@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/home_edit_channel_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="12dp"
+        android:paddingTop="12dp"
+        android:background="?attr/common_bg_white_value">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="频道管理"
+            android:textSize="18sp"
+            android:textColor="?attr/article_title_value"
+            android:layout_centerInParent="true"
+            />
+        <RelativeLayout
+            android:id="@+id/home_edit_channel_list_arrow"
+            android:layout_width="42dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true" >
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_centerInParent="true"
+                android:src="@mipmap/fanhui_anniu" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <com.chengning.yiqikantoutiao.widget.ScrollBarExtendViewPager
+        android:id="@+id/home_edit_channel_list_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/common_bg_value"
+        android:fadingEdge="none"
+        android:fillViewport="true"
+        android:visibility="visible" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="39dp"
+                android:background="?attr/edit_channel_title_bg_value" >
+
+                <TextView
+                    android:id="@+id/home_edit_channel_list_top_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/common_horizontal_margin"
+                    android:text="我的频道"
+                    android:textColor="?attr/item_title_color_value"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/home_edit_channel_list_top_title"
+                    android:layout_marginLeft="4dp"
+                    android:layout_toRightOf="@id/home_edit_channel_list_top_title"
+                    android:text="长按频道可拖动排序"
+                    android:textColor="?attr/article_time_value"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/home_edit_channel_list_delete"
+                    android:layout_width="66dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/common_horizontal_margin"
+                    android:background="@drawable/delete_btn_bg"
+                    android:gravity="center"
+                    android:text="排序删除"
+                    android:textColor="@color/channel_top_btn_text"
+                    android:textSize="14sp" />
+            </RelativeLayout>
+
+            <com.chengning.yiqikantoutiao.widget.DragGrid
+                android:id="@+id/home_edit_channel_list_my_grid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:listSelector="@color/transparent"
+                android:numColumns="4"
+                android:columnWidth="70dp"
+                android:stretchMode="spacingWidth"
+                android:padding="@dimen/common_horizontal_margin"
+                android:verticalSpacing="2dp">
+            </com.chengning.yiqikantoutiao.widget.DragGrid>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="39dp"
+                android:background="?attr/edit_channel_title_bg_value" >
+
+                <TextView
+                    android:id="@+id/home_edit_channel_list_other_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/common_horizontal_margin"
+                    android:text="可选频道"
+                    android:textColor="?attr/item_title_color_value"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/home_edit_channel_list_other_title"
+                    android:layout_marginLeft="4dp"
+                    android:layout_toRightOf="@id/home_edit_channel_list_other_title"
+                    android:text="点击增删频道"
+                    android:textColor="?attr/article_time_value"
+                    android:textSize="14sp" />
+            </RelativeLayout>
+
+            <com.chengning.yiqikantoutiao.widget.MaxGridView
+                android:id="@+id/home_edit_channel_list_other_grid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:listSelector="@color/transparent"
+                android:numColumns="4"
+                android:columnWidth="70dp"
+                android:stretchMode="spacingWidth"
+                android:padding="@dimen/common_horizontal_margin"
+                android:verticalSpacing="2dp">
+            </com.chengning.yiqikantoutiao.widget.MaxGridView>
+        </LinearLayout>
+    </com.chengning.yiqikantoutiao.widget.ScrollBarExtendViewPager>
+
+</LinearLayout>

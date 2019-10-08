@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_base_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_bg_value" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <ProgressBar
+            android:id="@+id/wait"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:indeterminateDrawable="@drawable/progress_center"
+            android:minHeight="42dp"
+            android:minWidth="42dp" />
+
+        <ImageView
+            android:id="@+id/touchRefrush"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/touch_refresh" />
+    </RelativeLayout>
+
+    <com.shenyuan.militarynews.views.PullToRefreshListView_FootLoad
+        xmlns:ptr="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title_bar_layout"
+        android:cacheColorHint="@color/transparent"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:fadingEdge="none"
+        android:fastScrollEnabled="false"
+        android:footerDividersEnabled="false"
+        android:headerDividersEnabled="false"
+        android:smoothScrollbar="true"
+        ptr:ptrAnimationStyle="flip" >
+    </com.shenyuan.militarynews.views.PullToRefreshListView_FootLoad>
+
+    <include layout="@layout/popup_home_new_content" />
+
+</RelativeLayout>

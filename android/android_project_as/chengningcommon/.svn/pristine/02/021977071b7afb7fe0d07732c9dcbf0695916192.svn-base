@@ -1,0 +1,83 @@
+package com.chengning.common.update;
+
+import org.apache.http.Header;
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+
+import com.chengning.common.base.util.BaseCommon;
+import com.chengning.common.base.util.BaseJUrl;
+import com.chengning.common.util.HttpUtil;
+import com.google.gson.Gson;
+
+public class UpdateAgent {
+	
+	public UpdateAgent(){
+		
+	} 
+
+	public static void update(final Context context, final String appkey){
+		update(context, appkey, BaseCommon.getUmengChannel(context), null);
+	}
+	
+	public static void update(final Context context, final String appkey, final String channel, final UpdateListener listener){
+		String url = BaseJUrl.append(UpdateConst.URL_UPDATE, UpdateConst.KEY_APPKEY, appkey);
+		url = BaseJUrl.append(url, UpdateConst.KEY_VERSION_CODE, UpdateUtil.getVersionCode(context));
+		url = BaseJUrl.append(url, UpdateConst.KEY_OLD_MD5, UpdateUtil.getApplicationMD5(context));
+		url = BaseJUrl.append(url, UpdateConst.KEY_CHANNEL, channel);
+		HttpUtil.getClient().get(context, url.toString(), null, null, new UpdateJsonHttpResponseHandler() {
+			
+			@Override
+	        public void onFailure(int statusCode, Header[] headers,Throwable throwable,JSONObject errorResponse) {
+				if(listener != null){
+					listener.onUpdateReturned(UpdateStatus.Error, null);
+				}
+	        }
+			
+	        @Override 
+	        public void onSuccess(JSONObject response) {
+	        	if(context == null || response == null){
+	        		// null
+					if(listener != null){
+						listener.onUpdateReturned(UpdateStatus.Error, null);
+					}
+	        		return;
+	        	}
+	        	try {
+		            Gson gson = new Gson();
+		            UpdateBean bean = gson.fromJson(response.toString(), UpdateBean.class);
+		            if("yes".equalsIgnoreCase(bean.getUpdate())){
+		            	// yes
+		            	if(!UpdateUtil.isWifi(context)){
+							if(listener != null){
+								listener.onUpdateReturned(UpdateStatus.NoneWifi, null);
+							}
+		            	}else{
+							if(listener != null){
+								listener.onUpdateReturned(UpdateStatus.Yes, null);
+							}
+		            	}
+		            	
+		            	Intent intent = new Intent(context, UpdateDialogActivity.class);
+		            	if(!(context instanceof Activity)) {
+		            		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		            	}
+		            	
+		            	intent.putExtra("bean", bean);
+		            	context.startActivity(intent);
+		            }else{
+		            	// no
+						if(listener != null){
+							listener.onUpdateReturned(UpdateStatus.No, null);
+						}
+		            }
+		            
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+	        }
+		});
+	}
+}

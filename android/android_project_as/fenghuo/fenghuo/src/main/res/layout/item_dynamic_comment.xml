@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/common_horizontal_margin"
+    android:paddingRight="@dimen/common_horizontal_margin"
+     >
+
+    <RelativeLayout 
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="6dp"
+		android:background="?attr/dynamic_list_huifu_bg_color_value" >
+		
+        <ImageView 
+            android:id="@+id/item_article_comment_top_comment_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="center"
+            android:layout_alignParentLeft="true"
+            android:src="?attr/dynamic_detail_comment_icon"/>
+        
+        <ImageView
+            android:id="@+id/item_article_comment_top_user_image"
+            android:layout_toRightOf="@id/item_article_comment_top_comment_icon"
+            android:layout_width="35dp"
+            android:layout_height="35dp" />
+
+        <RelativeLayout
+            android:id="@+id/item_article_comment_top_user_rl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/item_article_comment_top_user_image"
+            android:layout_marginLeft="6dp"
+            android:layout_toRightOf="@id/item_article_comment_top_user_image" >
+
+            <TextView
+                android:id="@+id/item_article_comment_top_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:gravity="center_vertical"
+                android:text="用户昵称"
+                android:includeFontPadding="false"
+                android:textColor="@color/article_cmt_name"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/item_article_comment_top_ower"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="4dp"
+                android:visibility="gone"
+                android:layout_toRightOf="@+id/item_article_comment_top_user_name"
+                android:background="@drawable/louzhu_icon" />
+
+            <TextView
+                android:id="@+id/item_article_comment_top_floor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:text="沙发"
+                android:visibility="gone"
+                android:textColor="?attr/article_time_value"
+                android:textSize="13sp" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/item_article_comment_top_user_medal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/item_article_comment_top_user_rl"
+            android:layout_toRightOf="@id/item_article_comment_top_user_rl"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/item_article_comment_top_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:text="时间"
+            android:layout_marginRight="@dimen/common_horizontal_margin"
+            android:textColor="?attr/article_time_value"
+            android:textSize="@dimen/common_item_time_text_size" />
+
+        <com.chengning.fenghuo.widget.DynamicTextView
+            android:id="@+id/item_article_comment_content_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/item_article_comment_top_user_rl"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="@dimen/common_horizontal_margin"
+            android:layout_alignLeft="@id/item_article_comment_top_user_rl"
+            android:textColor="?attr/item_dynamic_cmt_content_color_value"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:id="@+id/item_article_comment_content_listview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/item_article_comment_bottom"
+            android:layout_marginTop="6dp"
+            android:background="?attr/article_cmt_parent_bg_color_value"
+            android:orientation="vertical"
+            android:paddingBottom="10dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="6dp" 
+            android:visibility="gone">
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/item_article_comment_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/item_article_comment_content_text"
+            android:layout_marginBottom="3dp"
+            android:layout_marginTop="12dp"
+            android:visibility="gone" >
+
+            <TextView
+                android:id="@+id/item_article_comment_top_comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:drawableLeft="@drawable/tuijian_shouye_quanzi_comment_icon"
+                android:drawablePadding="6dp"
+                android:text="回复"
+                android:visibility="gone"
+                android:textColor="?attr/article_time_value"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/item_article_comment_top_like"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/common_horizontal_margin"
+                android:layout_toLeftOf="@+id/item_article_comment_top_comment"
+                android:drawableLeft="@drawable/tuijian_shouye_quanzi_zan_icon"
+                android:drawablePadding="2dp"
+                android:text=""
+                android:visibility="gone"
+                android:textColor="?attr/article_time_value"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/item_article_comment_top_more"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/item_article_comment_content_listview"
+            android:layout_alignRight="@+id/item_article_comment_content_listview"
+            android:layout_below="@+id/item_article_comment_content_listview"
+            android:background="?attr/article_cmt_parent_bg_color_value"
+            android:gravity="right"
+            android:paddingBottom="@dimen/common_horizontal_margin"
+            android:paddingLeft="@dimen/common_horizontal_margin"
+            android:paddingRight="@dimen/common_horizontal_margin"
+            android:text=""
+            android:textColor="@color/common_blue"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
+        <View
+            android:id="@+id/item_article_comment_line"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_below="@+id/item_article_comment_top_more"
+            android:layout_marginTop="6dp"
+            android:layout_alignLeft="@id/item_article_comment_top_user_image"
+            android:background="?attr/item_divider_color_value"/>
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/news_content"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+ 
+    <com.viewpagerindicator.TabPageIndicator
+        android:id="@+id/news_indicator"
+        android:layout_alignParentTop="true"
+        android:layout_height="39dp"
+        android:layout_width="fill_parent"
+        
+        />
+    <android.support.v4.view.ViewPager
+        android:id="@+id/news_pager"
+        android:layout_below="@+id/news_indicator"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" 
+        />
+         
+</RelativeLayout>

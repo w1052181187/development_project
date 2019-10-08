@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:background="?attr/main_bg_value"
+    >
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:padding="12dp"
+        android:layout_below="@+id/title_bar_layout"
+        android:orientation="vertical" >
+
+        <!-- 
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/myContentTextStyle"
+            android:text="1.做任务赚金币" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" 
+            android:orientation="horizontal"
+            android:layout_margin="12dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/myContentTextStyle"
+                android:text="金币可用来兑换礼品，去" />
+
+            <TextView
+                android:id="@+id/directorate_task_help_exchangecenter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/myContentTextStyle"
+                android:textColor="@color/home_bottom_txt_sel"
+                android:text="兑换中心" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/myContentTextStyle"
+            android:text="2.做任务赚积分" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            android:text="积分越多，等级越高，享有的权限也越多" />
+         -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/grade_description_head_bg_value"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" 
+                android:orientation="horizontal"
+                android:padding="12dp"
+                >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textAppearance="@style/myContentTextStyleGray"
+                    android:text="军衔" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textAppearance="@style/myContentTextStyleGray"
+                    android:text="等级" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textAppearance="@style/myContentTextStyleGray"
+                    android:text="积分" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px" 
+                android:background="?attr/item_divider_color_value"
+                />
+
+            <ListView
+                android:id="@+id/directorate_task_help_grade_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@null"
+                android:listSelector="@color/white"
+                android:scrollbars="none"
+                android:background="?attr/grade_description_head_bg_value" >
+            </ListView>
+
+        </LinearLayout>
+        
+    </LinearLayout>
+
+</RelativeLayout>

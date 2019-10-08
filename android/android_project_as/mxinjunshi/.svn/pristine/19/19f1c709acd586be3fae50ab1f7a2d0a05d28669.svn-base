@@ -1,0 +1,80 @@
+package com.ikantech.military.adapter;
+
+import java.util.List;
+
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.text.TextUtils;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.chengning.common.base.BasePageListAdapter;
+import com.chengning.common.base.BaseViewHolder;
+import com.ikantech.military.entity.WeaponItem;
+import com.ikantech.support.listener.YiImageLoaderListener;
+import com.ikantech.support.utils.YiAsyncImageLoader;
+import com.shenyuan.militarynews.R;
+
+public class SearchAdapter extends BasePageListAdapter {
+	
+	private boolean mIsNightMode;
+
+	public SearchAdapter(Activity context, List<WeaponItem> searchList) {
+		super(context, searchList);
+	}
+
+	public void setIsNightMode(boolean isNightMode) {
+		mIsNightMode = isNightMode;
+	}
+	@Override
+	public int buildLayoutId() {
+		return R.layout.search_item;
+	}
+
+	@Override
+	public void handleLayout(View convertView, int position, Object obj) {
+		TextView contentName = (TextView) BaseViewHolder.get(convertView, R.id.search_item_txt);
+		final ImageView contentImage = (ImageView) BaseViewHolder.get(convertView, R.id.search_item_img);
+
+		WeaponItem searchBean = (WeaponItem) getItem(position);
+
+		if (searchBean != null) {
+			contentName.setText(searchBean.getName());
+			
+			contentName.setTextColor(mIsNightMode ? Color.rgb(187, 204, 222) : getContext().getResources().getColor(R.color.main_weapon_type_color));
+
+
+			contentImage.setImageResource(mIsNightMode ? R.drawable.no_pic_night : R.drawable.no_pic);
+			if (!TextUtils.isEmpty(searchBean.getImageUrl())) {
+				YiAsyncImageLoader.loadBitmapFromUrl(searchBean.getImageUrl(),
+						new YiImageLoaderListener() {
+							@Override
+							public void onImageLoaded(String url, Bitmap bitmap) {
+								if (bitmap != null)
+									contentImage.setImageBitmap(bitmap);
+							}
+						});
+			}
+
+			ViewTreeObserver vto2 = contentImage.getViewTreeObserver();
+			vto2.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+				@Override
+				public void onGlobalLayout() {
+					if (contentImage.getWidth() > 0 && contentImage.getHeight() > 0) {
+						contentImage.getViewTreeObserver()
+								.removeGlobalOnLayoutListener(this);
+						LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) contentImage
+								.getLayoutParams();
+						params.height = (int) (contentImage.getWidth() * (258.0 / 379.0F));
+						contentImage.setLayoutParams(params);
+					}
+				}
+			});
+		}
+	}
+}

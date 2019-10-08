@@ -1,0 +1,307 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/about_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_bg_value">
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/my_income_share_rl"
+        android:layout_below="@+id/title_bar_layout"
+        android:background="?attr/common_bg_gray_value">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_bg_white_value"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/common_horizontal_margin"
+                    android:layout_marginRight="@dimen/common_horizontal_margin"
+                    android:layout_marginTop="23dp"
+                    android:text="当前余额(元)"
+                    android:textColor="?attr/article_time_value"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/my_income_all_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="22dp"
+                    android:layout_marginLeft="@dimen/common_horizontal_margin"
+                    android:layout_marginRight="@dimen/common_horizontal_margin"
+                    android:layout_marginTop="9dp"
+                    android:text="103.36"
+                    android:textColor="@color/my_income_money_color"
+                    android:textSize="39sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/my_income_gold_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:text="103.36"
+                            android:textColor="@color/my_income_money_color"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="昨日金币收入"
+                            android:textColor="?attr/article_time_value"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="45dp"
+                        android:background="?attr/item_divider_color_value" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/my_income_money_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:text="103.36"
+                            android:textColor="@color/my_income_money_color"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="昨日零钱收入"
+                            android:textColor="?attr/article_time_value"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
+                    android:background="?attr/item_divider_color_value" />
+
+                <TextView
+                    android:id="@+id/my_income_exchange_rate_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center"
+                    android:textColor="?attr/my_income_exchange_rate_color_value"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/my_income_ranking_list_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:background="?attr/common_bg_white_value"
+                android:paddingLeft="@dimen/common_horizontal_margin"
+                android:paddingRight="@dimen/common_horizontal_margin">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="24dp"
+                    android:layout_marginRight="12dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_toLeftOf="@+id/fenghuo_ranking_list_img"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="烽火军事收入排行榜"
+                        android:textColor="?attr/article_title_value"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="9dp"
+                        android:text="注册即送1元现金"
+                        android:textColor="?attr/article_time_value"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/fenghuo_ranking_list_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/wodeshouru_ph_pic" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/common_bg_white_value"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/common_horizontal_margin"
+                android:paddingRight="@dimen/common_horizontal_margin">
+
+                <RelativeLayout
+                    android:id="@+id/my_income_tab_gold_rl"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/my_income_tab_gold"
+                        style="@style/tabMyIncomeGold"
+                        android:text="金币" />
+
+                    <View
+                        android:id="@+id/my_income_tab_gold_line"
+                        android:layout_width="150dp"
+                        android:layout_height="2dp"
+                        android:layout_below="@+id/my_income_tab_gold"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/my_income_gold_selector" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/my_income_tab_money_rl"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/my_income_tab_money"
+                        style="@style/tabMyIncomeGold"
+                        android:text="零钱" />
+
+                    <View
+                        android:id="@+id/my_income_tab_money_line"
+                        android:layout_width="150dp"
+                        android:layout_height="2dp"
+                        android:layout_below="@+id/my_income_tab_money"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/my_income_gold_selector" />
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/item_divider_color_value" />
+
+            <com.chengning.fenghuo.widget.LoadFullListView
+                android:id="@+id/my_income_gold_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="?attr/item_divider_color_value"
+                android:dividerHeight="1dp"
+                android:paddingLeft="@dimen/common_horizontal_margin"
+                android:paddingRight="@dimen/common_horizontal_margin">
+
+            </com.chengning.fenghuo.widget.LoadFullListView>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="25dp"
+                android:layout_marginTop="@dimen/common_horizontal_margin"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="20dp"
+                    android:layout_height="1dp"
+                    android:background="?attr/item_divider_color_value" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:gravity="center"
+                    android:text="系统只保留最近3天的收入明细"
+                    android:textColor="?attr/my_income_exchange_rate_color_value"
+                    android:textSize="12sp" />
+
+                <View
+                    android:layout_width="20dp"
+                    android:layout_height="1dp"
+                    android:background="?attr/item_divider_color_value" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </ScrollView>
+
+    <RelativeLayout
+        android:id="@+id/my_income_share_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/common_bg_white_value"
+        android:padding="@dimen/common_horizontal_margin">
+
+        <TextView
+            android:id="@+id/my_income_share_btn"
+            android:layout_width="match_parent"
+            android:layout_height="47dp"
+            android:background="@drawable/wodeshouru_btn"
+            android:gravity="center"
+            android:paddingLeft="@dimen/common_horizontal_margin"
+            android:paddingRight="@dimen/common_horizontal_margin"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

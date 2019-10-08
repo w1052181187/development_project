@@ -1,0 +1,79 @@
+-- Merging decision tree log ---
+manifest
+ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:2:1-31:12
+INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:2:1-31:12
+INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:2:1-31:12
+INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:2:1-31:12
+INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:2:1-31:12
+INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:2:1-31:12
+INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:2:1-31:12
+	package
+		ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:3:5-23
+		INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml
+		INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml
+	android:versionName
+		ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:5:5-30
+		INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml
+		INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:2:11-69
+	android:versionCode
+		ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:4:5-28
+		INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml
+		INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml
+uses-sdk
+ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:7:5-9:41
+INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:7:5-9:41
+INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:7:5-9:41
+INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:7:5-9:41
+INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:7:5-9:41
+	android:targetSdkVersion
+		ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:9:9-38
+		INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml
+		INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:8:9-34
+		INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml
+		INJECTED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml
+uses-permission#android.permission.INTERNET
+ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:12:5-67
+	android:name
+		ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:12:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:13:5-79
+	android:name
+		ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:13:22-76
+uses-permission#android.permission.ACCESS_WIFI_STATE
+ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:14:5-76
+	android:name
+		ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:14:22-73
+uses-permission#android.permission.READ_PHONE_STATE
+ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:15:5-75
+	android:name
+		ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:15:22-72
+uses-permission#android.permission.ACCESS_COARSE_LOCATION
+ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:16:5-81
+	android:name
+		ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:16:22-78
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:17:5-79
+	android:name
+		ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:17:22-76
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:18:5-81
+	android:name
+		ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:18:22-78
+application
+ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:21:5-28:19
+service#com.qq.e.comm.DownloadService
+ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:22:9-24:40
+	android:exported
+		ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:24:13-37
+	android:name
+		ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:23:13-57
+activity#com.qq.e.ads.ADActivity
+ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:25:9-27:86
+	android:configChanges
+		ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:27:13-83
+	android:name
+		ADDED from E:\work\workspace_as\junshitoutiao_cmstop\tengxun_gdt\src\main\AndroidManifest.xml:26:13-51

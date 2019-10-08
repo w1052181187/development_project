@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/left_menu_item_height"
+    android:minHeight="@dimen/left_menu_item_height"
+    android:orientation="horizontal" >
+
+    <TextView
+        android:id="@+id/th"
+        android:layout_width="0dip"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:textColor="@color/main_weapon_type_color"
+        android:textSize="@dimen/text_size_big" />
+
+    <View
+        android:layout_width="1dip"
+        android:layout_height="fill_parent"
+        android:background="@color/com_sp" />
+
+    <TextView
+        android:id="@+id/td1"
+        android:layout_width="0dip"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:textColor="@color/main_weapon_type_color"
+        android:textSize="@dimen/text_size_big" />
+
+    <View
+        android:layout_width="1dip"
+        android:layout_height="fill_parent"
+        android:background="@color/com_sp" />
+
+    <TextView
+        android:id="@+id/td2"
+        android:layout_width="0dip"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:textColor="@color/main_weapon_type_color"
+        android:textSize="@dimen/text_size_big" />
+
+</LinearLayout>

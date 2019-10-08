@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+    package="com.alibaba.sdk.android.feedback"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="9"
+        android:targetSdkVersion="21"
+        tools:overrideLibrary="com.example.umeng_sdk"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
+    <application android:allowBackup="false" >
+        <activity
+            android:name="com.alibaba.sdk.android.feedback.windvane.CustomHybirdActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/ali_feedback_contentoverlay"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.alibaba.sdk.android.feedback.impl.ErrorPageActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/ali_feedback_contentoverlay" />
+
+        <service android:name="com.alibaba.mtl.appmonitor.AppMonitorService" />
+
+    </application>
+
+</manifest>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="45dp"
+    android:background="?attr/common_item_bg_white_state_value" >
+
+    <TextView
+        android:id="@+id/item_chat_report_tv"
+        style="@style/SettingChildText"
+        android:layout_centerVertical="true"
+        />
+
+    <ImageView
+        android:id="@+id/item_chat_report_checkimg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="12dp"
+        android:src="@drawable/list_checked" />
+
+</RelativeLayout>

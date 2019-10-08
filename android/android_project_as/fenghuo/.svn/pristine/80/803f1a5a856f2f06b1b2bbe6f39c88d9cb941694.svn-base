@@ -1,0 +1,98 @@
+package com.chengning.fenghuo.data.access;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+
+import com.chengning.common.base.BaseListDA;
+import com.chengning.common.util.SerializeUtil;
+import com.chengning.fenghuo.data.bean.CircleBean;
+import com.chengning.fenghuo.data.bean.CircleListBean;
+import com.chengning.fenghuo.data.bean.DynamicItemBean;
+import com.chengning.fenghuo.db.provider.dbContent.table_circle_channel_item;
+import com.chengning.fenghuo.db.provider.dbContent.table_circle_item;
+
+public class CircleChannelItemDA extends BaseListDA<CircleListBean> {
+
+	private static CircleChannelItemDA mInst;
+
+	public static CircleChannelItemDA getInst(Context con) {
+		if (mInst == null) {
+            synchronized (CircleChannelItemDA.class) {
+                if (mInst == null) {
+                    mInst = new CircleChannelItemDA(con);
+                }
+            }
+        }
+		return mInst;
+	}
+
+	private CircleChannelItemDA(Context con) {
+		super(con, table_circle_channel_item.CONTENT_URI);
+	}
+
+	@Override
+	public String buildDeleteWhere(CircleListBean t) {
+		return null;
+	}
+
+	@Override
+	public String[] buildDeleteSelectionArgs(CircleListBean t) {
+		return null;
+	}
+
+	@Override
+	public ContentValues buildInsertValues(CircleListBean bean) {
+		ContentValues values = new ContentValues();
+		
+		values.put("list", SerializeUtil.serialize(bean.getList()));
+		values.put("local_type", bean.getLocal_type());
+		values.put("local_page", bean.getLocal_page());
+		return values;
+	}
+
+	@Override
+	public CircleListBean buildQueryValues(Cursor cursor) {
+		CircleListBean bean = new CircleListBean();
+		bean.setLocal_type(cursor.getString(cursor.getColumnIndex("local_type")));
+		 
+		ArrayList<DynamicItemBean> list = (ArrayList<DynamicItemBean>) SerializeUtil.deSerialize(cursor.getString(cursor.getColumnIndex("list")));
+		bean.setList(list);
+		bean.setLocal_page(cursor.getInt(cursor.getColumnIndex("local_type")));
+		return bean;
+	}
+	
+//	public void setChannelAndPage(List<CircleBean> list, String type, int page){
+//		if(list != null){
+//			for(CircleBean b : list){
+//				b.setLocal_type(type);
+//				b.setLocal_page(page);
+//			}
+//		}
+//	}
+	
+	public void clearChannel(String type){
+		deleteTarget("local_type = ?",
+				new String[]{type});
+	}
+	
+	public void insertCircle(CircleListBean bean, String type, int page){
+		bean.setLocal_type(type);
+		bean.setLocal_page(page);
+		insertOne(bean);
+	}
+	
+	public CircleListBean queryChannelItem(String type, int page){
+		List<CircleListBean> list = queryTarget("local_type = ? and local_page = ?",
+				new String[]{type, String.valueOf(page)}, null);
+		if(list != null && list.size() > 0){
+			return list.get(0);
+		}else{
+			return null;
+		}
+	}
+
+}

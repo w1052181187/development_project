@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/common_bg_value"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/reply_detail_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/common_horizontal_margin"
+        android:paddingRight="@dimen/common_horizontal_margin"
+        android:paddingTop="@dimen/common_horizontal_margin" >
+
+        <ImageView
+            android:id="@+id/reply_detail_top_avatar"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:scaleType="centerCrop"/>
+
+        <RelativeLayout
+            android:id="@+id/reply_detail_top_name_rl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/reply_detail_top_avatar"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/reply_detail_top_avatar" >
+
+            <TextView
+                android:id="@+id/reply_detail_top_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/reply_detail_top_like"
+                android:ellipsize="end"
+                android:lines="1"
+                android:singleLine="true"
+                android:text="username"
+                android:textColor="@color/article_cmt_name"
+                android:textSize="15sp" />
+            <TextView
+                android:id="@+id/reply_detail_top_like"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/reply_detail_top_name"
+                android:layout_alignParentRight="true"
+                android:gravity="center"
+                android:drawablePadding="3dp"
+                android:drawableLeft="@drawable/toolbar_btn_like_small_state"
+                android:text="1"
+                android:textColor="?attr/comment_zan_text_color"
+                android:textSize="11sp" />
+        </RelativeLayout>
+        <TextView
+            android:id="@+id/reply_detail_top_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/reply_detail_top_name_rl"
+            android:layout_alignLeft="@id/reply_detail_top_name_rl"
+            android:layout_marginBottom="3dp"
+            android:layout_marginTop="5dp"
+            android:lineSpacingExtra="@dimen/comment_reply_line_space"
+            android:text="内容"
+            android:textColor="?attr/item_title_color_value"
+            android:textSize="@dimen/common_item_comment_content_text_size" />
+
+        <TextView
+            android:id="@+id/reply_detail_top_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/reply_detail_top_content"
+            android:layout_alignLeft="@id/reply_detail_top_name_rl"
+            android:text="时间"
+            android:textColor="?attr/item_title_color_value"
+            android:textSize="@dimen/common_item_time_text_size" />
+
+        <TextView
+            android:id="@+id/reply_detail_top_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/reply_detail_top_time"
+            android:layout_alignTop="@id/reply_detail_top_time"
+            android:layout_marginLeft="6dp"
+            android:text="· 删除"
+            android:textColor="?attr/item_title_color_value"
+            android:textSize="@dimen/common_item_time_text_size"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/reply_detail_top_report"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/reply_detail_top_content"
+            android:layout_alignParentRight="true"
+            android:text="举报"
+            android:textSize="@dimen/common_item_time_text_size"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/channel_item_divider_height_common"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:background="?attr/item_divider_color_value" />
+
+    <TextView
+        android:id="@+id/reply_detail_top_all_cmt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="8dp"
+        android:text="全部评论"
+        android:textColor="?attr/item_title_color_value"
+        android:textSize="14sp" >
+    </TextView>
+
+</LinearLayout>

@@ -1,0 +1,236 @@
+package com.shenyuan.militarynews.activity;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Message;
+import android.text.TextUtils;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+
+import com.chengning.common.base.BaseActivity;
+import com.chengning.common.base.BaseRetrofitModel;
+import com.chengning.common.base.MyRetrofitResponseCallback;
+import com.chengning.common.base.util.RetrofitManager;
+import com.chengning.common.util.StatusBarUtil;
+import com.shenyuan.militarynews.App;
+import com.shenyuan.militarynews.R;
+import com.shenyuan.militarynews.SettingManager;
+import com.shenyuan.militarynews.beans.data.BindDataBean;
+import com.shenyuan.militarynews.utils.Common;
+import com.shenyuan.militarynews.utils.UIHelper;
+import com.shenyuan.militarynews.views.TitleBar;
+
+import java.util.HashMap;
+
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+
+;
+
+public class PwdFindActivity extends BaseActivity {
+
+	private TitleBar mTitleBar;
+	private EditText mPhone;
+	private Button mGetCode;
+	private EditText mCode;
+	private Button mNext;
+	
+	private String mStrPhone;
+	private String mStrCode;
+	
+	private int mPhone_CountDown = 0;
+	private Runnable mRunnable;
+	private static final int COUNTDOWN = 0x01;
+	
+	private static final int REQUEST_MODIFY = 0x10;
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		Common.setTheme(getActivity());
+		setContentView(R.layout.activity_pwdfind);
+		if(Common.isTrue(SettingManager.getInst().getNightModel())){  
+			StatusBarUtil.setBar(this, getResources().getColor(R.color.night_bg_color), false);
+        }else{  
+        	StatusBarUtil.setBar(this, getResources().getColor(R.color.normalstate_bg), true);
+        }
+		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	public void initViews() {
+		mTitleBar = new TitleBar(getActivity(), true);
+		mTitleBar.showDefaultBack();
+		mTitleBar.setTitle(getResources().getString(R.string.findpassword));
+		
+		mPhone = (EditText) findViewById(R.id.fp_et_phone);
+		mGetCode = (Button) findViewById(R.id.fp_btn_getcode);
+		mCode = (EditText) findViewById(R.id.fp_et_code);
+		mNext = (Button) findViewById(R.id.fp_nextbtn);
+	}
+
+	@Override
+	public void initDatas() {
+		mRunnable = new Runnable() {
+			
+			@Override
+			public void run() {
+                try{    
+                    Message message = getHandler().obtainMessage(COUNTDOWN, null);
+					message.sendToTarget();
+                }catch (Exception e) {  
+                }  
+			}
+		};
+	}
+
+	@Override
+	public void installListeners() {
+		mGetCode.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getCode();
+			}
+		});
+		mNext.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				verify();
+			}
+		});
+	}
+
+	@Override
+	public void processHandlerMessage(Message msg) {
+		switch (msg.what) {
+		case COUNTDOWN:
+			mPhone_CountDown--;
+			if (mPhone_CountDown > 0) { 
+				setRequestEnable(false);
+			} else { 
+				setRequestEnable(true);
+			}
+			break;  
+		}
+	}
+	
+	private void setRequestEnable(boolean value){
+		if(value){
+			mPhone_CountDown = 0;
+			mGetCode.setText(getResources().getString(R.string.get_code));
+		}else{
+			mGetCode.setText(mPhone_CountDown + "秒后重新获取");
+			getHandler().postDelayed(mRunnable, 1000);
+		}
+	}
+	
+	private void getCode(){
+		mStrPhone = mPhone.getText().toString().trim();
+		if(TextUtils.isEmpty(mStrPhone)){
+			UIHelper.showToast(getActivity(), getResources().getString(R.string.please_input_account));
+			return;
+		}
+		
+		if (mPhone_CountDown != 0) { 
+			return;
+		}
+		
+		mPhone_CountDown = 60;
+		setRequestEnable(false);
+
+		HashMap params = new HashMap<String, String>();
+		params.put("sms_bind_num", mStrPhone);
+
+		Observable<BaseRetrofitModel> observable
+				= App.getInst().getApiInterface().getVerifyCode(params);
+		RetrofitManager.subcribe(observable, new MyRetrofitResponseCallback<String>() {
+
+			@Override
+			public void onDataSuccess(int status, String mod, String message, String data, BaseRetrofitModel<String> response) {
+				UIHelper.showToast(getActivity(), "验证码发送成功，请查收");
+			}
+
+			@Override
+			public void onDataFailure(int status, String mod, String message, String data, BaseRetrofitModel<String> response) {
+				UIHelper.showToast(getActivity(), message);
+				setRequestEnable(true);
+			}
+
+			@Override
+			public void onError(Throwable t) {
+				Common.showHttpFailureToast(getActivity());
+				setRequestEnable(true);
+				super.onError(t);
+			}
+		});
+	}
+	
+	private void verify(){
+		mStrPhone = mPhone.getText().toString().trim();
+		mStrCode = mCode.getText().toString().trim();
+		if(TextUtils.isEmpty(mStrPhone)){
+			UIHelper.showToast(getActivity(), getResources().getString(R.string.please_input_account));
+			return;
+		}
+		if(TextUtils.isEmpty(mStrCode)){
+			UIHelper.showToast(getActivity(), getResources().getString(R.string.please_input_code));
+			return;
+		}
+
+		HashMap params = new HashMap<String, String>();
+		params.put("sms_bind_num", mStrPhone);
+		params.put("bind_key", mStrCode);
+
+		Observable<BaseRetrofitModel> observable
+				= App.getInst().getApiInterface().verifyCode(params);
+		RetrofitManager.subcribe(observable, new MyRetrofitResponseCallback<String>() {
+
+			@Override
+			public void onSubscribe(Disposable d) {
+				UIHelper.addPD(getActivity(), "正在验证...");
+				super.onSubscribe(d);
+			}
+
+			@Override
+			public void onComplete() {
+				UIHelper.removePD();
+				super.onComplete();
+			}
+
+			@Override
+			public void onDataSuccess(int status, String mod, String message, String data, BaseRetrofitModel<String> response) {
+				startActivityForResult(new Intent(getActivity(), PwdModifyActivity.class)
+						.putExtra(PwdModifyActivity.BOOTTYPE, PwdModifyActivity.FORGETPWD)
+						.putExtra(PwdModifyActivity.PHONE, mStrPhone), REQUEST_MODIFY);
+			}
+
+			@Override
+			public void onDataFailure(int status, String mod, String message, String data, BaseRetrofitModel<String> response) {
+				UIHelper.showToast(getActivity(), message);
+			}
+
+			@Override
+			public void onError(Throwable t) {
+				Common.showHttpFailureToast(getActivity());
+				super.onError(t);
+			}
+		});
+
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if(requestCode == REQUEST_MODIFY && resultCode == RESULT_OK){
+			finish();
+		}
+	}
+
+	@Override
+	public Activity getActivity() {
+		return this;
+	}
+
+}

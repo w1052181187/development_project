@@ -1,0 +1,27 @@
+include ':app'
+include ':ali_feedback'
+include ':appcompat_v7'
+include ':design'
+include ':pulltorefresh'
+include ':recyclerview'
+include ':ali_securityguard'
+include ':baidu_mtj_sdk'
+include ':umeng_sdk'
+include ':shortcutBadger'
+include ':leancloudpush'
+include ':umeng_share'
+include ':viewpagerlibrary'
+include ':common'
+project(':ali_feedback').projectDir = new File(settingsDir, '../chengningcommon/ali_feedback')
+project(':appcompat_v7').projectDir = new File(settingsDir, '../chengningcommon/appcompat_v7')
+project(':design').projectDir = new File(settingsDir, '../chengningcommon/design')
+project(':pulltorefresh').projectDir = new File(settingsDir, '../chengningcommon/pulltorefresh')
+project(':recyclerview').projectDir = new File(settingsDir, '../chengningcommon/recyclerview')
+project(':ali_securityguard').projectDir = new File(settingsDir, '../chengningcommon/ali_securityguard')
+project(':baidu_mtj_sdk').projectDir = new File(settingsDir, '../chengningcommon/baidu_mtj_sdk')
+project(':umeng_sdk').projectDir = new File(settingsDir, '../chengningcommon/umeng_sdk')
+project(':shortcutBadger').projectDir = new File(settingsDir, '../chengningcommon/shortcutBadger')
+project(':leancloudpush').projectDir = new File(settingsDir, '../chengningcommon/leancloudpush')
+project(':umeng_share').projectDir = new File(settingsDir, '../chengningcommon/umeng_share')
+project(':viewpagerlibrary').projectDir = new File(settingsDir, '../chengningcommon/viewpagerlibrary')
+project(':common').projectDir = new File(settingsDir, '../chengningcommon/common')

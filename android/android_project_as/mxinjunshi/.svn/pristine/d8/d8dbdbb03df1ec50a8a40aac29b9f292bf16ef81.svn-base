@@ -1,0 +1,215 @@
+package com.ikantech.military.common;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.ikantech.support.utils.YiDeviceUtils;
+import com.ikantech.support.utils.YiPrefsKeeper;
+import com.shenyuan.militarynews.R;
+
+public class SingleChoiceDialog extends Dialog {
+	private String[] mItems;
+	private String[] mCodes;
+	private SingleChoiceListener mListener;
+	private String mSelectedItem;
+	private int mSelectedIndex;
+
+	private TextView mTitleTextView;
+	private String mTitle;
+	private ListView mListView;
+	// private ImageButton mDoneBtn;
+	private Context mContext;
+	private NativeAdapter mAdapter;
+
+	public SingleChoiceDialog(Context context) {
+		super(context, com.ikantech.support.R.style.Custom_Dialog_Dim);
+		mContext = context;
+		setCanceledOnTouchOutside(true);
+		mAdapter = new NativeAdapter();
+		mTitle = "";
+
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.single_choice_dialog);
+
+		mTitleTextView = (TextView) findViewById(R.id.single_choice_title);
+		mListView = (ListView) findViewById(R.id.single_choice_listview);
+		// mDoneBtn = (ImageButton) findViewById(R.id.single_choice_done);
+
+		mListView.setItemsCanFocus(false);
+		mListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+		mListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				mSelectedIndex = arg2;
+				mSelectedItem = (String) mAdapter.getItem(arg2);
+				mAdapter.notifyDataSetChanged();
+				mListener.onItemSelected(mSelectedItem, mSelectedIndex);
+				dismiss();
+			}
+
+		});
+		// mDoneBtn.setOnClickListener(new View.OnClickListener()
+		// {
+		//
+		// @Override
+		// public void onClick(View v)
+		// {
+		// if (mListener != null)
+		// {
+		// mListener.onItemSelected(mSelectedItem, mSelectedIndex);
+		// }
+		// }
+		// });
+		mListView.setAdapter(mAdapter);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		mTitleTextView.setText(mTitle);
+	}
+
+	public void setListener(SingleChoiceListener mListener) {
+		this.mListener = mListener;
+	}
+
+	@Override
+	public void show() {
+		super.show();
+		DisplayMetrics dm = YiDeviceUtils
+				.getDisplayMetrics((Activity) mContext);
+		Window window = getWindow();
+		WindowManager.LayoutParams params = window.getAttributes();
+		params.width = (int) (dm.widthPixels * 5.0F / 6);
+		params.height = (int) (dm.heightPixels * 3.4F / 5);
+		window.setAttributes(params);
+	}
+
+	public void show(float wScale, float hScale) {
+		super.show();
+		DisplayMetrics dm = YiDeviceUtils
+				.getDisplayMetrics((Activity) mContext);
+		Window window = getWindow();
+		WindowManager.LayoutParams params = window.getAttributes();
+		params.width = (int) (dm.widthPixels * wScale);
+		params.height = (int) (dm.heightPixels * hScale);
+		window.setAttributes(params);
+	}
+
+	public void setItems(String[] items, String[] codes) {
+		if (items == null || items.length < 1 || codes == null
+				|| codes.length < 1) {
+			throw new NullPointerException("items or codes non-null");
+		}
+		mItems = items;
+		mCodes = codes;
+		mAdapter.notifyDataSetChanged();
+	}
+
+	public void setTitle(CharSequence v) {
+		if (v == null)
+			return;
+		mTitle = v.toString();
+	}
+
+	public void setSelectedItem(String v) {
+		mSelectedItem = v;
+	}
+
+	public interface SingleChoiceListener {
+		void onItemSelected(String value, int index);
+	}
+
+	private class NativeAdapter extends BaseAdapter {
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return (mItems == null) ? 0 : mItems.length;
+		}
+
+		@Override
+		public Object getItem(int position) {
+			if (mItems != null && position >= 0 && position < mItems.length) {
+				return mItems[position];
+			}
+			return null;
+		}
+
+		@Override
+		public long getItemId(int position) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			String s = (String) getItem(position);
+			if (s == null) {
+				return null;
+			}
+
+			ViewHolder holder = null;
+			if (convertView == null) {
+				convertView = LayoutInflater.from(mContext).inflate(
+						R.layout.single_choice_list_item, null);
+				holder = new ViewHolder();
+				convertView.setTag(holder);
+
+				holder.mTextView = (TextView) convertView
+						.findViewById(R.id.single_choice_text);
+				holder.mImageView = (ImageView) convertView
+						.findViewById(R.id.single_choice_icon);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
+			}
+
+			int id = mContext.getResources().getIdentifier(mCodes[position],
+					"drawable", "com.ikantech.military");
+			if (id > 0) {
+				holder.mTextView.setCompoundDrawablesWithIntrinsicBounds(id, 0,
+						0, 0);
+			} else {
+				holder.mTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+						0, 0);
+			}
+
+			if (s.equals(mSelectedItem)) {
+				holder.mImageView
+						.setImageResource(R.drawable.common_ratio_select);
+			} else {
+				holder.mImageView
+						.setImageResource(R.drawable.common_transparent);
+			}
+			holder.mTextView.setText(s);
+
+			return convertView;
+		}
+
+		private class ViewHolder {
+			private TextView mTextView;
+			private ImageView mImageView;
+		}
+	}
+
+}

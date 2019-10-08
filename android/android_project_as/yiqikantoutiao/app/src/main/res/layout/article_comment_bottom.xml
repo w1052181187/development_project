@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/article_comment_bottom_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/common_bg_value"
+    android:orientation="vertical" >
+
+    <!--
+         <View
+        android:layout_width="match_parent"
+        android:layout_height="18dp"
+        android:background="?attr/item_divider_color_value" />
+    -->
+
+    <LinearLayout
+        android:id="@+id/article_comment_bottom_comment_ll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal"
+        android:visibility="gone" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="全部评论"
+                android:textColor="?attr/article_time_value"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3px"
+                android:layout_marginTop="6dp"
+                android:background="@color/article_cmt_name" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/article_comment_bottom_comment_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:text="(0)"
+            android:textColor="@color/article_time"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/article_comment_bottom_comment_v"
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:layout_marginLeft="@dimen/channel_item_divider_margin"
+        android:layout_marginRight="@dimen/channel_item_divider_margin"
+        android:background="?attr/item_divider_color_value"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/article_comment_bottom_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/common_bg_value"
+        android:orientation="vertical" >
+    </LinearLayout>
+    <include
+        android:id="@+id/footer_loading"
+        layout="@layout/footer_loading" />
+
+    <TextView
+        android:id="@+id/article_comment_bottom_no_data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="45dp"
+        android:layout_marginTop="45dp"
+        android:gravity="center"
+        android:text="暂时还没有评论"
+        android:textColor="?attr/article_time_value"
+        android:textSize="15sp" />
+
+</LinearLayout>

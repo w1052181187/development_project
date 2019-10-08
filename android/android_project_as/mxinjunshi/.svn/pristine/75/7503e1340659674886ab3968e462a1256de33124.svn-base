@@ -1,0 +1,50 @@
+package com.ikantech.military.adapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+
+public class SimpleFragmentPagerAdapter extends FragmentStatePagerAdapter  {
+    private ArrayList<Fragment> fragmentsList;
+    private List<String> strs;
+    public SimpleFragmentPagerAdapter(FragmentManager fm) {
+        super(fm);
+        
+    }
+
+    public SimpleFragmentPagerAdapter(FragmentManager fm, ArrayList<Fragment> fragments, List<String> strs) {
+        super(fm);
+        this.fragmentsList = fragments;
+        this.strs = strs;
+        
+    }
+
+	@Override
+    public int getCount() {
+        return fragmentsList.size();
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+    	return strs.get(position).toUpperCase();
+         
+    }
+//    @Override  
+//    public Object instantiateItem(View arg0, int arg1) {  
+//        return CircleDynamicListFragment.create(list.get(arg1));
+//    }  
+    
+    @Override
+    public Fragment getItem(int arg0) {
+        return fragmentsList.get(arg0);  
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        return super.getItemPosition(object);
+    }
+
+}

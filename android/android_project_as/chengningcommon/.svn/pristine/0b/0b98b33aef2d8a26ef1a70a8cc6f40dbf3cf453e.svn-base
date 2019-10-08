@@ -1,0 +1,127 @@
+package com.chengning.common.base;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.InputFilter;
+import android.text.TextUtils;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.GridView;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+
+import com.chengning.common.R;
+import com.chengning.common.app.ActivityInfo;
+
+public abstract class BaseDialogFragment extends DialogFragment {
+	private Activity mContext;
+	private BaseShowSuccessListener mShowLisener;
+
+	@Override
+	public void onAttach(Activity activity) {
+		mContext = activity;
+		super.onAttach(activity);
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		setStyle(DialogFragment.STYLE_NORMAL,
+				android.R.style.Theme_Translucent_NoTitleBar);
+
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		return configContentView();
+	}
+
+	@Override
+	public void show(FragmentManager manager, String tag) {
+		super.show(manager, tag);
+		if (mShowLisener != null) {
+			mShowLisener.success();
+		}
+	}
+
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+
+		initView();
+		initData();
+		initListener();
+
+	}
+	
+	/**
+	 * 获取上下文
+	 * @return
+	 */
+	public Activity getContext() {
+		return mContext;
+	}
+
+	/**
+	 * 配置根视图
+	 * @return
+	 */
+	public abstract View configContentView();
+	
+	/**
+	 * 初始化视图
+	 */
+	public abstract void initView();
+
+	/**
+	 * 初始化数据
+	 */
+	public abstract void initData() ;
+	
+	/**
+	 * 初始化监听器
+	 */
+	public abstract void initListener();
+
+	public void setShowSuccessListener(BaseShowSuccessListener listener){
+		this.mShowLisener = listener;
+	}
+
+	public interface BaseShowSuccessListener {
+		void success();
+	}
+
+}

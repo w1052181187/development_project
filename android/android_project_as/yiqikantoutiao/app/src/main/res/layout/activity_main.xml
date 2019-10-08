@@ -1,0 +1,93 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/common_bg">
+
+    <RelativeLayout
+        android:id="@+id/home_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/home_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="?item_divider_color_value" />
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="44dp"
+                android:background="?attr/toolbar_bg_color_value">
+
+                <com.chengning.common.widget.NestRadioGroup
+                    android:id="@+id/tabRadioGroup"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="horizontal">
+
+                    <com.chengning.common.widget.ImageRadioButton
+                        android:id="@+id/tab_home"
+                        style="@style/tabButton"
+                        android:checked="true"
+                        android:drawableTop="@drawable/toolbar_shuaxin_selector"
+                        android:text="@string/tab_home" />
+
+                    <com.chengning.common.widget.ImageRadioButton
+                        android:id="@+id/tab_video"
+                        style="@style/tabButton"
+                        android:drawableTop="@drawable/toolbar_video_selector"
+                        android:text="@string/tab_video" />
+
+                    <com.chengning.common.widget.ImageRadioButton
+                        android:id="@+id/tab_invite"
+                        style="@style/tabButton"
+                        android:drawableTop="@drawable/toolbar_invite_selector"
+                        android:text="@string/tab_invite" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+
+                        <com.chengning.common.widget.ImageRadioButton
+                            android:id="@+id/tab_wode"
+                            style="@style/tabButton"
+                            android:drawableTop="@drawable/toolbar_wode_selector"
+                            android:text="@string/tab_wode" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerHorizontal="true"
+                            android:paddingLeft="34dp"
+                            android:paddingTop="4dp"
+                            android:src="@mipmap/wode_hongdian14px" />
+
+                    </RelativeLayout>
+
+                </com.chengning.common.widget.NestRadioGroup>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/contentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/home_bottom"
+            android:background="@color/common_bg"
+            android:orientation="vertical">
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <include layout="@layout/first_run_page" />
+
+</RelativeLayout>

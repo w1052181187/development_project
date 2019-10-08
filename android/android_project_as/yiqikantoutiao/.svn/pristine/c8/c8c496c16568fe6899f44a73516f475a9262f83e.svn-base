@@ -1,0 +1,117 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/getpwd_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/main_bg_value" >
+    
+	<include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/title_bar_layout"
+        android:background="?attr/main_bg_value" >
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="17dp"
+            android:background="?attr/common_item_bg_white_state_value" >
+
+            <RelativeLayout
+                android:id="@+id/relativeLayout21"
+                android:layout_width="fill_parent"
+                android:layout_height="2px"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="12dp"
+                android:background="?attr/item_divider_color_value" >
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="2px"
+                android:layout_alignParentTop="true"
+                android:background="?attr/item_divider_color_value" >
+            </RelativeLayout>
+
+            <EditText
+                android:id="@+id/getpwd_phone_et"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:background="?attr/common_bg_white_value"
+                android:ems="10"
+                android:inputType="phone"
+                android:hint="请输入手机号"
+                android:textColor="?attr/item_title_color_value"
+                android:textColorHint="?attr/article_time_value" 
+                android:textSize="16sp"
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_below="@+id/relativeLayout1"
+            android:background="?attr/common_item_bg_white_state_value" >
+
+            <RelativeLayout
+                android:id="@+id/relativeLayout3"
+                android:layout_width="fill_parent"
+                android:layout_height="2px"
+                android:layout_alignParentBottom="true"
+                android:background="?attr/item_divider_color_value" >
+            </RelativeLayout>
+
+            <EditText
+                android:id="@+id/getpwd_code_et"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="12dp"
+                android:layout_toLeftOf="@+id/getpwd_codepush_btn"
+                android:background="?attr/common_bg_white_value"
+                android:ems="10"
+                android:hint="请输入验证码"
+                android:textColor="?attr/item_title_color_value"
+                android:textColorHint="?attr/article_time_value" 
+                android:textSize="16sp"
+                >
+            </EditText>
+
+            <Button
+                android:id="@+id/getpwd_codepush_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/shape_getcodebtn_bg_stated"
+                android:text="@string/get_regist_phone_key"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/getpwd_submit_btn"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/relativeLayout2"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="26dp"
+            android:background="@drawable/shape_btn_bg_stated"
+            android:text="下一步"
+            android:textColor="@color/topbar_fontcolor_2"
+            android:textSize="18dp" />
+    </RelativeLayout>
+
+</RelativeLayout>

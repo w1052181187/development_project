@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:orientation="vertical" >
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:background="?attr/item_divider_color_value" />
+
+    <TextView
+        android:id="@+id/popupwindow_circle_title_item"
+        style="@style/SettingChildText"
+        android:layout_width="match_parent"
+        android:background="?attr/common_item_bg_white_state_value"
+        android:drawablePadding="6dp"
+        android:text="热门"
+        android:textSize="16sp" />
+
+</LinearLayout>

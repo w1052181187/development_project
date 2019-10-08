@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="2px"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/item_divider_color_value" >
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_1"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/common_item_bg_white_state_value" >
+
+        <TextView
+            android:id="@+id/text_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:padding="@dimen/common_horizontal_margin"
+            android:text="所有评论"
+            android:textColor="?attr/item_title_color_value"
+            android:textSize="16dp" />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="2px"
+            android:layout_below="@id/text_1"
+            android:background="?attr/item_divider_color_value" >
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_2"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/common_item_bg_white_state_value" >
+
+        <TextView
+            android:id="@+id/text_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:padding="@dimen/common_horizontal_margin"
+            android:text="评论我的"
+            android:textColor="?attr/item_title_color_value"
+            android:textSize="16dp" />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="2px"
+            android:layout_below="@id/text_2"
+            android:background="?attr/item_divider_color_value" >
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_3"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/common_item_bg_white_state_value" >
+
+        <TextView
+            android:id="@+id/text_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:padding="@dimen/common_horizontal_margin"
+            android:text="我的评论"
+            android:textColor="?attr/item_title_color_value"
+            android:textSize="16dp" />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="2px"
+            android:layout_below="@id/text_3"
+            android:background="?attr/item_divider_color_value" >
+        </RelativeLayout>
+    </RelativeLayout>
+
+</LinearLayout>

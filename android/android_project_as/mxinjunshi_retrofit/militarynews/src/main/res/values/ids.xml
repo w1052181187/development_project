@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+   <item type="id" name="id_title_bar_imagebutton_left" />
+   <item type="id" name="id_title_bar_imagebutton_left_gap" />
+   <item type="id" name="id_title_bar_imagebutton_right" />
+   <item type="id" name="id_title_bar_title" />
+   <item type="id" name="id_title_bar_title_gap" />
+   <item type="id" name="tag_glide" />
+</resources>

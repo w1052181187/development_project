@@ -1,0 +1,84 @@
+package com.chengning.fenghuo.adapter;
+
+import java.util.List;
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.view.Display;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView.LayoutParams;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+
+import com.chengning.fenghuo.R;
+import com.chengning.fenghuo.emotion.weibo.Emotion;
+
+public class EmjoyGridAdapter extends BaseAdapter{
+	
+	private static final String TAG = EmjoyGridAdapter.class.getSimpleName();
+
+	private Context ctx;
+
+	private LayoutInflater mInflater;
+	private List<Emotion> mItems;
+	private int width;
+ 
+	public EmjoyGridAdapter() {
+	}
+
+	public EmjoyGridAdapter(Context context,List<Emotion> list, int page) {
+		this.ctx = context; 
+		mInflater = LayoutInflater.from(context);
+		mItems = list;
+	    Display display = ((Activity)context).getWindowManager().getDefaultDisplay();
+        width = display.getWidth()/10; 
+		
+	}
+
+	@Override
+	public int getCount() {
+		return mItems.size();
+	}
+
+	@Override
+	public Object getItem(int position) {
+		return mItems.get(position);
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return position;
+	} 
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		Emotion entity = mItems.get(position); 
+		ViewHolder viewHolder = null;
+	    if (convertView == null)
+	    { 
+			convertView = mInflater.inflate(R.layout.item_emjoy_grid, null); 
+	    	viewHolder = new ViewHolder();
+			viewHolder.img = (ImageView) convertView.findViewById(R.id.item_emjoygrid_img);   
+			convertView.setTag(viewHolder);
+	    }else{
+	        viewHolder = (ViewHolder) convertView.getTag();
+	    } 
+	    byte[] data = entity.getData();
+	    Bitmap b = BitmapFactory.decodeByteArray(data, 0, data.length);
+	    viewHolder.img.setImageBitmap(b);  
+	    LayoutParams a = new LayoutParams(width, width);
+	    viewHolder.img.setLayoutParams(a);
+	    viewHolder.img.setTag(entity);  
+	    convertView.setTag(viewHolder); 
+	    return convertView;
+	}
+	
+	static class ViewHolder { 
+        public ImageView img;  
+    }
+
+}

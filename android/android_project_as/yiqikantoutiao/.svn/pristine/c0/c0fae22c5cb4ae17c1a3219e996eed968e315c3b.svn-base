@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/zan_alert_bg"
+    android:gravity="center"
+    android:orientation="horizontal" >
+
+    <TextView
+        android:id="@+id/poppupwindow_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:drawableLeft="@drawable/share_white_icon"
+        android:drawablePadding="8dp"
+        android:text="分享"
+        android:textColor="@color/white"
+        android:textSize="12sp" />
+
+    <View
+        android:layout_width="2px"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="4dp"
+        android:background="#393939" />
+
+    <TextView
+        android:id="@+id/poppupwindow_middle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:drawableLeft="@drawable/taolun_detail_good_white_icon"
+        android:drawablePadding="8dp"
+        android:text="赞"
+        android:textColor="@color/white"
+        android:textSize="12sp" />
+
+    <View
+        android:layout_width="2px"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="4dp"
+        android:background="#393939" />
+
+    <TextView
+        android:id="@+id/poppupwindow_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:drawableLeft="@drawable/pinglun"
+        android:drawablePadding="8dp"
+        android:text="评论"
+        android:textColor="@color/white"
+        android:textSize="12sp" />
+
+</LinearLayout>

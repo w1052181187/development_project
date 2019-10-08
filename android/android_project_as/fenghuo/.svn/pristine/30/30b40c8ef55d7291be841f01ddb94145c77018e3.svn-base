@@ -1,0 +1,30 @@
+package com.chengning.fenghuo.event;
+
+public class DiscussLinkEvent {
+	
+	private String mStrLinkTitle;
+	private String mStrLinkAddr;
+	
+	public DiscussLinkEvent(String title, String addr){
+		this.mStrLinkTitle = title;
+		this.mStrLinkAddr = addr;
+	}
+
+	public String getmStrLinkTitle() {
+		return mStrLinkTitle;
+	}
+
+	public void setmStrLinkTitle(String mStrLinkTitle) {
+		this.mStrLinkTitle = mStrLinkTitle;
+	}
+
+	public String getmStrLinkAddr() {
+		return mStrLinkAddr;
+	}
+
+	public void setmStrLinkAddr(String mStrLinkAddr) {
+		this.mStrLinkAddr = mStrLinkAddr;
+	}
+
+	
+}

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_forward"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:orientation="vertical"
+    android:background="@color/white" >
+    
+     <com.chengning.fenghuo.widget.DynamicTextView
+        android:id="@+id/item_forward_comment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"   
+        android:text="" 
+        android:gravity="center_vertical"
+        android:lineSpacingMultiplier="@string/dynamic_text_line_spacing_multiplier"
+        android:layout_margin="5dp" 
+        android:textColor="@color/contentcolor" 
+        android:textSize="16sp" />
+
+    <RelativeLayout
+        android:id="@+id/item_forward_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:padding="10dp" 
+        android:background="#f0f0f0"
+      >
+
+        <ImageView
+            android:id="@+id/item_forward_top_user_image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentLeft="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/user_img98" />
+
+        <TextView
+            android:id="@+id/item_forward_top_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="6dp"
+            android:layout_toRightOf="@id/item_forward_top_user_image"
+            android:text="用户昵称"
+            android:textColor="@color/article_content_text"
+            android:textSize="16sp" />
+
+        <com.chengning.fenghuo.widget.DynamicTextView
+            android:id="@+id/item_forward_top_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/item_forward_top_user_name"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/item_forward_top_user_name"
+            android:ellipsize="end"
+            android:lines="2"
+            android:text=""
+            android:gravity="center_vertical"
+        	android:lineSpacingMultiplier="@string/dynamic_text_line_spacing_multiplier"
+            android:textColor="@color/article_time"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+
+</LinearLayout>

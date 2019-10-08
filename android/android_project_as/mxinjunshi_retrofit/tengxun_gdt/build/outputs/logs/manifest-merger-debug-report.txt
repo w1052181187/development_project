@@ -1,0 +1,79 @@
+-- Merging decision tree log ---
+manifest
+ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:2:1-27:12
+INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:2:1-27:12
+INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:2:1-27:12
+INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:2:1-27:12
+INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:2:1-27:12
+INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:2:1-27:12
+INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:2:1-27:12
+	package
+		ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:3:5-23
+		INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml
+		INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml
+	android:versionName
+		ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:5:5-30
+		INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml
+		INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:2:11-69
+	android:versionCode
+		ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:4:5-28
+		INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml
+		INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml
+uses-permission#android.permission.INTERNET
+ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:8:5-67
+	android:name
+		ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:8:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:9:5-79
+	android:name
+		ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:9:22-76
+uses-permission#android.permission.ACCESS_WIFI_STATE
+ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:10:5-76
+	android:name
+		ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:10:22-73
+uses-permission#android.permission.READ_PHONE_STATE
+ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:11:5-75
+	android:name
+		ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:11:22-72
+uses-permission#android.permission.ACCESS_COARSE_LOCATION
+ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:12:5-81
+	android:name
+		ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:12:22-78
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:13:5-79
+	android:name
+		ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:13:22-76
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:14:5-81
+	android:name
+		ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:14:22-78
+application
+ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:17:5-24:19
+service#com.qq.e.comm.DownloadService
+ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:18:9-20:40
+	android:exported
+		ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:20:13-37
+	android:name
+		ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:19:13-57
+activity#com.qq.e.ads.ADActivity
+ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:21:9-23:86
+	android:configChanges
+		ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:23:13-83
+	android:name
+		ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml:22:13-51
+uses-sdk
+INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml
+INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml
+INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml
+INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml
+		ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml
+		INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml
+		ADDED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml
+		INJECTED from F:\work\workspace_as\mxinjunshi_retrofit\tengxun_gdt\src\main\AndroidManifest.xml

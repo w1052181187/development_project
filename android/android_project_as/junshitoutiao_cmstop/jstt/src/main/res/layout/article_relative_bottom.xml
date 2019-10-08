@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/article_relative_bottom_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/common_bg_value" >
+
+    <LinearLayout
+        android:id="@+id/article_relative_bottom_article_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/common_horizontal_margin"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/article_relative_bottom_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="相关推荐"
+            android:textColor="?attr/article_time_value"
+            android:textSize="14sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3px"
+            android:layout_marginTop="6dp"
+            android:background="@color/article_comment_item_name_color" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/article_relative_bottom_top_line"
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:layout_below="@+id/article_relative_bottom_article_layout"
+        android:layout_marginLeft="@dimen/common_horizontal_margin"
+        android:layout_marginRight="@dimen/common_horizontal_margin"
+        android:background="?attr/item_divider_color_value" />
+
+    <View
+        android:id="@+id/article_relative_bottom_gap"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true" />
+
+    <LinearLayout
+        android:id="@+id/article_relative_bottom_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/article_relative_bottom_top_line"
+        android:background="?attr/common_bg_value"
+        android:orientation="vertical" >
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/article_relative_bottom_no_data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="76dp"
+        android:gravity="center"
+        android:text="暂时还没有数据"
+        android:textColor="?attr/article_time_value"
+        android:textSize="15sp" />
+
+</RelativeLayout>

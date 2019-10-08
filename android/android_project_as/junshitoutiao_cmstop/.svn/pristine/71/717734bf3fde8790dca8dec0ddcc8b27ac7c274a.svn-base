@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="arr_country">
+        <item>全部国家</item>
+        <item>中国</item>
+        <item>美国</item>
+        <item>俄罗斯/苏联</item>
+        <item>法国</item>
+        <item>德国</item>
+        <item>日本</item>
+        <item>英国</item>
+        <item>意大利</item>
+        <item>以色列</item>
+        <item>韩国</item>
+        <item>印度</item>
+        <item>中国台湾</item>
+        <item>其他国家</item>
+    </string-array>
+    <string-array name="arr_country_code">
+        <item>all</item>
+        <item>zhongguo</item>
+        <item>meiguo</item>
+        <item>eluosi</item>
+        <item>faguo</item>
+        <item>deguo</item>
+        <item>riben</item>
+        <item>yingguo</item>
+        <item>yidali</item>
+        <item>yiselie</item>
+        <item>hanguo</item>
+        <item>yindu</item>
+        <item>taiwan</item>
+        <item>qita</item>
+    </string-array>
+    <string-array name="weapon_type">
+        <item>全部武器类型</item>
+        <item>坦克</item>
+        <item>火箭炮</item>
+        <item>步兵战车</item>
+        <item>战斗机</item>
+        <item>强击机</item>
+        <item>轰炸机</item>
+        <item>运输机</item>
+        <item>无人机</item>
+        <item>直升机</item>
+        <item>反潜机</item>
+        <item>侦察机</item>
+        <item>航空母舰</item>
+        <item>驱逐舰</item>
+        <item>护卫舰</item>
+        <item>导弹艇</item>
+        <item>补给舰</item>
+        <item>两栖舰</item>
+        <item>潜艇</item>
+        <item>洲际导弹</item>
+        <item>弹道导弹</item>
+        <item>巡航导弹</item>
+        <item>防空导弹</item>
+        <item>空空导弹</item>
+        <item>反舰导弹</item>
+        <item>反坦克导弹</item>
+        <item>反辐射导弹</item>
+        <item>反卫星导弹</item>
+        <item>单兵武器</item>
+        <item>火炮</item>
+    </string-array>
+    <string-array name="weapon_type_code">
+        <item>all</item>
+        <item>tanke</item>
+        <item>huojianpao</item>
+        <item>bubingzhanche</item>
+        <item>zhandouji</item>
+        <item>qiangjiji</item>
+        <item>hongzhaji</item>
+        <item>yunshuji</item>
+        <item>wurenji</item>
+        <item>zhishengji</item>
+        <item>fanqianji</item>
+        <item>zhenchaji</item>
+        <item>hangmu</item>
+        <item>quzhujian</item>
+        <item>huweijian</item>
+        <item>daodanting</item>
+        <item>bujijian</item>
+        <item>liangqijian</item>
+        <item>qianting</item>
+        <item>zhouji</item>
+        <item>dandao</item>
+        <item>xunhang</item>
+        <item>fangkong</item>
+        <item>kongkong</item>
+        <item>fanjian</item>
+        <item>fantanke</item>
+        <item>fanfushe</item>
+        <item>fanweixing</item>
+        <item>danbing</item>
+        <item>huopao</item>
+    </string-array>
+    <string-array name="com_titles">
+        <item>概观</item>
+        <item>技术数据</item>
+        <item>武器装备</item>
+    </string-array>
+
+</resources>

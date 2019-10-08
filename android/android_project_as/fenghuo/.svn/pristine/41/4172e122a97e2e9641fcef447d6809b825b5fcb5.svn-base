@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/common_item_bg_white_state_value"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/common_horizontal_margin" >
+
+        <ImageView
+            android:id="@+id/follow_fans_user_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/follow_fans_list_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/follow_btn_bg_selector"
+            android:gravity="center"
+            android:paddingBottom="4dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="4dp"
+            android:textColor="@drawable/follow_text_color_selector"
+            android:textSize="13sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/follow_fans_list_btn"
+            android:layout_toRightOf="@+id/follow_fans_user_image" >
+
+            <TextView
+                android:id="@+id/follow_fans_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:ellipsize="end"
+                android:lines="1"
+                android:singleLine="true"
+                android:textColor="?attr/item_title_color_value"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/follow_fans_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/follow_fans_user_name"
+                android:layout_below="@+id/follow_fans_user_name"
+                android:layout_marginBottom="2dp"
+                android:layout_marginRight="8dp"
+                android:ellipsize="end"
+                android:hint="暂无简介"
+                android:singleLine="true"
+                android:textColor="?attr/article_time_value"
+                android:textColorHint="?attr/article_time_value"
+                android:textSize="@dimen/common_item_time_text_size" />
+
+            <TextView
+                android:id="@+id/follow_fans_fans_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/follow_fans_user_name"
+                android:layout_below="@+id/follow_fans_desc"
+                android:layout_marginRight="8dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text=""
+                android:textColor="?attr/article_time_value"
+                android:textColorHint="?attr/article_time_value"
+                android:textSize="@dimen/common_item_time_text_size" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <View
+        style="@style/SettingDivider"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="0dp" />
+
+</RelativeLayout>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/root"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/common_bg_value">
+
+    <!-- View that will be hidden when video goes fullscreen -->
+
+    <RelativeLayout
+        android:id="@+id/fullscreen_hide_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/article_content_content_frame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <include
+                android:id="@+id/video_layout"
+                layout="@layout/child_video"/>
+
+            <!--<include-->
+                <!--android:id="@+id/title_bar_layout"-->
+                <!--layout="@layout/title_bar"/>-->
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/home_root"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/article_content_content_frame">
+
+            <LinearLayout
+                android:id="@+id/contentLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+            </LinearLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <!-- View where the video will be shown when video goes fullscreen -->
+
+</RelativeLayout>

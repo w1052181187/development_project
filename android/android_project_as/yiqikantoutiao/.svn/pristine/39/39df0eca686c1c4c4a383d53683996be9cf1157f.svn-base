@@ -1,0 +1,275 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="ArticleBottomLikeBtnLayout">
+        <item name="android:layout_width">80dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/article_btn_bg</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingTop">4dp</item>
+    </style>
+    <style name="ArticleBottomBtnLayout">
+        <item name="android:layout_width">68dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/article_btn_bg</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingTop">4dp</item>
+    </style>
+    <style name="ArticleBottomBtnContent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/article_bottom_btn_text</item>
+        <item name="android:textSize">14dp</item>
+    </style>
+
+    <style name="SettingGroup">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/setting_group_bg_value</item>
+        <item name="android:paddingLeft">@dimen/common_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/common_horizontal_margin</item>
+        <item name="android:paddingTop">@dimen/common_horizontal_margin</item>
+        <item name="android:paddingBottom">@dimen/common_horizontal_margin</item>
+        <item name="android:textColor">?attr/setting_group_text_value</item>
+        <item name="android:textSize">@dimen/setting_group_text_size</item>
+    </style>
+    <style name="SettingGroup_title">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/setting_group_bg_value</item>
+        <item name="android:padding">@dimen/common_horizontal_margin</item>
+        <item name="android:textColor">?attr/setting_child_text_value</item>
+        <item name="android:textSize">@dimen/setting_group_text_size</item>
+    </style>
+
+    <style name="SettingChildText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/common_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/common_horizontal_margin</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:textColor">?attr/setting_child_text_value</item>
+        <item name="android:textSize">@dimen/setting_child_text_size</item>
+    </style>
+
+    <style name="SettingOfflineProgressText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/common_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/common_horizontal_margin</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:textColor">?attr/setting_offline_progress_text_value</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+    
+    <style name="SettingDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">2px</item>
+        <item name="android:background">?attr/item_divider_color_value</item>
+        <item name="android:layout_marginLeft">@dimen/common_horizontal_margin</item>
+    </style>
+
+    <!-- 下拉 转圈 -->
+    <style name="ProgressBarStyleblue">
+
+		<item name="android:indeterminateDrawable">@drawable/progress_blue</item>
+
+		<item name="android:minWidth">22dip</item>
+
+		<item name="android:maxWidth">22dip</item>
+
+		<item name="android:minHeight">22dip</item>
+
+		<item name="android:maxHeight">22dip</item>
+    </style>
+    
+    <!--字体阴影效果  -->
+    <style name="NameTextShadow">
+        <item name="android:shadowColor">#4d4d4d</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">1</item>
+    </style>
+    <!--圈子用户名字体阴影效果  -->
+    <style name="CircleNameTextShadow">
+        <item name="android:shadowColor">#212227</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">1</item>
+    </style>
+    
+    <style name="myContentTextStyle">  
+        <item name="android:textColor">?attr/item_title_color_value</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+    
+    <style name="myContentTextStyleGray">  
+        <item name="android:textColor">?attr/article_time_value</item>
+        <item name="android:textSize">15sp</item>  
+    </style>
+    
+    <style name="myCompleteTextStyleRed">  
+        <item name="android:textColor">@color/red</item>
+        <item name="android:textSize">12sp</item>  
+    </style>
+    
+    <style name="myContentTitleTextStyle">  
+        <item name="android:textColor">?attr/item_title_color_value</item>
+        <item name="android:textSize">18sp</item>  
+    </style>
+    
+    <style name="myContentTextStyleGraySmall" parent="myContentTextStyleGray">  
+        <item name="android:textSize">12sp</item>  
+    </style>
+    <style name="EditDialog" parent="android:style/Theme.Holo.Light.Dialog">
+        <item name="android:windowBackground">@color/transparent</item>
+    	<item name="android:windowNoTitle">true</item>
+    	<item name="android:windowIsFloating">true</item>
+    </style>
+    <!-- 标签按钮的样式 -->
+    <style name="tabButton">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">?attr/toolbar_text_color_value</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:drawablePadding">0dp</item>
+        <item name="android:lineSpacingExtra">4dp</item>
+    </style>
+
+    <!-- 白天模式 -->
+    <style name="DayTheme" parent="AppTheme">
+        <item name="main_bg_value">@color/main_bg</item>
+	    <item name="nav_bg_value">@drawable/nav_bg</item>
+	    <item name="nav_bg_click_value">@drawable/nav_click_bg_state</item>
+	    <item name="newstab_indicator_bg_unselect_value">@drawable/newstab_indicator_bg_unselect</item>
+	    <item name="item_title_color_value">@color/item_title_color_normal</item>
+	    <item name="item_title_color_readed_value">@color/item_title_color_readed</item>
+	    <item name="item_summary_color_value">@color/item_summary_color</item>  
+	    <item name="common_item_bg_state_value">@drawable/common_item_bg_state</item>
+	    <item name="common_item_bg_white_state_value">@drawable/common_item_bg_white_state</item>
+	    <item name="common_item_bg_gray_state_value">@drawable/common_item_bg_gray_state</item>
+	    <item name="common_item_bg_relative_state_value">@drawable/common_item_bg_relative_state</item>
+	    <item name="common_bg_value">@color/common_bg</item>
+	    <item name="common_bg_gray_value">@color/common_bg_gray</item>
+	    <item name="common_bg_gray_light_value">@color/common_bg_gray_light</item>
+	    <item name="common_bg_white_value">@color/white</item>
+	    <item name="news_tab_indicator_value">@drawable/home_tab_indicator_day</item>
+	    <item name="common_tab_text_value">@drawable/common_tab_text_day</item>
+	    <item name="common_bottom_radio_text_value">@drawable/common_bottom_radio_text_day</item>
+	    <item name="item_divider_color_value">@color/line_gray</item>
+	    <item name="home_top_divider_color_value">@color/home_top_line_gray</item>
+	    <item name="edit_channel_title_bg_value">@drawable/title_bg</item>
+	    <item name="edit_channel_title_child_text_value">@color/item_summary_color</item>
+	    <item name="article_title_value">@color/article_title</item> 
+	    <item name="article_time_value">@color/article_time</item>
+	    <item name="article_content_text_value">@color/article_content_text</item>
+	    <item name="article_bottom_btn_text_value">@color/article_bottom_btn_text</item>
+	    <item name="article_bottom_btn_bg_value">@color/article_bottom_btn_bg</item>
+		<item name="article_bottom_divide_value">@color/article_bottom_divider_color</item>
+		<item name="article_relative_item_bg_value">@drawable/article_relative_item_bg_state</item>
+	    <item name="article_setting_bg_value">@color/article_setting_bg</item>
+	    <item name="article_setting_font_textcolor_state_value">@drawable/article_setting_font_textcolor_state</item>
+	    <item name="setting_child_text_value">@color/setting_child_text</item>
+	    <item name="setting_group_bg_value">@color/setting_group_bg</item>
+		<item name="setting_group_text_value">@color/setting_group_text</item>
+		<item name="setting_offline_progress_text_value">@color/setting_offline_progress_text</item>
+		<item name="article_bottom_input_value">@drawable/shurukuang_bg</item>
+		<item name="article_bottom_cmt_bg_value">@color/white</item>
+		<item name="task_detail_divider_color_value">@color/task_detail_divider</item>
+		<item name="directorate_grade_head_bg_value">@color/white</item>
+		<item name="item_divider_cmt_parent_color_value">#cccccc</item>
+		<!-- <item name="article_cmt_parent_bg_color_value">#fdfdfd</item> -->
+		<item name="article_cmt_parent_bg_color_value">#f4f5f6</item>
+		<item name="logout_btn_bg_color_value">@drawable/common_item_bg_white_state</item>
+		<item name="no_data_text_color_value">#b2b2b2</item>
+		<item name="reply_pop_text_color_value">@color/white</item>
+		<item name="home_indicator_slide_right">@drawable/pic_zhezao</item>
+		<item name="login_forget_pwd_color_value">@color/login_forget_pwd_text_color</item> 
+		<item name="login_pwd_hint_color_value">@color/login_pwd_hint_text_color</item>
+		<item name="login_third_text_color_value">@color/login_third_text_color</item>
+		<item name="toolbar_bg_color_value">@color/home_bottom_radio_bg</item>
+		<item name="toolbar_text_color_value">@drawable/toolbar_text_color_day</item> 
+		<item name="slideview_text_value">@color/white</item>
+		<item name="item_dynamic_content_color_value">@color/item_dynamic_content_color</item>
+		<item name="item_dynamic_cmt_content_color_value">@color/item_dynamic_cmt_content_color</item>
+		<item name="column_tab_text_value">@drawable/column_tab_text_day</item>
+		<item name="column_tab_indicator_value">@drawable/column_tab_indicator</item>
+		<item name="dynamic_common_click_bg">@drawable/dynamic_item_common_click_bg_state</item>
+		<item name="my_more_login_text_color">@color/white</item>
+		<item name="comment_reply_detail_allcmt_text_color">#505050</item>
+		<item name="comment_zan_text_color">@drawable/common_cmt_zan_text_color_day</item>
+	</style>
+	<!-- 夜间模式 --> 
+	<style name="NightTheme" parent="AppTheme"> 
+	    <item name="main_bg_value">@color/night_bg_color</item>
+	    <item name="nav_bg_value">@drawable/nav_bg_night</item>
+	    <item name="nav_bg_click_value">@color/transparent</item>
+	    <item name="newstab_indicator_bg_unselect_value">@drawable/nav_bg_night</item>
+	    <item name="item_title_color_value">@color/night_text_color</item>
+	    <item name="item_title_color_readed_value">@color/night_text_color</item>
+	    <item name="item_summary_color_value">@color/night_text_color</item>
+	    <item name="common_item_bg_state_value">@color/night_bg_color</item> 
+	    <item name="common_item_bg_white_state_value">@color/night_bg_color</item>
+	    <item name="common_item_bg_gray_state_value">@color/night_bg_color</item>
+	    <item name="common_item_bg_relative_state_value">@color/night_bg_color</item>
+	    <item name="common_bg_value">@color/night_bg_color</item>
+	    <item name="common_bg_gray_value">@color/night_bg_color</item>
+	    <item name="common_bg_gray_light_value">@color/night_bg_color</item>
+	    <item name="common_bg_white_value">@color/night_bg_color</item>
+	    <item name="news_tab_indicator_value">@drawable/home_tab_indicator_night</item> 
+	    <item name="common_tab_text_value">@drawable/common_tab_text_night</item>
+	    <item name="common_bottom_radio_text_value">@drawable/common_tab_text_night</item>
+	    <item name="item_divider_color_value">@color/night_text_color</item>
+	    <item name="home_top_divider_color_value">@color/night_text_color</item>
+	    <item name="edit_channel_title_bg_value">@drawable/title_bg_night</item>
+	    <item name="edit_channel_title_child_text_value">#848484</item> 
+	    <item name="article_title_value">@color/night_text_color</item>
+	    <item name="article_time_value">@color/night_text_color</item>
+	    <item name="article_content_text_value">@color/night_text_color</item>
+	    <item name="article_bottom_btn_text_value">@color/night_text_color</item>
+	    <item name="article_bottom_btn_bg_value">@color/night_bg_color</item>
+	    <item name="article_bottom_divide_value">@color/night_bg_color</item>
+		<item name="article_relative_item_bg_value">@color/night_bg_color</item>
+	    <item name="article_setting_bg_value">@color/night_bg_color</item>
+	    <item name="article_setting_font_textcolor_state_value">@drawable/article_setting_font__textcolor_state_night</item>
+		<item name="setting_child_text_value">@color/night_text_color</item>
+		<item name="setting_group_bg_value">@color/night_setting_group_bg</item>
+		<item name="setting_group_text_value">@color/night_text_color</item>
+		<item name="setting_offline_progress_text_value">@color/night_text_color</item>
+		<item name="article_bottom_input_value">@drawable/input_bg_night</item>
+		<item name="article_bottom_cmt_bg_value">@color/night_bg_color</item>
+		<item name="task_detail_divider_color_value">@color/night_text_color</item>
+		<item name="directorate_grade_head_bg_value">@color/night_setting_group_bg</item>
+		<item name="item_divider_cmt_parent_color_value">@color/night_text_color</item>
+		<item name="article_cmt_parent_bg_color_value">#313131</item>
+		<item name="logout_btn_bg_color_value">@color/night_setting_group_bg</item>
+		<item name="no_data_text_color_value">@color/night_text_color</item>
+		<item name="reply_pop_text_color_value">@color/night_text_color</item>
+		<item name="home_indicator_slide_right">@drawable/slider_right_night</item>
+		<item name="login_forget_pwd_color_value">@color/night_text_color</item>
+		<item name="login_pwd_hint_color_value">@color/night_text_color</item>
+		<item name="login_third_text_color_value">@color/night_text_color</item>
+		<item name="toolbar_bg_color_value">@color/night_bg_color</item>
+		<item name="toolbar_text_color_value">@drawable/toolbar_text_color_night</item> 
+		<item name="slideview_text_value">@color/night_text_color</item>
+		<item name="item_dynamic_content_color_value">@color/night_text_color</item>
+		<item name="item_dynamic_cmt_content_color_value">@color/night_text_color</item>
+		<item name="column_tab_text_value">@drawable/column_tab_text_night</item>
+		<item name="column_tab_indicator_value">@drawable/column_tab_indicator_night</item>
+		<item name="dynamic_common_click_bg">@drawable/dynamic_item_common_click_bg_state_night</item>
+		<item name="my_more_login_text_color">@color/night_text_color</item>
+		<item name="comment_reply_detail_allcmt_text_color">@color/night_text_color</item>
+		<item name="comment_zan_text_color">@drawable/common_cmt_zan_text_color_night</item>
+	</style>
+
+</resources>

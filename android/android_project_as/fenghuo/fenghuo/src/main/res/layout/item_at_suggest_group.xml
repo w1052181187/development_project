@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/SettingGroup"
+        android:paddingBottom="4dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="4dp"
+        android:textSize="14dp" />
+
+    <View 
+        style="@style/SettingDivider"
+        android:layout_marginLeft="0dp"
+        android:layout_alignParentBottom="true"
+        />
+    
+</RelativeLayout>

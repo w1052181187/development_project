@@ -1,0 +1,227 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/accountbind_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_bg_value" >
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <com.chengning.common.widget.MultiStateView
+        xmlns:multistateview="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/multiStateView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/title_bar_layout"
+        multistateview:msv_emptyView="@layout/empty_view"
+        multistateview:msv_errorView="@layout/error_view"
+        multistateview:msv_loadingView="@layout/loading_view"
+        multistateview:msv_viewState="loading" >
+
+        <RelativeLayout
+            android:id="@+id/accountbind_content_rl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/common_bg_value"
+            android:visibility="gone" >
+
+            <LinearLayout
+                android:id="@+id/accountbind_account"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="17dp"
+                android:orientation="vertical" >
+
+                <RelativeLayout
+                    android:id="@+id/accountbind_phone_rl"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:background="?attr/common_item_bg_white_state_value" >
+
+                    <TextView
+                        android:id="@+id/accountbind_phone_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="12dp"
+                        android:text="手机号"
+                        android:textColor="?attr/item_title_color_value"
+                        android:textSize="16dp" />
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="2px"
+                        android:layout_alignParentTop="true"
+                        android:background="?attr/item_divider_color_value" >
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="2px"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginLeft="12dp"
+                        android:background="?attr/item_divider_color_value" >
+                    </View>
+
+                    <ImageView
+                        android:id="@+id/message_at_icon_imageview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="12dp"
+                        android:layout_marginLeft="12dp"
+                        android:src="@mipmap/list_icon" />
+
+                    <TextView
+                        android:id="@+id/accountbind_phone_txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toLeftOf="@+id/message_at_icon_imageview"
+                        android:text=""
+                        android:textColor="?attr/article_time_value"
+                        android:textSize="16dp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/accountbind_qq_rl"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:background="?attr/common_item_bg_white_state_value" >
+
+                    <TextView
+                        android:id="@+id/accountbind_qq_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="12dp"
+                        android:text="QQ"
+                        android:textColor="?attr/item_title_color_value"
+                        android:textSize="16dp" />
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="2px"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginLeft="12dp"
+                        android:background="?attr/item_divider_color_value" >
+                    </View>
+
+                    <ImageView
+                        android:id="@+id/message_comment_icon_imageview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="12dp"
+                        android:layout_marginLeft="12dp"
+                        android:src="@mipmap/list_icon" />
+
+                    <TextView
+                        android:id="@+id/accountbind_qq_txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toLeftOf="@+id/message_comment_icon_imageview"
+                        android:textColor="?attr/article_time_value"
+                        android:textSize="16dp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/accountbind_sine_rl"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:background="?attr/common_item_bg_white_state_value" >
+
+                    <TextView
+                        android:id="@+id/accountbind_sine_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="12dp"
+                        android:text="新浪微博"
+                        android:textColor="?attr/item_title_color_value"
+                        android:textSize="16dp" />
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="2px"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginLeft="12dp"
+                        android:background="?attr/item_divider_color_value" >
+                    </View>
+
+                    <ImageView
+                        android:id="@+id/message_like_icon_imageview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="12dp"
+                        android:layout_marginLeft="12dp"
+                        android:src="@mipmap/list_icon" />
+
+                    <TextView
+                        android:id="@+id/accountbind_sina_txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toLeftOf="@+id/message_like_icon_imageview"
+                        android:textColor="?attr/article_time_value"
+                        android:textSize="16dp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/accountbind_weixin_rl"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:background="?attr/common_item_bg_white_state_value" >
+
+                    <TextView
+                        android:id="@+id/accountbind_weixin_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="12dp"
+                        android:text="微信"
+                        android:textColor="?attr/item_title_color_value"
+                        android:textSize="16dp" />
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="2px"
+                        android:layout_alignParentBottom="true"
+                        android:background="?attr/item_divider_color_value" >
+                    </View>
+
+                    <ImageView
+                        android:id="@+id/message_at_detail_imageview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="12dp"
+                        android:layout_marginLeft="12dp"
+                        android:src="@mipmap/list_icon" />
+
+                    <TextView
+                        android:id="@+id/accountbind_weixin_txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toLeftOf="@+id/message_at_detail_imageview"
+                        android:textColor="?attr/article_time_value"
+                        android:textSize="16dp" />
+                </RelativeLayout>
+            </LinearLayout>
+        </RelativeLayout>
+    </com.chengning.common.widget.MultiStateView>
+
+</RelativeLayout>

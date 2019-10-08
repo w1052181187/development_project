@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="navigation_left_width">140dp</dimen>
+    <!-- 首页 -->
+    <dimen name="home_bottom_text_size">10dp</dimen>
+    <!-- 个人中心 - 我的资料 -->
+    <dimen name="fragment_user_profile_me_info_vertical_padding">12dp</dimen>
+    <dimen name="fragment_user_profile_me_info_text_left_margin">94dp</dimen>
+    <dimen name="fragment_user_profile_me_info_text_right_margin">16dp</dimen>
+    <dimen name="fragment_user_profile_me_info_left_margin">16dp</dimen>
+    <!-- 动态 -->
+    <dimen name="dynamic_pics_gap">4dp</dimen>
+    <dimen name="dynamic_pics_horizontal_margin">16dp</dimen>
+    <dimen name="dynamic_list_divider_height">0dp</dimen>
+    <dimen name="dynamic_interaction_user_name_text_size">14dp</dimen>
+    <dimen name="dynamic_interaction_time_text_size">12dp</dimen>
+    <dimen name="dynamic_interaction_from_text_size">12dp</dimen>
+    <dimen name="dynamic_title_padding_bottom">2dp</dimen>
+    <!-- title bar -->
+    <dimen name="top_title_text_size">18sp</dimen>
+    <dimen name="top_second_text_size">17sp</dimen>
+    <dimen name="titile_bar_height">46dp</dimen>
+    <dimen name="titile_bar_circle_title_drawablepadding">5dp</dimen>
+    <!-- emotion size -->
+    <dimen name="emotion_size">17dp</dimen>
+    <dimen name="emotion_size_18">19dp</dimen>
+    <dimen name="emotion_size_middle">24dp</dimen>
+    <dimen name="medal_size">16dp</dimen>
+    <!-- common -->
+    <dimen name="red_dot_height">15dp</dimen>
+    <dimen name="red_dot_no_text_height">10dp</dimen>
+    <dimen name="empty_list_height">200dp</dimen>
+    <dimen name="common_horizontal_margin">15dp</dimen>
+    <dimen name="common_vertical_margin">15dp</dimen>
+    <dimen name="common_item_time_text_size">12sp</dimen>
+    <dimen name="common_item_comment_content_text_size">16sp</dimen>
+    <dimen name="common_item_comment_content_child_text_size">15sp</dimen>
+    <dimen name="common_item_comment_reply_more_text_size">14sp</dimen>
+    <dimen name="flow_layout_margin">6dp</dimen>
+    <dimen name="flow_textview_margin_focuse">4dp</dimen>
+    <dimen name="flow_textview_margin">4dp</dimen>
+    <dimen name="article_img_empty_height">106dp</dimen>
+    <dimen name="article_img_empty_high_height">160dp</dimen>
+    <dimen name="article_img_empty_width">180dp</dimen>
+    <dimen name="ten_dp">10dp</dimen>
+    <dimen name="common_round_corner">0dp</dimen>
+    <dimen name="tuwen_image_gap">6dp</dimen>
+    <dimen name="home_tab_text_size">16sp</dimen>
+    <dimen name="home_tab_text_selected_size">17sp</dimen>
+    <!-- setting -->
+    <dimen name="setting_group_text_size">16sp</dimen>
+    <dimen name="setting_child_text_size">16sp</dimen>
+    <!-- channel item -->
+    <dimen name="channel_item_summary_size">12sp</dimen>
+    <dimen name="channel_item_divider_height_common">1px</dimen>
+    <dimen name="channel_item_divider_margin">12dp</dimen>
+    <dimen name="channel_item_title_text_size">17sp</dimen>
+    <dimen name="channel_item_title_margin_top">11dp</dimen>
+    <dimen name="channel_item_divider_height">10dp</dimen>
+    <dimen name="common_horizontal_margin_three_small">3dp</dimen>
+    <!-- channel itm image -->
+    <dimen name="channel_item_image_one_width">101dp</dimen>
+    <dimen name="channel_item_image_one_height">80dp</dimen>
+    <dimen name="channel_item_image_big_height">170dp</dimen>
+    <dimen name="channel_item_image_three_height">76dp</dimen>
+    <dimen name="channel_item_image_two_height">100dp</dimen>
+    <dimen name="channel_item_left_bottom_drawable_padding">2dp</dimen>
+    <dimen name="channel_item_tag_margin_right">9dp</dimen>
+    <!-- video -->
+    <dimen name="back_dialog_height">46dp</dimen>
+    <!-- other -->
+    <dimen name="daily_span_width">18dp</dimen>
+    <dimen name="daily_span_height">24dp</dimen>
+    <dimen name="comment_about_me_title_drawable_padding">3dp</dimen>
+    <dimen name="notification_large_icon_width">48dp</dimen>
+    <dimen name="article_comment_empty_height">40dp</dimen>
+    <!-- reward dialog -->
+    <dimen name="reward_dialog_common_margin">15dp</dimen>
+    <dimen name="reward_dialog_item_width">100dp</dimen>
+    <dimen name="home_slide_dot_width">6dp</dimen>
+    <dimen name="home_slide_dot_height">6dp</dimen>
+    <dimen name="home_slide_dot_circle_width">8dp</dimen>
+    <dimen name="home_slide_dot_circle_height">8dp</dimen>
+    <!-- circle list -->
+    <dimen name="circle_list_img_left_margin">6dp</dimen>
+    <dimen name="circle_list_img_width">84dp</dimen>
+    <!-- dynamic list -->
+    <dimen name="dynamic_list_img_left_margin">60dp</dimen>
+    <dimen name="dynamic_publish_pop_width">120dp</dimen>
+    <dimen name="circle_title_pop_width">220dp</dimen>
+
+    <dimen name="button_video_fullscreen_height_transparent">30dp</dimen>
+    <dimen name="button_video_fullscreen_height">18dp</dimen>
+    <dimen name="button_video_fullscreen_margin">8dp</dimen>
+    <dimen name="video_normal_height">180dp</dimen>
+    <dimen name="common_item_title_line_space">1dp</dimen> 
+    <dimen name="common_item_title_line_space_relative">5dp</dimen>
+
+    <dimen name="comment_reply_tv_padding">8dp</dimen>
+    <dimen name="comment_reply_tv_padding_no">2dp</dimen>
+    <dimen name="comment_reply_allcmt_margin_left">12dp</dimen>
+    <dimen name="comment_reply_nocmt_margin_left">64dp</dimen>
+    <dimen name="comment_reply_line_space">4dp</dimen>
+
+</resources>

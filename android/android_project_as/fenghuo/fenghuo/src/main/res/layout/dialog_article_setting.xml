@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    >
+
+    <RelativeLayout
+        android:id="@+id/article_setting_content"
+        android:layout_width="match_parent"
+        android:layout_height="270dp"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/article_setting_bg_value"
+         >
+
+        <TextView
+            android:id="@+id/article_setting_confirm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="完成"
+            android:textColor="?attr/article_title_value"
+            android:textSize="18sp" />
+
+        <View
+            android:id="@+id/article_setting_divider"
+            android:layout_width="match_parent"
+            android:layout_height="2px"
+            android:layout_above="@id/article_setting_confirm"
+            android:background="?attr/item_divider_color_value"/>
+
+        <LinearLayout
+            android:id="@+id/article_setting_font_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/article_setting_divider"
+            android:layout_marginBottom="30dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:padding="10dp"
+                android:src="@drawable/alert_ziti_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:text="字体大小:"
+                android:textColor="?attr/article_title_value"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/article_setting_font_small"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_weight="1"
+                android:background="@drawable/article_setting_font_left_state"
+                android:gravity="center"
+                android:text="小"
+                android:textColor="?attr/article_setting_font_textcolor_state_value"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/article_setting_font_middle"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_weight="1"
+                android:background="@drawable/article_setting_font_middle_state"
+                android:gravity="center"
+                android:text="中"
+                android:textColor="?attr/article_setting_font_textcolor_state_value"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/article_setting_font_large"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_weight="1"
+                android:background="@drawable/article_setting_font_middle_state"
+                android:gravity="center"
+                android:text="大"
+                android:textColor="?attr/article_setting_font_textcolor_state_value"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/article_setting_font_extra_large"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_marginRight="@dimen/common_horizontal_margin"
+                android:layout_weight="1"
+                android:background="@drawable/article_setting_font_right_state"
+                android:gravity="center"
+                android:text="特大"
+                android:textColor="?attr/article_setting_font_textcolor_state_value"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/article_setting_light_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/article_setting_font_layout"
+            android:layout_marginBottom="20dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:padding="10dp"
+                android:src="@drawable/alert_sun_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:text="亮度调节:"
+                android:textColor="?attr/article_title_value"
+                android:textSize="16sp" />
+
+            <SeekBar
+                android:id="@+id/article_setting_light_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/common_horizontal_margin"
+                android:max="255"
+                android:maxHeight="2dp"
+                android:minHeight="2dp"
+                android:progressDrawable="@drawable/article_seekbar_state"
+                android:thumb="@drawable/article_seek_thumb" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/article_setting_night_mode_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/article_setting_light_layout"
+            android:layout_marginBottom="20dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:padding="10dp"
+                android:src="@drawable/alert_moon_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="夜间模式"
+                android:textColor="?attr/article_title_value"
+                android:textSize="16sp" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <com.chengning.fenghuo.widget.SwitchButton
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/article_setting_night_mode_switch"
+                android:layout_width="105dp"
+                android:layout_height="35dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/common_horizontal_margin"
+                app:frameDrawable="@drawable/set_switch_frame_state"
+                app:sliderDrawable="@drawable/selector_set_switch_slider"
+                app:stateDrawable="@drawable/selector_set_switch_state"
+                app:stateMaskDrawable="@drawable/set_switch_mask" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/article_setting_top"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/article_setting_content"
+        android:background="@color/half_transparent" />
+
+</RelativeLayout>

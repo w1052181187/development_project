@@ -1,0 +1,75 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/aboutedit_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/setting_group_bg_value">
+    
+    <include
+       android:id="@+id/title_bar_layout"
+       layout="@layout/title_bar" />
+
+    <RelativeLayout
+        android:id="@+id/aboutedit_mid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/aboutedit_bottom"
+        android:layout_below="@+id/title_bar_layout"
+        android:background="?attr/setting_group_bg_value"
+        android:paddingBottom="17dp"
+        android:paddingTop="17dp" >
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout11"
+            android:layout_width="fill_parent"
+            android:layout_height="2px"
+            android:layout_alignParentTop="true"
+            android:background="?attr/setting_group_bg_value" >
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout22"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/relativeLayout33"
+            android:layout_below="@+id/relativeLayout11"
+            android:background="?attr/common_item_bg_white_state_value">
+
+            <EditText
+                android:id="@+id/aboutedit_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_marginBottom="6dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="6dp"
+                android:background="@null"
+                android:ems="10"
+                android:gravity="top"
+                android:hint="输入简介（长度80个汉字）"
+                android:maxLength="80"
+                android:textColor="?attr/setting_child_text_value"
+                android:textColorHint="?attr/setting_group_text_value" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout33"
+            android:layout_width="fill_parent"
+            android:layout_height="2px"
+            android:layout_alignParentBottom="true"
+            android:background="?attr/setting_group_bg_value" >
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/aboutedit_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="17dp"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/setting_group_bg_value"
+        android:orientation="vertical" >
+
+    </LinearLayout>
+
+</RelativeLayout>

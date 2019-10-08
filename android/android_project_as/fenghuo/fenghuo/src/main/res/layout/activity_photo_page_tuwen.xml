@@ -1,0 +1,174 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/activity_photo_root"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/black"
+                tools:context=".PhotoPageActivity">
+
+    <com.chengning.fenghuo.widget.PhotoContentRelativeLayout
+        android:id="@+id/activity_photo_content"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/transparent">
+    </com.chengning.fenghuo.widget.PhotoContentRelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/activity_photo_head"
+        android:layout_width="fill_parent"
+        android:layout_height="46dp"
+        android:background="@color/transparent">
+
+        <RelativeLayout
+            android:id="@+id/title_bar_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:onClick="photoClick"
+            android:paddingLeft="@dimen/common_horizontal_margin"
+            android:paddingRight="@dimen/common_horizontal_margin"
+            android:tag="0"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/title_bar_back_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:drawableLeft="@drawable/nav_back"
+                android:drawablePadding="4dp"
+                android:gravity="center"
+                android:text=""
+                android:textColor="@android:color/white"
+                android:textSize="15sp"/>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/activity_photo_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@color/transparent"
+            android:text=" "
+            android:textColor="#a9a9a9"
+            android:textSize="16sp"/>
+
+        <LinearLayout
+            android:id="@+id/article_photo_toolbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageButton
+                android:id="@+id/article_photo_save"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@color/transparent"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:src="@drawable/nav_img_save"/>
+
+            <ImageButton
+                android:id="@+id/article_photo_fav"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@color/transparent"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:src="@drawable/tuwen_bottom_fav_state"
+                android:visibility="gone"/>
+
+            <ImageButton
+                android:id="@+id/article_photo_share"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@color/transparent"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:src="@drawable/nav_img_share"
+                android:visibility="gone"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/activity_photo_footbar"
+            android:layout_width="fill_parent"
+            android:layout_height="140dp"
+            android:background="@drawable/img_txt_bg">
+
+            <TextView
+                android:id="@+id/activity_photo_title"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:padding="9dp"
+                android:text=""
+                android:textColor="#a9a9a9"
+                android:textIsSelectable="true"
+                android:textSize="18sp"/>
+
+            <ScrollView
+                android:id="@+id/text_scroll"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_below="@id/activity_photo_title"
+                android:fadingEdge="none">
+
+                <LinearLayout
+                    android:id="@+id/text_news_table"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:fadingEdge="none"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingBottom="9dp"
+                    android:paddingLeft="9dp"
+                    android:paddingRight="9dp">
+
+                    <TextView
+                        android:id="@+id/activity_photo_desc"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:text=""
+                        android:textColor="#a9a9a9"
+                        android:textIsSelectable="true"
+                        android:textSize="16sp"/>
+                </LinearLayout>
+            </ScrollView>
+
+            <TextView
+                android:id="@+id/activity_photo_title_bottom"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:paddingBottom="20dp"
+                android:paddingLeft="9dp"
+                android:paddingRight="9dp"
+                android:text=""
+                android:textColor="#a9a9a9"
+                android:textSize="18sp"/>
+        </RelativeLayout>
+
+        <include
+            android:id="@+id/photopage_comment_bottom_layout"
+            layout="@layout/photopage_comment_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+</RelativeLayout>

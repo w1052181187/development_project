@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_bg_gray_value" >
+
+    <include
+        android:id="@+id/progress_refresh_layout"
+        layout="@layout/progress_refresh"
+        android:visibility="gone" />
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/directorate_bg_img"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:orientation="vertical" >
+
+                <include
+                    android:id="@+id/title_bar_layout"
+                    layout="@layout/title_bar" />
+
+                <LinearLayout
+                    android:id="@+id/directorate_avatar_ll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:visibility="gone" >
+
+                    <ImageView
+                        android:id="@+id/directorate_avatar_img"
+                        android:layout_width="53dp"
+                        android:layout_height="53dp"
+                        android:background="@drawable/shap_square_bg_white_with_stroke"
+                        android:scaleType="centerCrop" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:gravity="center"
+                        android:orientation="vertical" >
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center" >
+
+                            <TextView
+                                android:id="@+id/directorate_name"
+                                style="@style/NameTextShadow"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentLeft="true"
+                                android:layout_centerVertical="true"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/top_second_text_size" />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/directorate_poin_or_money_rl"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:gravity="center"
+                            android:visibility="visible" >
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentLeft="true"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:id="@+id/directorate_poin_tv"
+                                    style="@style/NameTextShadow"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/white"
+                                    android:textSize="13sp" />
+
+                                <View
+                                    android:layout_width="2px"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="12dp"
+                                    android:layout_marginRight="12dp"
+                                    android:background="@color/white" />
+
+                                <TextView
+                                    android:id="@+id/directorate_money_tv"
+                                    style="@style/NameTextShadow"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/white"
+                                    android:textSize="13sp" />
+                            </LinearLayout>
+                        </RelativeLayout>
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/directorate_attendance_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|right"
+                        android:layout_marginLeft="12dp"
+                        android:background="@drawable/shape_btn_bg"
+                        android:text="签到"
+                        android:textColor="@color/topbar_fontcolor_2"
+                        android:textSize="15sp"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/directorate_task_help_ll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/directorate_bg_img"
+                android:layout_marginTop="10dp"
+                android:background="?attr/nav_bg_value"
+                android:orientation="vertical"
+                android:visibility="gone" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/common_horizontal_margin"
+                    android:paddingRight="12dp" >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawableLeft="@drawable/zhihuibu_jinbi_icon"
+                        android:drawablePadding="10dp"
+                        android:gravity="center_vertical"
+                        android:text="做任务赢积分"
+                        android:textAppearance="@style/myContentTextStyle" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <com.chengning.yiqikantoutiao.widget.LoadFullListView
+                android:id="@+id/directorate_listview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/directorate_bottom_tv"
+                android:layout_below="@+id/directorate_task_help_ll"
+                android:divider="?attr/item_divider_color_value"
+                android:dividerHeight="1px"
+                android:listSelector="?attr/common_item_bg_state_value"
+                android:visibility="gone" >
+            </com.chengning.yiqikantoutiao.widget.LoadFullListView>
+
+            <View
+                android:id="@+id/directorate_listview_bottom_line"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_below="@+id/directorate_listview"
+                android:background="?attr/item_divider_color_value" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

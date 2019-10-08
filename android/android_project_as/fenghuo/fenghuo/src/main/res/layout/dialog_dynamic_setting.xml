@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    >
+    <LinearLayout
+        android:id="@+id/article_setting_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/article_setting_bg_value"
+        android:orientation="vertical"
+         >
+         <TextView
+            android:id="@+id/dynamic_setting_collect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="加入收藏"
+            android:textColor="?attr/article_title_value"
+            android:textSize="16sp" />
+		<View
+            style="@style/SettingDivider"
+            android:layout_marginLeft="0dp"
+            />
+        <TextView
+            android:id="@+id/dynamic_setting_report"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="举报"
+            android:textColor="?attr/article_title_value"
+            android:textSize="16sp" />
+        <View
+            style="@style/SettingDivider"
+            android:layout_height="8px"
+            android:layout_marginLeft="0dp"
+         	/>
+        <TextView
+            android:id="@+id/dynamic_setting_confirm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="取消"
+            android:textColor="?attr/article_title_value"
+            android:textSize="16sp"
+            />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/dynamic_setting_top"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/article_setting_content"
+        android:background="@color/half_transparent" />
+
+</RelativeLayout>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_bg_value" >
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <include
+        android:id="@+id/progress_refresh_layout"
+        layout="@layout/progress_refresh"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/home_circle_content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title_bar_layout" >
+
+           <com.viewpagerindicator.TabPageIndicator
+               android:id="@+id/home_circle_indicator"
+               android:layout_width="match_parent"
+               android:layout_height="39dp"
+               android:scrollbars="none" />
+
+            <com.chengning.fenghuo.widget.NoScrollViewPager
+                android:id="@+id/home_circle_pager"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_below="@id/home_circle_indicator" />
+        <ImageView
+            android:id="@+id/topbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="@dimen/common_horizontal_margin"
+            android:layout_marginRight="@dimen/common_horizontal_margin"
+            android:background="@drawable/top_btn"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</RelativeLayout>

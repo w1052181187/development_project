@@ -1,0 +1,258 @@
+package com.ikantech.military.provider;
+
+import java.io.File;
+
+import android.annotation.SuppressLint;
+import android.content.ContentProvider;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.UriMatcher;
+import android.database.Cursor;
+import android.database.DatabaseErrorHandler;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
+
+import com.ikantech.military.provider.impl.CountryManager;
+import com.ikantech.military.provider.impl.CountryManager.CountryColumns;
+import com.ikantech.military.provider.impl.WeaponDetailsManager;
+import com.ikantech.military.provider.impl.WeaponDetailsManager.WeaponDetailsColumns;
+import com.ikantech.military.provider.impl.WeaponManager;
+import com.ikantech.military.provider.impl.WeaponManager.WeaponColumns;
+import com.ikantech.military.provider.impl.WeaponTypeManager;
+import com.ikantech.military.provider.impl.WeaponTypeManager.WeaponTypeColumns;
+
+public class DataProvider extends ContentProvider {
+	public static final String AUTHORITY = "com.cmstop.jstt.provider.DataProvider";
+	public static final String DATABASE_NAME = "com_ikantech_military.db";
+	private static final int DATABASE_VERSION = 2;
+
+	private CountryManager mCountryManager;
+	private WeaponTypeManager mWeaponTypeManager;
+	private WeaponManager mWeaponManager;
+	private WeaponDetailsManager mWeaponDetailsManager;
+
+	private static final UriMatcher mUriMatcher;
+
+	private DatabaseHelper mDatabaseHelper;
+
+	static {
+		mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+		mUriMatcher.addURI(AUTHORITY, CountryManager.TABLE_NAME,
+				UriType.COUNTRY.getCode());
+		mUriMatcher.addURI(AUTHORITY, CountryManager.TABLE_NAME + "/#",
+				UriType.COUNTRY_ID.getCode());
+		mUriMatcher.addURI(AUTHORITY, "live_folders/"
+				+ CountryManager.TABLE_NAME,
+				UriType.LIVE_FOLDER_COUNTRY.getCode());
+
+		mUriMatcher.addURI(AUTHORITY, WeaponManager.TABLE_NAME,
+				UriType.WEAPON.getCode());
+		mUriMatcher.addURI(AUTHORITY, WeaponManager.TABLE_NAME + "/#",
+				UriType.WEAPON_ID.getCode());
+		mUriMatcher.addURI(AUTHORITY, "live_folders/"
+				+ WeaponManager.TABLE_NAME,
+				UriType.LIVE_FOLDER_WEAPON.getCode());
+
+		mUriMatcher.addURI(AUTHORITY, WeaponTypeManager.TABLE_NAME,
+				UriType.WEAPON_TYPE.getCode());
+		mUriMatcher.addURI(AUTHORITY, WeaponTypeManager.TABLE_NAME + "/#",
+				UriType.WEAPON_TYPE_ID.getCode());
+		mUriMatcher.addURI(AUTHORITY, "live_folders/"
+				+ WeaponTypeManager.TABLE_NAME,
+				UriType.LIVE_FOLDER_WEAPON_TYPE.getCode());
+
+		mUriMatcher.addURI(AUTHORITY, WeaponDetailsManager.TABLE_NAME,
+				UriType.WEAPON_DETAILS.getCode());
+		mUriMatcher.addURI(AUTHORITY, WeaponDetailsManager.TABLE_NAME + "/#",
+				UriType.WEAPON_DETAILS_ID.getCode());
+		mUriMatcher.addURI(AUTHORITY, "live_folders/"
+				+ WeaponDetailsManager.TABLE_NAME,
+				UriType.LIVE_FOLDER_WEAPON_DETAILS.getCode());
+	}
+
+	@Override
+	public boolean onCreate() {
+		// TODO Auto-generated method stub
+		mCountryManager = new CountryManager();
+		mWeaponTypeManager = new WeaponTypeManager();
+		mWeaponManager = new WeaponManager();
+		mWeaponDetailsManager = new WeaponDetailsManager();
+		mDatabaseHelper = new DatabaseHelper(getContext());
+		return true;
+	}
+
+	protected AbsManager getManager(int code) {
+		if (code <= UriType.LIVE_FOLDER_COUNTRY.getCode()) {
+			return mCountryManager;
+		} else if (code > UriType.LIVE_FOLDER_WEAPON.getCode()
+				&& code <= UriType.LIVE_FOLDER_WEAPON_TYPE.getCode()) {
+			return mWeaponTypeManager;
+		} else if (code > UriType.LIVE_FOLDER_COUNTRY.getCode()
+				&& code <= UriType.LIVE_FOLDER_WEAPON.getCode()) {
+			return mWeaponManager;
+		} else if (code > UriType.LIVE_FOLDER_WEAPON_TYPE.getCode()
+				&& code <= UriType.LIVE_FOLDER_WEAPON_DETAILS.getCode()) {
+			return mWeaponDetailsManager;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public String getType(Uri uri) {
+		// TODO Auto-generated method stub
+		int code = mUriMatcher.match(uri);
+		if (code == UriType.COUNTRY.getCode()
+				|| code == UriType.LIVE_FOLDER_COUNTRY.getCode()) {
+			return CountryColumns.CONTENT_TYPE;
+		} else if (code == UriType.COUNTRY_ID.getCode()) {
+			return CountryColumns.CONTENT_ITEM_TYPE;
+		} else if (code == UriType.WEAPON_TYPE.getCode()
+				|| code == UriType.LIVE_FOLDER_WEAPON_TYPE.getCode()) {
+			return WeaponTypeColumns.CONTENT_TYPE;
+		} else if (code == UriType.WEAPON_TYPE_ID.getCode()) {
+			return WeaponTypeColumns.CONTENT_ITEM_TYPE;
+		} else if (code == UriType.WEAPON.getCode()
+				|| code == UriType.LIVE_FOLDER_WEAPON.getCode()) {
+			return WeaponColumns.CONTENT_TYPE;
+		} else if (code == UriType.WEAPON_ID.getCode()) {
+			return WeaponColumns.CONTENT_ITEM_TYPE;
+		} else if (code == UriType.WEAPON_DETAILS.getCode()
+				|| code == UriType.LIVE_FOLDER_WEAPON_DETAILS.getCode()) {
+			return WeaponDetailsColumns.CONTENT_TYPE;
+		} else if (code == UriType.WEAPON_DETAILS_ID.getCode()) {
+			return WeaponDetailsColumns.CONTENT_ITEM_TYPE;
+		} else {
+			throw new IllegalArgumentException("Unknown URI " + uri);
+		}
+	}
+
+	@Override
+	public Uri insert(Uri uri, ContentValues values) {
+		// TODO Auto-generated method stub
+		SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+		Uri ret = null;
+		int code = mUriMatcher.match(uri);
+		AbsManager manager = getManager(code);
+		if (manager != null) {
+			ret = manager.insert(db, code, uri, values);
+		}
+		if (ret != null) {
+			getContext().getContentResolver().notifyChange(uri, null);
+		}
+		return ret;
+	}
+
+	@Override
+	public int delete(Uri uri, String selection, String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+		int count = 0;
+		int code = mUriMatcher.match(uri);
+		AbsManager manager = getManager(code);
+		if (manager != null) {
+			count = manager.delete(db, code, uri, selection, selectionArgs);
+		}
+		if (count > 0) {
+			getContext().getContentResolver().notifyChange(uri, null);
+		}
+		return count;
+	}
+
+	@Override
+	public Cursor query(Uri uri, String[] projection, String selection,
+			String[] selectionArgs, String sortOrder) {
+		// TODO Auto-generated method stub
+		Cursor cursor = null;
+		SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
+
+		int code = mUriMatcher.match(uri);
+		AbsManager manager = getManager(code);
+		if (manager != null) {
+			cursor = manager.query(db, code, uri, projection, selection,
+					selectionArgs, sortOrder);
+		}
+
+		if (cursor != null) {
+			cursor.setNotificationUri(getContext().getContentResolver(), uri);
+		}
+		return cursor;
+	}
+
+	@Override
+	public int update(Uri uri, ContentValues values, String selection,
+			String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+		int count = 0;
+
+		int code = mUriMatcher.match(uri);
+		AbsManager manager = getManager(code);
+		if (manager != null) {
+			count = manager.update(db, code, uri, values, selection,
+					selectionArgs);
+		}
+		if (count > 0) {
+			getContext().getContentResolver().notifyChange(uri, null);
+		}
+		return count;
+	}
+
+	private static class DatabaseHelper extends SQLiteOpenHelper {
+
+		DatabaseHelper(Context context) {
+			super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		}
+
+		@Override
+		public void onCreate(SQLiteDatabase db) {
+			db.execSQL(CountryManager.CREATE_SQL);
+			db.execSQL(WeaponTypeManager.CREATE_SQL);
+			db.execSQL(WeaponManager.CREATE_SQL);
+			db.execSQL(WeaponDetailsManager.CREATE_SQL);
+		}
+
+		@Override
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			db.execSQL("DROP TABLE IF EXISTS " + CountryManager.TABLE_NAME);
+			db.execSQL("DROP TABLE IF EXISTS " + WeaponTypeManager.TABLE_NAME);
+			db.execSQL("DROP TABLE IF EXISTS " + WeaponManager.TABLE_NAME);
+			db.execSQL("DROP TABLE IF EXISTS "
+					+ WeaponDetailsManager.TABLE_NAME);
+			onCreate(db);
+		}
+	}
+
+	private static class DatabaseContext extends ContextWrapper {
+
+		public DatabaseContext(Context base) {
+			super(base);
+		}
+
+		@Override
+		public File getDatabasePath(String name) {
+			// TODO Auto-generated method stub
+			return super.getDatabasePath(name);
+		}
+
+		@Override
+		public SQLiteDatabase openOrCreateDatabase(String name, int mode,
+				CursorFactory factory) {
+			// TODO Auto-generated method stub
+			return super.openOrCreateDatabase(name, mode, factory);
+		}
+
+		@SuppressLint("NewApi")
+		@Override
+		public SQLiteDatabase openOrCreateDatabase(String name, int mode,
+				CursorFactory factory, DatabaseErrorHandler errorHandler) {
+			// TODO Auto-generated method stub
+			return super
+					.openOrCreateDatabase(name, mode, factory, errorHandler);
+		}
+
+	}
+}

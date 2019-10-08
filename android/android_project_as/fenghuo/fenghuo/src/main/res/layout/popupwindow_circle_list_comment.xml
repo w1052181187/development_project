@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:layout_gravity="center"
+    android:background="@drawable/zan_alert_bg"
+    >
+
+    <TextView
+        android:id="@+id/poppupwindow_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:layout_marginRight="12dp"
+        android:layout_marginLeft="12dp"
+        android:drawableLeft="@drawable/taolun_detail_good_white_icon"
+        android:drawablePadding="8dp"
+        android:text="赞" />
+    <View 
+        android:layout_height="match_parent"
+        android:layout_width="2px"
+        android:background="#393939"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        />
+
+    <TextView
+        android:id="@+id/poppupwindow_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:layout_marginRight="12dp"
+        android:layout_marginLeft="12dp"
+        android:textSize="12sp"
+        android:drawableLeft="@drawable/pinglun"
+        android:drawablePadding="8dp"
+        android:text="评论" />
+
+</LinearLayout>

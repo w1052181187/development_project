@@ -1,0 +1,66 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_photo_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black" >
+
+    <com.chengning.yiqikantoutiao.widget.PhotoContentRelativeLayout
+        android:id="@+id/activity_photo_content"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/transparent"
+        android:gravity="center" >
+    </com.chengning.yiqikantoutiao.widget.PhotoContentRelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/activity_photo_head"
+        android:layout_width="fill_parent"
+        android:layout_height="46dp"
+        android:background="@color/transparent" >
+
+        <RelativeLayout
+            android:id="@+id/title_bar_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:onClick="photoClick"
+            android:paddingLeft="@dimen/common_horizontal_margin"
+            android:paddingRight="@dimen/common_horizontal_margin"
+            android:tag="0"
+            android:visibility="visible" >
+
+            <TextView
+                android:id="@+id/title_bar_back_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:drawableLeft="@drawable/nav_back"
+                android:drawablePadding="4dp"
+                android:gravity="center"
+                android:text=""
+                android:textColor="@android:color/white"
+                android:textSize="15sp" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/article_photo_toolbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal" >
+
+            <ImageButton
+                android:id="@+id/article_photo_save"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@color/transparent"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:src="@drawable/nav_img_save" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:background="?attr/common_item_bg_state_value" >
+
+    <LinearLayout
+        android:id="@+id/item_directorate_status_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/common_horizontal_margin"
+        android:orientation="vertical" >
+
+        <View
+            android:layout_width="2px"
+            android:layout_height="20dp"
+            android:layout_gravity="center_horizontal"
+            android:background="?attr/item_divider_color_value" />
+
+        <ImageView
+            android:id="@+id/item_directorate_status_img"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="fitXY" />
+
+        <View
+            android:layout_width="2px"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:background="?attr/item_divider_color_value" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/item_directorate_task_complete_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="30dp"
+        android:layout_toRightOf="@id/item_directorate_status_layout"
+        android:text="1/1"
+        android:textColor="?attr/directorate_gray_value"
+        android:textSize="15sp" />
+
+    <LinearLayout
+        android:id="@+id/directorate_login_ll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/item_directorate_task_complete_progress"
+        android:layout_marginTop="30dp"
+        android:background="?attr/common_item_bg_state_value"
+        android:orientation="vertical"
+        android:layout_marginLeft="60dp" >
+
+        <ImageView
+            android:id="@+id/item_directorate_class_img"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:scaleType="fitXY" />
+        
+        <TextView
+            android:id="@+id/item_directorate_task_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="10dp"
+            android:textColor="?attr/directorate_gray_value"
+        	android:textSize="15sp"
+        	android:text="每日登录" />
+    </LinearLayout>
+
+</RelativeLayout>

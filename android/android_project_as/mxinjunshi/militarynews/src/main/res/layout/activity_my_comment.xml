@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_bg_value" >
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <com.chengning.common.widget.MultiStateView
+        xmlns:multistateview="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/multiStateView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title_bar_layout"
+        multistateview:msv_emptyView="@layout/empty_view"
+        multistateview:msv_errorView="@layout/error_view"
+        multistateview:msv_loadingView="@layout/loading_view"
+        multistateview:msv_viewState="loading" >
+
+        <com.shenyuan.militarynews.views.PullToRefreshListView_FootLoad
+            xmlns:ptr="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/common_bg_value"
+            android:cacheColorHint="@color/transparent"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:fadingEdge="none"
+            android:fastScrollEnabled="false"
+            android:footerDividersEnabled="false"
+            android:headerDividersEnabled="false"
+            android:smoothScrollbar="true"
+            ptr:ptrAnimationStyle="flip" >
+        </com.shenyuan.militarynews.views.PullToRefreshListView_FootLoad>
+    </com.chengning.common.widget.MultiStateView>
+
+</RelativeLayout>

@@ -1,0 +1,1 @@
+include ':umeng_sdk', ':baidu_mtj_sdk', ':ge', ':leancloudpush', ':pulltorefresh', ':umeng_share', ':viewpagerlibrary', ':common', ':shortcutBadger', ':alicloud_feedback'

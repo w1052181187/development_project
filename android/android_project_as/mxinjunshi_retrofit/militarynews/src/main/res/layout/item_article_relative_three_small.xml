@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_article_relative_three_small_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/common_item_bg_state_value" >
+
+    <RelativeLayout
+        android:id="@+id/item_list_news_bg"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/common_horizontal_margin"
+        android:layout_marginRight="@dimen/common_horizontal_margin" >
+
+        <RelativeLayout
+            android:id="@+id/relativelayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" >
+
+            <TextView
+                android:id="@+id/item_channel_item_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:lineSpacingExtra="@dimen/common_item_title_line_space_relative"
+                android:textColor="?attr/item_title_color_value"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/item_channel_item_commentnum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/item_channel_item_title"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:visibility="gone"
+                android:textColor="?attr/item_summary_color_value"
+                android:textSize="@dimen/channel_item_time_text_size" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/relativelayout"
+            android:orientation="horizontal" 
+            android:layout_marginTop="5dp">
+
+            <ImageView
+                android:id="@+id/item_channel_item_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:scaleType="centerCrop"
+                android:src="@color/transparent" />
+
+            <ImageView
+                android:id="@+id/item_channel_item_image1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/common_horizontal_margin_three_small"
+                android:scaleType="centerCrop"
+                android:src="@color/transparent" />
+
+            <ImageView
+                android:id="@+id/item_channel_item_image2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/common_horizontal_margin_three_small"
+                android:scaleType="centerCrop"
+                android:src="@color/transparent" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/item_channel_item_line"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/item_list_news_bg"
+        android:layout_height="@dimen/channel_item_divider_height_common"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="@dimen/common_horizontal_margin"
+        android:layout_marginRight="@dimen/common_horizontal_margin"
+        android:background="?attr/item_divider_color_value" />
+
+</RelativeLayout>

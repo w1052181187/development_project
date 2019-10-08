@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 标签栏中的充值标签前景 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:state_checked="false" android:state_pressed="true" android:drawable="@drawable/toolbar_shoutu2_android"></item>
+    <item android:state_checked="false" android:state_pressed="false" android:drawable="@drawable/toolbar_shoutu1_android"></item>
+	<item android:state_checked="true" android:drawable="@drawable/toolbar_shoutu2_android"></item>
+</selector>

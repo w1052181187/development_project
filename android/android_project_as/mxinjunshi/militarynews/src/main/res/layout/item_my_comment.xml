@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/common_item_bg_state_value" >
+
+    <RelativeLayout
+        android:id="@+id/my_comment_item_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/article_comment_item_image"
+        android:layout_toRightOf="@id/article_comment_item_image" >
+
+        <RelativeLayout
+            android:id="@+id/article_comment_item_name_rl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/article_comment_item_zan" >
+
+            <TextView
+                android:id="@+id/article_comment_item_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:maxWidth="160dp"
+                android:text="新军事网友"
+                android:textColor="@color/article_comment_item_name_color"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/article_comment_item_role"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/article_comment_item_name"
+                android:layout_toRightOf="@id/article_comment_item_name"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="@color/article_time"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/article_comment_item_vip"
+                android:layout_width="24dp"
+                android:layout_height="13dp"
+                android:layout_alignBottom="@id/article_comment_item_role"
+                android:layout_alignTop="@id/article_comment_item_role"
+                android:layout_toRightOf="@id/article_comment_item_role"
+                android:layout_marginLeft="6dp"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/article_comment_item_zan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@id/article_comment_item_name_rl"
+            android:layout_marginRight="@dimen/common_horizontal_margin"
+            android:drawableLeft="@drawable/list_item_zan"
+            android:drawablePadding="6dp"
+            android:paddingBottom="6dp"
+            android:paddingRight="6dp"
+            android:layout_marginLeft="6dp"
+            android:textColor="?attr/item_summary_color_value"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/article_comment_item_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/article_comment_item_name_rl"
+            android:layout_below="@id/article_comment_item_name_rl"
+            android:layout_marginTop="6dp"
+            android:text="12:43"
+            android:textColor="?attr/item_summary_color_value"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/article_comment_item_city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/article_comment_item_time"
+            android:layout_marginLeft="@dimen/common_horizontal_margin"
+            android:layout_toRightOf="@id/article_comment_item_time"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="?attr/item_summary_color_value"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/article_comment_item_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="@dimen/common_horizontal_margin"
+        android:layout_marginRight="@dimen/common_horizontal_margin"
+        android:layout_marginTop="21dp" />
+
+    <RelativeLayout
+        android:id="@+id/my_comment_item_content_list_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/my_comment_item_top"
+        android:layout_below="@+id/my_comment_item_top"
+        android:layout_marginBottom="12dp"
+        android:layout_marginRight="@dimen/common_horizontal_margin"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/my_cmt_reply_bj"
+        android:orientation="vertical"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp" >
+
+        <RelativeLayout
+            android:id="@+id/my_comment_item_content_list_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="@dimen/common_horizontal_margin" >
+
+            <TextView
+                android:id="@+id/my_comment_item_content_list_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:maxWidth="120dp"
+                android:text="新军事网友"
+                android:textColor="@color/article_comment_item_name_color"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/my_comment_item_content_list_zan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@id/my_comment_item_content_list_name"
+                android:layout_marginRight="@dimen/common_horizontal_margin"
+                android:drawableLeft="@drawable/list_item_zan"
+                android:drawablePadding="6dp"
+                android:paddingBottom="6dp"
+                android:paddingLeft="6dp"
+                android:textColor="?attr/item_summary_color_value"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/my_comment_item_content_list_role"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/my_comment_item_content_list_name"
+                android:layout_toLeftOf="@id/my_comment_item_content_list_zan"
+                android:layout_toRightOf="@id/my_comment_item_content_list_name"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="@color/article_time"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/my_comment_item_content_list_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/my_comment_item_content_list_name"
+                android:layout_below="@id/my_comment_item_content_list_name"
+                android:layout_marginTop="6dp"
+                android:text="12:43"
+                android:textColor="?attr/item_summary_color_value"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/my_comment_item_content_list_city"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/my_comment_item_content_list_time"
+                android:layout_marginLeft="@dimen/common_horizontal_margin"
+                android:layout_toRightOf="@id/my_comment_item_content_list_time"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="?attr/item_summary_color_value"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <com.shenyuan.militarynews.views.EmojiTextView
+            android:id="@+id/my_comment_item_content_list_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/my_comment_item_content_list_top"
+            android:layout_below="@id/my_comment_item_content_list_top"
+            android:layout_marginRight="@dimen/common_horizontal_margin"
+            android:layout_marginTop="@dimen/common_horizontal_margin"
+            android:textColor="?attr/item_title_color_value"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+    <com.shenyuan.militarynews.views.EmojiTextView
+        android:id="@+id/my_comment_item_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/my_comment_item_top"
+        android:layout_below="@id/my_comment_item_content_list_layout"
+        android:layout_marginRight="@dimen/common_horizontal_margin"
+        android:textColor="?attr/item_title_color_value"
+        android:textSize="17sp" />
+
+    <TextView
+        android:id="@+id/my_comment_item_content_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/my_comment_item_content"
+        android:layout_margin="@dimen/common_horizontal_margin"
+        android:background="?attr/article_cmt_parent_bg_color_value"
+        android:paddingBottom="2dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:paddingTop="2dp"
+        android:textColor="?attr/article_cmt_parent_content_color_value"
+        android:textSize="12sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/channel_item_divider_height_common"
+        android:layout_below="@id/my_comment_item_content_parent"
+        android:background="?attr/item_divider_color_value" />
+
+</RelativeLayout>

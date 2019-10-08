@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<channels>
+    <channel> <index>0</index><dbname>全站</dbname><name>全站</name><type>b</type><url>http://if.wap.xinjunshi.com/ifios/app.php?act=index</url> </channel>
+	<channel> <index>1</index><dbname>热点</dbname><name>热点</name><type>a</type><url>http://if.wap.xinjunshi.com/ifios/app.php?act=1</url> </channel>
+	<channel> <index>2</index><dbname>关注</dbname><name>关注</name><type>a</type><url>http://if.wap.xinjunshi.com/ifios/app.php?act=2</url> </channel>
+	<channel> <index>3</index><dbname>焦点</dbname><name>焦点</name><type>a</type><url>http://if.wap.xinjunshi.com/ifios/app.php?act=3</url> </channel>
+	<channel> <index>4</index><dbname>防务</dbname><name>防务</name><type>a</type><url>http://if.wap.xinjunshi.com/ifios/app.php?act=4</url> </channel>
+	<channel> <index>5</index><dbname>猎奇</dbname><name>擂台</name><type>a</type><url>http://if.wap.xinjunshi.com/ifios/app.php?act=5</url> </channel>
+	<channel> <index>6</index><dbname>历史</dbname><name>战役</name><type>a</type><url>http://if.wap.xinjunshi.com/ifios/app.php?act=6</url> </channel>
+	<channel> <index>7</index><dbname>娱乐</dbname><name>网友</name><type>a</type><url>http://if.wap.xinjunshi.com/ifios/app.php?act=7</url> </channel>
+	<channel> <index>8</index><dbname>网友</dbname><name>外媒</name><type>a</type><url>http://if.wap.xinjunshi.com/ifios/app.php?act=8</url> </channel> 
+	<channel> <index>9</index><dbname>图文</dbname><name>图文</name><type>c</type><url>http://if.wap.xinjunshi.com/ifios/app.php?act=tuwen</url> </channel>
+</channels>

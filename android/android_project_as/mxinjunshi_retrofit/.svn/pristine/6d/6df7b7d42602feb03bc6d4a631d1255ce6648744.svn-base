@@ -1,0 +1,91 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="?attr/home_bg_value" >
+
+    <include
+        android:id="@+id/progress_refresh_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        layout="@layout/progress_refresh"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <RelativeLayout
+            android:id="@+id/content_top"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/home_tab_height"
+            android:background="?attr/home_tab_bar_bg_value" >
+
+            <ImageView
+                android:id="@+id/search_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:scaleType="center"
+                android:src="@drawable/search_icon" />
+
+            <RelativeLayout
+                android:id="@+id/top_user"
+                android:layout_width="36dp"
+                android:layout_height="@dimen/home_tab_height"
+                android:layout_alignParentRight="true" >
+
+                <ImageView
+                    android:id="@+id/top_user_head"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="1dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/home_user_state" />
+            </RelativeLayout>
+
+            <com.shenyuan.militarynews.views.MyTabPageIndicator
+                android:id="@+id/indicator"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/home_tab_height"
+                android:layout_marginRight="6dp"
+                android:layout_toLeftOf="@id/top_user"
+                android:layout_toRightOf="@id/search_icon"
+                android:background="?attr/news_tab_indicator_value" />
+
+            <ImageView
+                android:id="@+id/indicator_slide_right"
+                android:layout_width="20dp"
+                android:layout_height="match_parent"
+                android:layout_alignBottom="@id/indicator"
+                android:layout_marginBottom="6dp"
+                android:layout_toLeftOf="@id/top_user"
+                android:scaleType="fitXY"
+                android:src="?attr/home_indicator_slide_right" />
+        </RelativeLayout>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/content_top" />
+
+        <Button
+            android:id="@+id/topbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="@dimen/common_horizontal_margin"
+            android:layout_marginRight="@dimen/common_horizontal_margin"
+            android:background="@drawable/top_btn"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</RelativeLayout>

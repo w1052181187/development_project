@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="140dp" >
+
+    <RelativeLayout
+        android:id="@+id/top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/circle_list_top_circle_img"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true" />
+
+        <ImageButton
+            android:id="@+id/circle_list_top_circle_follow"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@null"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:src="@drawable/selector_user_follow_state"
+            android:visibility="gone" />
+
+        <RelativeLayout
+            android:id="@+id/text_rl"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="10dp"
+            android:layout_alignWithParentIfMissing="true"
+            android:layout_toLeftOf="@+id/circle_list_top_circle_follow"
+            android:layout_toRightOf="@+id/circle_list_top_circle_img" >
+
+            <TextView
+                android:id="@+id/circle_list_top_circle_discuss_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" 
+                android:textColor="?attr/article_time_value"
+                android:textSize="14sp"
+                />
+
+            <TextView
+                android:id="@+id/circle_list_top_circle_member_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/circle_list_top_circle_discuss_count"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/circle_list_top_circle_discuss_count" 
+                android:textColor="?attr/article_time_value"
+                android:textSize="14sp"
+                />
+
+            <TextView
+                android:id="@+id/circle_list_top_circle_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/circle_list_top_circle_discuss_count"
+                android:layout_alignParentBottom="true"
+                android:lines="2"
+                android:maxLines="2" 
+                android:textColor="?attr/item_title_color_value"
+                android:textSize="13sp" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/circle_list_dynamic_name"
+        style="@style/SettingGroup"
+        android:paddingBottom="2dp"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/top" />
+
+</RelativeLayout>

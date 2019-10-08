@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <View
+        android:id="@+id/dialog_point_hint_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/half_transparent" />
+
+	<RelativeLayout
+		android:id="@+id/dialog_hint_rl"
+		android:layout_width="match_parent"
+		android:layout_height="320dp"
+		android:layout_centerInParent="true"
+		android:layout_marginLeft="54dp"
+		android:layout_marginRight="54dp"
+		android:background="@mipmap/tankuan_beijing"
+		>
+		<TextView
+			android:id="@+id/dialog_reg_money_tv"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textColor="@color/white"
+			android:layout_marginTop="110dp"
+			android:layout_centerHorizontal="true"
+			android:layout_marginLeft="24dp"
+			android:layout_marginRight="24dp"
+			android:text="您已经阅读了%d篇文章，产生了%d金币的收益。登录后阅读获取金币可提现到微信哦"
+			android:textSize="15sp"/>
+
+		<Button
+			android:id="@+id/dialog_reg_btn"
+			android:layout_width="match_parent"
+			android:layout_height="35dp"
+			android:layout_alignParentBottom="true"
+			android:layout_marginBottom="16dp"
+			android:layout_marginLeft="22dp"
+			android:layout_marginRight="22dp"
+			android:text="马上登录"
+			android:textSize="15sp"
+			android:textColor="@color/white"
+			android:background="@mipmap/yuanjiao_anniu"/>
+		
+	</RelativeLayout>
+
+	<RelativeLayout
+		android:id="@+id/dialog_close_rl"
+		android:layout_width="30dp"
+		android:layout_height="30dp"
+		android:layout_marginTop="40dp"
+		android:layout_below="@+id/dialog_hint_rl"
+		android:layout_centerHorizontal="true">
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerInParent="true"
+			android:src="@mipmap/fanhui_anniu1"/>
+	</RelativeLayout>
+
+</RelativeLayout>

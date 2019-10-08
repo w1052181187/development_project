@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/article_comment_bottom_more"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:background="?attr/common_item_bg_state_value"
+    android:gravity="center_vertical"
+    android:paddingTop="30dp"
+    android:paddingBottom="60dp"
+    android:paddingLeft="@dimen/comment_reply_nocmt_margin_left"
+    android:text="已显示全部评论"
+    android:textColor="?attr/comment_reply_detail_allcmt_text_color"
+    android:textSize="12sp" >
+
+</TextView>

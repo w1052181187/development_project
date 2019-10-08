@@ -1,0 +1,292 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/infoedit_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_bg_gray_value">
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <ScrollView
+        android:id="@+id/infoedit_scroll"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/title_bar_layout"
+        android:fadingEdge="none"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/infoedit_account"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="20dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/SettingGroup_title"
+                    android:text="基本信息" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/infoedit_img_rl"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="?attr/common_item_bg_white_state_value">
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:layout_centerVertical="true"
+                    android:text="头像" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2px"
+                    android:layout_alignParentBottom="true"
+                    android:background="?attr/item_divider_color_value"></View>
+
+                <ImageView
+                    android:id="@+id/infoedit_img"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignWithParentIfMissing="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:layout_toLeftOf="@+id/infoedit_img_boult"
+                    android:scaleType="centerCrop" />
+
+                <ImageView
+                    android:id="@+id/infoedit_img_boult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:src="@mipmap/list_icon"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/infoedit_name_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_item_bg_white_state_value">
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:text="昵称" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2px"
+                    android:layout_alignParentBottom="true"
+                    android:background="?attr/item_divider_color_value"></View>
+
+                <TextView
+                    android:id="@+id/infoedit_name_edit"
+                    style="@style/SettingChildText"
+                    android:layout_alignWithParentIfMissing="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:layout_toLeftOf="@+id/infoedit_name_boult"
+                    android:paddingRight="0dp"
+                    android:textColor="?attr/article_time_value" />
+
+                <ImageView
+                    android:id="@+id/infoedit_name_boult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:src="@mipmap/list_icon"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/infoedit_gender_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_item_bg_white_state_value">
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:text="性别" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2px"
+                    android:layout_alignParentBottom="true"
+                    android:background="?attr/item_divider_color_value"></View>
+
+                <TextView
+                    android:id="@+id/info_gender_tv"
+                    style="@style/SettingChildText"
+                    android:layout_alignWithParentIfMissing="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:layout_toLeftOf="@+id/infoedit_gender_boult"
+                    android:paddingRight="0dp"
+                    android:textColor="?attr/item_summary_color_value" />
+
+                <ImageView
+                    android:id="@+id/infoedit_gender_boult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:background="@mipmap/list_icon"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/infoedit_introduction_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_item_bg_white_state_value">
+
+                <TextView
+                    android:id="@+id/follow_introduction_title"
+                    style="@style/SettingChildText"
+                    android:text="简介" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2px"
+                    android:layout_alignParentBottom="true"
+                    android:background="?attr/item_divider_color_value"></View>
+
+                <TextView
+                    android:id="@+id/info_introduction_tv"
+                    style="@style/SettingChildText"
+                    android:layout_alignWithParentIfMissing="true"
+                    android:layout_marginLeft="75dp"
+                    android:layout_marginRight="@dimen/common_horizontal_margin"
+                    android:layout_toLeftOf="@+id/infoedit_introduction_boult"
+                    android:paddingRight="0dp"
+                    android:textColor="?attr/item_summary_color_value" />
+
+                <ImageView
+                    android:id="@+id/infoedit_introduction_boult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/common_horizontal_margin"
+                    android:background="@mipmap/list_icon"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/SettingGroup_title"
+                    android:text="其他资料 " />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/infoedit_level_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_item_bg_white_state_value">
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:text="军衔" />
+
+                <TextView
+                    android:id="@+id/infoedit_level_tv"
+                    style="@style/SettingChildText"
+                    android:layout_alignWithParentIfMissing="true"
+                    android:layout_marginLeft="@dimen/common_horizontal_margin"
+                    android:layout_marginRight="@dimen/common_horizontal_margin"
+                    android:layout_toLeftOf="@+id/infoedit_level_boult"
+                    android:paddingRight="0dp"
+                    android:textColor="?attr/article_time_value" />
+
+                <ImageView
+                    android:id="@+id/infoedit_level_boult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:background="@mipmap/list_icon" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="2px"
+                android:background="?attr/item_divider_color_value"></RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/infoedit_gold_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_item_bg_white_state_value">
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:text="金币" />
+
+                <TextView
+                    android:id="@+id/infoedit_gold_tv"
+                    style="@style/SettingChildText"
+                    android:layout_alignParentRight="true"
+                    android:textColor="?attr/article_time_value" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="2px"
+                android:background="?attr/item_divider_color_value"></RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/infoedit_point_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_item_bg_white_state_value">
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:text="积分" />
+
+                <TextView
+                    android:id="@+id/infoedit_point_tv"
+                    style="@style/SettingChildText"
+                    android:layout_alignParentRight="true"
+                    android:textColor="?attr/article_time_value" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="2px"
+                android:background="?attr/item_divider_color_value"></RelativeLayout>
+
+            <TextView
+                android:id="@+id/infoedit_logout"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_marginTop="24dp"
+                android:background="?attr/common_item_bg_white_state_value"
+                android:gravity="center"
+                android:text="退出登陆"
+                android:textColor="#FFFF0000"
+                android:textSize="16dp" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_bg" >
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <RelativeLayout
+        android:id="@+id/search_input"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:layout_below="@id/title_bar_layout"
+        android:background="@color/setting_bg"
+        android:orientation="horizontal" >
+
+        <!-- 输入的搜索信息 -->
+
+        <EditText
+            android:id="@+id/search_inputedit"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_margin="6dp"
+            android:background="@drawable/shape_search_bg"
+            android:drawableLeft="@drawable/search_icon_magnifier"
+            android:gravity="center_vertical"
+            android:hint="搜索关注的人"
+            android:imeOptions="actionSearch"
+            android:paddingRight="35dp"
+            android:singleLine="true"
+            android:textColor="@color/contentcolor"
+            android:textColorHint="@color/article_time"
+            android:textSize="16dp" />
+
+        <!-- 清空搜索文字按钮 -->
+
+        <ImageButton
+            android:id="@+id/search_inputclear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/search_inputedit"
+            android:layout_centerVertical="true"
+            android:background="@drawable/search_icon_empty"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_alignParentBottom="true"
+            android:background="@color/search_edit_bottom_line" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/activity_content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/search_input" >
+
+        <com.woozzu.android.widget.IndexableExpandableListView
+            android:id="@+id/list"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:divider="@color/transparent"
+            android:dividerHeight="0dp"
+            android:groupIndicator="@color/transparent"
+            android:listSelector="@color/transparent" />
+
+        <TextView
+            android:id="@+id/tips_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="100dp"
+            android:textColor="@color/tips_text"
+            android:textSize="16dp"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</RelativeLayout>

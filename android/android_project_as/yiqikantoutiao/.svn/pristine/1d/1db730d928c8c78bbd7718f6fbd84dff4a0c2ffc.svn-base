@@ -1,0 +1,125 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <ScrollView
+        android:id="@+id/scrollbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fadingEdge="none"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <RelativeLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+
+            <TextView
+                android:id="@+id/task_invite_apprentice_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:text="邀请码A55935382"/>
+
+            <TextView
+                android:id="@+id/task_invite_apprentice_copy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/task_invite_apprentice_code"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="4dp"
+                android:text="(点击可复制)"/>
+
+            <LinearLayout
+                android:id="@+id/task_invite_apprentice_share_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/task_invite_apprentice_copy"
+                android:layout_marginTop="30dp"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/task_invite_apprentice_weixin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:drawableTop="@drawable/ic_launcher"
+                    android:text="微信邀请"/>
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/task_invite_apprentice_qq"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:drawableTop="@drawable/ic_launcher"
+                    android:text="QQ邀请"/>
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/task_invite_apprentice_sms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:drawableTop="@drawable/ic_launcher"
+                    android:text="短信邀请"/>
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/task_invite_apprentice_face"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/task_invite_apprentice_share_layout"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:drawableTop="@drawable/ic_launcher"
+                android:text="面对面邀请"/>
+
+            <TextView
+                android:id="@+id/task_invite_apprentice_show_income"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/task_invite_apprentice_face"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="@dimen/common_horizontal_margin"
+                android:layout_marginRight="@dimen/common_horizontal_margin"
+                android:layout_marginTop="30dp"
+                android:gravity="center"
+                android:text="晒收入"/>
+
+            <TextView
+                android:id="@+id/task_invite_apprentice_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/task_invite_apprentice_show_income"
+                android:layout_marginLeft="@dimen/common_horizontal_margin"
+                android:layout_marginRight="@dimen/common_horizontal_margin"
+                android:layout_marginTop="30dp"
+                android:text="徒弟有效阅读将向您进贡金币，让您的金币暴涨，收徒越多您的收入就越高，收徒无上限。\n\n活动期间，没收一个有效徒弟奖励500金币。如果是首次收徒且进贡达100金币以上，将额外奖励一个1元的现金红包"/>
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>

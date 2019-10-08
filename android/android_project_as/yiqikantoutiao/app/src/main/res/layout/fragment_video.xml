@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_bg_value" >
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+    <RelativeLayout 
+        android:id="@+id/fragment_video_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title_bar_layout"
+        >
+        
+    </RelativeLayout>
+    <ImageView
+        android:id="@+id/topbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/common_horizontal_margin"
+        android:layout_marginRight="@dimen/common_horizontal_margin"
+        android:src="@drawable/top_btn"
+        android:visibility="gone" />
+    
+</RelativeLayout>

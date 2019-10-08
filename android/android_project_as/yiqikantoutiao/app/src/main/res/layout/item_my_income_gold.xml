@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="18dp"
+    android:paddingTop="18dp">
+    <TextView
+        android:id="@+id/item_my_income_gold_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/item_my_income_gold_count"
+        android:layout_marginRight="12dp"
+        android:textColor="?attr/article_title_value"/>
+    <TextView
+        android:id="@+id/item_my_income_gold_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:layout_alignParentRight="true"
+        android:drawablePadding="4dp"
+        android:drawableLeft="@drawable/wodeshouru_jinbi_icon"
+        android:layout_alignTop="@+id/item_my_income_gold_title"
+        android:textColor="?attr/article_time_value"/>
+
+    <TextView
+        android:id="@+id/item_my_income_golde_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="6dp"
+        android:layout_below="@+id/item_my_income_gold_title"
+        android:textColor="?attr/article_time_value"/>
+
+</RelativeLayout>

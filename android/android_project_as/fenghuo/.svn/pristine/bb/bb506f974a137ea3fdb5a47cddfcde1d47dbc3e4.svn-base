@@ -1,0 +1,281 @@
+package com.chengning.fenghuo.adapter;
+
+import java.util.List;
+
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import com.avos.avoscloud.im.v2.AVIMMessageType;
+import com.chengning.fenghuo.App;
+import com.chengning.fenghuo.Consts;
+import com.chengning.fenghuo.R;
+import com.chengning.fenghuo.SettingManager;
+import com.chengning.fenghuo.activity.PhotoPageChatActivity;
+import com.chengning.fenghuo.activity.UserInfoActivity;
+import com.chengning.fenghuo.data.bean.ChatMessageBean;
+import com.chengning.fenghuo.util.ChatClientManager;
+import com.chengning.fenghuo.util.Common;
+import com.chengning.fenghuo.util.MyRoundedBitmapDisplayer;
+import com.chengning.fenghuo.util.Utils;
+import com.chengning.fenghuo.widget.DynamicTextView;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+
+public class ChatMsgListAdapter extends BaseAdapter {
+
+	public static final int MSG_TYPE_TEXT = 1;
+	public static final int MSG_TYPE_IMG = 2;
+
+	private LayoutInflater mInflater;
+	protected ImageLoader mImageLoader;
+	private List<ChatMessageBean> list;
+	private OnClickListener sendListener;
+	// private int mMsgType;
+	private DisplayImageOptions mOptions;
+	private Activity mContext;
+
+	public ChatMsgListAdapter(Activity context,
+			List<ChatMessageBean> messageLists, OnClickListener listener) {
+		mImageLoader = ImageLoader.getInstance();
+		this.mContext = context;
+		this.list = messageLists;
+		this.mInflater = LayoutInflater.from(context);
+		this.sendListener = listener;
+
+		mOptions = new DisplayImageOptions.Builder()
+				.resetViewBeforeLoading(true)
+				.cacheInMemory(true)
+				.cacheOnDisc(true)
+				.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
+				.bitmapConfig(Bitmap.Config.RGB_565)
+				.considerExifParams(true)
+				.displayer( new MyRoundedBitmapDisplayer(App
+								.getInst() .getResources() .getDimensionPixelSize(R.dimen.common_round_corner)))
+				.build();
+	}
+
+	@Override
+	public int getItemViewType(int position) {
+		ChatMessageBean message = getItem(position);
+		if (message.getMsg_from().equals(
+				ChatClientManager.getInst().getClientId())) {
+			return Consts.RIGHT;
+		} else {
+			return Consts.LEFT;
+		}
+	}
+
+	public int getViewTypeCount() {
+		return 2;
+	}
+
+	public class ChatItemView {
+		DynamicTextView content;
+		ImageView img;
+		ImageView userimg;
+		TextView date;
+		ImageView failImg;
+		ProgressBar progressBar;
+		View contentRl;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+
+		int type = getItemViewType(position);
+		ChatMessageBean message = getItem(position);
+
+		ChatItemView itemview = null;
+		if (convertView == null) {
+			itemview = new ChatItemView();
+			switch (type) {
+			case Consts.LEFT:
+				convertView = mInflater.inflate(R.layout.item_chat_left, null);
+				itemview.contentRl = convertView
+						.findViewById(R.id.item_chat_left_rl);
+				itemview.content = (DynamicTextView) convertView
+						.findViewById(R.id.item_chat_left_txt);
+				itemview.userimg = (ImageView) convertView
+						.findViewById(R.id.item_chat_left_userimg);
+				itemview.img = (ImageView) convertView
+						.findViewById(R.id.item_chat_left_img);
+				itemview.date = (TextView) convertView
+						.findViewById(R.id.item_chat_left_date);
+				itemview.failImg = (ImageView) convertView
+						.findViewById(R.id.item_chat_left_failImageView);
+				itemview.progressBar = (ProgressBar) convertView
+						.findViewById(R.id.item_chat_left_sendingProgressBar);
+				convertView.setTag(itemview);
+				break;
+			case Consts.RIGHT:
+				convertView = mInflater.inflate(R.layout.item_chat_right, null);
+				itemview.contentRl = convertView
+						.findViewById(R.id.item_chat_right_rl);
+				itemview.content = (DynamicTextView) convertView
+						.findViewById(R.id.item_chat_right_txt);
+				itemview.userimg = (ImageView) convertView
+						.findViewById(R.id.item_chat_right_userimg);
+				itemview.img = (ImageView) convertView
+						.findViewById(R.id.item_chat_right_img);
+				itemview.date = (TextView) convertView
+						.findViewById(R.id.item_chat_right_date);
+				itemview.failImg = (ImageView) convertView
+						.findViewById(R.id.item_chat_right_failImageView);
+				itemview.progressBar = (ProgressBar) convertView
+						.findViewById(R.id.item_chat_right_sendingProgressBar);
+				convertView.setTag(itemview);
+				break;
+			}
+			
+		}
+		if (null != convertView.getTag()) {
+			itemview = (ChatItemView) convertView.getTag();
+
+			handleMsgType(message, itemview, type);
+
+			handleMsgStatus(message, itemview, position);
+
+			handleDateDisplay(itemview.date, position);
+
+		}
+		return convertView;
+	}
+
+	/**
+	 * 处理消息状态
+	 * 
+	 * @param message
+	 * @param itemview
+	 * @param position
+	 */
+	private void handleMsgStatus(ChatMessageBean message,
+			ChatItemView itemview, int position) {
+		switch (message.getMsg_status()) {
+		case Consts.MSG_STATUS_SENDING:
+			itemview.failImg.setVisibility(View.GONE);
+			itemview.progressBar.setVisibility(View.VISIBLE);
+			break;
+		case Consts.MSG_STATUS_SUCCESS:
+			itemview.failImg.setVisibility(View.GONE);
+			itemview.progressBar.setVisibility(View.GONE);
+			break;
+		case Consts.MSG_STATUS_FAITURE:
+			itemview.failImg.setVisibility(View.VISIBLE);
+			itemview.progressBar.setVisibility(View.GONE);
+			break;
+
+		default:
+			break;
+		}
+		itemview.failImg.setTag(getItem(position));
+		itemview.failImg.setOnClickListener(sendListener);
+	}
+
+	/**
+	 * 处理消息类型
+	 * 
+	 * @param message
+	 * @param itemview
+	 * @param position 
+	 */
+	private void handleMsgType(final ChatMessageBean message,
+			final ChatItemView itemview, final int type) {
+		
+		switch (message.getMsg_type()) {
+		case AVIMMessageType.TEXT_MESSAGE_TYPE:
+			itemview.contentRl.setVisibility(View.VISIBLE);
+			itemview.img.setVisibility(View.GONE);
+			itemview.content.setContent(message.getContent());
+
+			break;
+		case AVIMMessageType.IMAGE_MESSAGE_TYPE:
+			itemview.contentRl.setVisibility(View.GONE);
+			itemview.img.setVisibility(View.VISIBLE);
+			ImageLoader.getInstance().displayImage(message.getContent(),
+					itemview.img, mOptions);
+			itemview.img.setTag(message);
+			itemview.img.setOnClickListener(new OnClickListener(){
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					ChatMessageBean b = (ChatMessageBean) v.getTag();
+					PhotoPageChatActivity.launch(mContext, b.getContent());
+				}
+			});
+			break;
+		default:
+			break;
+		}
+		Utils.showFace(message.getFace(), itemview.userimg);
+		if (Common.isTrue(SettingManager.getInst().getNightModel())) {
+			itemview.userimg.setColorFilter(mContext.getResources().getColor(R.color.night_img_color), PorterDuff.Mode.MULTIPLY);
+		}
+		itemview.userimg.setTag(message);
+		itemview.userimg.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				ChatMessageBean bean = (ChatMessageBean) v.getTag();
+				UserInfoActivity.launchByUid(mContext, bean.getMsg_from());
+			}
+		});
+	}
+
+	/**
+	 * 处理日期显示
+	 * 
+	 * @param date
+	 * @param position
+	 */
+	private void handleDateDisplay(TextView date, int position) {
+		ChatMessageBean message = getItem(position);
+		if (position != 0) {
+			ChatMessageBean beanpre = getItem(position - 1);
+
+			String ds1 = Common.getDateMMDDNotNull(message.getTime());
+			String dspre = Common.getDateMMDDNotNull(beanpre.getTime());
+			if (ds1.equals(dspre)) {
+				date.setVisibility(View.GONE);
+			} else {
+				date.setText(ds1);
+				date.setVisibility(View.VISIBLE);
+			}
+		} else {
+			String ds1 = Common.getDateYYYYMMDDHHMMNotNull(message.getTime());
+			date.setText(ds1);
+			date.setVisibility(View.VISIBLE);
+		}
+	}
+
+	@Override
+	public int getCount() {
+		if (null == list) {
+			return 0;
+		} else {
+			return list.size();
+		}
+
+	}
+
+	@Override
+	public ChatMessageBean getItem(int position) {
+		return list.get(position);
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return position;
+	}
+
+}

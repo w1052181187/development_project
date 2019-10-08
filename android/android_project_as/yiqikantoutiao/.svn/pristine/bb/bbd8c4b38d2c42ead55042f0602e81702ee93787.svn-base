@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_channel_item_one_small_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/common_item_bg_state_value" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/item_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="12dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textColor="?attr/item_title_color_value"
+            android:textSize="16sp" />
+        <ImageView
+            android:id="@+id/item_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="5dp"
+            android:src="@drawable/search_close_btn"
+            android:visibility="gone"/>
+        <View
+            android:layout_width="@dimen/channel_item_divider_height_common"
+            android:layout_height="40dp"
+            android:layout_marginLeft="12dp"
+            android:background="?attr/item_divider_color_value"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/channel_item_divider_height_common"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/item_divider_color_value"/>
+
+</RelativeLayout>

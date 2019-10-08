@@ -1,0 +1,108 @@
+package com.chengning.fenghuovideo.nicevideo;
+
+import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+
+import com.chengning.common.base.BaseFragmentActivity;
+import com.chengning.fenghuovideo.R;
+import com.chengning.fenghuovideo.data.bean.BaseArticlesBean;
+import com.chengning.fenghuovideo.widget.ArticleShareDialog;
+import com.chengning.fenghuovideo.widget.VideoItemWidget;
+import com.umeng.analytics.pro.ac;
+
+/**
+ * Created by jiankai on 2017/8/21.
+ */
+
+public class FhNiceVideoWidget {
+//    VideoItemWidget viw = VideoItemWidget.createVideoItemWidget(getContext(), convertView, bean.getVideo_address(), itemData);
+    
+    private FhVideoViewHolder mHolder;
+    private Activity mActivity;
+
+    private FhNiceVideoWidget(Activity activity, View view, String url, FhItemData itemData, FhVideoPlayerController.CtrlMode mode){
+//        this.mActivity = activity;
+//        this.mRoot = view.findViewById(R.id.video_layout);
+//        this.mItemData = itemData;
+//        this.mUrl = url;
+//        init();
+        this.mActivity = activity;
+        View vRoot = view.findViewById(R.id.video_layout);
+        if(vRoot == null){
+            return;
+        }
+        vRoot.setTag(this);
+
+        mHolder = new FhVideoViewHolder(vRoot);
+        mHolder.setController(new FhVideoPlayerController(activity));
+        updateData(itemData);
+    }
+
+    public static FhNiceVideoWidget createVideoItemWidget(Activity activity, View view, String url, FhItemData itemData, FhVideoPlayerController.CtrlMode mode){
+        if(view != null){
+            View vRoot = view.findViewById(R.id.video_layout);
+            if(vRoot != null){
+                Object tag = vRoot.getTag();
+                if(tag != null && tag instanceof FhNiceVideoWidget){
+                    FhNiceVideoWidget viw = (FhNiceVideoWidget)tag;
+//                    Log.e("createVideoItemWidget", "createVideoItemWidget title: " + itemData.getBean().getTitle()
+//                            + ", isFullScreen: " + viw.getHolder().getPlayer().isFullScreen());
+                    if(viw.getHolder().getPlayer().isTinyWindow() || viw.getHolder().getPlayer().isFullScreen()){
+                        return viw;
+                    }
+                    viw.updateData(itemData);
+                    return viw;
+                }
+            }
+        }
+        return new FhNiceVideoWidget(activity, view, url, itemData, mode);
+    }
+
+    public static FhNiceVideoWidget findVideoItemWidget(Activity activity, View view, String url, FhItemData itemData, FhVideoPlayerController.CtrlMode mode){
+        if(view != null){
+            View vRoot = view.findViewById(R.id.video_layout);
+            if(vRoot != null){
+                Object tag = vRoot.getTag();
+                if(tag != null && tag instanceof FhNiceVideoWidget){
+                    FhNiceVideoWidget viw = (FhNiceVideoWidget)tag;
+//                    BaseArticlesBean<String> bean = itemData.getBean();
+//                    viw.mHolder.bindData(new FhVideo(bean.getTitle(), 0, bean.getImage_list(), bean.getVideo_address()));
+                    return viw;
+                }
+            }
+        }
+        return new FhNiceVideoWidget(activity, view, url, itemData, mode);
+    }
+    
+    private void updateData(final FhItemData itemData){
+        final BaseArticlesBean<String> bean = itemData.getBean();
+        String url = bean.getVideo_address() != null ? bean.getVideo_address() : bean.getVideo_play(); 
+        mHolder.bindData(new FhVideo(bean.getTitle(), 0, bean.getImage_list(), url));
+        mHolder.getController().setShareListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (null != bean && mActivity != null) {
+                    ArticleShareDialog dialog = new ArticleShareDialog();
+                    dialog.setBean((BaseFragmentActivity)mActivity, bean);
+                    dialog.show(((FragmentActivity) mActivity).getSupportFragmentManager(),
+                            ArticleShareDialog.class.getSimpleName());
+                }
+            }
+        });
+    }
+    
+    public FhVideoViewHolder getHolder(){
+        return mHolder;
+    }
+    
+    public ImageView getCover(){
+        return mHolder.getController().imageView();
+    }
+    
+    public void release(){
+        mHolder.getPlayer().release();
+    }
+}

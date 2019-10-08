@@ -1,0 +1,40 @@
+package com.chengning.yiqikantoutiao.adapter;
+
+import android.app.Activity;
+import android.view.View;
+import android.widget.TextView;
+
+import com.chengning.common.base.BasePageListAdapter;
+import com.chengning.common.base.BaseViewHolder;
+import com.chengning.yiqikantoutiao.R;
+import com.chengning.yiqikantoutiao.data.bean.MyIncomeGoldItemBean;
+
+import java.util.List;
+
+/**
+ * Created by Administrator on 2017/6/23.
+ */
+
+public class TaskMyIncomeGoldAdapter extends BasePageListAdapter {
+
+    public TaskMyIncomeGoldAdapter(Activity activity, List list) {
+        super(activity, list);
+    }
+
+    @Override
+    public int buildLayoutId() {
+        return R.layout.item_my_income_gold;
+    }
+
+    @Override
+    public void handleLayout(View convertView, int position, Object obj) {
+        TextView title = BaseViewHolder.get(convertView,R.id.item_my_income_gold_title);
+        TextView desc = BaseViewHolder.get(convertView,R.id.item_my_income_gold_title);
+        TextView num = BaseViewHolder.get(convertView,R.id.item_my_income_gold_title);
+
+        MyIncomeGoldItemBean bean = (MyIncomeGoldItemBean) obj;
+        title.setText(bean.getTitle());
+        title.setText(bean.getDesc());
+        num.setText(bean.getNum());
+    }
+}

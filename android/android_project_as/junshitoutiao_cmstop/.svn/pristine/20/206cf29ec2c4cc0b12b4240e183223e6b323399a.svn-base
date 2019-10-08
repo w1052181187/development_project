@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_bg_value" >
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <include
+        android:id="@+id/article_comment_bottom_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        layout="@layout/article_comment_bottom_toolbar" />
+
+    <com.cmstop.jstt.views.NonFocusingScrollView
+        android:id="@+id/article_content_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/article_comment_bottom_toolbar"
+        android:layout_below="@id/title_bar_layout"
+        android:fadingEdge="none"
+        android:visibility="visible" >
+
+        <LinearLayout
+            android:id="@+id/article_content_scroll_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/article_content_top"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/common_horizontal_margin"
+                android:paddingRight="@dimen/common_horizontal_margin"
+                android:paddingTop="@dimen/common_horizontal_margin" >
+
+                <TextView
+                    android:id="@+id/article_content_top_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="标题"
+                    android:textColor="?attr/article_title_value"
+                    android:textSize="21sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/article_content_top_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/article_content_top_title"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="时间"
+                    android:textColor="?attr/article_time_value"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/article_content_top_author"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/article_content_top_title"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_toRightOf="@+id/article_content_top_time"
+                    android:textColor="?attr/article_time_value"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/article_content_top_click"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@id/article_content_top_title"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="8dp"
+                    android:textColor="?attr/article_time_value"
+                    android:textSize="11sp" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="2px"
+                    android:layout_below="@id/article_content_top_time"
+                    android:background="?attr/item_divider_color_value" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/article_content_content_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+            </RelativeLayout>
+
+            <include
+                android:id="@+id/article_relative_bottom2_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                layout="@layout/article_relative_bottom2"
+                android:visibility="gone" />
+
+            <include
+                android:id="@+id/article_ad_bottom_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                layout="@layout/article_ad_bottom"
+                android:visibility="gone" />
+
+            <include
+                android:id="@+id/article_relative_bottom_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                layout="@layout/article_relative_bottom"
+                android:visibility="gone" />
+
+            <include
+                android:id="@+id/article_comment_bottom_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                layout="@layout/article_comment_bottom"
+                android:visibility="visible" />
+        </LinearLayout>
+    </com.cmstop.jstt.views.NonFocusingScrollView>
+
+    <RelativeLayout
+        android:id="@+id/cover_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/article_comment_bottom_toolbar"
+        android:layout_below="@id/title_bar_layout"
+        android:layout_marginBottom="1px"
+        android:background="?attr/common_bg_value" >
+
+        <include
+            android:id="@+id/progress_refresh_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            layout="@layout/progress_refresh"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/article_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    </FrameLayout>
+
+</RelativeLayout>

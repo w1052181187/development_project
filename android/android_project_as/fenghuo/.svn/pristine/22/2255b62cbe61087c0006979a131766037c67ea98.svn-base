@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/common_bg_white_value"
+        android:paddingTop="12dp" >
+
+        <ImageView
+            android:id="@+id/item_circlechannel_head"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginLeft="12dp"
+            android:scaleType="centerCrop" />
+
+        <RelativeLayout
+            android:id="@+id/head"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/item_circlechannel_head"
+            android:layout_alignWithParentIfMissing="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toLeftOf="@+id/circle_list_item_check"
+            android:layout_toRightOf="@+id/item_circlechannel_head"
+            android:paddingRight="@dimen/common_horizontal_margin" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/item_circlechannel_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginBottom="4dp"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/article_cmt_name"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/item_circlechannel_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@id/item_circlechannel_name"
+                    android:layout_below="@id/item_circlechannel_name"
+                    android:layout_marginRight="@dimen/common_horizontal_margin"
+                    android:background="?attr/dynamic_common_click_bg"
+                    android:textColor="?attr/item_dynamic_content_color_value"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/item_circlechannel_del"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/geren_delete_btn"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <CheckBox
+            android:id="@+id/circle_list_item_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/common_horizontal_margin"
+            android:button="@drawable/phone_jump_check_stated"
+            android:checked="false" />
+
+        <RelativeLayout
+            android:id="@+id/item_circlechannel_content_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/head"
+            android:layout_below="@id/head"
+            android:layout_marginRight="@dimen/common_horizontal_margin" >
+
+            <com.chengning.fenghuo.widget.DynamicTextView
+                android:id="@+id/item_circlechannel_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="?attr/dynamic_common_click_bg"
+                android:ellipsize="end"
+                android:textColor="?attr/item_dynamic_content_color_value"
+                android:textSize="15sp"
+                android:visibility="gone" />
+
+            <com.chengning.fenghuo.widget.DynamicTextView
+                android:id="@+id/item_circlechannel_content_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="?attr/dynamic_common_click_bg"
+                android:ellipsize="end"
+                android:maxLines="5"
+                android:textColor="?attr/item_dynamic_content_color_value"
+                android:textSize="15sp"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/item_circlechannel_image_ll1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/item_circlechannel_content_layout"
+            android:layout_below="@+id/item_circlechannel_content_layout"
+            android:layout_marginTop="10dp"
+            android:visibility="gone" >
+
+            <ImageView
+                android:id="@+id/item_circlechannel_image1"
+                android:layout_width="@dimen/circle_list_img_width"
+                android:layout_height="@dimen/circle_list_img_width"
+                android:scaleType="centerCrop" />
+
+            <ImageView
+                android:id="@+id/item_circlechannel_image2"
+                android:layout_width="@dimen/circle_list_img_width"
+                android:layout_height="@dimen/circle_list_img_width"
+                android:layout_marginLeft="@dimen/circle_list_img_left_margin"
+                android:layout_toRightOf="@+id/item_circlechannel_image1"
+                android:scaleType="centerCrop" />
+
+            <ImageView
+                android:id="@+id/item_circlechannel_image3"
+                android:layout_width="@dimen/circle_list_img_width"
+                android:layout_height="@dimen/circle_list_img_width"
+                android:layout_marginLeft="@dimen/circle_list_img_left_margin"
+                android:layout_toRightOf="@+id/item_circlechannel_image2"
+                android:scaleType="centerCrop" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/item_circlechannel_image_ll2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/item_circlechannel_image_ll1"
+            android:layout_below="@+id/item_circlechannel_image_ll1"
+            android:layout_marginTop="@dimen/circle_list_img_left_margin"
+            android:visibility="gone" >
+
+            <ImageView
+                android:id="@+id/item_circlechannel_image4"
+                android:layout_width="@dimen/circle_list_img_width"
+                android:layout_height="@dimen/circle_list_img_width"
+                android:scaleType="centerCrop" />
+
+            <ImageView
+                android:id="@+id/item_circlechannel_image5"
+                android:layout_width="@dimen/circle_list_img_width"
+                android:layout_height="@dimen/circle_list_img_width"
+                android:layout_marginLeft="@dimen/circle_list_img_left_margin"
+                android:layout_toRightOf="@+id/item_circlechannel_image4"
+                android:scaleType="centerCrop" />
+
+            <ImageView
+                android:id="@+id/item_circlechannel_image6"
+                android:layout_width="@dimen/circle_list_img_width"
+                android:layout_height="@dimen/circle_list_img_width"
+                android:layout_marginLeft="@dimen/circle_list_img_left_margin"
+                android:layout_toRightOf="@+id/item_circlechannel_image5"
+                android:scaleType="centerCrop" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/item_circlechannel_image_ll3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/item_circlechannel_image_ll2"
+            android:layout_below="@+id/item_circlechannel_image_ll2"
+            android:layout_marginTop="@dimen/circle_list_img_left_margin"
+            android:visibility="gone" >
+
+            <ImageView
+                android:id="@+id/item_circlechannel_image7"
+                android:layout_width="@dimen/circle_list_img_width"
+                android:layout_height="@dimen/circle_list_img_width"
+                android:scaleType="centerCrop" />
+
+            <ImageView
+                android:id="@+id/item_circlechannel_image8"
+                android:layout_width="@dimen/circle_list_img_width"
+                android:layout_height="@dimen/circle_list_img_width"
+                android:layout_marginLeft="@dimen/circle_list_img_left_margin"
+                android:layout_toRightOf="@+id/item_circlechannel_image7"
+                android:scaleType="centerCrop" />
+
+            <ImageView
+                android:id="@+id/item_circlechannel_image9"
+                android:layout_width="@dimen/circle_list_img_width"
+                android:layout_height="@dimen/circle_list_img_width"
+                android:layout_marginLeft="@dimen/circle_list_img_left_margin"
+                android:layout_toRightOf="@+id/item_circlechannel_image8"
+                android:scaleType="centerCrop" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/item_circlechannel_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/item_circlechannel_content_layout"
+            android:layout_below="@id/item_circlechannel_image_ll3"
+            android:layout_marginRight="@dimen/common_horizontal_margin"
+            android:layout_marginTop="6dp"
+            android:text="详情"
+            android:textColor="@color/article_cmt_name"
+            android:textSize="15sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/item_circlechannel_duanping"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/item_circlechannel_content_layout"
+            android:layout_below="@id/item_circlechannel_detail"
+            android:layout_marginRight="@dimen/common_horizontal_margin"
+            android:layout_marginTop="6dp"
+            android:text="全文"
+            android:textColor="@color/article_cmt_name"
+            android:textSize="15sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/item_circlechannel_share"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/item_circlechannel_content_layout"
+            android:layout_below="@id/item_circlechannel_duanping"
+            android:layout_marginRight="@dimen/common_horizontal_margin"
+            android:layout_marginTop="6dp"
+            android:background="?attr/dynamic_list_more_huifu_bg_color_value"
+            android:drawableLeft="@drawable/share_default_logo"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
+            android:padding="4dp"
+            android:textColor="?attr/item_dynamic_content_color_value"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/item_circlechannel_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/item_circlechannel_content_layout"
+            android:layout_below="@id/item_circlechannel_share"
+            android:layout_marginRight="@dimen/common_horizontal_margin"
+            android:layout_marginTop="6dp"
+            android:textColor="?attr/article_time_value"
+            android:textSize="@dimen/common_item_time_text_size" />
+
+        <TextView
+            android:id="@+id/item_circlechannel_comment_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/item_circlechannel_time"
+            android:layout_marginRight="12dp"
+            android:drawableLeft="@drawable/circle_list_cmt_dianji"
+            android:drawablePadding="5dp"
+            android:textColor="?attr/article_time_value"
+            android:textSize="@dimen/common_item_time_text_size" />
+
+        <LinearLayout
+            android:id="@+id/item_circlechannel_comment_zan_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/item_circlechannel_time"
+            android:layout_below="@+id/item_circlechannel_time"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="6dp"
+            android:background="?attr/dynamic_list_huifu_bg_value"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/item_circlechannel_zan_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="4dp" >
+
+                <TextView
+                    android:id="@+id/item_circlechannel_zan_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:drawableLeft="?attr/dynamic_detail_good_icon"
+                    android:drawablePadding="5dp"
+                    android:text="0"
+                    android:textColor="?attr/item_title_color_value"
+                    android:textSize="14sp" />
+
+                <View
+                    android:id="@+id/item_circlechannel_zan_line"
+                    android:layout_width="2px"
+                    android:layout_height="22dp"
+                    android:layout_marginLeft="6dp"
+                    android:layout_toRightOf="@+id/item_circlechannel_zan_tv"
+                    android:background="?attr/item_divider_color_value" />
+
+                <com.chengning.fenghuo.widget.FlowLayoutSingleLine
+                    android:id="@+id/item_circlechannel_zan_flow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginRight="6dp"
+                    android:layout_toLeftOf="@+id/item_circlechannel_zan_more"
+                    android:layout_toRightOf="@+id/item_circlechannel_zan_line"
+                    android:visibility="gone" >
+                </com.chengning.fenghuo.widget.FlowLayoutSingleLine>
+
+                <ImageView
+                    android:id="@+id/item_circlechannel_zan_more"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="6dp"
+                    android:padding="6dp"
+                    android:src="@drawable/xiala" />
+            </RelativeLayout>
+
+            <com.chengning.fenghuo.widget.FlowLayout
+                android:id="@+id/item_circlechannel_zan_more_flow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginBottom="4dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_toLeftOf="@+id/item_circlechannel_zan_more"
+                android:layout_toRightOf="@+id/item_circlechannel_zan_tv"
+                android:visibility="gone" >
+            </com.chengning.fenghuo.widget.FlowLayout>
+
+            <View
+                android:id="@+id/item_circlechannel_cmt_layout_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="?attr/item_divider_color_value" />
+
+            <LinearLayout
+                android:id="@+id/item_circlechannel_cmt_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="2dp"
+                android:paddingTop="2dp" >
+            </LinearLayout>
+
+            <View
+                android:id="@+id/item_circlechannel_cmt_more_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="?attr/item_divider_color_value"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/item_circlechannel_cmt_more"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/dynamic_list_more_huifu_bg_color_value"
+                android:gravity="center_vertical"
+                android:paddingBottom="6dp"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:paddingTop="6dp"
+                android:textColor="@color/article_cmt_name"
+                android:textSize="14sp"
+                android:visibility="gone" >
+            </TextView>
+        </LinearLayout>
+
+        <View
+            android:id="@+id/item_circlechannel_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_below="@id/item_circlechannel_comment_zan_layout"
+            android:layout_marginTop="12dp"
+            android:background="?attr/item_divider_color_value" />
+    </RelativeLayout>
+
+</RelativeLayout>

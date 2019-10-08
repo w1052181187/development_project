@@ -1,0 +1,81 @@
+package com.ikantech.military.entity;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+
+import com.ikantech.support.utils.YiPrefsKeeper.YiPrefsKeepable;
+
+public class CompareList implements YiPrefsKeepable {
+	private List<Integer> mList;
+
+	public CompareList() {
+		mList = new ArrayList<Integer>();
+	}
+
+	@Override
+	public void save(Editor editor) {
+		// TODO Auto-generated method stub
+		JSONArray array = new JSONArray();
+		for (Integer integer : mList) {
+			array.put(integer);
+		}
+		editor.putString("list", array.toString());
+	}
+
+	@Override
+	public void restore(SharedPreferences preferences) {
+		// TODO Auto-generated method stub
+		String list = preferences.getString("list", null);
+		if (list != null) {
+			try {
+				JSONArray array = new JSONArray(list);
+				mList.clear();
+				for (int i = 0; i < array.length(); i++) {
+					Integer integer = Integer.valueOf(array.getInt(i));
+					if (!mList.contains(integer)) {
+						mList.add(integer);
+					}
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+	}
+
+	@Override
+	public String getPrefsName() {
+		// TODO Auto-generated method stub
+		return "compare_list";
+	}
+
+	public List<Integer> getCompareList() {
+		ArrayList<Integer> ret = new ArrayList<Integer>();
+		ret.addAll(mList);
+		return ret;
+	}
+
+	public void setList(List<Integer> integers) {
+		if (integers == null)
+			return;
+		mList.clear();
+		mList.addAll(integers);
+	}
+
+	public void add(Integer integer) {
+		if (!mList.contains(integer))
+			mList.add(integer);
+	}
+	
+	public void del(Integer integer) {
+		mList.remove(integer);
+	}
+
+	public boolean contains(Integer integer) {
+		return mList.contains(integer);
+	}
+}

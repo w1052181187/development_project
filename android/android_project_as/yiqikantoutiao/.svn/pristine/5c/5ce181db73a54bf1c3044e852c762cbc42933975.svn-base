@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:layout_gravity="center"
+    android:background="@drawable/tuijian_zhuanlan_btn_bg"
+    >
+
+    <TextView
+        android:id="@+id/poppupwindow_follow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:layout_marginRight="12dp"
+        android:layout_marginLeft="6dp"
+        android:text="关注" />
+
+    <TextView
+        android:id="@+id/poppupwindow_homepage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:layout_marginRight="6dp"
+        android:textSize="12sp"
+        android:text="主页" />
+
+</LinearLayout>

@@ -1,0 +1,65 @@
+package com.chengning.fenghuo.adapter;
+
+import java.util.List;
+
+import android.app.Activity;
+import android.graphics.PorterDuff;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.chengning.common.base.BasePageListAdapter;
+import com.chengning.common.base.BaseViewHolder;
+import com.chengning.fenghuo.R;
+import com.chengning.fenghuo.SettingManager;
+import com.chengning.fenghuo.data.bean.UserInfoBean;
+import com.chengning.fenghuo.util.Common;
+import com.chengning.fenghuo.util.Utils;
+import com.nostra13.universalimageloader.core.ImageLoader;
+
+public class ColumnistListAdapter extends BasePageListAdapter {
+
+	private OnClickListener mFollowClick;
+
+	public ColumnistListAdapter(Activity context, List list, OnClickListener click) {
+		super(context, list);
+		this.mFollowClick = click;
+	}
+
+	@Override
+	public int buildLayoutId() {
+		return R.layout.item_list_columnist;
+	}
+
+	@Override
+	public void handleLayout(View convertView, int position, Object obj) {
+		TextView title = (TextView) BaseViewHolder.get(convertView, R.id.item_columnist_title);
+		TextView desc = (TextView) BaseViewHolder.get(convertView, R.id.item_columnist_desc);
+		ImageView image = (ImageView) BaseViewHolder.get(convertView, R.id.item_columnist_face);
+		TextView follow = (TextView) BaseViewHolder.get(convertView, R.id.item_columnist_follow);
+	
+		UserInfoBean bean= (UserInfoBean) obj;
+//			bean.setPos(position);
+		title.setText(bean.getNickname()); 
+		desc.setText(bean.getAboutme().replaceFirst("^\\s*(\u3000\u3000)*", "")); 
+		
+		Utils.showFace(bean.getFace(), image);
+		if (Common.isTrue(SettingManager.getInst().getNightModel())) {
+			image.setColorFilter(getContext().getResources().getColor(R.color.night_img_color), PorterDuff.Mode.MULTIPLY);
+		}
+		 
+		if(bean.getIs_follow() == 0) {
+			follow.setSelected(true);
+		} else {
+			follow.setSelected(false);
+		}
+		follow.setText(!follow.isSelected() ? getContext().getString(R.string.str_userinfo_already_focused)
+				: getContext().getString(R.string.str_columnist_not_focused));
+		follow.setOnClickListener(mFollowClick);
+		follow.setTag(bean); 
+		title.setTag(bean);
+		
+	} 
+	 
+}

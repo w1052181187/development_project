@@ -1,0 +1,173 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_bg_value"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/title_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/titile_bar_height"
+        android:background="?attr/nav_bg_value" >
+
+        <RelativeLayout
+            android:id="@+id/title_bar_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin" >
+
+            <TextView
+                android:id="@+id/title_bar_cancel_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:drawablePadding="4dp"
+                android:gravity="center"
+                android:text="取消"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/search_bg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_toLeftOf="@id/title_bar_cancel"
+            android:background="@drawable/search_bg2"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <ImageView
+                android:id="@+id/search_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@null"
+                android:src="@drawable/search_icon" />
+
+            <EditText
+                android:id="@+id/search_edittext"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dip"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="搜你想搜的"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLength="20"
+                android:singleLine="true"
+                android:textSize="14sp" >
+            </EditText>
+
+            <Button
+                android:id="@+id/title_bar_search_clear"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/close_search_et"
+                android:paddingRight="10dp"
+                android:visibility="gone" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title_bar_layout"
+        android:gravity="bottom" >
+
+        <com.chengning.common.widget.MultiStateView
+            xmlns:multistateview="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/multiStateView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            multistateview:msv_emptyView="@layout/searchnews_nodata_view"
+            multistateview:msv_errorView="@layout/error_view"
+            multistateview:msv_loadingView="@layout/loading_view"
+            multistateview:msv_viewState="loading" >
+
+            <com.shenyuan.militarynews.views.PullToRefreshListView_FootLoad
+                xmlns:ptr="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/common_bg_value"
+                android:cacheColorHint="@color/transparent"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:fadingEdge="none"
+                android:fastScrollEnabled="false"
+                android:footerDividersEnabled="false"
+                android:headerDividersEnabled="false"
+                android:smoothScrollbar="true"
+                ptr:ptrAnimationStyle="flip" />
+
+            <Button
+                android:id="@+id/topbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="@dimen/common_horizontal_margin"
+                android:layout_marginRight="@dimen/common_horizontal_margin"
+                android:background="@drawable/top_btn"
+                android:visibility="gone" />
+        </com.chengning.common.widget.MultiStateView>
+
+        <LinearLayout
+            android:id="@+id/search_history_ll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="@dimen/activity_horizontal_margin" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <View
+                    android:layout_width="4px"
+                    android:layout_height="14dp"
+                    android:background="#007ACD" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:includeFontPadding="false"
+                    android:text="搜索历史"
+                    android:textColor="#7F7F7F"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/search_history_clear"
+                    android:layout_width="12dp"
+                    android:layout_height="14dp"
+                    android:background="@drawable/searchnews_delete" />
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/history_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:divider="@null"
+                android:scrollbars="none" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

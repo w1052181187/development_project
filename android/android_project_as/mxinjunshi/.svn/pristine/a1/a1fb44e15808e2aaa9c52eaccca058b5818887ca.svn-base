@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="SwitchButton">
+        <attr name="frameDrawable" format="reference|color" />
+        <attr name="stateDrawable" format="reference|color" />
+        <attr name="stateMaskDrawable" format="reference|color" />
+        <attr name="sliderDrawable" format="reference|color" />
+        <attr name="withTextInterval" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="SelectableRoundedImageView">
+        <attr name="sriv_left_top_corner_radius" format="dimension" />
+        <attr name="sriv_right_top_corner_radius" format="dimension" />
+        <attr name="sriv_left_bottom_corner_radius" format="dimension" />
+        <attr name="sriv_right_bottom_corner_radius" format="dimension" />
+        <attr name="sriv_border_width" format="dimension" />
+        <attr name="sriv_border_color" format="color" />
+        <attr name="sriv_oval" format="boolean" />
+        <attr name="android:scaleType" />
+    </declare-styleable>
+    
+    <!-- 夜间模式 -->
+    <attr name="home_bg_value" format="color|reference" />
+    <attr name="nav_bg_value" format="color|reference" />
+    <attr name="newstab_indicator_bg_unselect_value" format="color|reference" /> 
+    <attr name="item_title_color_readed_value" format="color|reference" /> 
+    <attr name="item_title_color_value" format="color|reference" /> 
+    <attr name="item_summary_color_value" format="color|reference" /> 
+    <attr name="common_item_bg_state_value" format="color|reference" />
+    <attr name="common_item_bg_transparte_state_value" format="color|reference" />
+    <attr name="common_bg_value" format="color|reference" />
+    <attr name="common_bg_gray_value" format="color|reference" />
+    <attr name="common_bg_white_value" format="color|reference" />
+    <attr name="news_tab_indicator_value" format="color|reference" />
+    <attr name="common_tab_text_value" format="color|reference" />
+    <attr name="home_tab_bar_bg_value" format="color|reference" />
+    <attr name="item_divider_color_value" format="color|reference" />
+    <attr name="home_title_value" format="color|reference" />
+    <attr name="home_indicator_slide_right" format="color|reference" />
+    <attr name="article_title_value" format="color|reference" />
+    <attr name="article_time_value" format="color|reference" />
+    <attr name="article_content_text_value" format="color|reference" />
+    <attr name="article_bottom_btn_text_value" format="color|reference" />
+    <attr name="article_bottom_btn_bg_value" format="color|reference" />
+    <attr name="article_setting_bg_value" format="color|reference" />
+    <attr name="article_setting_font_textcolor_state_value" format="color|reference" />
+    <attr name="setting_child_text_value" format="color|reference" />
+    <attr name="setting_offline_progress_text_value" format="color|reference" />
+    <attr name="slideview_text_value" format="color|reference" />
+    <attr name="setting_group_bg_value" format="color|reference" />
+    <attr name="setting_group_text_value" format="color|reference" />
+    <attr name="article_bottom_input_value" format="color|reference" />
+    <attr name="article_bottom_cmt_bg_value" format="color|reference" />
+    <attr name="setting_btn_bg_state_value" format="color|reference" />
+    <attr name="toolbar_bg_btn_value" format="color|reference" />
+    <attr name="toolbar_bg_color_value" format="color|reference" />
+    <attr name="toolbar_text_color_value" format="color|reference" />
+    <attr name="common_white_value" format="color|reference" />
+    <attr name="dialog_upgrade_des_text_value" format="color|reference" />
+    <attr name="directorate_grade_head_bg_value" format="color|reference" />
+    <attr name="directorate_task_des_mid_bg_value" format="color|reference" />
+    <attr name="common_black_value" format="color|reference" />
+    <attr name="directorate_gray_value" format="color|reference" />
+    <attr name="task_tab_indicator_value" format="color|reference" />
+    <attr name="task_main_bg" format="color|reference" />
+    <attr name="photo_page" format="reference|color" ></attr>
+    <attr name="weapon_search_bg" format="reference|color" ></attr>
+    <attr name="article_cmt_parent_bg_color_value" format="color|reference" />
+    <attr name="article_cmt_parent_content_color_value" format="color|reference" />
+    <!-- 夜间模式 -->
+    
+    <declare-styleable name="RoundProgressBar">
+        <attr name="roundColor" format="color" />
+        <attr name="roundProgressColor" format="color" />
+        <attr name="roundWidth" format="dimension"></attr>
+        <attr name="textColor" format="color|reference"/>
+        <attr name="textSize" format="dimension|reference"/>
+        <attr name="max" format="integer"></attr>
+        <attr name="textIsDisplayable" format="boolean"></attr>
+        <attr name="style">
+            <enum name="STROKE" value="0"></enum>
+            <enum name="FILL" value="1"></enum>
+        </attr>
+    </declare-styleable>
+    
+    <!-- TabPageIndicator -->
+    <attr name="textSelectedSize" format="dimension|reference" />
+    <!-- TabPageIndicator -->
+
+</resources>

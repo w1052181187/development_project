@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="1dp"
+    android:background="?attr/common_item_bg_transparte_state_value" >
+
+    <TextView
+        android:id="@+id/article_comment_item_parent_floor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="6dp"
+        android:paddingRight="@dimen/common_horizontal_margin"
+        android:text="1f"
+        android:textColor="?attr/item_summary_color_value"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/article_comment_item_parent_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/article_comment_item_parent_floor"
+        android:layout_toLeftOf="@id/article_comment_item_parent_floor"
+        android:paddingRight="@dimen/common_horizontal_margin"
+        android:text="time"
+        android:textColor="?attr/item_summary_color_value"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/article_comment_item_parent_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/article_comment_item_parent_floor"
+        android:layout_marginLeft="@dimen/common_horizontal_margin"
+        android:layout_marginRight="@dimen/common_horizontal_margin"
+        android:layout_toLeftOf="@id/article_comment_item_parent_time"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:paddingRight="@dimen/common_horizontal_margin"
+        android:text="新军事网友"
+        android:textColor="?attr/item_summary_color_value"
+        android:textSize="14sp" />
+
+    <com.cmstop.jstt.views.EmojiTextView
+        android:id="@+id/article_comment_item_parent_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/article_comment_item_parent_name"
+        android:layout_below="@id/article_comment_item_parent_name"
+        android:layout_marginBottom="12dp"
+        android:layout_marginRight="@dimen/common_horizontal_margin"
+        android:layout_marginTop="10dp"
+        android:textColor="?attr/item_title_color_value"
+        android:textSize="14sp" />
+
+    <ImageView
+        android:id="@+id/article_comment_item_parent_line"
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:layout_alignLeft="@id/article_comment_item_parent_name"
+        android:layout_below="@id/article_comment_item_parent_content"
+        android:background="@drawable/comment_parent_divider"
+        android:scaleType="fitXY" />
+
+</RelativeLayout>

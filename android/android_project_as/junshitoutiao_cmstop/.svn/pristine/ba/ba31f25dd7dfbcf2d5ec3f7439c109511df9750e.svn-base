@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="errorHint">发生了一个错误  %1$s.请点击<i><b>"报告"</b></i> 发送错误信息到我们的邮箱!!!</string>
+
+    <!-- 检测版本更新文件位置 -->
+    <string name="about">军事头条（www.xinjunshi.net）运营团队是一个年轻有活力的队伍，主编和责任编辑有3年以上互联网社区媒体从业经验，网站负责人从事互联网运营也已10年之久。本站成立于2002年，前身是中国军队网(www.cnarmy.net)，2003年9月网站正式启用新域名www.xinjunshi.net。作为国内最早的一批军事类站点，本站建站伊始便立志将公正客观的立场带到文章中，以满足广大网友所需的军事相关方面的内容资讯和爱国情感的交流，致力于提供一个理性爱国者、军事爱好者聚集和交流的网络平台，为用户提供全面的咨讯互动需求，引导理性、爱国的军事氛围</string>
+    <string name="serverurl">http://down.xinjunshi.com/xjsappversion.xml</string>
+    <string name="dbname">xjs.db</string>
+    <string name="select">选择</string>
+    <string name="share">分享</string>
+    <string name="sharing">分享中...</string>
+    <string name="publishing">发布中...</string>
+    <string name="footbar_refresh">刷新</string>
+    <string name="footbar_comment">评论</string>
+    <string name="footbar_share">分享</string>
+    <string name="footbar_favorite">收藏</string>
+    <string name="footbar_more">更多</string>
+    <!-- sina share message -->
+    <string name="OAUTH_ERROR">服务器验证失败</string>
+    <string name="OAUTH_RequestToken_ACCESS">第三方应用验证成功</string>
+    <string name="OAUTH_RequestToken_ERROR">第三方应用验证失败</string>
+    <string name="OAUTH_AccessToken_ACCESS">用户授权登录成功</string>
+    <string name="OAUTH_AccessToken_ERROR">用户授权登录失败</string>
+    <string name="OAUTH_AccessToken_SXPIRED">授权已过期，请重新授权登录</string>
+    <string name="Weibo_Message_NULL">分享数据不能为空</string>
+    <string name="Weibo_Message_LONG">已超出140个字</string>
+    <string name="Weibo_Share_Success">微博分享成功</string>
+    <string name="Weibo_Share_Error">微博分享失败</string>
+    <string name="Weibo_Share_Repeat">已经分享过了</string>
+    <string name="app_name">军事头条</string>
+    <!-- 字体大小 -->
+    <string name="front_size1">特大号</string>
+    <string name="front_size2">大号</string>
+    <string name="front_size3">中号</string>
+    <string name="front_size4">小号</string>
+    <!-- 滑动刷新 -->
+
+
+    <string name="tab_home_index1">资讯</string>
+    <string name="tab_home_index2">独家</string>
+    <string name="tab_home_index3">商城</string>
+    <string name="tab_home_index4">我的</string>
+    
+    <!-- 滑动区域文字及链接 -->
+
+    <string name="action_settings">Settings</string>
+    <!--<string name="title_activity_list_news">ListNews</string>-->
+    <!--<string name="title_activity_setting">SettingActivity</string>-->
+    <!--<string name="title_activity_about">AboutActivity</string>-->
+    <!--<string name="title_activity_feedback">FeedbackActivity</string>-->
+    <!--<string name="title_activity_news_page">NewsPageActivity</string>-->
+    <!--<string name="title_activity_photo_page">PhotoPageActivity</string>-->
+    <!--<string name="title_activity_welcome">SplashActivity</string>-->
+    <!--<string name="title_activity_equip">EquipActivity</string>-->
+    
+    <string name="intent_timeout">网络连接超时</string>
+    <string name="server_fail">网络异常，请重试</string>
+    <string name="intnet_fail">网络已断开，请检查网络设置</string>
+    <string name="no_login_tip">请先登录</string>
+
+    <!-- 登录注册个人中心 -->
+    <string name="login_third_hint">使用社交账号登录</string>
+    <string name="login_or">或</string>
+    <string name="please_input_account">请输入手机号码/昵称</string>
+    <string name="please_input_phone">请输入手机号码</string>
+    <string name="please_input_password">请输入密码</string>
+    <string name="please_input_oldpassword">输入旧密码</string>
+    <string name="please_input_newpassword">请输入新密码</string>
+    <string name="please_input_newpasswordagain">确认新密码</string>
+    <string name="please_input_code">请输入验证码</string>
+    <string name="please_input_nickname">请输入昵称</string>
+	<string name="please_first_login">请先登录</string>
+    <string name="login">登录</string>
+    <string name="login_skip">跳过登录</string>
+    <string name="login_tip">登录后做任务可获得积分、军衔，还可与更多军迷互动</string>
+    <string name="register">注册</string>
+    <string name="finishregister">完成注册</string>
+    <string name="phoneverify">手机验证</string>
+    <string name="no_account">没有账号?</string>
+    <string name="quick_register">快速注册</string>
+    <string name="forget_password">忘记密码</string>
+    <string name="get_code">获取验证码</string>
+    <string name="set_password">设定至少6位密码</string>
+    <string name="click_login">点击登录</string>
+    <string name="headquart">指挥部</string>
+    <string name="myfav">我的收藏</string>
+    <string name="mycomment">我的评论</string>
+    <string name="myorder">我的订单</string>
+    <string name="setting">设置</string>
+    <string name="exit">退出登录</string>
+    <string name="my">我的</string>
+    <string name="findpassword">密码找回</string>
+    <string name="nextstep">下一步</string>
+    <string name="commit">提交</string>
+    <string name="modifypwd">修改密码</string>
+    <string name="setnewpwd">设置新密码</string>
+    <string name="completeinfo">完善资料</string>
+	<string name = "myProfile_edit_activity_takephoto">拍照</string>
+    <string name = "myProfile_edit_activity_localphoto">选择本地照片</string>
+	<string name = "handle_hint">请稍候..</string>
+	<string name = "change_phone">更换手机号</string>
+    <string name = "bind_phone">绑定手机号</string>
+    <!--任务详情  -->
+    <string name="directorate_task_detail_login_text1">1.如果您还没有账号,请先点击注册账号</string>
+    <string name="directorate_task_detail_login_text2">2.每天登录账号即可获取奖励</string>
+    <string name="directorate_task_detail_share_text1">1.打开任意一篇文章</string>
+    <string name="directorate_task_detail_share_text2">2.文章结束区域有分享按钮,点击分享到相应的社交账号,即可获得积分奖励</string>
+    <string name="directorate_task_detail_comment_text1">1.打开任意一篇文章</string>
+    <!-- &#8220;&#8221; 表示双引号 -->
+    <string name="directorate_task_detail_comment_text2">2.点击&#8220;评论框&#8221;,输入您想表达的观点,字数需要在两字以上,即可获得积分奖励</string>
+    
+    <!--文章 -->
+    <string name="article_collect_hint">文章已收藏，请到[我的][我的收藏]中查看</string>
+    <string name="collect_merge_hint">发现有本地收藏文章，是否上传至云端永久保存？</string>
+    <string name="comment_copy_hint">内容已复制成功</string>
+    
+    <!--common-->
+    <string name="common_item_title_line_space">1</string>
+    <!-- 打赏 -->
+    <string name="no_wx_no_pay">"未安装微信客户端，无法打赏"</string>
+    <string name="loading_get_order">"获取订单中..."</string>
+    <string name="notice_format_error">"格式错误"</string>
+    
+    <!-- umeng share-->
+    <string name="umeng_share_err_userinfo">获取用户资料错误</string>
+    <string name="umeng_share_cancle_userinfo">取消获取用户资料</string>
+    <string name="umeng_share_err_share">分享错误</string>
+    <string name="umeng_share_cancle_share">分享取消</string>
+    <string name="umeng_share_success_share">分享成功</string>
+    <string name="umeng_share_err_qq_login">QQ登录失败</string>
+    <string name="umeng_share_err_auth">授权失败</string>
+    <string name="umeng_share_install_wx">请安装微信客户端</string>
+    <string name="umeng_share_install_qq">请安装QQ客户端</string>
+    
+</resources>

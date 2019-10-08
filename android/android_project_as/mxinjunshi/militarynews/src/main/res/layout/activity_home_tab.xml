@@ -1,0 +1,64 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/common_bg" >
+
+    <LinearLayout
+        android:id="@+id/home_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/toolbar_bg_color_value"
+        android:orientation="vertical" >
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/home_toolbar_line" />
+
+        <RadioGroup
+            android:id="@+id/tabRadioGroup"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal" >
+
+            <com.chengning.common.widget.ImageRadioButton
+                android:id="@+id/tab_home"
+                style="@style/tabButton"
+                android:checked="true"
+                android:drawableTop="@drawable/toolbar_home_refresh"
+                android:text="@string/tab_home_index1" />
+
+            <com.chengning.common.widget.ImageRadioButton
+                android:id="@+id/tab_video"
+                style="@style/tabButton"
+                android:drawableTop="@drawable/toolbar_home_video"
+                android:text="@string/tab_home_index2" />
+
+            <com.chengning.common.widget.ImageRadioButton
+                android:id="@+id/tab_mall"
+                style="@style/tabButton"
+                android:drawableTop="@drawable/toolbar_home_mall"
+                android:text="@string/tab_home_index3" />
+
+            <com.chengning.common.widget.ImageRadioButton
+                android:id="@+id/tab_wode"
+                style="@style/tabButton"
+                android:drawableTop="@drawable/toolbar_home_wode"
+                android:text="@string/tab_home_index4" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/contentLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@id/home_bottom"
+        android:background="@color/common_bg"
+        android:orientation="vertical" >
+    </LinearLayout>
+
+    <include layout="@layout/first_run_page" />
+
+</RelativeLayout>

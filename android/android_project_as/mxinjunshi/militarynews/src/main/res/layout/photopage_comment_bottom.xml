@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/article_comment_bottom_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/photopage_comment_bottom_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/img_toolbar_bg" >
+
+        <View
+            android:id="@+id/photopage_comment_bottom_toolbar_divider"
+            android:layout_width="match_parent"
+            android:layout_height="0px"
+            />
+
+        <ImageButton
+            android:id="@+id/photopage_comment_bottom_toolbar_tread"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/photopage_comment_bottom_toolbar_divider"
+            android:background="@color/transparent"
+            android:src="@drawable/img_toolbar_bad" />
+        
+        <TextView
+            android:id="@+id/photopage_comment_bottom_toolbar_tread_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/photopage_comment_bottom_toolbar_tread"
+            android:layout_alignTop="@id/photopage_comment_bottom_toolbar_tread"
+            android:layout_marginLeft="26dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/tips_bg36"
+            android:gravity="center"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:textColor="@color/white"
+            android:textSize="9sp" 
+            android:visibility="gone"
+            />
+        
+        <ImageButton
+            android:id="@+id/photopage_comment_bottom_toolbar_like"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_below="@id/photopage_comment_bottom_toolbar_divider"
+            android:layout_toLeftOf="@id/photopage_comment_bottom_toolbar_tread"
+            android:background="@color/transparent"
+            android:src="@drawable/img_toolbar_good" />
+        
+        <TextView
+            android:id="@+id/photopage_comment_bottom_toolbar_like_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/photopage_comment_bottom_toolbar_like"
+            android:layout_alignTop="@id/photopage_comment_bottom_toolbar_like"
+            android:layout_marginLeft="26dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/tips_bg36"
+            android:gravity="center"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:textColor="@color/white"
+            android:textSize="9sp" 
+            android:visibility="gone"
+            />
+
+        <ImageButton
+            android:id="@+id/photopage_comment_bottom_toolbar_comment"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_below="@id/photopage_comment_bottom_toolbar_divider"
+            android:layout_toLeftOf="@id/photopage_comment_bottom_toolbar_like"
+            android:background="@color/transparent"
+            android:src="@drawable/toolbar_comment" />
+
+        <TextView
+            android:id="@+id/photopage_comment_bottom_toolbar_comment_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/photopage_comment_bottom_toolbar_comment"
+            android:layout_alignTop="@id/photopage_comment_bottom_toolbar_comment"
+            android:layout_marginLeft="26dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/tips_bg36"
+            android:gravity="center"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:textColor="@color/white"
+            android:textSize="9sp" 
+            android:visibility="gone"
+            />
+
+        <TextView
+            android:id="@+id/photopage_comment_bottom_toolbar_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/common_horizontal_margin"
+            android:layout_toLeftOf="@id/photopage_comment_bottom_toolbar_comment"
+            android:background="@drawable/img_toolbar_comment_input"
+            android:padding="6dp"
+            android:text="说两句吧~"
+            android:textColor="@color/common_text_summary"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+</LinearLayout>

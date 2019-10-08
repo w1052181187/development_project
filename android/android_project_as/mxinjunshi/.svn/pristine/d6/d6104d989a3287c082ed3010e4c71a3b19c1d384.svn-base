@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/article_relative_bottom_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/common_horizontal_margin"
+        android:background="@drawable/article_bottom_bg_stroke" >
+
+        <RelativeLayout
+            android:id="@+id/article_content_bottom_tip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/article_content_bottom_zan"
+            android:background="?attr/common_bg_white_value"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/article_bottom_share_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:paddingBottom="6dp"
+                android:paddingTop="6dp"
+                android:text="精彩推荐"
+                android:textColor="@color/article_bottom_hint_text"
+                android:textSize="16sp" />
+
+            <View
+                android:id="@+id/article_bottom_share_hintline"
+                android:layout_width="match_parent"
+                android:layout_height="3px"
+                android:layout_alignLeft="@id/article_bottom_share_hint"
+                android:layout_alignRight="@id/article_bottom_share_hint"
+                android:layout_below="@id/article_bottom_share_hint"
+                android:background="@color/article_comment_item_name_color" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:layout_below="@id/article_bottom_share_hintline"
+                android:background="?attr/item_divider_color_value" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/article_ad_bottom_ad_big_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/article_content_bottom_tip"
+            android:orientation="vertical" >
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

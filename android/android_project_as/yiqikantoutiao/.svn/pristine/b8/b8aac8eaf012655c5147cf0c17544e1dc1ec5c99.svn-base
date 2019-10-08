@@ -1,0 +1,73 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/set_comment_permission_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/setting_group_bg_value" >
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title_bar_layout" >
+
+        <LinearLayout
+            android:id="@+id/set_comment_permission_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="17dp"
+            android:background="?attr/common_item_bg_white_state_value"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/set_comment_permission_all_rl"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="?attr/common_item_bg_white_state_value" >
+
+                <TextView
+                    android:id="@+id/set_comment_permission_all_tv"
+                    style="@style/SettingChildText"
+                    android:layout_centerVertical="true"
+                    android:text="所有人" />
+
+                <ImageView
+                    android:id="@+id/set_comment_permission_all_checkimg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:src="@drawable/list_checked" />
+            </RelativeLayout>
+
+            <View style="@style/SettingDivider" />
+
+            <RelativeLayout
+                android:id="@+id/set_comment_permission_focus_rl"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="?attr/common_item_bg_white_state_value" >
+
+                <TextView
+                    android:id="@+id/set_comment_permission_focus_tv"
+                    style="@style/SettingChildText"
+                    android:layout_centerVertical="true"
+                    android:text="我关注的人" />
+
+                <ImageView
+                    android:id="@+id/set_comment_permission_focus_checkimg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:src="@drawable/list_checked" />
+            </RelativeLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

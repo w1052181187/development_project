@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <!-- Non focused states --> 
+    <item android:state_focused="false" android:state_checked="false" android:state_pressed="false" android:drawable="@drawable/news_tab_indicator_divider_night" />
+    <item android:state_focused="false" android:state_checked="true"  android:state_pressed="false" android:drawable="@drawable/newstab_indicator_bg_select_night" />
+
+    <!-- Focused states --> 
+ 
+    <!-- Pressed -->
+    <!--    Non focused states -->
+    <item android:state_focused="false" android:state_checked="false" android:state_pressed="true" android:drawable="@drawable/newstab_indicator_bg_select_night" />
+    <item android:state_focused="false" android:state_checked="true"  android:state_pressed="true" android:drawable="@drawable/newstab_indicator_bg_select_night" />
+
+    <!--    Focused states -->
+
+</selector>

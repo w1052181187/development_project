@@ -1,0 +1,194 @@
+package com.shenyuan.militarynews.RetrofitRequestInterface;
+
+import com.chengning.common.base.BaseRetrofitModel;
+import com.google.gson.JsonObject;
+import com.shenyuan.militarynews.beans.data.AdStartBean;
+import com.shenyuan.militarynews.beans.data.ArticlesPicBean;
+import com.shenyuan.militarynews.beans.data.BadgeBean;
+import com.shenyuan.militarynews.beans.data.BindDataBean;
+import com.shenyuan.militarynews.beans.data.CommentListBean;
+import com.shenyuan.militarynews.beans.data.DirectorateBean;
+import com.shenyuan.militarynews.beans.data.DirectoratePointBean;
+import com.shenyuan.militarynews.beans.data.DirectorateTaskBean;
+import com.shenyuan.militarynews.beans.data.DomainBean;
+import com.shenyuan.militarynews.beans.data.FavListBean;
+import com.shenyuan.militarynews.beans.data.LoginBean;
+import com.shenyuan.militarynews.beans.data.RankBean;
+import com.shenyuan.militarynews.beans.data.SearchNewsListBean;
+import com.shenyuan.militarynews.utils.JUrl;
+
+import java.util.List;
+import java.util.Map;
+
+import io.reactivex.Observable;
+import okhttp3.MultipartBody;
+import retrofit2.Response;
+import retrofit2.http.FieldMap;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
+import retrofit2.http.QueryMap;
+
+public interface ApiInterface {
+
+    /**
+     * 更换域名
+     * @return
+     */
+    @GET("/xin.js")
+    Observable<Response<DomainBean>> changeDomain();
+
+    @POST(JUrl.URL_GET_AD_START)
+    @FormUrlEncoded
+    Observable<BaseRetrofitModel<AdStartBean>> getAd(@FieldMap Map<String, String> maps);
+
+    @POST(JUrl.URL_EDIT_FACE)
+    @Multipart
+    Observable<BaseRetrofitModel<JsonObject>> uploadFace(@Part MultipartBody.Part file);
+
+    @GET(JUrl.URL_REMOVE_BIND)
+    Observable<BaseRetrofitModel<String>> removeBind(@QueryMap Map<String, String> params);
+
+    @POST(JUrl.URL_GET_BIND_STATE)
+    Observable<BaseRetrofitModel<BindDataBean>> getBindState();
+
+
+    /**
+     * 文章详情相关
+     */
+    @GET(JUrl.URL_GET_CLICKS)
+    Observable<BaseRetrofitModel<JsonObject>> getClicks(@QueryMap Map<String, String> params);
+
+    @POST(JUrl.GET_ARTICLES_PIC )
+    @FormUrlEncoded
+    Observable<BaseRetrofitModel<ArticlesPicBean>> getArticlePics(@FieldMap Map<String, String> params);
+
+    @GET(JUrl.URL_GET_FAVORITE_ATRICLES)
+    Observable<BaseRetrofitModel<FavListBean>> getFavorite(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.URL_COLLECT_FAVORITE_ATRICLES)
+    Observable<BaseRetrofitModel<String>> doFavorite(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.URL_CANCEL_FAVORITE_ATRICLES)
+    Observable<BaseRetrofitModel<String>> cancleFavorite(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.URL_GET_SEARCH)
+    Observable<BaseRetrofitModel<SearchNewsListBean>> search(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.GET_GOOD_BAD)
+    Observable<BaseRetrofitModel<JsonObject>> doLikeBad(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.URL_GET_COMMENT_PARENT_LIST)
+    Observable<BaseRetrofitModel<CommentListBean>> getComentReply(@QueryMap Map<String, String> params);
+
+    @POST(JUrl.URL_GET_REWARD_ORDER)
+    @FormUrlEncoded
+    Observable<BaseRetrofitModel<Map>> rewardArticle(@FieldMap Map<String, String> params);
+
+    @GET(JUrl.URL_GET_NEW_ARTICLE_COUNT)
+    Observable<BaseRetrofitModel<BadgeBean>> updateBadge(@QueryMap Map<String, String> params);
+
+
+    /**
+     * 评论相关
+     * @param params
+     * @return
+     */
+    @POST(JUrl.URL_DO_COMMENT_REPLY_PUBLISH)
+    @FormUrlEncoded
+    Observable<BaseRetrofitModel<DirectoratePointBean>> publishComment(@FieldMap Map<String, String> params);
+
+    @POST(JUrl.URL_DO_COMMENT_GOOD_BAD)
+    @FormUrlEncoded
+    Observable<BaseRetrofitModel<JsonObject>> doLikeBadComment(@FieldMap Map<String, String> params);
+
+    @GET(JUrl.URl_DELETE_MY_COMMENT)
+    Observable<BaseRetrofitModel<String>> deleteMyComment(@QueryMap Map<String, String> params);
+
+    @POST(JUrl.URL_GET_COMMENT_REPORT)
+    @FormUrlEncoded
+    Observable<BaseRetrofitModel<String>> report(@FieldMap Map<String, String> params);
+
+    /**
+     * 用户相关
+     */
+    @POST(JUrl.URL_BIND_QQ_REGIST)
+    @FormUrlEncoded
+    Observable<BaseRetrofitModel<String>> bindRegistQQ(@FieldMap Map<String, String> params);
+
+    @POST(JUrl.URL_BIND_SINA_REGIST)
+    @FormUrlEncoded
+    Observable<BaseRetrofitModel<String>> bindRegistSina(@FieldMap Map<String, String> params);
+
+    @GET(JUrl.URL_DIRECTORATE_INFO)
+    Observable<BaseRetrofitModel<DirectorateBean>> getDirectorate();
+
+    @GET(JUrl.URL_DIRECTORATE_DETAIL_INFO)
+    Observable<BaseRetrofitModel<DirectorateTaskBean>> getDirectorateTask(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.URL_GET_LOGIN_EVERYDAY)
+    Observable<BaseRetrofitModel<LoginBean>> everyLogin();
+
+    @POST(JUrl.URL_LOGIN)
+    @FormUrlEncoded
+    Observable<BaseRetrofitModel<JsonObject>> login(@FieldMap Map<String, String> params);
+
+    @GET(JUrl.URL_EXIT)
+    Observable<BaseRetrofitModel<String>> logout();
+
+    @POST(JUrl.URL_REGISTER)
+    @FormUrlEncoded
+    Observable<BaseRetrofitModel<JsonObject>> register(@FieldMap Map<String, String> params);
+
+    @POST(JUrl.URL_GETPHONECODE)
+    @FormUrlEncoded
+    Observable<BaseRetrofitModel<String>> getVerifyCode(@FieldMap Map<String, String> params);
+
+    @POST(JUrl.URL_VERIFYCODE)
+    @FormUrlEncoded
+    Observable<BaseRetrofitModel<String>> verifyCode(@FieldMap Map<String, String> params);
+
+    @POST(JUrl.URL_PHONEVERIFY)
+    @FormUrlEncoded
+    Observable<BaseRetrofitModel<String>> verifyPhone(@FieldMap Map<String, String> params);
+
+    @POST(JUrl.URL_MODIFYPWBYFORGET)
+    @FormUrlEncoded
+    Observable<BaseRetrofitModel<String>> modifyPwdByForget(@FieldMap Map<String, String> params);
+
+    @POST(JUrl.URL_MODIFYPWBYNORMAL)
+    @FormUrlEncoded
+    Observable<BaseRetrofitModel<String>> modifyPwdByNormal(@FieldMap Map<String, String> params);
+
+    @GET(JUrl.URL_GET_LEVEL_LIST)
+    Observable<BaseRetrofitModel<List<RankBean>>> getRankLevel();
+
+    @GET(JUrl.URL_BIND_QQ)
+    Observable<BaseRetrofitModel<JsonObject>> bindQQ(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.URL_BIND_WEIBO)
+    Observable<BaseRetrofitModel<JsonObject>> bindSina(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.URL_LOGIN_QQ)
+    Observable<BaseRetrofitModel<JsonObject>> loginQQ(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.URL_GET_SHARE)
+    Observable<BaseRetrofitModel<DirectoratePointBean>> getPointByShare(@QueryMap Map<String, String> params);
+
+    @POST(JUrl.URL_LOGIN_SINA)
+    @FormUrlEncoded
+    Observable<BaseRetrofitModel<JsonObject>> loginSina(@FieldMap Map<String, String> params);
+
+    @GET(JUrl.URL_LOGIN_WX)
+    Observable<BaseRetrofitModel<JsonObject>> loginWx();
+
+    @POST(JUrl.URL_EDIT_NICKNAME)
+    @FormUrlEncoded
+    Observable<BaseRetrofitModel<String>> editNickname(@FieldMap Map<String, String> params);
+
+    @GET(JUrl.URL_GET_USERINFO)
+    Observable<BaseRetrofitModel<LoginBean>> getUserinfo();
+
+}

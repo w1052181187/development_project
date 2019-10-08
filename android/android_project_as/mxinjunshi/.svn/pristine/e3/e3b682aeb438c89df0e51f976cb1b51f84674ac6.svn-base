@@ -1,0 +1,458 @@
+package com.ikantech.military.ui;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import za.co.immedia.pinnedheaderlistview.PinnedHeaderListView;
+import za.co.immedia.pinnedheaderlistview.SectionedBaseAdapter;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.ServiceConnection;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.ikantech.military.entity.WeaponItem;
+import com.ikantech.military.provider.impl.WeaponDetailsManager.WeaponDetailsColumns;
+import com.ikantech.military.provider.impl.WeaponManager.WeaponColumns;
+import com.ikantech.support.listener.YiImageLoaderListener;
+import com.ikantech.support.ui.YiBaseActivity;
+import com.ikantech.support.ui.YiUIBaseActivity;
+import com.ikantech.support.utils.YiAsyncImageLoader;
+import com.ikantech.support.utils.YiPrefsKeeper;
+import com.ikantech.support.utils.YiUtils;
+import com.shenyuan.militarynews.R;
+import com.shenyuan.militarynews.SettingManager;
+import com.shenyuan.militarynews.utils.Common;
+
+public class CompareActivity extends YiUIBaseActivity {
+	private PinnedHeaderListView mListView;
+	private NativeSectionedAdapter mAdapter;
+
+	private TextView mWeapon1NameTv;
+	private TextView mWeapon2NameTv;
+
+	private ImageView mWeapon1Img;
+	private ImageView mWeapon2Img;
+
+	private int mWeaponId1 = -1;
+	private int mWeaponId2 = -1;
+
+	private String[] mSections;
+
+	private List<String> mGaguans;
+	private List<String> mJishuDatas;
+	private List<String> mEquis;
+
+	private WeaponItem mWeapon1;
+	private WeaponItem mWeapon2;
+	private Map<String, String> mWeaponDetail1;
+	private Map<String, String> mWeaponDetail2;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		setContentView(R.layout.activity_compare);
+		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+	}
+
+	public void onReturnBtnClick(View view) {
+		finish();
+	}
+
+	@Override
+	public void processHandlerMessage(Message msg) {
+		// TODO Auto-generated method stub
+		switch (msg.what) {
+		case 0x01:
+			cancelProgressDialog();
+			YiAsyncImageLoader.loadBitmapFromUrl(mWeapon1.getImageUrl(),
+					new YiImageLoaderListener() {
+						@Override
+						public void onImageLoaded(String url, Bitmap bitmap) {
+							if (bitmap != null)
+								mWeapon1Img.setImageBitmap(bitmap);
+						}
+					});
+			YiAsyncImageLoader.loadBitmapFromUrl(mWeapon2.getImageUrl(),
+					new YiImageLoaderListener() {
+						@Override
+						public void onImageLoaded(String url, Bitmap bitmap) {
+							if (bitmap != null)
+								mWeapon2Img.setImageBitmap(bitmap);
+						}
+					});
+			mWeapon1NameTv.setText(mWeapon1.getName());
+			mWeapon2NameTv.setText(mWeapon2.getName());
+			mAdapter.notifyDataSetChanged();
+			break;
+		case 0x02:
+			cancelProgressDialog();
+			showMsgDialog(getString(R.string.err_load_data_failed),
+					getString(R.string.str_ok), new View.OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							finish();
+						}
+					});
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	protected void initViews() {
+		// TODO Auto-generated method stub
+		mWeapon1NameTv = (TextView) findViewById(R.id.compare_item_txt1);
+		mWeapon2NameTv = (TextView) findViewById(R.id.compare_item_txt2);
+		mWeapon1Img = (ImageView) findViewById(R.id.compare_item_img1);
+		mWeapon2Img = (ImageView) findViewById(R.id.compare_item_img2);
+
+		mListView = (PinnedHeaderListView) findViewById(R.id.compare_list);
+	}
+
+	@Override
+	protected void initDatas() {
+		// TODO Auto-generated method stub
+		mWeaponId1 = getIntent().getIntExtra("id1", -1);
+		mWeaponId2 = getIntent().getIntExtra("id2", -1);
+		if (-1 == mWeaponId1 || -1 == mWeaponId2) {
+			Message message = getHandler().obtainMessage(0x02);
+			message.sendToTarget();
+			return;
+		}
+
+		mGaguans = new ArrayList<String>();
+		mJishuDatas = new ArrayList<String>();
+		mEquis = new ArrayList<String>();
+		mWeaponDetail1 = new HashMap<String, String>();
+		mWeaponDetail2 = new HashMap<String, String>();
+
+		mWeapon1 = new WeaponItem(mWeaponId1);
+		mWeapon2 = new WeaponItem(mWeaponId2);
+
+		mSections = getResources().getStringArray(R.array.com_titles);
+
+		mAdapter = new NativeSectionedAdapter();
+		mListView.setAdapter(mAdapter);
+
+//		mNightMode = new NightMode();
+//		YiPrefsKeeper.read(this, mNightMode);
+		if (Common.isTrue(SettingManager.getInst().getNightModel())) {
+			mWeapon1Img.setImageResource(R.drawable.no_pic_night);
+			mWeapon2Img.setImageResource(R.drawable.no_pic_night);
+		} else {
+			mWeapon1Img.setImageResource(R.drawable.no_pic);
+			mWeapon2Img.setImageResource(R.drawable.no_pic);
+		}
+	}
+
+	@Override
+	protected void installListeners() {
+		// TODO Auto-generated method stub
+		ViewTreeObserver vto2 = mWeapon1Img.getViewTreeObserver();
+		vto2.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+			@Override
+			public void onGlobalLayout() {
+				// 如果因为没有获取到width而没有展示数据，则展示数据
+				if (mWeapon1Img.getWidth() > 0 && mWeapon1Img.getHeight() > 0) {
+					mWeapon1Img.getViewTreeObserver()
+							.removeGlobalOnLayoutListener(this);
+					RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mWeapon1Img
+							.getLayoutParams();
+					params.height = (int) (mWeapon1Img.getWidth() * (258.0 / 379.0F));
+					mWeapon1Img.setLayoutParams(params);
+
+					params = (RelativeLayout.LayoutParams) mWeapon2Img
+							.getLayoutParams();
+					params.height = (int) (mWeapon2Img.getWidth() * (258.0 / 379.0F));
+					mWeapon2Img.setLayoutParams(params);
+				}
+			}
+		});
+
+		installLocalServiceBinder(new ServiceConnection() {
+
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder service) {
+				// TODO Auto-generated method stub
+				showProgressDialog();
+				getLocalService().execute(new LoadWeaponRunnable());
+			}
+		});
+	}
+
+	@Override
+	protected void uninstallListeners() {
+		// TODO Auto-generated method stub
+		uninstallLocalServiceBinder();
+	}
+
+	private class LoadWeaponRunnable implements Runnable {
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			if (mWeaponId1 == -1 || mWeaponId2 == -1)
+				return;
+
+			Cursor weaponCursor = getContentResolver().query(
+					WeaponColumns.CONTENT_URI,
+					new String[] { WeaponColumns.NAME, WeaponColumns.IMAG_URL,
+							WeaponColumns._ID },
+					WeaponColumns._ID + " in (" + mWeaponId1 + ", "
+							+ mWeaponId2 + ")", null, null);
+
+			Cursor weaponDetailsCursor = getContentResolver().query(
+					WeaponDetailsColumns.CONTENT_URI,
+					new String[] { WeaponDetailsColumns.OVERVIEW,
+							WeaponDetailsColumns.TECH_DATA,
+							WeaponDetailsColumns.WEAPONRY,
+							WeaponDetailsColumns.WEAPON_ID },
+					WeaponDetailsColumns.WEAPON_ID + " in (" + mWeaponId1
+							+ ", " + mWeaponId2 + ")", null, null);
+
+			Message message = null;
+			try {
+				if (weaponCursor != null && weaponDetailsCursor != null
+						&& weaponCursor.getCount() == 2
+						&& weaponDetailsCursor.getCount() == 2) {
+					weaponCursor.moveToFirst();
+					weaponDetailsCursor.moveToFirst();
+
+					do {
+						if (weaponCursor.getInt(2) == mWeaponId1) {
+							mWeapon1.setName(weaponCursor.getString(0));
+							mWeapon1.setImageUrl(weaponCursor.getString(1));
+						}
+
+						if (weaponCursor.getInt(2) == mWeaponId2) {
+							mWeapon2.setName(weaponCursor.getString(0));
+							mWeapon2.setImageUrl(weaponCursor.getString(1));
+						}
+					} while (weaponCursor.moveToNext());
+
+					do {
+						if (weaponDetailsCursor.getInt(3) == mWeaponId1) {
+							String g = weaponDetailsCursor.getString(0);
+							String j = weaponDetailsCursor.getString(1);
+							String z = weaponDetailsCursor.getString(2);
+							parse(g, mGaguans, mWeaponDetail1);
+							parse(j, mJishuDatas, mWeaponDetail1);
+							parse(z, mEquis, mWeaponDetail1);
+						}
+
+						if (weaponDetailsCursor.getInt(3) == mWeaponId2) {
+							String g = weaponDetailsCursor.getString(0);
+							String j = weaponDetailsCursor.getString(1);
+							String z = weaponDetailsCursor.getString(2);
+							parse(g, mGaguans, mWeaponDetail2);
+							parse(j, mJishuDatas, mWeaponDetail2);
+							parse(z, mEquis, mWeaponDetail2);
+						}
+					} while (weaponDetailsCursor.moveToNext());
+					message = getHandler().obtainMessage(0x01);
+				} else {
+					message = getHandler().obtainMessage(0x02);
+				}
+				message.sendToTarget();
+			} catch (Exception e) {
+				// TODO: handle exception
+			} finally {
+				if (weaponCursor != null) {
+					weaponCursor.close();
+					weaponCursor = null;
+				}
+
+				if (weaponDetailsCursor != null) {
+					weaponDetailsCursor.close();
+					weaponDetailsCursor = null;
+				}
+			}
+		}
+	}
+
+	private void parse(String g, List<String> who, Map<String, String> map) {
+		try {
+			g = "<table>" + g + "</table>";
+			Document document = Jsoup.parse(g);
+			Elements elements = document.select("tr");
+			for (Element element : elements) {
+				String th = element.getElementsByTag("th").first().text()
+						.trim();
+				String td = element.getElementsByTag("td").first().text()
+						.trim();
+				if (!who.contains(th) && !isStringInvalid(th)) {
+					who.add(th);
+				}
+				map.put(th, td);
+			}
+		} catch (Exception e) {
+		}
+	}
+
+	private class NativeSectionedAdapter extends SectionedBaseAdapter {
+
+		@Override
+		public Object getItem(int section, int position) {
+			if (position == -1 && section >= 0 && section < mSections.length) {
+				return mSections[section];
+			}
+			List<String> items = null;
+			switch (section) {
+			case 0:
+				items = mGaguans;
+				break;
+			case 1:
+				items = mJishuDatas;
+				break;
+			case 2:
+				items = mEquis;
+				break;
+			default:
+				break;
+			}
+			if (position >= 0 && position < items.size()) {
+				return items.get(position);
+			}
+			return null;
+		}
+
+		@Override
+		public long getItemId(int section, int position) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public int getSectionCount() {
+			return 3;
+		}
+
+		@Override
+		public int getCountForSection(int section) {
+			switch (section) {
+			case 0:
+				return mGaguans.size();
+			case 1:
+				return mJishuDatas.size();
+			case 2:
+				return mEquis.size();
+			default:
+				return 0;
+			}
+		}
+
+		@Override
+		public View getItemView(int section, int position, View convertView,
+				ViewGroup parent) {
+			LinearLayout layout = null;
+			if (convertView == null) {
+				LayoutInflater inflator = (LayoutInflater) parent.getContext()
+						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				layout = (LinearLayout) inflator.inflate(
+						R.layout.compare_list_item, null);
+			} else {
+				layout = (LinearLayout) convertView;
+			}
+			String item = (String) getItem(section, position);
+			if (!YiUtils.isStringInvalid(item)) {
+				TextView th = ((TextView) layout.findViewById(R.id.th));
+				TextView td1 = ((TextView) layout.findViewById(R.id.td1));
+				TextView td2 = ((TextView) layout.findViewById(R.id.td2));
+
+				if (Common.isTrue(SettingManager.getInst().getNightModel())) {
+					th.setTextColor(Color.rgb(163, 163, 163));
+					td1.setTextColor(Color.rgb(163, 163, 163));
+					td2.setTextColor(Color.rgb(163, 163, 163));
+				} else {
+					th.setTextColor(getResources().getColor(
+							R.color.main_weapon_type_color));
+					td1.setTextColor(getResources().getColor(
+							R.color.main_weapon_type_color));
+					td2.setTextColor(getResources().getColor(
+							R.color.main_weapon_type_color));
+				}
+
+				th.setText(item);
+				td1.setText("");
+				td2.setText("");
+
+				String td1V = mWeaponDetail1.get(item);
+				String td2V = mWeaponDetail2.get(item);
+
+				if (!isStringInvalid(td1V)) {
+					td1.setText(td1V);
+				}
+
+				if (!isStringInvalid(td2V)) {
+					td2.setText(td2V);
+				}
+			}
+			return layout;
+		}
+
+		@Override
+		public View getSectionHeaderView(int section, View convertView,
+				ViewGroup parent) {
+			LinearLayout layout = null;
+			if (convertView == null) {
+				LayoutInflater inflator = (LayoutInflater) parent.getContext()
+						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				layout = (LinearLayout) inflator.inflate(
+						R.layout.compare_section_item, null);
+			} else {
+				layout = (LinearLayout) convertView;
+			}
+			String item = (String) getItem(section, -1);
+			if (!YiUtils.isStringInvalid(item)) {
+				TextView textView = (TextView) layout
+						.findViewById(R.id.textItem);
+				textView.setText(item);
+				if (Common.isTrue(SettingManager.getInst().getNightModel())) {
+					textView.setTextColor(Color.rgb(187, 204, 222));
+					layout
+							.setBackgroundResource(R.drawable.duibi_titlebg_night);
+				} else {
+					textView.setTextColor(getResources().getColor(
+							R.color.main_weapon_type_color));
+					layout.setBackgroundResource(R.drawable.duibi_titlebg);
+				}
+			}
+			return layout;
+		}
+	}
+}

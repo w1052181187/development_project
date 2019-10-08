@@ -1,0 +1,22 @@
+package com.ikantech.military.provider;
+
+public enum UriType {
+	COUNTRY(0x01), COUNTRY_ID(0x02), LIVE_FOLDER_COUNTRY(0x03), WEAPON(0x04), WEAPON_ID(
+			0x05), LIVE_FOLDER_WEAPON(0x06), WEAPON_TYPE(0x07), WEAPON_TYPE_ID(
+			0x08), LIVE_FOLDER_WEAPON_TYPE(0x09), WEAPON_DETAILS(0x0A), WEAPON_DETAILS_ID(
+			0x0B), LIVE_FOLDER_WEAPON_DETAILS(0x0C);
+
+	private int code;
+
+	private UriType(int code) {
+		this.code = code;
+	}
+
+	public int getCode() {
+		return code;
+	}
+
+	public String toString() {
+		return String.valueOf(code);
+	}
+}

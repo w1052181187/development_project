@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_bg_value"
+    android:orientation="vertical" >
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/common_item_bg_white_state_value"
+            android:orientation="vertical" >
+
+            <TextView
+                style="@style/SettingGroup"
+                android:text="系统设置" />
+
+            <RelativeLayout
+                android:id="@+id/setting_account_bind_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_item_bg_white_state_value"
+                android:visibility="gone" >
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:text="账号绑定" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:background="@drawable/list_icon" />
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/setting_account_bind_view"
+                style="@style/SettingDivider"
+                android:visibility="gone" />
+
+            <RelativeLayout
+                android:id="@+id/setting_change_password_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_item_bg_white_state_value"
+                android:visibility="gone" >
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:text="修改密码" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:background="@drawable/list_icon" />
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/setting_change_password_view"
+                style="@style/SettingDivider"
+                android:visibility="gone" />
+
+            <RelativeLayout
+                android:id="@+id/setting_font_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_item_bg_white_state_value" >
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:text="字体大小" />
+
+                <TextView
+                    android:id="@+id/setting_font_text"
+                    style="@style/SettingChildText"
+                    android:layout_alignParentRight="true"
+                    android:text="中" />
+            </RelativeLayout>
+
+            <View style="@style/SettingDivider" />
+
+            <RelativeLayout
+                android:id="@+id/setting_notify_set_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_item_bg_white_state_value" >
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:text="通知设置" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:background="@drawable/list_icon" />
+            </RelativeLayout>
+
+            <View style="@style/SettingDivider" />
+
+            <RelativeLayout
+                android:id="@+id/setting_cache_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_item_bg_white_state_value" >
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:text="清理缓存" />
+
+                <TextView
+                    android:id="@+id/setting_cache_text"
+                    style="@style/SettingChildText"
+                    android:layout_alignParentRight="true"
+                    android:text="0.00MB" />
+            </RelativeLayout>
+
+            <View style="@style/SettingDivider" />
+
+            <RelativeLayout
+                android:id="@+id/setting_no_image_mode_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_item_bg_white_state_value" >
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:text="无图模式" />
+
+                <com.chengning.yiqikantoutiao.widget.SwitchButton
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/setting_no_image_mode_switch"
+                    android:layout_width="105dp"
+                    android:layout_height="35dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    app:frameDrawable="@drawable/set_switch_frame_state"
+                    app:sliderDrawable="@drawable/selector_set_switch_slider"
+                    app:stateDrawable="@drawable/selector_set_switch_state"
+                    app:stateMaskDrawable="@drawable/set_switch_mask" />
+            </RelativeLayout>
+
+            <View style="@style/SettingDivider" />
+
+            <RelativeLayout
+                android:id="@+id/setting_offline_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_item_bg_white_state_value" >
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:text="离线阅读" />
+
+                <include
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/common_horizontal_margin"
+                    layout="@layout/setting_offline_progress" />
+            </RelativeLayout>
+
+            <TextView
+                style="@style/SettingGroup"
+                android:text="其他" />
+
+            <RelativeLayout
+                android:id="@+id/setting_about_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_item_bg_white_state_value" >
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:text="关于我们" />
+            </RelativeLayout>
+
+            <View style="@style/SettingDivider" />
+
+            <RelativeLayout
+                android:id="@+id/setting_update_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_item_bg_white_state_value" >
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:text="新版本检测" />
+            </RelativeLayout>
+
+            <View style="@style/SettingDivider" />
+
+            <RelativeLayout
+                android:id="@+id/setting_feedback_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_item_bg_white_state_value" >
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:text="意见反馈" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:background="?attr/item_divider_color_value" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

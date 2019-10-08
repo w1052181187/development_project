@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+    package="com.cmstop.jstt"
+    android:installLocation="auto"
+    android:versionCode="73"
+    android:versionName="2.4.2" >
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.RESTART_PACKAGES" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.READ_SETTINGS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- for Samsung -->
+    <uses-permission android:name="com.sec.android.provider.badge.permission.READ" />
+    <uses-permission android:name="com.sec.android.provider.badge.permission.WRITE" />
+
+    <!-- for htc -->
+    <uses-permission android:name="com.htc.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="com.htc.launcher.permission.UPDATE_SHORTCUT" />
+
+    <!-- for sony -->
+    <uses-permission android:name="com.sonyericsson.home.permission.BROADCAST_BADGE" />
+    <uses-permission android:name="com.sonymobile.home.permission.PROVIDER_INSERT_BADGE" />
+
+    <!-- for apex -->
+    <uses-permission android:name="com.anddoes.launcher.permission.UPDATE_COUNT" />
+
+    <!-- for solid -->
+    <uses-permission android:name="com.majeur.launcher.permission.UPDATE_BADGE" />
+
+    <!-- for huawei -->
+    <uses-permission android:name="com.huawei.android.launcher.permission.CHANGE_BADGE" />
+    <uses-permission android:name="com.huawei.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="com.huawei.android.launcher.permission.WRITE_SETTINGS" />
+
+    <!-- for ZUK -->
+    <uses-permission android:name="android.permission.READ_APP_BADGE" />
+
+    <!-- for OPPO -->
+    <uses-permission android:name="com.oppo.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="com.oppo.launcher.permission.WRITE_SETTINGS" />
+
+    <!-- 此行是配置让Android系统自行决定应用的安装位置。  installLocation -->
+    <uses-sdk
+        android:minSdkVersion="10"
+        android:targetSdkVersion="19" />
+    <!-- 支持多分辨率 -->
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:resizeable="true"
+        android:smallScreens="true" />
+
+    <application
+        android:name="com.cmstop.jstt.App"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:theme="@style/xjsAppTheme"
+        tools:replace="android:allowBackup,android:theme">
+
+        <!-- 51ae9a3956240b64c4008c75 -->
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="57eb859be0f55a51740011fa" >
+        </meta-data>
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="web" />
+        <!-- 从百度网站获取的 APP	KEY -->
+        <meta-data
+            android:name="BaiduMobAd_STAT_ID"
+            android:value="927c874110" />
+
+        <!-- 是否开启错误日志统计，默认为 false，我们用true -->
+        <meta-data
+            android:name="BaiduMobAd_EXCEPTION_LOG"
+            android:value="true" />
+        <!-- 百度AD 从百度网站获取的 APP	ID -->
+        <meta-data
+            android:name="BaiduMobAd_APP_ID"
+            android:value="a6e3d34a" />
+
+        <provider
+            android:name="com.cmstop.jstt.provider.dbProvider"
+            android:authorities="com.cmstop.jstt.provider.dbProvider" >
+        </provider>
+
+        <activity
+            android:name="com.cmstop.jstt.activity.SplashActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/SplashTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.ikantech.military.ui.SearchActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
+        </activity>
+        <activity
+            android:name="com.ikantech.military.ui.WeaponDetialsActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
+        </activity>
+        <activity
+            android:name="com.ikantech.military.ui.CompareActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
+        </activity>
+        <activity
+            android:name="com.ikantech.military.ui.CommentActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
+        </activity>
+
+        <provider
+            android:name="com.ikantech.military.provider.DataProvider"
+            android:authorities="com.cmstop.jstt.provider.DataProvider" >
+        </provider>
+
+        <service
+            android:name="com.ikantech.support.service.YiLocalService"
+            android:exported="false" />
+
+        <activity
+            android:name="com.ikantech.military.ui.CompareManagerActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.HomeSingleActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.SettingActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.ArticleActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="true"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.SearchNewsActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.VideoDetailActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="true"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.VideoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:process=":videoprocess"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.ArticleCommentActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.PhotoPageActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.PhotoPageArticleActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.MyFavoriteActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.MyActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.AboutActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.DebugActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.wxapi.WXEntryActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".wxapi.WXPayEntryActivity"
+            android:exported="true"
+            android:launchMode="singleTop" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.AdDetailActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.LoginActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.RegisterActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.CompleteInfoActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.AccountCenterActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.PwdModifyActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.PhoneVerifyActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.ModifyPhoneActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.PwdFindActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.wxapi.AuthTencentActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.wxapi.AuthWeiboActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.RankIntroductionActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.DirectorateTaskDetailActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.DirectorateActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.MyCommentActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.ShopActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" >
+        </activity>
+        
+        <activity
+            android:name="com.cmstop.jstt.activity.AccountInfoActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.cmstop.jstt.activity.AccountBindActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <!-- ###################注册SDK使用的Activity###################### -->
+        <!-- 分享编辑页 -->
+        <activity
+            android:name="com.umeng.socialize.editorpage.ShareActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.UMDefault" />
+
+        <!-- QQ精简版.. -->
+        <activity
+            android:name="com.umeng.qq.tencent.AuthActivity"
+            android:launchMode="singleTask"
+            android:noHistory="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="tencent1102303039" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.umeng.qq.tencent.AssistActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <!-- QQ精简版 end.. -->
+
+
+        <!-- 查看评论页 -->
+        <activity
+            android:name="com.umeng.socialize.view.CommentActivity"
+            android:configChanges="orientation|keyboard"
+            android:theme="@style/Theme.UMDefault" >
+        </activity>
+
+        <!-- ###################添加UmengAppkey###################### -->
+        <service
+            android:name="com.umeng.common.net.DownloadingService"
+            android:exported="true"
+            android:process=":DownloadingService" >
+        </service>
+        <service
+            android:name="com.umeng.update.net.DownloadingService"
+            android:process=":DownloadingService" >
+        </service>
+
+        <activity
+            android:name="com.umeng.update.UpdateDialogActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+        </activity>
+
+        <service android:name="com.kyview.DownloadService" />
+
+        <activity
+            android:name="cn.domob.android.ads.DomobActivity"
+            android:theme="@android:style/Theme.Translucent" />
+
+        <service
+            android:name="com.avos.avoscloud.PushService"
+            android:exported="true" />
+
+        <!-- Push -->
+        <receiver android:name="com.avos.avoscloud.AVBroadcastReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.cmstop.jstt.PushReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="com.avos.UPDATE_STATUS" />
+                <action android:name="com.cmstop.jstt.PUSH" />
+            </intent-filter>
+        </receiver>
+        <!-- 下载服务 -->
+        <service android:name="com.cmstop.jstt.service.OfflineDownloadService" >
+        </service>
+        <!-- 自动更新 -->
+        <service android:name="com.chengning.common.update.UpdateDownLoadService" >
+        </service>
+
+        <activity
+            android:name="com.chengning.common.update.UpdateDialogActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+        </activity>
+        <!-- 百度AD 添加AppActivity申明 -->
+        <activity
+            android:name="com.baidu.mobads.AppActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <!-- 百度AD 必需： 声明 BaiduActivity， 否则可能导致计费不正常 -->
+        <activity
+            android:name="com.baidu.mobad.feeds.BaiduActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation" />
+
+        <!-- 应用安装、覆盖安装、移除监听广播 -->
+        <receiver android:name="com.cmstop.jstt.PackageReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="com.shenyuan.militarynews.service.UpdateBadgeService" >
+        </service>
+
+        <activity
+            android:name=".activity.ExclusiveDetailActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <!-- 阿里百川用户反馈 begin -->
+        <activity
+            android:name="com.alibaba.sdk.android.feedback.windvane.CustomHybirdActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/ali_feedback_contentoverlay"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.alibaba.sdk.android.feedback.impl.ErrorPageActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/ali_feedback_contentoverlay" />
+
+        <receiver
+            android:name="com.alibaba.sdk.android.feedback.impl.NetworkChangeReceiver"
+            android:enabled="true"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="com.alibaba.mtl.appmonitor.AppMonitorService" />
+        <!-- 阿里百川用户反馈 end -->
+    </application>
+
+</manifest>

@@ -1,0 +1,130 @@
+package com.chengning.common.util;
+
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.params.CookiePolicy;
+import org.apache.http.impl.client.DefaultRedirectHandler;
+import org.apache.http.protocol.HttpContext;
+
+import android.content.Context;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.BinaryHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.ResponseHandlerInterface;
+
+public class HttpUtil {
+
+	private static AsyncHttpClient client = new AsyncHttpClient();
+	static {
+		init(client);
+	}
+
+	public static void init(AsyncHttpClient client) {
+		client.setTimeout(10000);
+		// 默认支持重定向
+		client.setRedirectHandler(new DefaultRedirectHandler() {
+			@Override
+			public boolean isRedirectRequested(HttpResponse response,
+					HttpContext context) {
+				try {
+					int statusCode = response.getStatusLine().getStatusCode();
+					if (statusCode == 301 || statusCode == 302) {
+						return true;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return false;
+			}
+		});
+		// 允许环形重定向和设置重定向最大次数。
+		client.getHttpClient().getParams()
+				.setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true);
+		client.getHttpClient().getParams()
+				.setParameter(ClientPNames.MAX_REDIRECTS, 3);
+		
+		//如果设置为Cookie策略为BEST_MATCH，或BROWSER_COMPATIBILITY的话，HttpClient会在请求中携带由服务器返回的Cookie。
+//		client.getHttpClient().getParams()
+//				.setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BEST_MATCH);
+	}
+
+	public static AsyncHttpClient getClient() {
+		return client;
+	}
+
+	// post
+	public static void post(String urlString, RequestParams params,
+			JsonHttpResponseHandler res) {
+		client.post(urlString, params, res);
+	}
+
+	public static void post(Context context, String urlString,
+			RequestParams params, JsonHttpResponseHandler res) {
+		client.post(context, urlString, params, res);
+	}
+
+	public static void post(Context context, String url, HttpEntity entity,
+			String contentType, ResponseHandlerInterface responseHandler) {
+		client.post(context, url, entity, contentType, responseHandler);
+	}
+
+	public static void post(Context context, String url, Header[] headers,
+			RequestParams params, String contentType,
+			ResponseHandlerInterface responseHandler) {
+		client.post(context, url, headers, params, contentType, responseHandler);
+	}
+
+	// get
+	public static void get(String urlString, AsyncHttpResponseHandler res) {
+		client.get(urlString, res);
+	}
+
+	public static void get(String urlString, RequestParams params,
+			AsyncHttpResponseHandler res) {
+		client.get(urlString, params, res);
+	}
+
+	public static void get(String urlString, JsonHttpResponseHandler res) {
+		client.get(urlString, res);
+	}
+
+	public static void get(String urlString, RequestParams params,
+			JsonHttpResponseHandler res) {
+		client.get(urlString, params, res);
+	}
+
+	public static void get(String uString, BinaryHttpResponseHandler bHandler) {
+		client.get(uString, bHandler);
+	}
+
+	// get with context
+	public static void get(Context context, String urlString,
+			AsyncHttpResponseHandler res) {
+		client.get(context, urlString, res);
+	}
+
+	public static void get(Context context, String urlString,
+			RequestParams params, AsyncHttpResponseHandler res) {
+		client.get(context, urlString, params, res);
+	}
+
+	public static void get(Context context, String urlString,
+			JsonHttpResponseHandler res) {
+		client.get(context, urlString, res);
+	}
+
+	public static void get(Context context, String urlString,
+			RequestParams params, JsonHttpResponseHandler res) {
+		client.get(context, urlString, params, res);
+	}
+
+	public static void get(Context context, String uString,
+			BinaryHttpResponseHandler bHandler) {
+		client.get(context, uString, bHandler);
+	}
+}

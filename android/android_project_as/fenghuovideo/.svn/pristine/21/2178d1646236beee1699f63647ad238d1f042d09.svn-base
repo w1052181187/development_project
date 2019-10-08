@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">烽火视频</string>
+    <string name="intent_timeout">网络连接超时</string>
+    <string name="server_fail">网络异常，请重试</string>
+    <string name="intnet_fail">网络已断开，请检查网络设置</string>
+    <string name="login_fail_null">用户名和密码不能为空</string>
+    <string name="get_regist_phone_key">获取验证码</string>
+    <string name="error_sdcard">未找到sd卡,此功能不能使用</string>
+    <string name="bind_unbound">请去网站解绑</string>
+    <string name="collect_hint">已收藏，请到[我的][收藏]中查看</string>
+    
+    <string name="common_item_title_line_space">1.2</string>
+
+    <!-- pull_to_refresh -->
+    <string name="pull_to_refresh_pull_label">下拉刷新</string>
+    <string name="pull_to_refresh_release_label">松开刷新</string>
+    <string name="pull_to_refresh_refreshing_label">正在刷新…</string>
+    <string name="pull_to_refresh_from_bottom_refreshing_label">正在载入…</string>
+    
+    <!-- activity_info_edit -->
+    <string name = "activity_info_edit_bar_title">我的</string>
+    <string name = "myProfile_edit_activity_takephoto">拍照</string>
+    <string name = "myProfile_edit_activity_localphoto">选择本地照片</string>
+    
+    <!-- activity_bind -->
+    <string name = "activity_bind_change_phone">更换绑定的手机号</string>
+    <string name = "activity_bind_cancle_phone">取消手机号绑定</string>
+    
+    <!-- activity_login -->
+    <string name = "handle_hint">请稍候..</string>
+    <string name="no_login_hint">"您还没有登录，请先登录！"</string>
+    
+    <!-- umeng share-->
+    <string name="umeng_share_err_userinfo">获取用户资料错误</string>
+    <string name="umeng_share_cancle_userinfo">取消获取用户资料</string>
+    <string name="umeng_share_err_share">分享错误</string>
+    <string name="umeng_share_cancle_share">分享取消</string>
+    <string name="umeng_share_success_share">分享成功</string>
+    <string name="umeng_share_err_qq_login">QQ登录失败</string>
+    <string name="umeng_share_err_auth">授权失败</string>
+    <string name="umeng_share_install_wx">请安装微信客户端</string>
+    <string name="umeng_share_install_qq">请安装QQ客户端</string>
+
+    <string name="comment_copy_hint">内容已复制成功</string>
+</resources>

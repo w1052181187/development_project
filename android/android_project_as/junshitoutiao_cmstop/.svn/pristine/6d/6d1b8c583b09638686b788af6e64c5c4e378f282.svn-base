@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/alert_bg"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/detail_menu_comapre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/detail_menu_btn_selector"
+        android:gravity="left|center_vertical"
+        android:paddingLeft="9dip"
+        android:paddingRight="9dip"
+        android:text="@string/settings_compare"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/detail_menu_add_remove_compare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/detail_menu_btn_selector"
+        android:gravity="left|center_vertical"
+        android:paddingLeft="9dip"
+        android:paddingRight="9dip"
+        android:text="@string/str_add_to_compare"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/detail_menu_comment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/detail_menu_btn_selector"
+        android:gravity="left|center_vertical"
+        android:paddingLeft="9dip"
+        android:paddingRight="9dip"
+        android:text="@string/str_comment"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/detail_menu_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/detail_menu_btn_selector"
+        android:gravity="left|center_vertical"
+        android:paddingLeft="9dip"
+        android:paddingRight="9dip"
+        android:text="@string/str_search"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
+
+</LinearLayout>

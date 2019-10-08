@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/header_user_info_detail_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="10dp" >
+    <LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical"
+	    android:background="?attr/common_item_bg_white_state_value"
+	    >
+		<View
+	        style="@style/SettingDivider"
+	        android:layout_marginLeft="0dp"
+	        />
+	    <RelativeLayout
+	        android:id="@+id/me_info_r2"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:background="?attr/common_item_bg_white_state_value" >
+	
+	        <TextView
+	            style="@style/SettingChildText"
+	            android:textColor="?attr/article_time_value"
+	            android:text="性别"
+	            />
+	
+	        <TextView
+	            android:id="@+id/me_info_sex_text"
+	            style="@style/SettingChildText"
+	            android:paddingLeft="0dp"
+	            android:paddingRight="0dp"
+	            android:layout_marginLeft="@dimen/fragment_user_profile_me_info_text_left_margin"
+	            android:layout_marginRight="@dimen/common_horizontal_margin"
+	            android:text=""
+	            />
+	    </RelativeLayout>
+	    <View
+	        style="@style/SettingDivider" 
+	        />
+	
+	    <RelativeLayout
+	        android:id="@+id/me_info_r3"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:visibility="gone"
+	        android:background="?attr/common_item_bg_white_state_value" >
+	
+	        <TextView
+	            style="@style/SettingChildText"
+	            android:textColor="?attr/article_time_value"
+	            android:text="关注圈子"
+	             />
+	
+	        <TextView
+	            android:id="@+id/me_info_follow_circle_text"
+	            style="@style/SettingChildText"
+	            android:paddingLeft="0dp"
+	            android:paddingRight="0dp"
+	            android:layout_marginLeft="@dimen/fragment_user_profile_me_info_text_left_margin"
+	            android:layout_marginRight="@dimen/common_horizontal_margin"
+	            android:text=""
+	            />
+	    </RelativeLayout>
+		<View
+	        style="@style/SettingDivider" 
+	        android:visibility="gone"
+	        />
+	    <RelativeLayout
+	        android:id="@+id/me_info_r4"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:background="?attr/common_item_bg_white_state_value" >
+	
+	        <TextView
+	            style="@style/SettingChildText"
+	            android:textColor="?attr/article_time_value"
+	            android:text="简介"
+	            />
+	
+	        <TextView
+	            android:id="@+id/me_info_intro_text"
+	            style="@style/SettingChildText"
+	            android:paddingLeft="0dp"
+	            android:paddingRight="0dp"
+	            android:layout_marginLeft="@dimen/fragment_user_profile_me_info_text_left_margin"
+	            android:layout_marginRight="@dimen/common_horizontal_margin"
+	            android:text=""
+	            />
+	    </RelativeLayout>
+		
+	    <RelativeLayout
+	        android:id="@+id/me_info_r5"
+	        android:layout_width="match_parent"
+	        android:layout_height="45dp"
+	        android:background="?attr/common_item_bg_white_state_value"
+	        >
+			<View
+		         style="@style/SettingDivider"
+		         android:layout_alignParentTop="true"
+		         android:layout_marginLeft="0dp"
+	         />
+	        <TextView
+	            android:id="@+id/me_info_more_text"
+	            style="@style/SettingChildText"
+	            android:paddingLeft="0dp"
+	            android:paddingRight="0dp"
+	            android:layout_marginLeft="@dimen/fragment_user_profile_me_info_text_left_margin"
+	            android:layout_marginRight="@dimen/common_horizontal_margin"
+	            android:layout_centerInParent="true"
+	            android:textColor="?attr/article_time_value"
+	            android:text="更多资料"
+	            />
+			<View
+		         style="@style/SettingDivider"
+		         android:layout_alignParentBottom="true"
+		         android:layout_marginLeft="0dp"
+	         />
+	    </RelativeLayout>
+    </LinearLayout>
+	
+</LinearLayout>

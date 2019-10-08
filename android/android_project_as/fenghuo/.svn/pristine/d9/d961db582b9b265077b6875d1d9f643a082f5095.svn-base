@@ -1,0 +1,85 @@
+package com.chengning.fenghuo.base;
+
+import android.content.res.ObbInfo;
+import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
+import android.view.View;
+
+public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
+    private SparseArray<View> mViews;
+    private View mConvertView;
+    private BaseRecylerViewAdapter adapter;
+
+    //初始化的设置
+    protected BaseRecyclerViewHolder(View itemView) {
+        super(itemView);
+        //ItemView沾满屏幕宽度，LayoutInflater默认包裹内容
+        RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT);
+        itemView.setLayoutParams(lp);
+        this.mViews = new SparseArray<View>();
+        mConvertView = itemView;
+    }
+
+    public BaseRecyclerViewHolder(View itemView, final BaseRecylerViewAdapter adapter) {
+        super(itemView);
+        RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT);
+        itemView.setLayoutParams(lp);
+        this.mViews = new SparseArray<View>();
+        mConvertView = itemView;
+        if (adapter.getItemClickListener() != null) {
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    adapter.getItemClickListener().onItemClickListener(v, getAdapterPosition());
+                }
+            });
+        }
+        this.adapter = adapter;
+    }
+
+
+    public View getConvertView() {
+        return mConvertView;
+    }
+
+    /**
+     * 通过控件的Id获取对于的控件，如果没有则加入views
+     *
+     * @param viewId 组件id
+     * @return 当前组件
+     */
+    public <T extends View> T getView(int viewId) {
+        View view = mViews.get(viewId);
+        if (view == null) {
+            view = mConvertView.findViewById(viewId);
+            mViews.put(viewId, view);
+        }
+        try {
+            return (T) view;
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 通过控件的Id获取对于的控件，如果没有则加入views
+     *
+     * @param viewId 组件ID
+     * @return 找到的组件
+     */
+    public <T extends View> T findViewById(int viewId) {
+        View view = mViews.get(viewId);
+        if (view == null) {
+            view = mConvertView.findViewById(viewId);
+            mViews.put(viewId, view);
+        }
+        try {
+            return (T) view;
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+ 
+}

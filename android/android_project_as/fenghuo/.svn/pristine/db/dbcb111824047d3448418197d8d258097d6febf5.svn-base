@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_base_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+   <com.chengning.fenghuo.widget.PullToRefreshListView_FootLoad
+        xmlns:ptr="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title_bar_layout"
+        android:background="?attr/common_bg_value"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:fadingEdge="none"
+        android:fastScrollEnabled="false"
+        android:footerDividersEnabled="false"
+        android:headerDividersEnabled="false"
+        android:smoothScrollbar="true"
+        ptr:ptrAnimationStyle="flip" />
+
+    <include
+        android:id="@+id/progress_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        layout="@layout/progress_refresh" />
+
+    <RelativeLayout
+        android:id="@+id/circle_list_bottom_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/nav_bg_value"
+        android:paddingLeft="@dimen/common_horizontal_margin"
+        android:paddingRight="@dimen/common_horizontal_margin"
+        android:visibility="gone" >
+
+        <CheckBox
+            android:id="@+id/circle_list_all_check"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:button="@drawable/phone_jump_check_stated"
+            android:checked="false"
+            android:paddingLeft="6dp"
+            android:text="全选"
+            android:textColor="?attr/setting_group_text_value"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/circle_list_cancle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="取消收藏"
+            android:textColor="?attr/article_time_value"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+</RelativeLayout>

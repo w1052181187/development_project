@@ -1,0 +1,93 @@
+package com.ikantech.military.common;
+
+ 
+
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import com.ikantech.support.proxy.YiDialogProxy;
+
+import com.ikantech.support.proxy.YiHandlerProxy;
+import com.ikantech.support.ui.YiBaseActivity;
+import com.ikantech.support.utils.YiUtils;
+
+public abstract class YiUiFragment extends YiFragment
+  implements YiDialogProxy.YiDialogExtProxiable, YiHandlerProxy.YiHandlerProxiable
+{
+  private YiHandlerProxy a;
+
+  public void InitFragment() 
+  {  
+    initViews();
+    initDatas();
+    installListeners();
+  }
+
+  public void onDestroy()
+  {
+    uninstallListeners();
+    super.onDestroy();
+  }
+
+  protected abstract void initViews();
+
+  protected abstract void initDatas();
+
+  protected abstract void installListeners();
+
+  protected abstract void uninstallListeners();
+
+  protected boolean isStringInvalid(String paramString)
+  {
+    return YiUtils.isStringInvalid(paramString);
+  }
+
+  public void showMsgDialog(String paramString1, String paramString2)
+  {
+    showMsgDialog(null, paramString1, paramString2, null, null, null);
+  }
+
+  public void showMsgDialog(String paramString1, String paramString2, String paramString3)
+  {
+    showMsgDialog(paramString1, paramString2, paramString3, null, null, null);
+  }
+
+  public void showMsgDialog(String paramString1, String paramString2, View.OnClickListener paramOnClickListener)
+  {
+    showMsgDialog(null, paramString1, paramString2, null, paramOnClickListener, null);
+  }
+
+  public void showMsgDialog(String paramString1, String paramString2, String paramString3, String paramString4, View.OnClickListener paramOnClickListener1, View.OnClickListener paramOnClickListener2)
+  {
+    this.mActivityProxy.showMsgDialog(paramString1, paramString2, paramString3, paramString4, paramOnClickListener1, paramOnClickListener2);
+  }
+
+  public void showProgressDialog(int paramInt)
+  {
+    showProgressDialog(getString(paramInt), null, true);
+  }
+
+  public void showProgressDialog(String paramString)
+  {
+    showProgressDialog(paramString, null, true);
+  }
+
+  public void showProgressDialog(String paramString, DialogInterface.OnCancelListener paramOnCancelListener, boolean paramBoolean)
+  {
+    this.mActivityProxy.showProgressDialog(paramString, paramOnCancelListener, paramBoolean);
+  }
+
+  protected void initHandlerProxy()
+  {
+    if (this.a != null)
+      return;
+    this.a = new YiHandlerProxy(this.getActivity(), this);
+  }
+
+  public Handler getHandler()
+  {
+    initHandlerProxy();
+    return this.a.getHandler();
+  }
+}

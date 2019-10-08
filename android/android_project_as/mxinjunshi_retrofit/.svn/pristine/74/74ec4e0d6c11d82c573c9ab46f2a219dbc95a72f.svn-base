@@ -1,0 +1,140 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/infoedit_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_bg_gray_value" >
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <ScrollView
+        android:id="@+id/infoedit_scroll"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/title_bar_layout"
+        android:layout_marginTop="10dp"
+        android:fadingEdge="none"
+        android:scrollbars="none" >
+
+        <LinearLayout
+            android:id="@+id/infoedit_account"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="20dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/infoedit_img_rl"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="?attr/setting_btn_bg_state_value" >
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:layout_centerVertical="true"
+                    android:text="头像" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2px"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="@dimen/common_horizontal_margin"
+                    android:background="?attr/item_divider_color_value" >
+                </View>
+
+                <ImageView
+                    android:id="@+id/infoedit_img"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignWithParentIfMissing="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:layout_toLeftOf="@+id/infoedit_img_boult" />
+
+                <ImageView
+                    android:id="@+id/infoedit_img_boult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:src="@drawable/list_icon" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/infoedit_name_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/setting_btn_bg_state_value" >
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:text="昵称" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2px"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="@dimen/common_horizontal_margin"
+                    android:background="?attr/item_divider_color_value" >
+                </View>
+
+                <TextView
+                    android:id="@+id/infoedit_name_edit"
+                    style="@style/SettingChildText"
+                    android:layout_alignWithParentIfMissing="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:layout_toLeftOf="@+id/infoedit_name_boult"
+                    android:paddingRight="0dp"
+                    android:textColor="?attr/article_time_value"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:id="@+id/infoedit_name_boult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:src="@drawable/list_icon" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/infoedit_password_modify_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/setting_btn_bg_state_value" >
+
+                <TextView
+                    style="@style/SettingChildText"
+                    android:text="修改密码" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2px"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="@dimen/common_horizontal_margin"
+                    android:background="?attr/item_divider_color_value" >
+                </View>
+
+                <ImageView
+                    android:id="@+id/infoedit_gender_boult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:background="@drawable/list_icon" />
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

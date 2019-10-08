@@ -1,0 +1,64 @@
+<resources>
+
+    <style name="AppTheme" parent="android:Theme.Holo.Light">
+        <item name="android:windowIsTranslucent">false</item>
+		<item name="android:windowNoTitle">true</item>  
+		<item name="android:windowActionBar">false</item>  
+		<item name="android:windowBackground">@color/white</item>  
+        <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
+        <item name="android:windowAnimationStyle">@style/activityAnimation</item>
+    </style>
+
+    <!-- animation 样式 -->
+    <style name="activityAnimation" parent="@android:style/Animation">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_right_in</item>
+        <item name="android:activityOpenExitAnimation">@anim/slide_left_out</item>
+        <item name="android:activityCloseEnterAnimation">@anim/slide_left_in</item>
+        <item name="android:activityCloseExitAnimation">@anim/slide_right_out</item>
+    </style>
+
+    <style name="AppTheme.Feedback" parent="AppTheme">
+        <item name="android:windowIsTranslucent">true</item>
+		<item name="android:windowNoTitle">true</item>  
+		<item name="android:windowActionBar">false</item>  
+		<item name="android:windowBackground">@color/white</item>  
+        <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
+    </style>
+
+    <style name="mainTextShadow">
+        <item name="android:shadowColor">@color/black</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0.8</item>
+        <item name="android:shadowRadius">1</item>
+    </style>
+
+    <style name="CommonTitle">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+    </style>
+
+    <style name="CustomTabPageIndicator" parent="Widget.TabPageIndicator">
+        <item name="android:background">@color/transparent</item>
+        <item name="android:textAppearance">@style/CustomTabPageIndicator.Text</item>
+        <item name="android:textColor">?attr/common_tab_text_value</item>
+        <item name="textNormalSize">17sp</item>
+        <item name="textSelectedSize">19sp</item>
+        <item name="android:divider">@null</item>
+        <item name="android:dividerPadding">0dp</item>
+        <item name="android:showDividers">middle</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:fadingEdge">horizontal</item>
+        <item name="android:fadingEdgeLength">8dp</item>
+    </style>
+
+    <style name="CustomTabPageIndicator.Text" parent="android:TextAppearance.Medium">
+        <item name="android:typeface">monospace</item>
+    </style>
+</resources>

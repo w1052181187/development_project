@@ -1,0 +1,173 @@
+package com.shenyuan.militarynews.views;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+
+import com.chengning.common.base.BaseDialogFragment;
+import com.chengning.common.base.BaseFragmentActivity;
+import com.chengning.common.base.util.BaseUmengShare.BaseUMShareListener;
+import com.shenyuan.militarynews.App;
+import com.shenyuan.militarynews.R;
+import com.shenyuan.militarynews.beans.data.ArticlesBean;
+import com.shenyuan.militarynews.utils.UIHelper;
+import com.shenyuan.militarynews.utils.UmengShare;
+import com.umeng.socialize.UMShareAPI;
+import com.umeng.socialize.UMShareListener;
+import com.umeng.socialize.bean.SHARE_MEDIA;
+
+public class PicArticleDialog extends BaseDialogFragment{
+	
+	private View mView;
+	private View mEmpty;
+	
+	private View mWeixin;
+	private View mPyq;
+	private View mWeibo;
+	private View mQzone;
+	protected ArticlesBean mArticleBean;
+	
+	private String url;
+	private String imgUrl;
+	private String title;
+
+	public void setBean(ArticlesBean mArticleBean) {
+		Bundle args = new Bundle();
+		args.putSerializable("bean", mArticleBean);
+		setArguments(args);
+	}
+	
+	public void setData(String url,String imgUrl,String title) {
+		Bundle args = new Bundle();
+		args.putString("url", url);
+		args.putString("imgUrl", imgUrl);
+		args.putString("title", title);
+		setArguments(args);
+	}
+	
+	@Override
+	public void initData() {
+		mArticleBean = (ArticlesBean) getArguments().getSerializable("bean");
+		url = getArguments().getString("url");
+		imgUrl = getArguments().getString("imgUrl");
+		title = getArguments().getString("title");
+	}
+
+	@Override
+	public void initView() {
+		mEmpty = mView.findViewById(R.id.dialog_pic_article_share_empty);
+		mWeixin = mView.findViewById(R.id.dialog_pic_article_share_weixin);
+		mPyq = mView.findViewById(R.id.dialog_pic_article_share_pyq);
+		mWeibo = mView.findViewById(R.id.dialog_pic_article_share_weibo);
+		mQzone = mView.findViewById(R.id.dialog_pic_article_share_qzone);
+	}
+	
+	@Override
+	public void initListener() {
+		mEmpty.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dismissAllowingStateLoss();
+			}
+		});
+		mWeixin.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(!TextUtils.isEmpty(url)){
+					UmengShare.getInstance().shareToWeixin(getContext(), url,imgUrl,title);
+				}else{
+					UmengShare.getInstance().shareToWeixin(getContext(), UmengShare.getInstance().translateObjectToShareBean(mArticleBean));
+				}
+			}
+		});
+		
+		mPyq.setOnClickListener(new OnClickListener() {
+					
+			@Override
+			public void onClick(View v) {
+				if(!TextUtils.isEmpty(url)){
+					UmengShare.getInstance().shareToCircle(getContext(), url,imgUrl,title);
+				}else{
+					UmengShare.getInstance().shareToCircle(getContext(), UmengShare.getInstance().translateObjectToShareBean(mArticleBean));
+				}
+			}
+		});
+		
+		mWeibo.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dismissAllowingStateLoss();
+				if(!TextUtils.isEmpty(url)){
+					UmengShare.getInstance().shareToWeibo(getContext(), url,imgUrl,title, null);
+				}else if (null != mArticleBean ) {
+					UmengShare.getInstance().shareToWeibo(getContext(), new BaseUMShareListener(getActivity()) {
+						
+						@Override
+						public void onResult(SHARE_MEDIA share_media) {
+							if (App.getInst().isLogin()) {
+								UmengShare.getPointByHttp((BaseFragmentActivity) getContext(),UmengShare.getInstance().getAid(), 5);
+							}
+							super.onResult(share_media);
+						}
+
+					}, UmengShare.getInstance().translateObjectToShareBean(mArticleBean) );
+				}
+			}
+		});
+		
+		mQzone.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(!TextUtils.isEmpty(url)){
+					UmengShare.getInstance().shareToQzone(getContext(), url,imgUrl,title, null);
+				} else if (null != mArticleBean ) {
+					UmengShare.getInstance().shareToQzone(getContext(), new UMShareListener() {
+						
+						@Override
+						public void onResult(SHARE_MEDIA share_media) {
+							if (App.getInst().isLogin()) {
+								UmengShare.getPointByHttp((BaseFragmentActivity)getContext(),UmengShare.getInstance().getAid(), 4);
+							}
+						}
+						
+						@Override
+						public void onError(SHARE_MEDIA share_media, Throwable throwable) {
+							UIHelper.showToast(getContext(),"分享失败");
+						}
+						
+						@Override
+						public void onCancel(SHARE_MEDIA share_media) {
+							UIHelper.showToast(getContext(),"分享取消");
+						}
+
+						@Override
+						public void onStart(SHARE_MEDIA share_media) {
+							// TODO Auto-generated method stub
+							
+						}
+					}, UmengShare.getInstance().translateObjectToShareBean(mArticleBean) );
+				}
+				
+			}
+		});
+	}
+
+	@Override
+	public void onPause() {
+		dismissAllowingStateLoss();
+		super.onPause();
+	}
+
+	@Override
+	public View configContentView() {
+		mView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_pic_article_share, null);
+		return mView;
+	}
+
+}

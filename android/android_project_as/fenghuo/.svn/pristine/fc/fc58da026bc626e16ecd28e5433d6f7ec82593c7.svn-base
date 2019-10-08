@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <View
+        android:id="@+id/dialog_point_hint_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/half_transparent" />
+
+	<LinearLayout
+		android:layout_width="253dp"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
+		android:orientation="vertical"
+		android:background="@mipmap/shouye_tanchuang_bg"
+		>
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="108dp"
+			android:background="@drawable/shouye_tanchuang_topbj">
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textSize="15sp"
+				android:layout_centerInParent="true"
+				android:text="新手红包"
+				android:textColor="#ffdca6"
+				android:drawablePadding="10dp"
+				android:drawableBottom="@mipmap/shouye_tanchuang_hongbao"/>
+			<RelativeLayout
+				android:id="@+id/dialog_close_rl"
+				android:layout_width="30dp"
+				android:layout_height="30dp"
+				android:layout_alignParentRight="true"
+				android:layout_alignParentTop="true">
+				<ImageView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_centerInParent="true"
+					android:src="@mipmap/shouye_tanchuang_close"/>
+			</RelativeLayout>
+
+		</RelativeLayout>
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textColor="#ed493d"
+			android:text="注册后您将获得"
+			android:layout_marginTop="20dp"
+			android:layout_gravity="center_horizontal"
+			android:textSize="16sp"/>
+		<TextView
+			android:id="@+id/dialog_reg_money_tv"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textColor="#222222"
+			android:layout_marginTop="20dp"
+			android:layout_marginBottom="24dp"
+			android:layout_gravity="center_horizontal"
+			android:textSize="35sp"/>
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textColor="#777777"
+			android:text="注册后存入您的余额"
+			android:layout_marginBottom="15dp"
+			android:layout_gravity="center_horizontal"
+			android:textSize="14sp"/>
+		<Button
+			android:id="@+id/dialog_reg_btn"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="21dp"
+			android:layout_marginLeft="21dp"
+			android:layout_marginBottom="30dp"
+			android:text="立即注册"
+			android:textSize="16sp"
+			android:textColor="@color/white"
+			android:background="@drawable/shouye_tanchuang_button"/>
+		
+	</LinearLayout>
+
+</RelativeLayout>

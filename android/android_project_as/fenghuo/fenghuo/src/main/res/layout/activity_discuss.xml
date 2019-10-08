@@ -1,0 +1,271 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/nav_bg_value" >
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <ScrollView
+        android:id="@+id/discuss_scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/discuss_bottom"
+        android:layout_below="@+id/title_bar_layout"
+        android:scrollbars="none" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <ScrollView
+                android:id="@+id/discuss_scrollbar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true" >
+
+                <LinearLayout
+                    android:id="@+id/discuss_mid"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical" >
+
+                    <EditText
+                        android:id="@+id/discuss_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:ems="10"
+                        android:gravity="top"
+                        android:hint="在这里输入标题（可选）"
+                        android:padding="12dp"
+                        android:singleLine="true"
+                        android:textColor="?attr/item_title_color_value"
+                        android:textColorHint="?attr/article_time_value"
+                        android:textSize="18sp" >
+                    </EditText>
+
+                    <View
+                        android:id="@+id/discuss_title_bottom_line"
+                        style="@style/SettingDivider"
+                        android:layout_marginLeft="0dp" />
+
+                    <EditText
+                        android:id="@+id/discuss_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:ems="10"
+                        android:gravity="top"
+                        android:hint="内容"
+                        android:minLines="2"
+                        android:padding="12dp"
+                        android:textColor="?attr/item_title_color_value"
+                        android:textColorHint="?attr/article_time_value"
+                        android:textSize="18sp" >
+
+                        <requestFocus />
+                    </EditText>
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+    </ScrollView>
+	
+    <TextView 
+        android:id="@+id/discuss_wordnumlimit_hint"
+        android:layout_above="@+id/discuss_showlink_rl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:textSize="18sp"
+        android:textColor="@color/desccolor"
+        android:text="(限制200个字)"/>
+    
+    <RelativeLayout
+        android:id="@+id/discuss_showlink_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:layout_above="@+id/discuss_bottom"
+        android:layout_marginBottom="8dp" >
+
+        <TextView
+            android:id="@+id/discuss_showlink"
+            android:layout_width="match_parent"
+            android:layout_toLeftOf="@+id/discuss_showlink_del"
+            android:layout_height="wrap_content"
+            android:background="@color/line_gray"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
+            android:text="这里是个链接" />
+
+        <Button
+            android:id="@+id/discuss_showlink_del"
+            android:layout_width="20dp"
+            android:layout_marginLeft="-10dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/circle_link_close"
+            android:visibility="visible" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/discuss_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@null" >
+
+            <View
+                style="@style/SettingDivider"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="0dp" />
+
+            <View
+                style="@style/SettingDivider"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="0dp" />
+
+            <RelativeLayout
+                android:id="@+id/discuss_photo_partent"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="10dp" >
+
+                <ImageView
+                    android:id="@+id/discuss_photo"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/fabiao_toolbar_img_btn1" />
+
+                <TextView
+                    android:id="@+id/discuss_photo_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/tips_bg32"
+                    android:gravity="center"
+                    android:paddingLeft="1dp"
+                    android:paddingRight="1dp"
+                    android:text="0"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <ImageButton
+                android:id="@+id/discuss_emjoy"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@+id/discuss_photo_partent"
+                android:background="@color/transparent"
+                android:src="@drawable/fabiao_toolbar_emjoy_btn" />
+
+            <ImageButton
+                android:id="@+id/discuss_at"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@+id/discuss_emjoy"
+                android:background="@color/transparent"
+                android:src="@drawable/fabiao_toolbar_at_btn" />
+
+            <ImageButton
+                android:id="@+id/discuss_link"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:layout_toRightOf="@+id/discuss_at"
+                android:background="@color/transparent"
+                android:src="@drawable/fabiao_toolbar_link_btn" />
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/discuss_link"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="36dp"
+                android:text=" " />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/discuss_emjoy_rl"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:visibility="gone" >
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/discuss_emjoygrid"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_alignParentTop="true"
+                android:listSelector="@android:color/transparent" />
+
+            <LinearLayout
+                android:id="@+id/discuss_emjoydotlist"
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="1"
+                android:listSelector="@android:color/transparent"
+                android:orientation="horizontal" >
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/discuss_photo_rl"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:background="?attr/common_bg_gray_value"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <GridView
+                android:id="@+id/discuss_img"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:listSelector="@android:color/transparent"
+                android:numColumns="3"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:stretchMode="columnWidth" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="4dp"
+                android:gravity="center_horizontal"
+                android:text="最多可添加6张图"
+                android:textColor="?attr/no_data_text_color_value"
+                android:textSize="14sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,179 @@
+package com.ikantech.military.ui;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.os.Message;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
+
+import com.ikantech.military.adapter.SearchAdapter;
+import com.ikantech.military.entity.WeaponItem;
+import com.ikantech.military.provider.impl.WeaponManager.WeaponColumns;
+import com.ikantech.support.ui.YiUIBaseActivity;
+import com.shenyuan.militarynews.R;
+import com.shenyuan.militarynews.SettingManager;
+import com.shenyuan.militarynews.utils.Common;
+import com.shenyuan.militarynews.views.TitleBar;
+
+public class SearchActivity extends YiUIBaseActivity {
+	private GridView mGridView;
+	private EditText mEditText;
+	private SearchAdapter mAdapter;
+	private List<WeaponItem> mWeaponItems;
+	
+	private TitleBar mTitleBar;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		Common.setTheme(this);
+		setContentView(R.layout.activity_search);
+		super.onCreate(savedInstanceState);
+
+		getWindow().setSoftInputMode(
+				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+		mTitleBar = new TitleBar(this, false);
+		mTitleBar.showDefaultBack();
+		mTitleBar.setTitle("搜索");
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		mAdapter.setIsNightMode(Common.isTrue(SettingManager.getInst().getNightModel()));
+		mAdapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void processHandlerMessage(Message msg) {
+		// TODO Auto-generated method stub
+		switch (msg.what) {
+		case 0x01:
+			cancelProgressDialog();
+			List<WeaponItem> items = (List<WeaponItem>) msg.obj;
+			mWeaponItems.clear();
+			if (items != null) {
+				mWeaponItems.addAll(items);
+			}
+			mAdapter.notifyDataSetChanged();
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	protected void initViews() {
+		mGridView = (GridView) findViewById(R.id.search_grid);
+		mEditText = (EditText) findViewById(R.id.search_edittext);
+	}
+
+	@Override
+	protected void initDatas() {
+		mWeaponItems = new ArrayList<WeaponItem>();
+
+		mAdapter = new SearchAdapter(this, mWeaponItems);
+		mGridView.setAdapter(mAdapter);
+	}
+
+	@Override
+	protected void installListeners() {
+		mGridView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				WeaponItem item = (WeaponItem) mAdapter.getItem(arg2);
+				if (item != null) {
+					Intent intent = new Intent(SearchActivity.this,
+							WeaponDetialsActivity.class);
+					intent.putExtra("id", item.getId());
+					startActivity(intent);
+				}
+			}
+		});
+
+		mEditText.setOnEditorActionListener(new OnEditorActionListener() {
+
+			@Override
+			public boolean onEditorAction(TextView v, int actionId,
+					KeyEvent event) {
+				// TODO Auto-generated method stub
+				if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+					if (isStringInvalid(mEditText.getText().toString())) {
+						showMsgDialog(getString(R.string.search_editext_tip),
+								getString(R.string.str_ok));
+						return false;
+					}
+					showProgressDialog();
+					getLocalService().execute(new Runnable() {
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							loadWeapon(mEditText.getText().toString());
+						}
+					});
+				}
+				return false;
+			}
+		});
+
+		installLocalServiceBinder();
+	}
+
+	private void loadWeapon(String text) {
+		Cursor cursor = getContentResolver().query(
+				WeaponColumns.CONTENT_URI,
+				new String[] { WeaponColumns.NAME, WeaponColumns.IMAG_URL,
+						WeaponColumns._ID },
+				WeaponColumns.NAME + " like '%" + text + "%'", null, null);
+		Message message = null;
+		try {
+			if (cursor != null && cursor.getCount() > 0) {
+				ArrayList<WeaponItem> items = new ArrayList<WeaponItem>();
+				cursor.moveToFirst();
+				do {
+					WeaponItem weaponItem = new WeaponItem(cursor.getInt(2));
+					weaponItem.setName(cursor.getString(0));
+					weaponItem.setImageUrl(cursor.getString(1));
+					items.add(weaponItem);
+				} while (cursor.moveToNext());
+				message = getHandler().obtainMessage(0x01, items);
+			} else {
+				message = getHandler().obtainMessage(0x01, null);
+			}
+		} catch (Exception e) {
+			message = getHandler().obtainMessage(0x01, null);
+		} finally {
+			if (cursor != null) {
+				cursor.close();
+				cursor = null;
+			}
+			message.sendToTarget();
+		}
+	}
+
+	@Override
+	protected void uninstallListeners() {
+		// TODO Auto-generated method stub
+		uninstallLocalServiceBinder();
+	}
+
+	public void onReturnBtnClick(View view) {
+		finish();
+	}
+
+}

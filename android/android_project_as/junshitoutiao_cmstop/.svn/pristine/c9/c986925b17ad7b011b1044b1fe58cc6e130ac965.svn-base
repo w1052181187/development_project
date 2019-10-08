@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="1dp"
+    android:paddingTop="10dp" >
+
+    <uk.co.senab.photoview.PhotoView
+        android:id="@+id/item_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:adjustViewBounds="true" />
+
+    <include
+        android:id="@+id/no_pic_press_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/no_pic_press" />
+
+    <include
+        android:id="@+id/no_pic_loading_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/no_pic_loading" />
+
+    <include
+        android:id="@+id/no_pic_error_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/no_pic_error" />
+
+</FrameLayout>

@@ -1,0 +1,209 @@
+package com.cmstop.jstt.views;
+
+import android.app.Activity;
+import android.graphics.drawable.BitmapDrawable;
+import android.provider.Settings;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.PopupWindow;
+import android.widget.PopupWindow.OnDismissListener;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
+
+import com.chengning.common.util.DisplayUtil;
+import com.cmstop.jstt.R;
+import com.cmstop.jstt.SettingManager;
+import com.cmstop.jstt.SettingManager.FontSize;
+import com.cmstop.jstt.utils.BrightnessTools;
+import com.cmstop.jstt.utils.Common;
+
+@Deprecated
+public class ArticleSettingDialog2 {
+	
+	private View mRoot;
+	private PopupWindow mPopup;
+	private View mSetting;
+
+	private View mTop;
+	private SwitchButton mNightModeSwitch;
+	private SeekBar mLightSeekBar;
+	private TextView mFontSmall;
+	private TextView mFontMiddle;
+	private TextView mFontLarge;
+	private TextView mFontExtraLarge;
+	private View mConfirm;
+	
+	private OnArticleSettingListener mListener;
+	
+	private Activity mContext;
+	private BrightnessTools mBrightnessTools;
+	private int mNightMode;
+	
+	public ArticleSettingDialog2(Activity context, int mode){
+		this.mContext = context;
+		this.mNightMode = mode;
+	}
+	
+	public void setView(View root){
+		LayoutInflater inflater = LayoutInflater.from(mContext);
+		RelativeLayout contentView = (RelativeLayout) inflater.inflate(R.layout.dialog_article_setting, null);
+		DisplayUtil.getInst().init(mContext);
+		int height = DisplayUtil.getInst().getScreenHeight();
+		mRoot = root;
+		mPopup = new PopupWindow(contentView, LayoutParams.MATCH_PARENT, height);
+		// 需要设置一下此参数，点击外边可消失 
+		mPopup.setBackgroundDrawable(new BitmapDrawable()); 
+        //设置点击窗口外边窗口消失 
+		mPopup.setOutsideTouchable(true); 
+        // 设置此参数获得焦点，否则无法点击 
+		mPopup.setFocusable(true); 
+		
+		this.mSetting = contentView;
+		
+		mTop = mSetting.findViewById(R.id.article_setting_top);
+		mNightModeSwitch = (SwitchButton) mSetting.findViewById(R.id.article_setting_night_mode_switch);
+		mLightSeekBar = (SeekBar) mSetting.findViewById(R.id.article_setting_light_seekbar);
+		mFontSmall = (TextView) mSetting.findViewById(R.id.article_setting_font_small);
+		mFontMiddle = (TextView) mSetting.findViewById(R.id.article_setting_font_middle);
+		mFontLarge = (TextView) mSetting.findViewById(R.id.article_setting_font_large);
+		mFontExtraLarge = (TextView) mSetting.findViewById(R.id.article_setting_font_extra_large);
+		mConfirm = mSetting.findViewById(R.id.article_setting_confirm);
+
+		mFontSmall.setTag(FontSize.Small);
+		mFontMiddle.setTag(FontSize.Middle);
+		mFontLarge.setTag(FontSize.Large);
+		mFontExtraLarge.setTag(FontSize.ExtraLarge);
+
+		mFontSmall.setOnClickListener(mFontOnClickListener);
+		mFontMiddle.setOnClickListener(mFontOnClickListener);
+		mFontLarge.setOnClickListener(mFontOnClickListener);
+		mFontExtraLarge.setOnClickListener(mFontOnClickListener);
+		
+		// TODO(夜间模式)
+		mNightModeSwitch.setChecked(!Common.isTrue(mNightMode));
+		
+		mBrightnessTools = new BrightnessTools(mContext, mContext.getContentResolver());
+		mLightSeekBar.setProgress(mBrightnessTools.getScreenBrightness());
+		
+		readFont();
+		
+		mTop.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mPopup.dismiss();
+			}
+		});
+		mLightSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+				mBrightnessTools.setScreenMode(Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+				mBrightnessTools.setScreenBrightness(progress);
+				mBrightnessTools.saveScreenBrightness(progress);
+			}
+		});
+		mConfirm.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dismiss();
+			}
+		});
+		mPopup.setOnDismissListener(new OnDismissListener() {
+			
+			@Override
+			public void onDismiss() {
+			}
+		});
+		
+		mNightModeSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				mListener.onNightModeChange(isChecked);
+			}
+		});
+	}
+	
+	public boolean isShowing(){
+		return mPopup != null && mPopup.isShowing();
+	}
+	
+	public void show(){
+		mPopup.showAtLocation(mRoot, Gravity.NO_GRAVITY, mRoot.getLeft(), mRoot.getTop());
+	}
+	
+	public void dismiss(){
+		mPopup.dismiss();
+	}
+	
+	public void setListenr(OnArticleSettingListener listener){
+		this.mListener = listener;
+	}
+	
+	private void readFont(){
+		int size = SettingManager.getInst().getFontSize();
+		FontSize font = FontSize.getFontSize(size);
+
+		setFont(font);
+	}
+	
+	private void saveFont(FontSize font){
+		SettingManager.getInst().saveFontSize(font.getSize());
+	}
+	
+	public void setFont(FontSize font){
+		mFontSmall.setSelected(false);
+		mFontMiddle.setSelected(false);
+		mFontLarge.setSelected(false);
+		mFontExtraLarge.setSelected(false);
+		
+		switch (font) {
+		case Small:
+			mFontSmall.setSelected(true);
+			break;
+		case Middle:
+			mFontMiddle.setSelected(true);
+			break;
+		case Large:
+			mFontLarge.setSelected(true);
+			break;
+		case ExtraLarge:
+			mFontExtraLarge.setSelected(true);
+			break;
+		}
+	}
+	
+	private OnClickListener mFontOnClickListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			FontSize font = (FontSize) v.getTag();
+			setFont(font);
+			saveFont(font);
+			mListener.onFontChange(font);
+		}
+	};
+	
+	public static interface OnArticleSettingListener{
+		public void onFontChange(FontSize font);
+		public void onNightModeChange(boolean mode);
+	}
+}

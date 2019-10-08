@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="AnimationFade">
+
+        <!-- PopupWindow左右弹出的效果 -->
+        <item name="android:windowEnterAnimation">@anim/inuptodown</item>
+        <item name="android:windowExitAnimation">@anim/outdowntoup</item>
+    </style>
+
+    <style name="CommonTitle">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+    </style>
+    
+    <style name="ArticleBottomLikeBtnLayout">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minWidth">80dp</item>
+        <item name="android:background">@drawable/xjs_article_btn_bg</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingTop">4dp</item>
+    </style>
+
+    <style name="ArticleBottomBtnLayout">
+        <item name="android:layout_width">68dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/xjs_article_btn_bg</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingTop">4dp</item>
+    </style>
+
+    <style name="ArticleBottomBtnContent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/article_bottom_btn_text</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="SettingGroup">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/setting_group_bg_value</item>
+        <item name="android:padding">@dimen/common_horizontal_margin</item>
+        <item name="android:textColor">?attr/setting_group_text_value</item>
+        <item name="android:textSize">@dimen/setting_group_text_size</item>
+    </style>
+
+    <style name="SettingChildText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/common_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/common_horizontal_margin</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:textColor">?attr/setting_child_text_value</item>
+        <item name="android:textSize">@dimen/setting_child_text_size</item>
+    </style>
+
+    <style name="SettingOfflineProgressText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/common_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/common_horizontal_margin</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:textColor">?attr/setting_offline_progress_text_value</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="SettingDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">2px</item>
+        <item name="android:background">?attr/item_divider_color_value</item>
+        <item name="android:layout_marginLeft">@dimen/common_horizontal_margin</item>
+    </style>
+
+    <!-- 下拉 转圈 -->
+    <style name="ProgressBarStyleblue">
+
+	　　        <item name="android:indeterminateDrawable">@drawable/progress_blue</item>
+
+	　　        <item name="android:minWidth">22dip</item>
+
+	　　        <item name="android:maxWidth">22dip</item>
+
+	　　        <item name="android:minHeight">22dip</item>
+
+	　　        <item name="android:maxHeight">22dip</item>
+    </style>
+    <!-- 标签按钮的样式 -->
+    <style name="TabLayout">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:background">?attr/toolbar_bg_btn_value</item>
+    </style>
+
+    <style name="TabTextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">?attr/toolbar_text_color_value</item>
+        <item name="android:drawablePadding">6dp</item>
+    </style>
+
+    <style name="myContentTextStyle">
+        <item name="android:textColor">?attr/item_title_color_value</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+    
+    <!-- animation 样式 -->
+    <style name="activityAnimation" parent="@android:style/Animation">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_right_in</item>
+        <item name="android:activityOpenExitAnimation">@anim/slide_left_out</item>
+        <item name="android:activityCloseEnterAnimation">@anim/slide_left_in</item>
+        <item name="android:activityCloseExitAnimation">@anim/slide_right_out</item>
+    </style>
+	
+	<!-- Hometab的样式 -->
+    <style name="tabButton">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@drawable/toolbar_color_tab_text</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:paddingTop">7dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:drawablePadding">1dp</item>
+        <item name="android:lineSpacingExtra">4dp</item>
+    </style>
+    
+    <style name="ChannelItemTag">
+        <item name="android:background">@drawable/tag_bg</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/common_item_tag_text</item>
+        <item name="android:textSize">@dimen/channel_item_tag_text_size</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:layout_marginTop">@dimen/channel_item_tag_margin_top</item>
+        <item name="android:layout_marginRight">@dimen/channel_item_tag_margin_right</item>
+    </style>
+    
+</resources>

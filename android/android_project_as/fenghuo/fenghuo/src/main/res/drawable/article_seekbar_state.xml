@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!-- 未选中 -->
+    <item android:id="@android:id/background">
+        <nine-patch android:src="@drawable/article_seek_bg" />
+    </item>
+    <!-- 中 -->
+    <item android:id="@android:id/progress">
+        <clip>
+            <nine-patch android:src="@drawable/article_seek" />
+        </clip>
+    </item>
+
+</layer-list>

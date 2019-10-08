@@ -1,0 +1,194 @@
+package com.shenyuan.militarynews.RetrofitRequestInterface;
+
+import com.chengning.common.base.BaseResponseBean;
+import com.google.gson.JsonObject;
+import com.shenyuan.militarynews.beans.data.AdStartBean;
+import com.shenyuan.militarynews.beans.data.ArticlesPicBean;
+import com.shenyuan.militarynews.beans.data.BadgeBean;
+import com.shenyuan.militarynews.beans.data.BindDataBean;
+import com.shenyuan.militarynews.beans.data.CommentListBean;
+import com.shenyuan.militarynews.beans.data.DirectorateBean;
+import com.shenyuan.militarynews.beans.data.DirectoratePointBean;
+import com.shenyuan.militarynews.beans.data.DirectorateTaskBean;
+import com.shenyuan.militarynews.beans.data.DomainBean;
+import com.shenyuan.militarynews.beans.data.FavListBean;
+import com.shenyuan.militarynews.beans.data.LoginBean;
+import com.shenyuan.militarynews.beans.data.RankBean;
+import com.shenyuan.militarynews.beans.data.SearchNewsListBean;
+import com.shenyuan.militarynews.utils.JUrl;
+
+import java.util.List;
+import java.util.Map;
+
+import io.reactivex.Observable;
+import okhttp3.MultipartBody;
+import retrofit2.Response;
+import retrofit2.http.FieldMap;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
+import retrofit2.http.QueryMap;
+
+public interface ApiInterface {
+
+    /**
+     * 更换域名
+     * @return
+     */
+    @GET("/xin.js")
+    Observable<Response<DomainBean>> changeDomain();
+
+    @POST(JUrl.URL_GET_AD_START)
+    @FormUrlEncoded
+    Observable<BaseResponseBean<AdStartBean>> getAd(@FieldMap Map<String, String> maps);
+
+    @POST(JUrl.URL_EDIT_FACE)
+    @Multipart
+    Observable<BaseResponseBean<JsonObject>> uploadFace(@Part MultipartBody.Part file);
+
+    @GET(JUrl.URL_REMOVE_BIND)
+    Observable<BaseResponseBean<String>> removeBind(@QueryMap Map<String, String> params);
+
+    @POST(JUrl.URL_GET_BIND_STATE)
+    Observable<BaseResponseBean<BindDataBean>> getBindState();
+
+
+    /**
+     * 文章详情相关
+     */
+    @GET(JUrl.URL_GET_CLICKS)
+    Observable<BaseResponseBean<JsonObject>> getClicks(@QueryMap Map<String, String> params);
+
+    @POST(JUrl.GET_ARTICLES_PIC )
+    @FormUrlEncoded
+    Observable<BaseResponseBean<ArticlesPicBean>> getArticlePics(@FieldMap Map<String, String> params);
+
+    @GET(JUrl.URL_GET_FAVORITE_ATRICLES)
+    Observable<BaseResponseBean<FavListBean>> getFavorite(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.URL_COLLECT_FAVORITE_ATRICLES)
+    Observable<BaseResponseBean<String>> doFavorite(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.URL_CANCEL_FAVORITE_ATRICLES)
+    Observable<BaseResponseBean<String>> cancleFavorite(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.URL_GET_SEARCH)
+    Observable<BaseResponseBean<SearchNewsListBean>> search(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.GET_GOOD_BAD)
+    Observable<BaseResponseBean<JsonObject>> doLikeBad(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.URL_GET_COMMENT_PARENT_LIST)
+    Observable<BaseResponseBean<CommentListBean>> getComentReply(@QueryMap Map<String, String> params);
+
+    @POST(JUrl.URL_GET_REWARD_ORDER)
+    @FormUrlEncoded
+    Observable<BaseResponseBean<Map>> rewardArticle(@FieldMap Map<String, String> params);
+
+    @GET(JUrl.URL_GET_NEW_ARTICLE_COUNT)
+    Observable<BaseResponseBean<BadgeBean>> updateBadge(@QueryMap Map<String, String> params);
+
+
+    /**
+     * 评论相关
+     * @param params
+     * @return
+     */
+    @POST(JUrl.URL_DO_COMMENT_REPLY_PUBLISH)
+    @FormUrlEncoded
+    Observable<BaseResponseBean<DirectoratePointBean>> publishComment(@FieldMap Map<String, String> params);
+
+    @POST(JUrl.URL_DO_COMMENT_GOOD_BAD)
+    @FormUrlEncoded
+    Observable<BaseResponseBean<JsonObject>> doLikeBadComment(@FieldMap Map<String, String> params);
+
+    @GET(JUrl.URl_DELETE_MY_COMMENT)
+    Observable<BaseResponseBean<String>> deleteMyComment(@QueryMap Map<String, String> params);
+
+    @POST(JUrl.URL_GET_COMMENT_REPORT)
+    @FormUrlEncoded
+    Observable<BaseResponseBean<String>> report(@FieldMap Map<String, String> params);
+
+    /**
+     * 用户相关
+     */
+    @POST(JUrl.URL_BIND_QQ_REGIST)
+    @FormUrlEncoded
+    Observable<BaseResponseBean<String>> bindRegistQQ(@FieldMap Map<String, String> params);
+
+    @POST(JUrl.URL_BIND_SINA_REGIST)
+    @FormUrlEncoded
+    Observable<BaseResponseBean<String>> bindRegistSina(@FieldMap Map<String, String> params);
+
+    @GET(JUrl.URL_DIRECTORATE_INFO)
+    Observable<BaseResponseBean<DirectorateBean>> getDirectorate();
+
+    @GET(JUrl.URL_DIRECTORATE_DETAIL_INFO)
+    Observable<BaseResponseBean<DirectorateTaskBean>> getDirectorateTask(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.URL_GET_LOGIN_EVERYDAY)
+    Observable<BaseResponseBean<LoginBean>> everyLogin();
+
+    @POST(JUrl.URL_LOGIN)
+    @FormUrlEncoded
+    Observable<BaseResponseBean<JsonObject>> login(@FieldMap Map<String, String> params);
+
+    @GET(JUrl.URL_EXIT)
+    Observable<BaseResponseBean<String>> logout();
+
+    @POST(JUrl.URL_REGISTER)
+    @FormUrlEncoded
+    Observable<BaseResponseBean<JsonObject>> register(@FieldMap Map<String, String> params);
+
+    @POST(JUrl.URL_GETPHONECODE)
+    @FormUrlEncoded
+    Observable<BaseResponseBean<String>> getVerifyCode(@FieldMap Map<String, String> params);
+
+    @POST(JUrl.URL_VERIFYCODE)
+    @FormUrlEncoded
+    Observable<BaseResponseBean<String>> verifyCode(@FieldMap Map<String, String> params);
+
+    @POST(JUrl.URL_PHONEVERIFY)
+    @FormUrlEncoded
+    Observable<BaseResponseBean<String>> verifyPhone(@FieldMap Map<String, String> params);
+
+    @POST(JUrl.URL_MODIFYPWBYFORGET)
+    @FormUrlEncoded
+    Observable<BaseResponseBean<String>> modifyPwdByForget(@FieldMap Map<String, String> params);
+
+    @POST(JUrl.URL_MODIFYPWBYNORMAL)
+    @FormUrlEncoded
+    Observable<BaseResponseBean<String>> modifyPwdByNormal(@FieldMap Map<String, String> params);
+
+    @GET(JUrl.URL_GET_LEVEL_LIST)
+    Observable<BaseResponseBean<List<RankBean>>> getRankLevel();
+
+    @GET(JUrl.URL_BIND_QQ)
+    Observable<BaseResponseBean<JsonObject>> bindQQ(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.URL_BIND_WEIBO)
+    Observable<BaseResponseBean<JsonObject>> bindSina(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.URL_LOGIN_QQ)
+    Observable<BaseResponseBean<JsonObject>> loginQQ(@QueryMap Map<String, String> params);
+
+    @GET(JUrl.URL_GET_SHARE)
+    Observable<BaseResponseBean<DirectoratePointBean>> getPointByShare(@QueryMap Map<String, String> params);
+
+    @POST(JUrl.URL_LOGIN_SINA)
+    @FormUrlEncoded
+    Observable<BaseResponseBean<JsonObject>> loginSina(@FieldMap Map<String, String> params);
+
+    @GET(JUrl.URL_LOGIN_WX)
+    Observable<BaseResponseBean<JsonObject>> loginWx();
+
+    @POST(JUrl.URL_EDIT_NICKNAME)
+    @FormUrlEncoded
+    Observable<BaseResponseBean<String>> editNickname(@FieldMap Map<String, String> params);
+
+    @GET(JUrl.URL_GET_USERINFO)
+    Observable<BaseResponseBean<LoginBean>> getUserinfo();
+
+}

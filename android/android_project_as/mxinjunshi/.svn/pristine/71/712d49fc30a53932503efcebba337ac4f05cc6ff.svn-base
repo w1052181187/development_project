@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/article_comment_bottom_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/article_bottom_cmt_bg_value" >
+
+    <View
+        android:id="@+id/article_comment_bottom_toolbar_divider"
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:background="?attr/item_divider_color_value" />
+    
+    <ImageButton
+        android:id="@+id/article_comment_bottom_toolbar_share"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_below="@id/article_comment_bottom_toolbar_divider"
+        android:layout_alignParentRight="true"
+        android:background="?attr/common_item_bg_state_value"
+        android:src="@drawable/share"
+        android:visibility="visible"/>
+
+    <ImageButton
+        android:id="@+id/article_comment_bottom_toolbar_fav"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_below="@id/article_comment_bottom_toolbar_divider"
+        android:layout_toLeftOf="@id/article_comment_bottom_toolbar_share"
+        android:background="?attr/common_item_bg_state_value"
+        android:src="@drawable/article_bottom_fav_state" />
+
+    <ImageButton
+        android:id="@+id/article_comment_bottom_toolbar_comment"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_below="@+id/article_comment_bottom_toolbar_divider"
+        android:layout_toLeftOf="@+id/article_comment_bottom_toolbar_fav"
+        android:background="?attr/common_item_bg_state_value"
+        android:src="@drawable/toolbar_comment" />
+    
+    
+
+    <TextView
+        android:id="@+id/article_comment_bottom_toolbar_comment_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/article_comment_bottom_toolbar_comment"
+        android:layout_alignTop="@id/article_comment_bottom_toolbar_comment"
+        android:layout_marginLeft="26dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/xiaoxi_hongdain"
+        android:gravity="center"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:textColor="@color/white"
+        android:textSize="9sp"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/article_comment_bottom_toolbar_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/common_horizontal_margin"
+        android:layout_toLeftOf="@id/article_comment_bottom_toolbar_comment"
+        android:background="?attr/article_bottom_input_value"
+        android:padding="8dp"
+        android:drawableLeft="@drawable/xiepinglun_icon"
+        android:drawablePadding="8dp"
+        android:text="写评论..."
+        android:textColor="?attr/item_summary_color_value"
+        android:textSize="14sp" />
+
+</RelativeLayout>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/video_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center">
+
+    <RelativeLayout
+        android:id="@+id/video_content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="203dp"
+        android:background="@color/black">
+
+        <RelativeLayout
+            android:id="@+id/video_videoview_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!--<VideoView-->
+            <!--android:id="@+id/video_videoview"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_centerInParent="true" />-->
+            <com.chengning.fenghuovideo.widget.TextureVideoView
+                android:id="@+id/video_videoview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/video_cover_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/video_cover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/video_ctrl_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/video_ctrl_time_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true">
+
+                <ImageView
+                    android:id="@+id/video_ctrl_fullscreen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:padding="6dp"
+                    android:src="@drawable/fv_video_quanping" />
+
+                <TextView
+                    android:id="@+id/video_ctrl_time_current"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:padding="6dp"
+                    android:text="当前时间"
+                    android:textColor="@color/white"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/video_ctrl_time_total"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/video_ctrl_fullscreen"
+                    android:padding="6dp"
+                    android:text="总时间"
+                    android:textColor="@color/white"
+                    android:textSize="12sp" />
+
+                <SeekBar
+                    android:id="@+id/video_ctrl_time_progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/video_ctrl_time_total"
+                    android:layout_toRightOf="@+id/video_ctrl_time_current"
+                    android:max="1000"
+                    android:maxHeight="2dp"
+                    android:progressDrawable="@drawable/video_play_seekbar_progress"
+                    android:thumb="@drawable/video_play_seekbar_thumb"
+                    android:thumbOffset="6dp" />
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/video_ctrl_play_pause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:padding="10dp"
+                android:src="@drawable/video_play_pause_state" />
+
+            <ProgressBar
+                android:id="@+id/video_ctrl_loading"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true" />
+
+        </RelativeLayout>
+    </RelativeLayout>
+</RelativeLayout>

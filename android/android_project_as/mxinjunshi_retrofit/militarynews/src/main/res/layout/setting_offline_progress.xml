@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+    <com.shenyuan.militarynews.views.RoundProgressBar
+        xmlns:android_custom="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/setting_offline_round_progress"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/common_horizontal_margin"
+        android_custom:max="100"
+        android_custom:roundColor="#e6e6e6"
+        android_custom:roundProgressColor="#0066cc"
+        android_custom:roundWidth="1dp"
+        android_custom:textColor="?attr/setting_child_text_value"
+        android_custom:textIsDisplayable="true"
+        android_custom:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/setting_offline_text"
+        style="@style/SettingOfflineProgressText"
+        android:layout_alignParentRight="true" />
+
+</RelativeLayout>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/home_edit_channel_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="39dp"
+        android:background="?attr/edit_channel_title_bg_value" >
+
+        <TextView
+            android:id="@+id/home_edit_channel_list_top_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/common_horizontal_margin"
+            android:text="我的频道"
+            android:textColor="?attr/item_title_color_value"
+            android:textSize="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/home_edit_channel_list_top_title"
+            android:layout_marginLeft="4dp"
+            android:layout_toRightOf="@id/home_edit_channel_list_top_title"
+            android:text="长按频道可拖动排序"
+            android:textColor="?attr/article_time_value"
+            android:textSize="14dp" />
+
+        <RelativeLayout
+            android:id="@+id/home_edit_channel_list_arrow"
+            android:layout_width="41dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/arrow_up" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/home_edit_channel_list_delete"
+            android:layout_width="66dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/home_edit_channel_list_arrow"
+            android:background="@drawable/delete_btn_bg"
+            android:gravity="center"
+            android:text="排序删除"
+            android:textColor="@color/channel_top_btn_text"
+            android:textSize="14dp" />
+    </RelativeLayout>
+
+    <com.chengning.fenghuo.widget.ScrollBarExtendViewPager
+        android:id="@+id/home_edit_channel_list_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/common_bg_value"
+        android:fadingEdge="none"
+        android:fillViewport="true"
+        android:visibility="visible" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <com.chengning.fenghuo.widget.DragGrid
+                android:id="@+id/home_edit_channel_list_my_grid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:listSelector="@color/transparent"
+                android:numColumns="3"
+                android:padding="6dp"
+                android:stretchMode="columnWidth" >
+            </com.chengning.fenghuo.widget.DragGrid>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="39dp"
+                android:background="?attr/edit_channel_title_bg_value" >
+
+                <TextView
+                    android:id="@+id/home_edit_channel_list_other_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/common_horizontal_margin"
+                    android:text="可选频道"
+                    android:textColor="?attr/item_title_color_value"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/home_edit_channel_list_other_title"
+                    android:layout_marginLeft="4dp"
+                    android:layout_toRightOf="@id/home_edit_channel_list_other_title"
+                    android:text="点击增删频道"
+                    android:textColor="?attr/article_time_value"
+                    android:textSize="14dp" />
+            </RelativeLayout>
+
+            <com.chengning.fenghuo.widget.MaxGridView
+                android:id="@+id/home_edit_channel_list_other_grid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:listSelector="@color/transparent"
+                android:numColumns="3"
+                android:padding="6dp"
+                android:stretchMode="columnWidth" >
+            </com.chengning.fenghuo.widget.MaxGridView>
+        </LinearLayout>
+    </com.chengning.fenghuo.widget.ScrollBarExtendViewPager>
+
+</LinearLayout>

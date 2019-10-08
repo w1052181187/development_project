@@ -1,0 +1,105 @@
+
+var xmlHttp;
+var IE = document.all ? true : false;
+var hdCookieName = "hduser";
+createXMLHttpRequestByObject = function (xmlObject) {
+	if (window.ActiveXObject) {
+		xmlObject = new ActiveXObject("Microsoft.XMLHTTP");
+	} else {
+		if (window.XMLHttpRequest) {
+			xmlObject = new XMLHttpRequest();
+		}
+	}
+	if (!xmlObject) { // 异常，创建对象实例失败
+		window.alert("\u4e0d\u80fd\u521b\u5efaXMLHttpRequest\u5bf9\u8c61\u5b9e\u4f8b.");
+		return false;
+	}
+	return xmlObject;
+};
+$(document).ready(function () {
+	$(".h2_line").click(function () {
+		var subsectionid = $(this).attr("id");//span 标签的id	
+		var type = $("#" + subsectionid + "em").attr("class");     
+		var nextDivobj = $("#"+subsectionid).next("div"); //取得兄弟节点【距离本节点最近的节点】-
+		if(subsectionid==1){
+			nextDivobj = $("div[pid=1]");
+		}
+		if(nextDivobj.length==0){
+		 nextDivobj = $("#"+subsectionid).next("div");
+		}
+		if (type != null && type == "bthide") {		    
+			var loadflagObj = nextDivobj.find("p[name=loadflag]");
+			if(loadflagObj.length > 0){
+				nextDivobj.show();
+				var doctitle = document.getElementById("doctitle").value;
+				var editSubXMLhttp = createXMLHttpRequestByObject("editsubsectionXMLhttp");
+				var editsuburl = "";	
+				if (subsectionid != null && subsectionid != "" && doctitle != null && doctitle != "") {
+					if (/[1-9]+[0-9]*/.test(subsectionid)) {
+						//editsuburl = "http://www.baike.com/editsubsectionauth/" + encodeURI(doctitle) + "/" + subsectionid; ///wikdoc/sp							
+						//http://wikdoc.hudong.com/editsubsectionauth.do?docTitle=%E5%8D%97%E4%BA%AC&subsectionId=3
+						//editsuburl = "http://wikdoc.hudong.com/editsubsectionauth.do?docTitle=" + encodeURI(doctitle) + "&subsectionId=" + subsectionid;
+						//editsuburl = "http://wikdoc.hudong.com/editsubsectionauthforwap.do?docTitle=" + encodeURI(doctitle) + "&subsectionId=" + subsectionid;						
+						 editsuburl = "http://www.baike.com/editsubsectionauthforwap/" + encodeURI(doctitle) + "/" + subsectionid; ///wikdoc/sp
+						 						
+						$.ajax(
+							{dataType:"xml", 
+							type:"GET", 
+							url:editsuburl, 
+							success:function (xml) {							
+								var flag = $(xml).find("Flag").text();
+								var Reason = $(xml).find("Reason").text();
+								var doctext = $(xml).find("DocText").text();							
+								var Doctitle = $(xml).find("Doctitle").text();										
+								if (flag == "true") {
+									if (doctext != null && doctext != "") {
+										var obj = nextDivobj.html(doctext).show();//显示内容
+									}
+								} else {
+									alert('服务器繁忙，稍后再访问！');
+								}
+							}
+						});
+					}
+				}
+			}else{
+				nextDivobj.show();
+				//alert('show='+nextDivobj.show());
+			}
+			
+			$("#" + subsectionid + "em").removeClass("bthide").addClass("btshow");
+		} else {
+			if (type == "btshow") {
+				nextDivobj.hide();
+				$("#" + subsectionid + "em").removeClass("btshow").addClass("bthide");
+			}
+		}
+	});
+}); 
+
+
+	//导航模块收起和展开
+function switchNavModule(navmoduleid) {
+	if (document.getElementById("navData-" + navmoduleid).style.display == "none") {
+		document.getElementById("nav-h2-" + navmoduleid).style.backgroundPosition = "10px -19px";
+		document.getElementById("navsphidden_" + navmoduleid).style.display = "";
+		document.getElementById("navspshow_" + navmoduleid).style.display = "none";
+		document.getElementById("navData-" + navmoduleid).style.display = "";
+	} else {
+		document.getElementById("nav-h2-" + navmoduleid).style.backgroundPosition = "10px 7px";
+		document.getElementById("navsphidden_" + navmoduleid).style.display = "none";
+		document.getElementById("navspshow_" + navmoduleid).style.display = "";
+		document.getElementById("navData-" + navmoduleid).style.display = "none";
+	}
+}
+function showapp() {
+    var useragent = navigator.userAgent;
+    useragent = useragent.toLowerCase();
+    if (useragent.indexOf("android") > 0 || useragent.indexOf("juc") > 0) {
+        window.location = 'http://appserver.baike.com/deploy/guancha/baikeguancha.apk';
+    } else if (useragent.indexOf("ios") > 0 || useragent.indexOf("iuc") > 0 || useragent.indexOf("iphone") > 0 || useragent.indexOf("ipad") > 0) {
+        window.location = 'https://itunes.apple.com/us/app/bai-ke-guan-cha/id629847557';
+    } else {
+        window.location = 'http://about.hudong.com/m/baikeguancha.html';
+    }
+}

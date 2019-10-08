@@ -1,0 +1,20 @@
+include ':alicloud_feedback'
+include ':pulltorefresh'
+include ':baidu_mtj_sdk'
+include ':umeng_sdk'
+include ':shortcutBadger'
+include ':leancloudpush'
+include ':umeng_share'
+include ':tengxun_gdt'
+include ':viewpagerlibrary'
+include ':common'
+include ':militarynews'
+project(':alicloud_feedback').projectDir = new File(settingsDir, '../chengningcommon/alicloud_feedback')
+project(':pulltorefresh').projectDir = new File(settingsDir, '../chengningcommon/pulltorefresh')
+project(':baidu_mtj_sdk').projectDir = new File(settingsDir, '../chengningcommon/baidu_mtj_sdk')
+project(':umeng_sdk').projectDir = new File(settingsDir, '../chengningcommon/umeng_sdk')
+project(':shortcutBadger').projectDir = new File(settingsDir, '../chengningcommon/shortcutBadger')
+project(':leancloudpush').projectDir = new File(settingsDir, '../chengningcommon/leancloudpush')
+project(':umeng_share').projectDir = new File(settingsDir, '../chengningcommon/umeng_share')
+project(':viewpagerlibrary').projectDir = new File(settingsDir, '../chengningcommon/viewpagerlibrary')
+project(':common').projectDir = new File(settingsDir, '../chengningcommon/common')

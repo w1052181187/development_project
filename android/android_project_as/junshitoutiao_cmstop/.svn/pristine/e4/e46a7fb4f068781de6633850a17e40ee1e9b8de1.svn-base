@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.chengning.common.widget.MultiStateView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:multistateview="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/multiStateView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    multistateview:msv_emptyView="@layout/empty_view"
+    multistateview:msv_errorView="@layout/error_view"
+    multistateview:msv_loadingView="@layout/loading_view"
+    multistateview:msv_viewState="loading" >
+
+    <RelativeLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <WebView
+            android:id="@+id/video_webview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <RelativeLayout
+            android:id="@+id/title_bar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/back_dialog_height"
+            android:background="@color/half_transparent" >
+
+            <RelativeLayout
+                android:id="@+id/title_bar_back"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingLeft="@dimen/common_horizontal_margin"
+                android:paddingRight="@dimen/common_horizontal_margin"
+                android:visibility="visible" >
+
+                <TextView
+                    android:id="@+id/title_bar_back_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:drawableLeft="@drawable/nav_back"
+                    android:drawablePadding="4dp"
+                    android:gravity="center" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/title_bar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:paddingLeft="@dimen/common_horizontal_margin"
+                android:paddingRight="@dimen/common_horizontal_margin"
+                android:textColor="?attr/article_title_value"
+                android:textSize="18sp"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</com.chengning.common.widget.MultiStateView>

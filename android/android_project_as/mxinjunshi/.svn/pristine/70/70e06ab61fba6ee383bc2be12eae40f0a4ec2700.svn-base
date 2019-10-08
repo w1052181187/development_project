@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=GBK">
+        <meta content="320" name="MobileOptimized">
+        <meta content="width=device-width" name="viewport">
+        <title>
+            武器详情
+        </title>
+        <link type="text/css" rel="stylesheet" href="./inc/style.css">
+        <script type="text/javascript" src="./inc/jquery.js">
+        </script>
+        <script type="text/javascript" src="./inc/viewdocnewwap.js">
+        </script>
+    </head>
+    
+    <body>
+        <div class="wrapper">
+            <center>
+                <img style="max-width: 100%; 
+                max-height: 100%; 
+                width: auto; 
+                height: auto;" src="${big_img}" alt="" onError="this.src='images/no_pic_l.png';">
+            </center>
+            <div class="word_info">
+                <div class="wrap">
+                    <h1>
+                        ${name}
+                    </h1>
+                    <div style="display:none" class="prompt" id="unifyprompt">
+                    </div>
+                    <span class="h2" style="margin-left:15px; margin-top:4px; color:#aaa;">
+                        英文名称：${engName}
+                    </span>
+                    <br>
+                    <span class="h2" style="margin-left:15px; margin-top:4px; color:#aaa;">
+                        所属国家：${country}
+                    </span>
+                    <br>
+                    <span class="h2" style="margin-left:15px; margin-top:4px; color:#aaa;">
+                        类&nbsp;&nbsp;&nbsp;&nbsp;型：${subtype}
+                    </span>
+                    <br>
+                    <span class="h2" style="margin-left:15px; margin-top:4px; color:#aaa;">
+                        研发单位：${cro}
+                    </span>
+                    <br>
+                    <div class="zy">
+                        <div class="img">
+                            <img src="${imgUrl}"  onError="this.src='images/no_pic.png';">
+                        </div>
+                        <p>
+                        </p>
+                        <p>
+                            ${desc}
+                        </p>
+                        <p>
+                        </p>
+                    </div>
+                    <div style="margin-top:4px;">
+                        <!--参数-->
+                        <div class="neirong">
+                            <table cellspacing="5" width="250">
+	<tbody>
+		<tr>
+			<th bgcolor="#b2b2b2" colspan="2" height="24" align="left">
+				<strong><font color="white">&nbsp;概观</font></strong></th>
+		</tr>
+${param1}
+		<tr>
+			<th bgcolor="#b2b2b2" colspan="2" height="24" align="left">
+				<strong><font color="white">&nbsp;技术数据</font></strong></th>
+		</tr>
+${param2}
+		<tr>
+			<th bgcolor="#b2b2b2" colspan="2" height="24" align="left">
+				<strong><font color="white">&nbsp;武器装备</font></strong></th>
+		</tr>
+	${param3}
+	</tbody>
+</table>
+                            <br>
+                        </div>
+                    </div>
+                    <div id="content">
+                        <span class="h2_line" id="3">
+                            <em id="3em" style="" class="bthide">
+                            </em>
+                            研发历程
+                        </span>
+                        <div style="display:none" id="4">
+                            <div class="neirong">
+                                ${dev_course}
+                            </div>
+                        </div>
+                        <span class="h2_line" id="5">
+                            <em id="5em" style="" class="bthide">
+                            </em>
+                            装备配置
+                        </span>
+                        <div style="display:none" id="6">
+                            <div class="neirong">
+                                ${equi_dev}
+                            </div>
+                        </div>
+                        <span class="h2_line" id="7">
+                            <em id="7em" style="" class="bthide">
+                            </em>
+                            服役部队
+                        </span>
+                        <div style="display:none" id="8">
+                            <div class="neirong">
+                                ${serve_army}
+                            </div>
+                        </div>
+                        <span class="h2_line" id="25">
+                            <em id="25em" style="" class="bthide">
+                            </em>
+                            媒体评述
+                        </span>
+                        <div style="display: none;" id="26">
+                            <div class="neirong">
+                                ${comment_of_media}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>

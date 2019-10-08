@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:background="?attr/common_bg_value"
+    >
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" 
+        />
+    <WebView
+        android:id="@+id/useproto_webView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/title_bar_layout"
+        />
+
+</RelativeLayout>

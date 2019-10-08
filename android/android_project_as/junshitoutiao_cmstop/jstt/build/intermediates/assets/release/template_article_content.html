@@ -1,0 +1,206 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0055)http://m.fenghuo001.com/index.php?mod=topics&code=15519 -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <title>
+        烽火模板
+    </title>
+    <style>
+        body, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, p, blockquote, th, td {
+            margin: 0;
+            padding: 0;
+        }
+        .nr_gz_cont {
+            overflow: hidden;
+        }
+
+        .nr_top {
+            padding: 10px 10px 0px 10px;
+        }
+
+            .nr_top .nr_top_cont {
+                color: #4c4c4c;
+                line-height: 28px;
+                font-size: 18px;
+            }
+
+                .nr_top .nr_top_cont img {
+                    width: 100%;
+                    height: auto;
+                }
+
+                .nr_top .nr_top_cont p {
+                    padding: 0px 0 10px 0;
+                }
+        .nr_button {
+            width: 100%;
+            height: 50px;
+            overflow: hidden;
+        }
+
+            .nr_button .button1 {
+                height: 30px;
+                line-height: 30px;
+                text-align: center;
+                font-size: 14px;
+                margin: 10px 5px;
+                float: left;
+            }
+
+            .nr_button .button2 {
+                height: 30px;
+                line-height: 30px;
+                text-align: center;
+                font-size: 14px;
+                margin: 10px 5px;
+                float: right;
+            }
+        .cont_img {
+            margin:0px 0 10px 0;
+            background: #555;
+            opacity: 0.6;
+            filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60);
+        }
+    </style>
+    
+    
+    <script>
+
+        var a = TAG_TEMPLATE_CONFIG_FONT;
+        var b = TAG_TEMPLATE_CONFIG_NIGHT_MODE;
+       
+        function fontchange(a) {
+
+            if (a == 1) {
+                var fontsize = document.getElementById('nr_top_cont');
+                fontsize.style.fontSize = "14px";
+                fontsize.style.lineHeight = "24px";
+            }
+            else if (a == 2) {
+                var fontsize = document.getElementById('nr_top_cont');
+                fontsize.style.fontSize = "18px";
+                fontsize.style.lineHeight = "28px";
+            }
+            else if (a == 3) {
+                var fontsize = document.getElementById('nr_top_cont');
+                fontsize.style.fontSize = "22px";
+                fontsize.style.lineHeight = "32px";
+            }
+            else if (a == 4) {
+                var fontsize = document.getElementById('nr_top_cont');
+                fontsize.style.fontSize = "26px";
+                fontsize.style.lineHeight = "38px";
+            }
+            ;
+        };
+        function bgchange(b) {
+            if (b == 1) {
+                var fontsize = document.getElementById('nr_top_cont');
+                var fontback = document.getElementById('nr_gz_cont');
+                var fontbg = document.getElementsByClassName('cont_img');
+                fontback.style.background = "#fcfcfc";
+                fontsize.style.color = "#4f4f4f";
+                for (i = 0; i < fontbg.length; i++) {
+                    fontbg.item(i).style.opacity = '1.0';
+                }
+
+            }
+            else if (b == 2) {
+                var fontsize = document.getElementById('nr_top_cont');
+                var fontback = document.getElementById('nr_gz_cont');
+                fontback.style.background = "#333333";
+                fontsize.style.color = "#666666";
+            }
+
+
+        };
+        
+        function imgclick(obj) {
+            window.imagelistner.openImage(obj.attributes["src_origin"].nodeValue);
+        };
+        
+        function videoimgclick(obj) {
+            window.imagelistner.openVideo(obj.src);
+        };
+        
+        function noimgclick(obj) {
+            obj.src = obj.attributes["src_loading"].nodeValue;
+            loadobjectimage(obj, obj.attributes["src_origin"].nodeValue, true);
+        };
+        
+        function noimgload(obj) {
+        		obj.onload=null;
+        		obj.setAttribute("onclick","imgclick(this)");
+            obj.src = obj.attributes["src_origin"].nodeValue;
+        };
+        
+        function imgload(obj) {
+        		obj.onload=null;
+            obj.src = obj.attributes["src_origin"].nodeValue;
+        };
+        
+        function imgerror(obj) {
+        	obj.onload = obj.onerror = null;
+          obj.src = obj.attributes["src_error"].nodeValue;
+        };
+        
+        function loadobjectimage(obj, imageurl, resetclick){
+        	var imgloader=new Image();
+        	imgloader.src = imageurl;
+        	var done = false;
+        	imgloader.onload = imgloader.onreadystatechange = function(){
+        		if ( !done && (!this.readyState ||
+        		this.readyState == "loaded" || this.readyState == "complete") ) {
+        			done = true;
+        			obj.src = this.src;
+        			if(resetclick){
+        				obj.onclick=function(){
+        					imgclick(this);
+        				}
+        			}
+        			imgloader = null;
+        		}
+        	};
+        	imgloader.onerror = function(){
+        		obj.onload = obj.onerror = null;
+        		obj.src = obj.attributes["src_error"].nodeValue;
+        	}
+        }
+        
+        function loadimage() {
+        	var images=document.getElementsByTagName("img");
+        	var imgLen=images.length;
+        	var noimage;
+        	for(var i=0;i<imgLen;i++){
+        		noimage = images[i].attributes["noimage"].nodeValue;
+        		if(noimage == "0"){
+        			loadobjectimage(images[i], images[i].attributes["src_origin"].nodeValue, false);
+        		}
+					}
+				}
+    </script>
+
+</head>
+<body style="background:#fff;">
+    
+    <div class="nr_gz_cont" id="nr_gz_cont">
+        <div class="nr_top" style="padding:0 10px 0;">
+
+            <div class="clear"></div>
+            <div class="nr_top_cont" id="nr_top_cont">TAG_TEMPLATE_CONTENT</div>
+
+        </div>
+    </div>
+    <script>
+        fontchange(a);
+        bgchange(b);
+    </script>
+
+
+    
+</body>
+</html>

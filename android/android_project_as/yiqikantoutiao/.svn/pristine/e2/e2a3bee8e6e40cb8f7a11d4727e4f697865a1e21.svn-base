@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="SwitchButton">
+        <attr name="frameDrawable" format="reference|color" />
+        <attr name="stateDrawable" format="reference|color" />
+        <attr name="stateMaskDrawable" format="reference|color" />
+        <attr name="sliderDrawable" format="reference|color" />
+        <attr name="withTextInterval" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="SelectableRoundedImageView">
+        <attr name="sriv_left_top_corner_radius" format="dimension" />
+        <attr name="sriv_right_top_corner_radius" format="dimension" />
+        <attr name="sriv_left_bottom_corner_radius" format="dimension" />
+        <attr name="sriv_right_bottom_corner_radius" format="dimension" />
+        <attr name="sriv_border_width" format="dimension" />
+        <attr name="sriv_border_color" format="color" />
+        <attr name="sriv_oval" format="boolean" />
+        <attr name="android:scaleType" />
+    </declare-styleable>
+    
+    <!-- 夜间模式 -->
+    <attr name="main_bg_value" format="color|reference" />
+    <attr name="nav_bg_value" format="color|reference" />
+    <attr name="nav_bg_click_value" format="color|reference" />
+    <attr name="newstab_indicator_bg_unselect_value" format="color|reference" /> 
+    <attr name="item_title_color_readed_value" format="color|reference" /> 
+    <attr name="item_title_color_value" format="color|reference" /> 
+    <attr name="item_summary_color_value" format="color|reference" /> 
+    <attr name="common_item_bg_state_value" format="color|reference" />
+    <attr name="common_item_bg_white_state_value" format="color|reference" />
+    <attr name="common_item_bg_gray_state_value" format="color|reference" />
+    <attr name="common_item_bg_relative_state_value" format="color|reference" />
+    <attr name="common_bg_value" format="color|reference" />
+    <attr name="common_bg_gray_value" format="color|reference" />
+    <attr name="common_bg_gray_light_value" format="color|reference" />
+    <attr name="common_bg_white_value" format="color|reference" />
+    <attr name="news_tab_indicator_value" format="color|reference" />
+    <attr name="common_tab_text_value" format="color|reference" />
+    <attr name="common_bottom_radio_text_value" format="color|reference" />
+    <attr name="item_divider_color_value" format="color|reference" />
+    <attr name="home_top_divider_color_value" format="color|reference" />
+    <attr name="edit_channel_title_bg_value" format="color|reference" />
+    <attr name="edit_channel_title_child_text_value" format="color|reference" />
+    <attr name="article_title_value" format="color|reference" />
+    <attr name="article_time_value" format="color|reference" />
+    <attr name="article_content_text_value" format="color|reference" />
+    <attr name="article_bottom_btn_text_value" format="color|reference" />
+    <attr name="article_bottom_btn_bg_value" format="color|reference" />
+    <attr name="article_bottom_divide_value" format="color|reference" />
+    <attr name="article_relative_item_bg_value" format="color|reference" />
+    <attr name="article_setting_bg_value" format="color|reference" />
+    <attr name="article_setting_font_textcolor_state_value" format="color|reference" />
+    <attr name="setting_child_text_value" format="color|reference" />
+    <attr name="slideview_text_value" format="color|reference" />
+    <attr name="setting_group_bg_value" format="color|reference" />
+    <attr name="setting_group_text_value" format="color|reference" />
+    <attr name="setting_offline_progress_text_value" format="color|reference" />
+    <attr name="article_bottom_input_value" format="color|reference" />
+    <attr name="article_bottom_cmt_bg_value" format="color|reference" />
+    <attr name="task_detail_divider_color_value" format="color|reference" />
+    <attr name="directorate_grade_head_bg_value" format="color|reference" />
+    <attr name="item_divider_cmt_parent_color_value" format="color|reference" />
+    <attr name="logout_btn_bg_color_value" format="color|reference" />
+    <attr name="no_data_text_color_value" format="color|reference" />
+    <attr name="reply_pop_text_color_value" format="color|reference" />
+    <attr name="home_indicator_slide_right" format="color|reference" />
+    <attr name="login_forget_pwd_color_value" format="color|reference" />
+    <attr name="login_pwd_hint_color_value" format="color|reference" />
+    <attr name="login_third_text_color_value" format="color|reference" />
+    <attr name="article_cmt_parent_bg_color_value" format="color|reference" />
+    <attr name="toolbar_bg_color_value" format="color|reference" />
+    <attr name="toolbar_text_color_value" format="color|reference" />
+    <attr name="item_dynamic_content_color_value" format="color|reference" /> 
+    <attr name="item_dynamic_cmt_content_color_value" format="color|reference" /> 
+    <attr name="chat_bg_value" format="color|reference" />
+    <attr name="column_tab_text_value" format="color|reference" />
+    <attr name="column_tab_indicator_value" format="color|reference" />
+    <attr name="dynamic_list_huifu_bg_value" format="color|reference" />
+    <attr name="dynamic_list_huifu_bg_triangle_value" format="color|reference" />
+    <attr name="dynamic_list_huifu_bg_color_value" format="color|reference" />
+    <attr name="dynamic_list_more_huifu_bg_color_value" format="color|reference" />
+    <attr name="dynamic_detail_good_icon" format="color|reference" />
+    <attr name="dynamic_detail_comment_icon" format="color|reference" />
+    <attr name="dynamic_common_click_bg" format="color|reference" />
+    <attr name="my_more_login_text_color" format="color|reference" />
+    <attr name="comment_reply_detail_allcmt_text_color" format="color|reference" />
+    <attr name="comment_zan_text_color" format="color|reference" />
+    <!-- 夜间模式 -->
+    
+    <declare-styleable name="RoundProgressBar">
+        <attr name="roundColor" format="color" />
+        <attr name="roundProgressColor" format="color" />
+        <attr name="roundWidth" format="dimension"></attr>
+        <attr name="textColor" format="color|reference"/>
+        <attr name="textSize" format="dimension|reference"/>
+        <attr name="max" format="integer"></attr>
+        <attr name="textIsDisplayable" format="boolean"></attr>
+        <attr name="style">
+            <enum name="STROKE" value="0"></enum>
+            <enum name="FILL" value="1"></enum>
+        </attr>
+    </declare-styleable>
+    <!-- TabPageIndicator -->
+    <declare-styleable name="MyTabPageIndicator">
+        <attr name="textNormalSize" format="dimension|reference" />
+        <attr name="textSelectedSize" format="dimension|reference" />
+    </declare-styleable>
+
+</resources>

@@ -1,0 +1,63 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearlayout_images_slide_root"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/transparent" >
+
+    <RelativeLayout
+        android:id="@+id/linearlayout_images_slide"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <com.chengning.common.widget.extend.ViewPagerExtend
+            android:id="@+id/image_slide_page"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:focusable="true" />
+
+        <RelativeLayout
+            android:id="@+id/layout_title_text"
+            style="@style/Transparent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom" >
+
+            <LinearLayout
+                android:id="@+id/shadow_ll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:gravity="bottom"
+                android:background="@drawable/toutiao_title_bg"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/tvSlideTitle"
+                    style="@style/mainTextShadow"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:ellipsize="end"
+                    android:gravity="center_horizontal"
+                    android:maxLines="1"
+                    android:text=""
+                    android:textColor="?attr/slideview_text_value"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:id="@+id/layout_circle_images"
+                    android:layout_width="wrap_content"
+                    android:layout_height="8dp"
+                    android:layout_below="@+id/tvSlideTitle"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="2dp"
+                    android:orientation="horizontal" />
+            </LinearLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

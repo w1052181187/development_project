@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/title_bar_layout"
+    android:layout_width="match_parent"
+    android:layout_height="46dp"
+    android:background="?attr/nav_bg_value" 
+    >
+
+    <RelativeLayout
+        android:id="@+id/title_bar_back"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:background="?attr/nav_bg_click_value"
+        android:paddingLeft="@dimen/common_horizontal_margin"
+        android:paddingRight="@dimen/common_horizontal_margin"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/title_bar_back_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:drawableLeft="@drawable/nav_back_state"
+            android:drawablePadding="4dp"
+            android:gravity="center"
+            android:text="返回"
+            android:textColor="?attr/item_title_color_value"
+            android:textSize="@dimen/top_second_text_size" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/title_bar_close_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/title_bar_back"
+        android:gravity="center"
+        android:layout_marginLeft="@dimen/common_horizontal_margin"
+        android:text="关闭"
+        android:textColor="?attr/item_title_color_value"
+        android:textSize="@dimen/top_second_text_size"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/title_bar_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:paddingLeft="@dimen/common_horizontal_margin"
+        android:paddingRight="@dimen/common_horizontal_margin"
+        android:textColor="?attr/article_title_value"
+        android:textSize="@dimen/top_title_text_size"
+        android:visibility="gone" />
+
+</RelativeLayout>

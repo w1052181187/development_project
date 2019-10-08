@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/article_relative_bottom_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/common_bg_value">
+
+    <View
+        android:id="@+id/article_relative_bottom_article_v"
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:layout_marginBottom="6dp"
+        android:layout_marginLeft="@dimen/common_horizontal_margin"
+        android:layout_marginRight="@dimen/common_horizontal_margin"
+        android:background="?attr/item_divider_color_value"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:id="@+id/article_relative_bottom_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/article_relative_bottom_article_v"
+        android:background="?attr/common_bg_value"
+        android:orientation="vertical">
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/article_relative_bottom_no_data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="76dp"
+        android:gravity="center"
+        android:text="暂时还没有数据"
+        android:textColor="?attr/article_time_value"
+        android:textSize="15sp"/>
+
+    <LinearLayout
+        android:id="@+id/article_relative_bottom_more"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/article_relative_bottom_list"
+        android:gravity="center_horizontal"
+        android:paddingBottom="12dp"
+        android:paddingTop="21dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="4dp"
+            android:drawableRight="@mipmap/gengduo_pic"
+            android:gravity="center"
+            android:text="查看更多"
+            android:textColor="#222222"
+            android:textSize="14sp"/>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/item_channel_item_divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/channel_item_divider_height_common"
+        android:layout_below="@id/article_relative_bottom_more"
+        android:background="?attr/item_divider_color_value"/>
+</RelativeLayout>

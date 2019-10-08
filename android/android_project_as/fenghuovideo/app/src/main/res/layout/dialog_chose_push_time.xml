@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialog_chose_push_time_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        android:background="@drawable/alert_bg"
+        android:paddingLeft="1dp"
+        android:paddingRight="1dp" >
+
+        <LinearLayout
+            android:id="@+id/dialog_chose_push_time_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp" >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/dialog_chose_push_time_start_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="4dp"
+                    android:text="开始时间"
+                    android:textColor="@color/dialog_common_title_text"
+                    android:textSize="16dp" />
+
+                <com.chengning.common.widget.wheel.WheelView
+                    android:id="@+id/dialog_chose_push_time_start_time_wheel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/dialog_chose_push_time_end_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="4dp"
+                    android:text="结束时间"
+                    android:textColor="@color/dialog_common_title_text"
+                    android:textSize="16dp" />
+
+                <com.chengning.common.widget.wheel.WheelView
+                    android:id="@+id/dialog_chose_push_time_end_time_wheel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/dialog_chose_push_time_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dialog_chose_push_time_top" >
+
+            <LinearLayout
+                android:id="@+id/dialog_chose_push_time_btn_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/dialog_chose_push_time_cancel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/dialog_cancel_btn_state"
+                    android:text="取消"
+                    android:textColor="@color/dialog_common_cancel_text"
+                    android:textSize="16dp" />
+
+                <Button
+                    android:id="@+id/dialog_chose_push_time_confirm"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/dialog_confirm_btn_state"
+                    android:text="确定"
+                    android:textColor="@color/dialog_common_confirm_text"
+                    android:textSize="16dp" />
+            </LinearLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

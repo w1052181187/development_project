@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_bg" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <com.chengning.yiqikantoutiao.widget.PullToRefreshListView_FootLoad
+            xmlns:ptr="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/dynamic_list"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:cacheColorHint="@color/transparent"
+            android:divider="@color/dynamic_list_divider"
+            android:dividerHeight="@dimen/dynamic_list_divider_height"
+            android:fadingEdge="none"
+            android:fastScrollEnabled="false"
+            android:footerDividersEnabled="false"
+            android:headerDividersEnabled="false"
+            android:smoothScrollbar="true"
+            ptr:ptrAnimationStyle="flip" >
+        </com.chengning.yiqikantoutiao.widget.PullToRefreshListView_FootLoad>
+
+        <ImageView
+            android:id="@+id/touchRefrush"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/touch_refresh" />
+
+        <TextView
+            android:id="@+id/wait_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/touchRefrush"
+            android:layout_centerHorizontal="true"
+            android:text="努力加载中...."
+            android:textColor="#cccccc"
+            android:textSize="16dp" />
+
+        <ProgressBar
+            android:id="@+id/wait"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:indeterminateDrawable="@drawable/progress_center"
+            android:minHeight="42dp"
+            android:minWidth="42dp" />
+
+        <TextView
+            android:id="@+id/tips_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="40dp"
+            android:textColor="@color/tips_text"
+            android:textSize="16dp"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</RelativeLayout>

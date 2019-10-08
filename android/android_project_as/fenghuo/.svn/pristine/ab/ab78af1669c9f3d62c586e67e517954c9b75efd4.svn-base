@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_discuss_grid_root"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="5dp" >
+
+    <ImageView
+        android:id="@+id/item_discuss_grid_image"
+        android:layout_width="wrap_content"
+        android:layout_height="80dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/add_img_icon" />
+
+    <ImageButton
+        android:id="@+id/item_discuss_grid_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/transparent"
+        android:src="@drawable/remove_img_icon" />
+
+</RelativeLayout>

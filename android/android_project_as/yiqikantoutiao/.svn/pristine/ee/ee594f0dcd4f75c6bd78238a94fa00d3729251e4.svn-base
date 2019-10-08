@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <TextView
+        android:id="@+id/item_channel_tab_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="12dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:background="@drawable/yuanjiao_an"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="首页"
+        android:textColor="@color/channel_tab_text"
+        android:textSize="16sp" />
+
+    <ImageView
+        android:id="@+id/item_channel_tab_delete"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_alignParentRight="true"
+        android:src="@mipmap/shandiao_anniu" />
+</RelativeLayout>

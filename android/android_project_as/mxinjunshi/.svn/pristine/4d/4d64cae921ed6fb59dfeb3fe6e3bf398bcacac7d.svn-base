@@ -1,0 +1,392 @@
+package com.ikantech.military.ui;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+
+import android.content.ComponentName;
+import android.content.ContentUris;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Message;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.widget.Button;
+
+import com.ikantech.military.entity.CompareList;
+import com.ikantech.military.provider.impl.CountryManager.CountryColumns;
+import com.ikantech.military.provider.impl.WeaponDetailsManager.WeaponDetailsColumns;
+import com.ikantech.military.provider.impl.WeaponManager.WeaponColumns;
+import com.ikantech.support.ui.YiUIBaseActivity;
+import com.ikantech.support.utils.YiLog;
+import com.ikantech.support.utils.YiPrefsKeeper;
+import com.ikantech.support.widget.YiPopupWindow;
+import com.shenyuan.militarynews.R;
+import com.shenyuan.militarynews.SettingManager;
+import com.shenyuan.militarynews.utils.Common;
+import com.shenyuan.militarynews.views.TitleBar;
+
+public class WeaponDetialsActivity extends YiUIBaseActivity implements
+		View.OnClickListener {
+	private WebView mWebView;
+
+	private YiPopupWindow mPopupWindow;
+	private String mCountry;
+
+	private int mWeaponId = -1;
+	private Cursor mWeaponCursor = null;
+	private Cursor mWeaponDetailsCursor = null;
+	private CompareList mCompareList;
+
+	private Button mCompareBtn;
+	private Button mAddOrRemoveComBtn;
+	private Button mCommentBtn;
+	private Button mSearchBtn;
+	
+	private TitleBar mTitleBar;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		Common.setTheme(this);
+		setContentView(R.layout.activity_weapon_detials);
+		super.onCreate(savedInstanceState);
+		
+		mTitleBar = new TitleBar(this, true);
+		mTitleBar.showDefaultBack();
+		mTitleBar.setTitle("武器详情");
+		mTitleBar.setRightButton(R.drawable.nav_xuanxiang);
+		
+		mTitleBar.setRightButtonOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View view) {
+				if (mPopupWindow != null && mPopupWindow.isShowing()) {
+					mPopupWindow.dismiss();
+				} else {
+					int[] loc = new int[2];
+					view.getLocationOnScreen(loc);
+					getPopupWindow().showAtLocation(view, Gravity.TOP | Gravity.RIGHT,
+							0, loc[1] + view.getHeight() + 5);
+				}
+			}
+		});
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		YiPrefsKeeper.read(this, mCompareList);
+		if (mAddOrRemoveComBtn != null) {
+			if (mCompareList.contains(Integer.valueOf(mWeaponId))) {
+				mAddOrRemoveComBtn.setText(R.string.str_remove_from_compare);
+			} else {
+				mAddOrRemoveComBtn.setText(R.string.str_add_to_compare);
+			}
+		}
+		
+//		if(Common.isTrue(SettingManager.getInst().getNightModel())) {
+//			mWebView.setBackgroundColor(getResources().getColor(R.color.app_night_bgcolor));
+//		}else {
+//			mWebView.setBackgroundColor(getResources().getColor(R.color.app_bgcolor));
+//		}
+	}
+
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		if (mPopupWindow != null && mPopupWindow.isShowing()) {
+			mPopupWindow.dismiss();
+		}
+		if (mWeaponCursor != null) {
+			mWeaponCursor.close();
+			mWeaponCursor = null;
+		}
+		if (mWeaponDetailsCursor != null) {
+			mWeaponDetailsCursor.close();
+			mWeaponDetailsCursor = null;
+		}
+		super.onDestroy();
+	}
+
+	public void onBackPressed() {
+		if (mPopupWindow != null && mPopupWindow.isShowing()) {
+			mPopupWindow.dismiss();
+		} else {
+			super.onBackPressed();
+		}
+	}
+
+	public YiPopupWindow getPopupWindow() {
+		if (mPopupWindow == null) {
+			View view = LayoutInflater.from(this).inflate(
+					R.layout.weapon_detail_menu, null);
+			mPopupWindow = new YiPopupWindow(view,
+					ViewGroup.LayoutParams.WRAP_CONTENT,
+					ViewGroup.LayoutParams.WRAP_CONTENT);
+			mPopupWindow.setAnimationStyle(R.style.AnimationFade);
+
+			mCompareBtn = (Button) view.findViewById(R.id.detail_menu_comapre);
+			mAddOrRemoveComBtn = (Button) view
+					.findViewById(R.id.detail_menu_add_remove_compare);
+			mCommentBtn = (Button) view.findViewById(R.id.detail_menu_comment);
+			mSearchBtn = (Button) view.findViewById(R.id.detail_menu_search);
+
+			mCompareBtn.setOnClickListener(this);
+			mAddOrRemoveComBtn.setOnClickListener(this);
+			mCommentBtn.setOnClickListener(this);
+			mSearchBtn.setOnClickListener(this);
+		}
+
+		if (mCompareList.contains(Integer.valueOf(mWeaponId))) {
+			mAddOrRemoveComBtn.setText(R.string.str_remove_from_compare);
+		} else {
+			mAddOrRemoveComBtn.setText(R.string.str_add_to_compare);
+		}
+		return mPopupWindow;
+	}
+
+	@Override
+	public void processHandlerMessage(Message msg) {
+		// TODO Auto-generated method stub
+		switch (msg.what) {
+		case 0x01:
+			getLocalService().execute(new LoadWeaponDetailsRunnable());
+			break;
+		case 0x02:
+			cancelProgressDialog();
+			showMsgDialog(getString(R.string.err_load_data_failed),
+					getString(R.string.str_ok), new View.OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							finish();
+						}
+					});
+			break;
+		case 0x03:
+			cancelProgressDialog();
+			String html = (String) msg.obj;
+			mWebView.loadDataWithBaseURL("file:///android_asset/", html,
+					"text/html", "utf-8", null);
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	protected void initViews() {
+		mWebView = (WebView) findViewById(R.id.weapon_detials_webview);
+	}
+
+	@Override
+	protected void initDatas() {
+		mWebView.getSettings().setJavaScriptEnabled(true);
+		mCompareList = new CompareList();
+
+		mWeaponId = getIntent().getIntExtra("id", -1);
+		if (-1 == mWeaponId) {
+			Message message = getHandler().obtainMessage(0x02);
+			message.sendToTarget();
+		}
+	}
+
+	@Override
+	protected void installListeners() {
+		mWebView.setWebChromeClient(new WebChromeClient() {
+			public void onProgressChanged(WebView view, int progress) {
+				if (progress == 80) {
+					// mLoader.setVisibility(View.GONE);
+				}
+			}
+		});
+		installLocalServiceBinder(new ServiceConnection() {
+
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+
+			}
+
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder service) {
+				showProgressDialog();
+				getLocalService().execute(new LoadWeaponRunnable());
+			}
+		});
+	}
+
+	@Override
+	protected void uninstallListeners() {
+		uninstallLocalServiceBinder();
+	}
+
+	private class LoadWeaponRunnable implements Runnable {
+		@Override
+		public void run() {
+			if (mWeaponId == -1)
+				return;
+
+			mWeaponCursor = getContentResolver().query(
+					ContentUris.withAppendedId(WeaponColumns.CONTENT_URI,
+							mWeaponId),
+					new String[] { WeaponColumns.NAME, WeaponColumns.IMAG_URL,
+							WeaponColumns.COUNTRY_CODE }, null, null, null);
+
+			mWeaponDetailsCursor = getContentResolver().query(
+					WeaponDetailsColumns.CONTENT_URI,
+					new String[] { WeaponDetailsColumns.BIG_IMG_URL,
+							WeaponDetailsColumns.SUB_TYPE,
+							WeaponDetailsColumns.DESC,
+							WeaponDetailsColumns.OVERVIEW,
+							WeaponDetailsColumns.TECH_DATA,
+							WeaponDetailsColumns.WEAPONRY,
+							WeaponDetailsColumns.DEV_COURSE,
+							WeaponDetailsColumns.EQUI_DEV,
+							WeaponDetailsColumns.SERVE_ARMY,
+							WeaponDetailsColumns.COMMENT_OF_MEDIA,
+							WeaponDetailsColumns.ENGLISH_NAME,
+							WeaponDetailsColumns.CRO },
+					WeaponDetailsColumns.WEAPON_ID + "=?",
+					new String[] { String.valueOf(mWeaponId) }, null);
+
+			Message message = null;
+			if (mWeaponCursor != null && mWeaponDetailsCursor != null
+					&& mWeaponCursor.getCount() > 0
+					&& mWeaponDetailsCursor.getCount() > 0) {
+				mWeaponCursor.moveToFirst();
+				Cursor cursor = getContentResolver().query(
+						CountryColumns.CONTENT_URI,
+						new String[] { CountryColumns.NAME },
+						CountryColumns.CODE + "=?",
+						new String[] { mWeaponCursor.getString(2) }, null);
+				try {
+					if (cursor != null && cursor.getCount() > 0) {
+						cursor.moveToFirst();
+						mCountry = cursor.getString(0);
+					}
+				} catch (Exception e) {
+					// TODO: handle exception
+				} finally {
+					if (cursor != null) {
+						cursor.close();
+					}
+				}
+
+				mWeaponDetailsCursor.moveToFirst();
+				message = getHandler().obtainMessage(0x01);
+			} else {
+				message = getHandler().obtainMessage(0x02);
+			}
+			message.sendToTarget();
+		}
+	}
+
+	private class LoadWeaponDetailsRunnable implements Runnable {
+		@Override
+		public void run() {
+			int res = -1;
+			if(Common.isTrue(SettingManager.getInst().getNightModel())) {
+				res = R.raw.test_ngiht;
+			}else {
+				res = R.raw.test;
+			}
+			
+			InputStream fIn = getResources().openRawResource(res);
+			ByteArrayOutputStream fout = null;
+			try {
+				fout = new ByteArrayOutputStream(fIn.available());
+
+				byte[] buffer = new byte[1024];
+				int readed = 0;
+				while ((readed = fIn.read(buffer, 0, buffer.length - 1)) != -1) {
+					fout.write(buffer, 0, readed);
+				}
+				byte[] ret = fout.toByteArray();
+				String html = new String(ret, "gbk");
+				html = html.replace("${big_img}",
+						mWeaponDetailsCursor.getString(0));
+				html = html.replace("${subtype}",
+						mWeaponDetailsCursor.getString(1));
+				html = html.replace("${desc}",
+						mWeaponDetailsCursor.getString(2));
+
+				html = html.replace("${param1}",
+						mWeaponDetailsCursor.getString(3));
+				html = html.replace("${param2}",
+						mWeaponDetailsCursor.getString(4));
+				html = html.replace("${param3}",
+						mWeaponDetailsCursor.getString(5));
+
+				html = html.replace("${dev_course}",
+						mWeaponDetailsCursor.getString(6));
+				html = html.replace("${equi_dev}",
+						mWeaponDetailsCursor.getString(7));
+				html = html.replace("${serve_army}",
+						mWeaponDetailsCursor.getString(8));
+				html = html.replace("${comment_of_media}",
+						mWeaponDetailsCursor.getString(9));
+				html = html.replace("${engName}",
+						mWeaponDetailsCursor.getString(10));
+				html = html.replace("${cro}",
+						mWeaponDetailsCursor.getString(11));
+
+				html = html.replace("${name}", mWeaponCursor.getString(0));
+				html = html.replace("${country}", mCountry);
+				html = html.replace("${imgUrl}", mWeaponCursor.getString(1));
+
+				Message message = getHandler().obtainMessage(0x03, html);
+				message.sendToTarget();
+			} catch (Exception e) {
+				YiLog.getInstance().e(e,
+						"get raw data from store device failed.");
+			} finally {
+				try {
+					if (fIn != null) {
+						fIn.close();
+					}
+					if (fout != null) {
+						fout.close();
+					}
+				} catch (Exception e2) {
+				}
+			}
+		}
+	}
+
+	@Override
+	public void onClick(View v) {
+		int id = v.getId();
+		if(id ==  R.id.detail_menu_comapre)
+		{
+		 
+			Intent intent = new Intent(WeaponDetialsActivity.this,
+					CompareManagerActivity.class);
+			startActivity(intent);
+		}else if(id == R.id.detail_menu_add_remove_compare){
+			if (mCompareList.contains(Integer.valueOf(mWeaponId))) {
+				mCompareList.del(Integer.valueOf(mWeaponId));
+				mAddOrRemoveComBtn.setText(R.string.str_add_to_compare);
+			} else {
+				mCompareList.add(Integer.valueOf(mWeaponId));
+				mAddOrRemoveComBtn.setText(R.string.str_remove_from_compare);
+			}
+			YiPrefsKeeper.write(this, mCompareList);
+		}else if(id == R.id.detail_menu_comment){
+//			UMSocialService controller = UMServiceFactory.getUMSocialService(
+//					"com.umeng.comment#" + mWeaponId);
+//			controller.openComment(WeaponDetialsActivity.this, false); 
+		}else if(id == R.id.detail_menu_search){
+			Intent intent = new Intent(WeaponDetialsActivity.this,
+					SearchActivity.class);
+			startActivity(intent);
+		}
+	}
+}

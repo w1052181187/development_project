@@ -1,0 +1,48 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_bg_gray_value" >
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/title_bar_layout" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/chat_report_reason"
+                style="@style/SettingGroup"
+                android:text="请选择举报原因:" />
+
+            <com.chengning.fenghuo.widget.LoadFullListView
+                android:id="@+id/chat_report_reason_listview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="?attr/item_divider_color_value"
+                android:dividerHeight="1px"
+                android:listSelector="?attr/common_item_bg_state_value" >
+            </com.chengning.fenghuo.widget.LoadFullListView>
+
+            <EditText
+                android:id="@+id/chat_report_reason_other_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="请填写详细内容，以便能及时受理~"
+                android:padding="12dp"
+                android:textColor="?attr/setting_child_text_value"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

@@ -1,0 +1,40 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/message_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_bg_gray_value" >
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <com.chengning.common.widget.MultiStateView
+        xmlns:multistateview="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/multiStateView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title_bar_layout"
+        multistateview:msv_emptyView="@layout/empty_view"
+        multistateview:msv_errorView="@layout/error_view"
+        multistateview:msv_loadingView="@layout/loading_view"
+        multistateview:msv_viewState="loading" >
+
+        <com.chengning.fenghuo.widget.PullToRefreshListView_FootLoad
+            xmlns:ptr="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/chat_list_listview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:cacheColorHint="@color/transparent"
+            android:divider="@color/list_divier"
+            android:dividerHeight="0dp"
+            android:fadingEdge="none"
+            android:fastScrollEnabled="false"
+            android:footerDividersEnabled="false"
+            android:headerDividersEnabled="false"
+            android:smoothScrollbar="true"
+            ptr:ptrAnimationStyle="flip" >
+        </com.chengning.fenghuo.widget.PullToRefreshListView_FootLoad>
+    </com.chengning.common.widget.MultiStateView>
+
+</RelativeLayout>

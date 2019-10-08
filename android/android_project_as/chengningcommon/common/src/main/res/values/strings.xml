@@ -1,0 +1,15 @@
+<resources>
+
+    <string name="app_name">chengning-common</string>
+
+    <!-- umeng share-->
+    <string name="umeng_share_err_userinfo">获取用户资料错误</string>
+    <string name="umeng_share_cancle_userinfo">取消获取用户资料</string>
+    <string name="umeng_share_err_share">分享错误</string>
+    <string name="umeng_share_cancle_share">分享取消</string>
+    <string name="umeng_share_success_share">分享成功</string>
+    <string name="umeng_share_err_qq_login">QQ登录失败</string>
+    <string name="umeng_share_err_auth">授权失败</string>
+    <string name="umeng_share_install_wx">请安装微信客户端</string>
+    <string name="umeng_share_install_qq">请安装QQ客户端</string>
+</resources>

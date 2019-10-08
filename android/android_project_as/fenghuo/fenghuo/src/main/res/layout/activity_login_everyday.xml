@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/main_bg_value">
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <com.chengning.common.widget.MultiStateView xmlns:multistateview="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/multiStateView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title_bar_layout"
+        multistateview:msv_emptyView="@layout/empty_view"
+        multistateview:msv_errorView="@layout/error_view"
+        multistateview:msv_loadingView="@layout/loading_view"
+        multistateview:msv_viewState="loading">
+
+        <ScrollView
+            android:id="@+id/directorate_task_detail_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/title_bar_layout"
+            android:scrollbars="none"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="每日登录"
+                    android:textAppearance="@style/myContentTitleTextStyle" />
+
+                <TextView
+                    android:id="@+id/directorate_task_detail_complete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="今天的任务还没有完成！快去做任务得奖励！"
+                    android:textAppearance="@style/myContentTextStyleGraySmall" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_marginTop="6dp"
+                    android:background="?attr/task_detail_divider_color_value" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="任务性质:"
+                        android:textAppearance="@style/myContentTextStyle" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="6dp"
+                        android:text="日常任务"
+                        android:textAppearance="@style/myContentTextStyle" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/directorate_task_detail_count_ll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="奖励次数:"
+                        android:textAppearance="@style/myContentTextStyle" />
+
+                    <TextView
+                        android:id="@+id/directorate_task_detail_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="6dp"
+                        android:textAppearance="@style/myContentTextStyle" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="积分奖励:"
+                        android:textAppearance="@style/myContentTextStyle" />
+
+                    <TextView
+                        android:id="@+id/directorate_task_detail_point"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="6dp"
+                        android:drawableLeft="@drawable/zhihuibu_renwu_jifen_icon"
+                        android:drawablePadding="6dp"
+                        android:gravity="center_vertical"
+                        android:textAppearance="@style/myContentTextStyle" />
+                </LinearLayout>
+
+                <!--<LinearLayout-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginBottom="20dp"-->
+                    <!--android:layout_marginTop="6dp"-->
+                    <!--android:gravity="center_vertical"-->
+                    <!--android:visibility="gone"-->
+                    <!--android:orientation="horizontal">-->
+
+                    <!--<TextView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:text="金币奖励:"-->
+                        <!--android:textAppearance="@style/myContentTextStyle" />-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/directorate_task_detail_money"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginLeft="6dp"-->
+                        <!--android:drawableLeft="@drawable/zhihuibu_renwu_jinbi_icon"-->
+                        <!--android:drawablePadding="6dp"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--android:textAppearance="@style/myContentTextStyle" />-->
+
+                <!--</LinearLayout>-->
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:layout_marginTop="20dp"
+                    android:text="任务说明:"
+                    android:textAppearance="@style/myContentTextStyle" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:text="1.如果您还没有账号，请先点击注册账号"
+                    android:textAppearance="@style/myContentTextStyle" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:text="2.每天登录账号即可获得奖励"
+                    android:textAppearance="@style/myContentTextStyle" />
+
+                <ImageView
+                    android:id="@+id/dialog_upgrade_close_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/renwu_login" />
+            </LinearLayout>
+        </ScrollView>
+    </com.chengning.common.widget.MultiStateView>
+
+</RelativeLayout>

@@ -1,0 +1,139 @@
+package com.chengning.fenghuo.widget;
+
+import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
+import android.widget.TextView;
+
+import com.chengning.common.base.BaseFragmentActivity;
+import com.chengning.fenghuo.LoginManager;
+import com.chengning.fenghuo.R;
+import com.chengning.fenghuo.data.bean.BaseArticlesBean;
+import com.chengning.fenghuo.util.ArticleManagerUtils;
+import com.chengning.fenghuo.util.ArticleManagerUtils.LikeState;
+import com.chengning.fenghuo.util.Common;
+
+public class DynamicCommentBottom {
+	private FragmentActivity mContext;
+	
+	private TextView mInput;
+	private ImageButton mLike;
+	private TextView mCommentCount;
+	private final ImageButton mComment;
+	private ImageButton mShare;
+
+	private BaseArticlesBean mArticleBean;
+	private ArticleManagerUtils mArticleManagerUtils;
+
+	public DynamicCommentBottom(FragmentActivity activity, final View root){
+		this.mContext = activity;
+		mInput = (TextView) root.findViewById(R.id.article_comment_bottom_toolbar_input);
+		mLike = (ImageButton) root.findViewById(R.id.article_comment_bottom_toolbar_fav);
+		mCommentCount = (TextView) root.findViewById(R.id.article_comment_bottom_toolbar_comment_count);
+		mComment = (ImageButton) root.findViewById(R.id.article_comment_bottom_toolbar_comment);
+		mShare = (ImageButton) root.findViewById(R.id.article_comment_bottom_toolbar_share);
+		init();
+	}
+	
+	private void init() {
+		mComment.setVisibility(View.GONE);
+		mCommentCount.setVisibility(View.GONE);
+		mInput.setText("回复楼主");
+		mLike.setImageResource(R.drawable.dynamic_bottom_like_state);
+		
+		LikeState likeState = new LikeState() {
+			
+			@Override
+			public void success(String digCounts) {
+				mLike.setSelected(true);
+				mLike.setEnabled(true);
+			}
+			
+			@Override
+			public void init() {
+				mLike.setEnabled(false);	
+			}
+			
+			@Override
+			public void failure() {
+				mLike.setEnabled(true);
+			}
+		};
+		
+//		CollectState collectState = new CollectState() {
+//			
+//			@Override
+//			public void setState(boolean state) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		};
+		
+		mArticleManagerUtils = new ArticleManagerUtils(likeState);
+	}
+
+	public void setData(BaseArticlesBean bean){
+		this.mArticleBean = bean;
+		if (null == mArticleBean) {
+			return;
+		}
+		mLike.setSelected(Common.isTrue(mArticleBean.getIs_dig()));
+		
+		mInput.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (null != mArticleBean && LoginManager.getInst().checkLoginWithNotice(mContext)) {
+					DynamicCommentInputDialog dynamicDialog = new DynamicCommentInputDialog();
+					dynamicDialog.setBean(mArticleBean);
+					dynamicDialog.show(((BaseFragmentActivity)mContext).getSupportFragmentManager(), CommentInputDialog.class.getSimpleName());
+					
+				}
+			}
+		});
+		mLike.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (!Common.isTrue(mArticleBean.getIs_dig())) {
+					mArticleManagerUtils.doLike(mContext, mArticleBean);
+				} else {
+					mArticleManagerUtils.cancleLike(mContext, mArticleBean);
+				}
+			}
+		});
+		
+		mShare.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (null != mArticleBean) {
+					
+					PicArticleDialog dialog = new PicArticleDialog();
+					dialog.setBean(mArticleBean);					
+					dialog.show(mContext.getSupportFragmentManager(),
+							PicArticleDialog.class.getSimpleName());
+					
+				}
+				
+			}
+		});
+	}
+	
+	public ImageButton getLikeButton(){
+		return mLike;
+	}
+	
+	public void setLikeState(LikeState likeState){
+		mArticleManagerUtils = new ArticleManagerUtils(likeState);
+	}
+	
+//	public void setCollectState(boolean isFavState) {
+////		if (type == ArticleType.ARTICLE) {
+//			mArticleManagerUtils.setCollectState(isFavState);
+////		}
+//		
+//	}
+	
+}

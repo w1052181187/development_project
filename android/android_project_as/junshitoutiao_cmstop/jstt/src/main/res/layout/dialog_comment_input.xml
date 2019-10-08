@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <View
+        android:id="@+id/comment_input_empty"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/half_transparent" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/common_bg_value" >
+
+            <TextView
+                android:id="@+id/comment_input_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/common_horizontal_margin"
+                android:text="取消"
+                android:textColor="?attr/item_summary_color_value"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/comment_input_publish"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:padding="@dimen/common_horizontal_margin"
+                android:text="发布"
+                android:textColor="@color/common_blue"
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/comment_input_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/comment_input_cancel"
+                android:layout_marginBottom="6dp"
+                android:layout_marginLeft="@dimen/common_horizontal_margin"
+                android:layout_marginRight="@dimen/common_horizontal_margin"
+                android:background="?attr/article_bottom_input_value"
+                android:gravity="top"
+                android:hint="请勿发表有关政治、色情、及令人反感的信息，否则将会禁止您的评论"
+                android:minHeight="90dp"
+                android:padding="6dp"
+                android:textColor="?attr/article_title_value"
+                android:textColorHint="?attr/item_summary_color_value"
+                android:textSize="16sp" />
+
+            <EditText
+                android:id="@+id/comment_input_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/comment_input_input"
+                android:layout_marginBottom="6dp"
+                android:layout_marginLeft="@dimen/common_horizontal_margin"
+                android:layout_marginRight="@dimen/common_horizontal_margin"
+                android:background="?attr/article_bottom_input_value"
+                android:ellipsize="end"
+                android:hint="留个名儿呗~"
+                android:lines="1"
+                android:maxLines="1"
+                android:padding="6dp"
+                android:singleLine="true"
+                android:textColor="?attr/article_title_value"
+                android:textColorHint="?attr/item_summary_color_value"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_below="@id/comment_input_name" />
+        </RelativeLayout>
+    </ScrollView>
+
+</LinearLayout>

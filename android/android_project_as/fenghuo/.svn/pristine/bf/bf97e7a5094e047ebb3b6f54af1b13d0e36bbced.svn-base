@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_list_findpeople_right_root"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/common_item_bg_white_state_value"
+    android:paddingLeft="@dimen/common_vertical_margin"
+    android:paddingRight="@dimen/common_vertical_margin" >
+
+    <ImageView
+        android:id="@+id/item_columnist_face"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="@dimen/common_horizontal_margin"
+        android:layout_marginTop="@dimen/common_horizontal_margin"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/common_horizontal_margin"
+        android:layout_marginRight="@dimen/common_horizontal_margin"
+        android:layout_toLeftOf="@+id/item_columnist_follow"
+        android:layout_toRightOf="@+id/item_columnist_face"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/item_columnist_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textColor="?attr/item_title_color_value"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/item_columnist_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:hint="暂无简介"
+            android:singleLine="true"
+            android:textColor="?attr/article_time_value"
+            android:textColorHint="?attr/article_time_value"
+            android:textSize="@dimen/common_item_time_text_size" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/item_columnist_follow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/follow_btn_bg_selector"
+        android:gravity="center"
+        android:paddingBottom="4dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="4dp"
+        android:textColor="@drawable/follow_text_color_selector"
+        android:textSize="13sp" />
+
+    <View
+        style="@style/SettingDivider"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="0dp" />
+
+</RelativeLayout>

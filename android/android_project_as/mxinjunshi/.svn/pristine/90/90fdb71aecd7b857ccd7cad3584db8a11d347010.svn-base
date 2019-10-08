@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 标签按钮底部的背景颜色 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@color/home_toolbar_bg_night_normal" android:state_selected="false" android:state_pressed="false"></item>
+    <item android:drawable="@color/home_toolbar_bg_night_selected" android:state_selected="false" android:state_pressed="true"></item>
+    <item android:drawable="@color/home_toolbar_bg_night_selected" android:state_selected="true"></item>
+
+</selector>

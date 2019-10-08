@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../chengningcommon/alicloud_feedback/alicloud_feedback.iml" filepath="$PROJECT_DIR$/../chengningcommon/alicloud_feedback/alicloud_feedback.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../chengningcommon/baidu_mtj_sdk/baidu_mtj_sdk.iml" filepath="$PROJECT_DIR$/../chengningcommon/baidu_mtj_sdk/baidu_mtj_sdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../chengningcommon/common/common.iml" filepath="$PROJECT_DIR$/../chengningcommon/common/common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../chengningcommon/leancloudpush/leancloudpush.iml" filepath="$PROJECT_DIR$/../chengningcommon/leancloudpush/leancloudpush.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../chengningcommon/pulltorefresh/pulltorefresh.iml" filepath="$PROJECT_DIR$/../chengningcommon/pulltorefresh/pulltorefresh.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../chengningcommon/shortcutBadger/shortcutBadger.iml" filepath="$PROJECT_DIR$/../chengningcommon/shortcutBadger/shortcutBadger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../chengningcommon/umeng_sdk/umeng_sdk.iml" filepath="$PROJECT_DIR$/../chengningcommon/umeng_sdk/umeng_sdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../chengningcommon/umeng_share/umeng_share.iml" filepath="$PROJECT_DIR$/../chengningcommon/umeng_share/umeng_share.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../chengningcommon/viewpagerlibrary/viewpagerlibrary.iml" filepath="$PROJECT_DIR$/../chengningcommon/viewpagerlibrary/viewpagerlibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/yiqikantoutiao.iml" filepath="$PROJECT_DIR$/yiqikantoutiao.iml" />
+    </modules>
+  </component>
+</project>

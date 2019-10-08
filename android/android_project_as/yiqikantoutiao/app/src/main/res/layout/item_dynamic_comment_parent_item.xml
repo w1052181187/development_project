@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <com.chengning.yiqikantoutiao.widget.DynamicTextView
+        android:id="@+id/item_dynamic_comment_item_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/dynamic_list_more_huifu_bg_color_value"
+        android:paddingBottom="2dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingTop="2dp"
+        android:text=""
+        android:textColor="?attr/item_dynamic_cmt_content_color_value"
+        android:textSize="14sp" />
+
+</LinearLayout>

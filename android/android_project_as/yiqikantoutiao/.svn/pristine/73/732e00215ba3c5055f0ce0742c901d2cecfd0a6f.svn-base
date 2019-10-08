@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <View
+        android:id="@+id/dialog_point_hint_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/half_transparent" />
+
+    <RelativeLayout 
+        android:id="@+id/dialog_point_hint_bg"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content" 
+	    android:layout_centerInParent="true"
+	    android:paddingBottom="12dp"
+	    android:background="@drawable/bg"
+	    >
+
+        <RelativeLayout
+            android:id="@+id/dialog_point_hint_bg_rl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/top_bg1" 
+            >
+
+            <ImageView
+		        android:id="@+id/dialog_point_hint_close_btn"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentLeft="true"
+		        android:layout_alignParentTop="true"
+		        android:layout_marginLeft="12dp"
+		        android:layout_marginTop="12dp"
+		        android:padding="12dp"
+		        android:background="@drawable/alert_close_btn" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" 
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                >
+
+                <TextView
+                    android:id="@+id/dialog_point_hint_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:textColor="@color/white"
+                    />
+
+                <TextView
+                    android:id="@+id/dialog_point_hint_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" 
+                    android:textSize="16sp"
+                    android:textColor="@color/white"
+                    />
+
+            </LinearLayout>
+            
+        </RelativeLayout>
+	
+        <TextView
+            android:id="@+id/dialog_point_hint_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/dialog_point_hint_bg_rl"
+            android:layout_alignLeft="@+id/dialog_point_hint_bg_rl"
+            android:layout_alignRight="@+id/dialog_point_hint_bg_rl"
+            android:layout_marginTop="12dp" 
+            android:layout_marginLeft="24dp" 
+            android:layout_marginRight="24dp" 
+            android:textSize="16sp"
+            android:text="您今天还可以完成以下任务:"
+            android:textColor="@color/item_title_color_normal"
+            />
+        
+        <com.chengning.yiqikantoutiao.widget.LoadFullListView
+            android:id="@+id/dialog_point_hint_list"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/dialog_point_hint_task"
+	        android:layout_alignLeft="@+id/dialog_point_hint_bg_rl"
+	        android:layout_alignRight="@+id/dialog_point_hint_bg_rl"
+            android:layout_marginTop="6dp"
+            android:layout_marginLeft="24dp" 
+            android:layout_marginRight="24dp" 
+            android:dividerHeight="0dp"
+            android:divider="@null"
+            android:listSelector="@color/transparent"
+            >
+            
+        </com.chengning.yiqikantoutiao.widget.LoadFullListView>
+	
+        <View
+	        android:id="@+id/dialog_point_hint_line"
+	        android:layout_width="match_parent"
+	        android:layout_height="1px"
+	        android:layout_below="@+id/dialog_point_hint_list"
+	        android:layout_centerHorizontal="true"
+	        android:layout_marginTop="6dp" 
+	        android:background="@color/line_gray"
+	        />
+        
+	    <TextView
+	        android:id="@+id/dialog_point_hint_confirm_btn"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/dialog_point_hint_line"
+	        android:layout_centerHorizontal="true"
+	        android:gravity="center"
+	        android:layout_marginTop="12dp"
+	        android:layout_marginLeft="24dp" 
+            android:layout_marginRight="24dp"
+	        android:textSize="17sp"
+	        android:textColor="@color/common_gray"
+	        android:text="执行任务" />
+	
+	</RelativeLayout>
+
+</RelativeLayout>

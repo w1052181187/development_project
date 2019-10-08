@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_bg_value" >
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <include
+        android:id="@+id/article_comment_bottom_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        layout="@layout/article_comment_bottom_toolbar" />
+
+    <com.chengning.yiqikantoutiao.widget.NoFocusingBottomListenerScrollView
+        android:id="@+id/article_content_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/article_comment_bottom_toolbar"
+        android:layout_below="@id/title_bar_layout"
+        android:fadingEdge="none"
+        android:visibility="visible" >
+
+        <LinearLayout
+            android:id="@+id/article_content_scroll_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/article_content_top"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/common_horizontal_margin"
+                android:paddingRight="@dimen/common_horizontal_margin"
+                android:paddingTop="18dp" >
+
+                <TextView
+                    android:id="@+id/article_content_top_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingMultiplier="1.2"
+                    android:text="标题\n2标题"
+                    android:textColor="?attr/article_title_value"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/article_content_top_from_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/article_content_top_title"
+                    android:layout_marginTop="14dp"
+                    android:text="来源："
+                    android:textColor="?attr/article_time_value"
+                    android:textSize="@dimen/channel_item_summary_size" />
+
+                <TextView
+                    android:id="@+id/article_content_top_from"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/article_content_top_from_tv"
+                    android:layout_below="@id/article_content_top_title"
+                    android:layout_marginRight="10dp"
+                    android:layout_toRightOf="@id/article_content_top_from_tv"
+                    android:enabled="false"
+                    android:textColor="?attr/article_time_value"
+                    android:textSize="@dimen/channel_item_summary_size" />
+
+                <TextView
+                    android:id="@+id/article_content_top_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/article_content_top_from"
+                    android:layout_alignWithParentIfMissing="true"
+                    android:layout_below="@id/article_content_top_title"
+                    android:layout_toRightOf="@id/article_content_top_from"
+                    android:text="时间"
+                    android:textColor="?attr/article_time_value"
+                    android:textSize="@dimen/channel_item_summary_size" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/article_content_content_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/article_content_zanshang_shangtoutiao_buxihuan"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_marginBottom="33dp"
+                android:layout_marginLeft="@dimen/common_horizontal_margin"
+                android:layout_marginRight="@dimen/common_horizontal_margin"
+                android:layout_marginTop="33dp"
+                android:orientation="horizontal" >
+
+                <LinearLayout
+                    android:id="@+id/article_content_shangtoutiao_layout"
+                    android:layout_width="107dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/article_zanshang"
+                    android:gravity="center"
+                    android:padding="8dp" >
+
+                    <TextView
+                        android:id="@+id/article_content_shangtoutiao_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/article_ding_state"
+                        android:drawablePadding="4dp"
+                        android:gravity="center"
+                        android:text="上头条"
+                        android:textColor="@drawable/common_zan_text_color"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/article_content_buxihuan_layout"
+                    android:layout_width="107dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/article_zanshang"
+                    android:gravity="center"
+                    android:padding="8dp" >
+
+                    <TextView
+                        android:id="@+id/article_content_buxihuan_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/article_cai_state"
+                        android:drawablePadding="4dp"
+                        android:gravity="center"
+                        android:text="不喜欢"
+                        android:textColor="@drawable/common_zan_text_color"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <include
+                android:id="@+id/article_ad_bottom_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                layout="@layout/article_ad_bottom"
+                android:visibility="gone" />
+
+            <RelativeLayout
+                android:id="@+id/article_content_bottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="@dimen/common_horizontal_margin"
+                android:layout_marginRight="@dimen/common_horizontal_margin"
+                android:layout_marginTop="4dp"
+                android:visibility="gone"
+                android:background="@drawable/article_bottom_bg_stroke" >
+
+                
+            </RelativeLayout>
+
+            <include
+                android:id="@+id/article_relative_bottom_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                layout="@layout/article_relative_bottom"
+                android:visibility="gone" />
+
+            <RelativeLayout
+                android:id="@+id/article_content_pager_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:visibility="visible" >
+
+                <include
+                    android:id="@+id/article_comment_bottom_layout"
+                    layout="@layout/article_comment_bottom" />
+            </RelativeLayout>
+        </LinearLayout>
+    </com.chengning.yiqikantoutiao.widget.NoFocusingBottomListenerScrollView>
+
+    <RelativeLayout
+        android:id="@+id/cover_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/article_comment_bottom_toolbar"
+        android:layout_below="@id/title_bar_layout"
+        android:layout_marginBottom="1px"
+        android:background="?attr/common_bg_value" >
+
+        <include
+            android:id="@+id/progress_refresh_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            layout="@layout/progress_refresh"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/article_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    </FrameLayout>
+
+</RelativeLayout>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <RelativeLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/common_item_bg_state_value"
+        android:padding="@dimen/common_horizontal_margin">
+
+        <ImageView
+            android:id="@+id/item_article_comment_top_user_image"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:scaleType="centerCrop"
+            android:layout_alignParentLeft="true" />
+
+        <TextView
+            android:id="@+id/item_article_comment_top_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/item_article_comment_top_user_image"
+            android:layout_marginLeft="@dimen/common_horizontal_margin"
+            android:layout_toRightOf="@id/item_article_comment_top_user_image"
+            android:layout_toLeftOf="@+id/item_article_comment_top_like"
+            android:text="用户昵称"
+            android:textColor="@color/article_cmt_name"
+            android:textSize="14sp" />
+        <TextView
+            android:id="@+id/item_article_comment_top_like"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:paddingLeft="6dp"
+            android:layout_alignTop="@+id/item_article_comment_top_user_name"
+            android:drawableLeft="@drawable/toolbar_btn_like_small_state"
+            android:drawablePadding="3dp"
+            android:gravity="center"
+            android:text=""
+            android:textColor="?attr/comment_zan_text_color"
+            android:textSize="12sp" />
+
+        <com.chengning.fenghuo.widget.DynamicTextView
+            android:id="@+id/item_article_comment_content_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/item_article_comment_top_user_name"
+            android:layout_below="@id/item_article_comment_top_user_name"
+            android:layout_marginTop="7dp"
+            android:layout_marginBottom="6dp"
+            android:lineSpacingExtra="@dimen/comment_reply_line_space"
+            android:textColor="?attr/item_title_color_value"
+            android:textSize="@dimen/common_item_comment_content_text_size" />
+
+        <RelativeLayout
+            android:id="@+id/item_article_comment_top_ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/item_article_comment_top_user_name"
+            android:layout_below="@+id/item_article_comment_content_text"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/item_article_comment_top_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="时间"
+                android:textColor="?attr/item_title_color_value"
+                android:textSize="@dimen/common_item_time_text_size" />
+
+            <TextView
+                android:id="@+id/item_article_comment_top_comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/item_article_comment_top_time"
+                android:background="@drawable/commet_reply_tv_bg_selector"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:text="回复"
+                android:layout_marginLeft="2dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:textColor="?attr/item_title_color_value"
+                android:textSize="@dimen/common_item_time_text_size" />
+            <TextView
+                android:id="@+id/item_article_comment_top_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:paddingLeft="12dp"
+                android:gravity="right"
+                android:layout_marginLeft="12dp"
+                android:text="删除"
+                android:textColor="?attr/item_title_color_value"
+                android:textSize="@dimen/common_item_time_text_size" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/item_article_comment_content_listview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/item_article_comment_top_user_name"
+            android:layout_below="@id/item_article_comment_top_ll"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="5dp"
+            android:layout_marginTop="11dp"
+            android:background="?attr/article_cmt_parent_bg_color_value"
+            android:orientation="vertical" >
+        </LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>

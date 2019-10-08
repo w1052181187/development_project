@@ -1,0 +1,6 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/yejian_icon" android:state_selected="false"/>
+    <item android:drawable="@drawable/baitian_icon" android:state_selected="true"/>
+
+</selector>

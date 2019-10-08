@@ -1,0 +1,42 @@
+-injars 'E:\work\workspace_as\junshitoutiao_cmstop\jstt\build\intermediates\transforms\jarMerging\release\0.jar'
+-outjars 'E:\work\workspace_as\junshitoutiao_cmstop\jstt\build\intermediates\multi-dex\release\componentClasses.jar'
+
+-libraryjars 'D:\software\android-environment\android-sdk-studio\sdk\build-tools\26.0.2\lib\shrinkedAndroid.jar'
+
+-forceprocessing
+-dontoptimize
+-dontobfuscate
+-dontusemixedcaseclassnames
+-dontpreverify
+-dontnote **
+-dontwarn **
+-printconfiguration 'E:\work\workspace_as\junshitoutiao_cmstop\jstt\build\intermediates\multi-dex\release\components.flags'
+
+
+# Referenced at E:\work\workspace_as\junshitoutiao_cmstop\jstt\build\intermediates\manifests\full\release\AndroidManifest.xml:68
+-keep class com.cmstop.jstt.App {
+    <init>(...);
+}
+
+-keep public class * extends android.app.Instrumentation {
+    <init>();
+}
+
+-keep public class * extends android.app.Application {
+    <init>();
+    void attachBaseContext(android.content.Context);
+}
+
+-keep public class * extends android.app.backup.BackupAgent {
+    <init>();
+}
+
+-keep public class * extends java.lang.annotation.Annotation {
+    <fields>;
+    <methods>;
+}
+
+-keep class com.android.tools.ir.** {
+    <fields>;
+    <methods>;
+}

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/header_home_new_content_text"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:background="#d5e9f7"
+        android:gravity="center"
+        android:text="烽火视频推荐引擎有%d条更新"
+        android:textColor="#2a90d7"
+        android:textSize="14sp" />
+
+</LinearLayout>

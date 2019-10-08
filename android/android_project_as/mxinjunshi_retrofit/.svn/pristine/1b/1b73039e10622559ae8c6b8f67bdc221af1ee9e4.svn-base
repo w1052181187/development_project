@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_bg_value" >
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <LinearLayout
+        android:id="@+id/content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title_bar_layout"
+        android:gravity="bottom"
+        android:orientation="vertical" >
+
+        <include layout="@layout/popup_home_new_content" />
+
+        <com.chengning.common.widget.MultiStateView
+            xmlns:multistateview="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/multiStateView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            multistateview:msv_emptyView="@layout/empty_view"
+            multistateview:msv_errorView="@layout/error_view"
+            multistateview:msv_loadingView="@layout/loading_view"
+            multistateview:msv_viewState="loading" >
+
+            <com.shenyuan.militarynews.views.PullToRefreshListView_FootLoad
+                xmlns:ptr="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/common_bg_value"
+                android:cacheColorHint="@color/transparent"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:fadingEdge="none"
+                android:fastScrollEnabled="false"
+                android:footerDividersEnabled="false"
+                android:headerDividersEnabled="false"
+                android:smoothScrollbar="true"
+                ptr:ptrAnimationStyle="flip" >
+            </com.shenyuan.militarynews.views.PullToRefreshListView_FootLoad>
+
+            <Button
+                android:id="@+id/topbtn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="@dimen/common_horizontal_margin"
+                android:layout_marginRight="@dimen/common_horizontal_margin"
+                android:background="@drawable/top_btn"
+                android:visibility="gone" />
+        </com.chengning.common.widget.MultiStateView>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2px"
+            android:background="?attr/item_divider_color_value" />
+
+        <TextView
+            android:id="@+id/article_comment_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:layout_marginLeft="@dimen/common_horizontal_margin"
+            android:layout_marginRight="@dimen/common_horizontal_margin"
+            android:layout_marginTop="6dp"
+            android:background="?attr/article_bottom_input_value"
+            android:padding="6dp"
+            android:text="我也说两句..."
+            android:textColor="?attr/item_summary_color_value"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+</RelativeLayout>

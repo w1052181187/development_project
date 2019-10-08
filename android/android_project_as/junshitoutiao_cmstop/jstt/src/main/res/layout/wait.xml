@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/waitLayout_root"
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent" >
+
+    <ImageView
+        android:id="@+id/wait_bk"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/transparent"
+        android:contentDescription="@string/app_name" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" >
+
+        <ProgressBar
+            android:id="@+id/progressBar1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:indeterminateDrawable="@drawable/progress_center"
+            android:minHeight="42dp"
+            android:minWidth="42dp" />
+    </RelativeLayout>
+
+</RelativeLayout>

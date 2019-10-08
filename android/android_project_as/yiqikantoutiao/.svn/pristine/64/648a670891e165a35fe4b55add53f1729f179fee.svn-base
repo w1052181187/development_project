@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/article_comment_reply_more"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
+    android:text="查看全部回复"
+    android:textColor="@color/article_cmt_name"
+    android:textSize="@dimen/common_item_comment_reply_more_text_size" >
+
+</TextView>

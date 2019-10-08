@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="?attr/common_bg_value" >
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/title_bar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title_bar_layout"
+        android:layout_centerInParent="true"
+        android:background="?attr/common_bg_gray_value"
+        android:orientation="vertical"
+        android:paddingLeft="25dp"
+        android:paddingRight="25dp"
+        android:paddingTop="40dp" >
+
+        <EditText
+            android:id="@+id/pm_et_old"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:background="@null"
+            android:drawableLeft="@drawable/icon_password"
+            android:drawablePadding="10dp"
+            android:hint="@string/please_input_oldpassword"
+            android:singleLine="true"
+            android:textSize="16sp"
+            android:textColor="?attr/article_title_value" />
+
+        <View
+            android:id="@+id/pm_v_oneline"
+            style="@style/SettingDivider"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="5dp" />
+
+        <EditText
+            android:id="@+id/pm_et_new"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:background="@null"
+            android:drawableLeft="@drawable/icon_password"
+            android:drawablePadding="10dp"
+            android:hint="@string/please_input_newpassword"
+            android:singleLine="true"
+            android:textSize="16sp"
+            android:textColor="?attr/article_title_value" />
+
+        <View
+            style="@style/SettingDivider"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="5dp" />
+
+        <EditText
+            android:id="@+id/pm_et_newagain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:drawableLeft="@drawable/icon_password"
+            android:drawablePadding="10dp"
+            android:hint="@string/please_input_newpasswordagain"
+            android:singleLine="true"
+            android:textSize="16sp"
+            android:textColor="?attr/article_title_value" />
+
+        <View
+            style="@style/SettingDivider"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="5dp" />
+
+        <Button
+            android:id="@+id/pm_btn_commit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="25dp"
+            android:background="@drawable/login_btn_bg_day"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="@string/commit"
+            android:textColor="@color/login_text_color"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+</RelativeLayout>

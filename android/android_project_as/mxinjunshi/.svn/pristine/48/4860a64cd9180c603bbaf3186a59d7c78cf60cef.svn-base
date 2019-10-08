@@ -1,0 +1,184 @@
+package com.ikantech.military.provider.impl;
+
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
+import android.net.Uri;
+import android.provider.BaseColumns;
+import android.provider.LiveFolders;
+import android.text.TextUtils;
+
+import com.ikantech.military.provider.AbsManager;
+import com.ikantech.military.provider.DataProvider;
+import com.ikantech.military.provider.UriType;
+
+import java.util.HashMap;
+
+public class CountryManager implements AbsManager {
+	public static final String TABLE_NAME = "a01";
+	public static final String CREATE_SQL;
+
+	private static HashMap<String, String> mProjectionMap;
+	private static HashMap<String, String> mLiveFolderProjectionMap;
+
+	public static final class CountryColumns implements BaseColumns {
+		private CountryColumns() {
+		}
+
+		public static final Uri CONTENT_URI = Uri.parse("content://"
+				+ DataProvider.AUTHORITY + "/" + TABLE_NAME);
+
+		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.ikantech.military."
+				+ TABLE_NAME;
+		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.ikantech.military."
+				+ TABLE_NAME;
+
+
+		public static final String NAME = TABLE_NAME + "01";
+
+
+		public static final String CODE = TABLE_NAME + "02";
+
+		public static final String DEFAULT_SORT_ORDER = CODE + " ASC";
+	}
+
+	static {
+		StringBuilder builder = new StringBuilder();
+		builder.append("CREATE TABLE ");
+		builder.append(TABLE_NAME);
+		builder.append(" (");
+		builder.append(CountryColumns._ID + " INTEGER PRIMARY KEY,");
+		builder.append(CountryColumns.NAME + " TEXT,");
+		builder.append(CountryColumns.CODE + " TEXT");
+		builder.append(");");
+		CREATE_SQL = builder.toString();
+
+		mProjectionMap = new HashMap<String, String>();
+		mProjectionMap.put(CountryColumns._ID, CountryColumns._ID);
+		mProjectionMap.put(CountryColumns.NAME, CountryColumns.NAME);
+		mProjectionMap.put(CountryColumns.CODE, CountryColumns.CODE);
+
+		mLiveFolderProjectionMap = new HashMap<String, String>();
+		mLiveFolderProjectionMap.put(LiveFolders._ID, CountryColumns._ID
+				+ " AS " + LiveFolders._ID);
+		mLiveFolderProjectionMap.put(LiveFolders.NAME, CountryColumns.NAME
+				+ " AS " + LiveFolders.NAME);
+	}
+
+
+	public int update(SQLiteDatabase db, int type, Uri uri,
+			ContentValues values, String where, String[] whereArgs) {
+		int count;
+		if (type == UriType.COUNTRY.getCode()) {
+			count = db.update(TABLE_NAME, values, where, whereArgs);
+		} else if (type == UriType.COUNTRY_ID.getCode()) {
+			String noteId = uri.getPathSegments().get(1);
+			count = db.update(
+					TABLE_NAME,
+					values,
+					CountryColumns._ID
+							+ "="
+							+ noteId
+							+ (!TextUtils.isEmpty(where) ? " AND (" + where
+									+ ')' : ""), whereArgs);
+		} else {
+			throw new IllegalArgumentException("Unknown URI " + uri);
+		}
+		return count;
+	}
+
+
+	public int delete(SQLiteDatabase db, int type, Uri uri, String where,
+			String[] whereArgs) {
+		int count;
+		if (type == UriType.COUNTRY.getCode()) {
+			count = db.delete(TABLE_NAME, where, whereArgs);
+		} else if (type == UriType.COUNTRY_ID.getCode()) {
+			String noteId = uri.getPathSegments().get(1);
+			count = db.delete(
+					TABLE_NAME,
+					CountryColumns._ID
+							+ "="
+							+ noteId
+							+ (!TextUtils.isEmpty(where) ? " AND (" + where
+									+ ')' : ""), whereArgs);
+		} else {
+			throw new IllegalArgumentException("Unknown URI " + uri);
+		}
+		return count;
+	}
+
+
+	public Uri insert(SQLiteDatabase db, int type, Uri uri,
+			ContentValues initialValues) {
+
+		if (type != UriType.COUNTRY.getCode()) {
+			throw new IllegalArgumentException("Unknown URI " + uri);
+		}
+
+		ContentValues values;
+		if (initialValues != null) {
+			values = new ContentValues(initialValues);
+		} else {
+			values = new ContentValues();
+		}
+
+		// Make sure that the fields are all set if
+		if (values.containsKey(CountryColumns.CODE) == false) {
+			throw new SQLException("Failed to insert row into " + uri
+					+ ", code should be point.");
+		}
+
+		if (values.containsKey(CountryColumns.NAME) == false) {
+			throw new SQLException("Failed to insert row into " + uri
+					+ ", name should be point.");
+		}
+
+		long rowId = db.insert(TABLE_NAME, null, values);
+		if (rowId > 0) {
+			Uri ret = ContentUris.withAppendedId(CountryColumns.CONTENT_URI,
+					rowId);
+			return ret;
+		}
+
+		throw new SQLException("Failed to insert row into " + uri);
+	}
+
+
+	public Cursor query(SQLiteDatabase db, int type, Uri uri,
+			String[] projection, String selection, String[] selectionArgs,
+			String sortOrder) {
+
+		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+		qb.setTables(TABLE_NAME);
+
+		if (type == UriType.COUNTRY.getCode()) {
+			qb.setProjectionMap(mProjectionMap);
+		} else if (type == UriType.COUNTRY_ID.getCode()) {
+			qb.setProjectionMap(mProjectionMap);
+			qb.appendWhere(CountryColumns._ID + "="
+					+ uri.getPathSegments().get(1));
+		} else if (type == UriType.LIVE_FOLDER_COUNTRY.getCode()) {
+			qb.setProjectionMap(mLiveFolderProjectionMap);
+		} else {
+			throw new IllegalArgumentException("Unknown URI " + uri);
+		}
+
+		// If no sort order is specified use the default
+		String orderBy;
+		if (TextUtils.isEmpty(sortOrder)) {
+			orderBy = CountryColumns.DEFAULT_SORT_ORDER;
+		} else {
+			orderBy = sortOrder;
+		}
+
+		// Get the database and run the query
+		Cursor c = qb.query(db, projection, selection, selectionArgs, null,
+				null, orderBy);
+
+		return c;
+	}
+}

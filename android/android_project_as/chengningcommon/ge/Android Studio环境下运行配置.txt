@@ -1,0 +1,7 @@
+Android Studio 运行配置
+1、Run -> Edit Configurations
+2、加号(Add New Configurations) -> Application
+3、Name: ge
+Main class: com.foxykeep.cpcodegenerator.Main
+Working directory: $MODULE_DIR$
+Use classpath of module: ge

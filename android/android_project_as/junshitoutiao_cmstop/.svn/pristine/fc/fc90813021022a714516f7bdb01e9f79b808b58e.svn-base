@@ -1,0 +1,400 @@
+package com.cmstop.jstt.fragment;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.ComponentName;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.GridView;
+
+import com.chengning.common.base.BaseFragment;
+import com.cmstop.jstt.SettingManager;
+import com.cmstop.jstt.utils.Common;
+import com.ikantech.military.adapter.SearchAdapter;
+import com.ikantech.military.common.SingleChoiceDialog;
+import com.ikantech.military.common.SingleChoiceDialog.SingleChoiceListener;
+import com.ikantech.military.common.YiUiFragment;
+import com.ikantech.military.entity.WeaponItem;
+import com.ikantech.military.provider.DataProvider;
+import com.ikantech.military.provider.impl.WeaponManager.WeaponColumns;
+import com.ikantech.military.ui.WeaponDetialsActivity;
+import com.ikantech.support.proxy.YiActivityProxy;
+import com.cmstop.jstt.R;
+
+public class GearFragment extends YiUiFragment implements
+		SingleChoiceListener {
+	private GridView mGridView;
+	private SearchAdapter mAdapter;
+	private List<WeaponItem> mWeaponItems;
+	private Button mCountryBtn;
+	private Button mWeaponTypeBtn;
+
+	private Button mCurrentEditView;
+
+	private SingleChoiceDialog mSingleChoiceDialog;
+	private int mCurrentCountryIndex;
+	private int mCurrentWeaponTypeIndex;
+	private String[] mCountries;
+	private String[] mWeaponTypes;
+	private String[] mCountryCodes;
+	private String[] mWeaponTypeCodes;
+
+	private long mExitTime;
+
+	private LayoutInflater mInflater;
+	private View mView;
+
+	@Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState); 
+       
+    }
+	
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);  
+		InitFragment(); 
+    }
+ 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+        Common.setTheme(getActivity());
+     	this.mInflater = inflater;
+    	mView = inflater.inflate(R.layout.fragment_gear, container, false);  
+ 
+    	
+    	return mView ;
+    }
+
+	@Override
+	public void onStart() {
+		super.onStart(); 
+		mAdapter.setIsNightMode(Common.isTrue(SettingManager.getInst().getNightModel()));
+		mAdapter.notifyDataSetChanged();
+	}
+
+	public void onDestroy() {
+		if (mSingleChoiceDialog != null && mSingleChoiceDialog.isShowing()) {
+			mSingleChoiceDialog.dismiss();
+		}
+		uninstallLocalServiceBinder();
+		super.onDestroy();
+	}
+
+	@Override
+	public void processHandlerMessage(Message msg) {
+		switch (msg.what) {
+		case 0x01:
+			cancelProgressDialog();
+			List<WeaponItem> items = (List<WeaponItem>) msg.obj;
+			mWeaponItems.clear();
+			if (items != null) {
+				mWeaponItems.addAll(items);
+			}
+			mAdapter.notifyDataSetChanged();
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	public void initViews() {
+		mGridView = (GridView) mView.findViewById(R.id.main_grid);
+		mCountryBtn = (Button) mView.findViewById(R.id.main_country_btn);
+		mWeaponTypeBtn = (Button) mView.findViewById(R.id.main_weapon_type_btn);
+	}
+
+	@Override
+	public void initDatas() {
+		mCountries = getResources().getStringArray(R.array.arr_country);
+		mWeaponTypes = getResources().getStringArray(R.array.weapon_type);
+		mCountryCodes = getResources().getStringArray(R.array.arr_country_code);
+		mWeaponTypeCodes = getResources().getStringArray(
+				R.array.weapon_type_code);
+
+		mCurrentCountryIndex = 1;
+		mCurrentWeaponTypeIndex = 0;
+
+		mCountryBtn.setText(mCountries[mCurrentCountryIndex]);
+		mWeaponTypeBtn.setText(mWeaponTypes[mCurrentWeaponTypeIndex]);
+
+		mWeaponItems = new ArrayList<WeaponItem>();
+
+		mAdapter = new SearchAdapter(this.getActivity(), mWeaponItems);
+		mGridView.setAdapter(mAdapter);
+
+		installLocalServiceBinder(new ServiceConnection() {
+
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder service) {
+				// TODO Auto-generated method stub
+//				showProgressDialog(); 
+				getLocalService().execute(new Runnable() {
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						copyDatabase();
+						loadWeapon(mCountryCodes[mCurrentCountryIndex],
+								mWeaponTypeCodes[mCurrentWeaponTypeIndex]);
+					}
+				});
+			}
+		});
+	}
+
+	private void copyDatabase() {
+		String dbPath = "/data/data/"+getActivity().getPackageName()+"/databases/";
+
+		File dir = new File(dbPath);
+
+		if (!dir.exists())
+			dir.mkdir();
+
+		FileOutputStream os = null;
+		InputStream is = null;
+
+		try {
+			String fileName = dbPath + DataProvider.DATABASE_NAME;
+			File file = new File(fileName);
+			if (file.exists()) {
+				return;
+			}
+
+			os = new FileOutputStream(fileName);
+			is = getResources().openRawResource(R.raw.com_ikantech_military);
+			byte[] buffer = new byte[8192];
+			int count = 0;
+			while ((count = is.read(buffer)) > 0) {
+				os.write(buffer, 0, count);
+				os.flush();
+			}
+		} catch (Exception e) {
+		} finally {
+			try {
+				if (os != null) {
+					os.close();
+				}
+
+				if (is != null) {
+					is.close();
+				}
+
+				os = null;
+				is = null;
+			} catch (Exception e2) {
+			}
+		}
+	}
+
+	private void loadWeapon(String country, String type) {
+		String whereString = null;
+		String[] whereArgs = null;
+
+		boolean flag1 = "all".equals(country);
+		boolean flag2 = "all".equals(type);
+
+		if (!flag1 && flag2) {
+			whereString = WeaponColumns.COUNTRY_CODE + "=? ";
+			whereArgs = new String[] { country };
+		} else if (flag1 && !flag2) {
+			whereString = WeaponColumns.WEAPON_TYPE_CODE + "=? ";
+			whereArgs = new String[] { type };
+		} else if (!flag1 && !flag2) {
+			whereString = WeaponColumns.WEAPON_TYPE_CODE + "=? and "
+					+ WeaponColumns.COUNTRY_CODE + "=?";
+			whereArgs = new String[] { type, country };
+		}
+
+		Cursor cursor = this.getActivity().getContentResolver().query(
+				WeaponColumns.CONTENT_URI,
+				new String[] { WeaponColumns.NAME, WeaponColumns.IMAG_URL,
+						WeaponColumns._ID }, whereString, whereArgs, null);
+		Message message = null;
+		try {
+			if (cursor != null && cursor.getCount() > 0) {
+				ArrayList<WeaponItem> items = new ArrayList<WeaponItem>();
+				cursor.moveToFirst();
+				do {
+					WeaponItem weaponItem = new WeaponItem(cursor.getInt(2));
+					weaponItem.setName(cursor.getString(0));
+					weaponItem.setImageUrl(cursor.getString(1));
+					items.add(weaponItem);
+				} while (cursor.moveToNext());
+				message = getHandler().obtainMessage(0x01, items);
+			} else {
+				message = getHandler().obtainMessage(0x01, null);
+			}
+		} catch (Exception e) {
+			message = getHandler().obtainMessage(0x01, null);
+		} finally {
+			if (cursor != null) {
+				cursor.close();
+				cursor = null;
+			}
+			message.sendToTarget();
+		}
+	}
+
+	@Override
+	protected void installListeners() {
+		mGridView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				WeaponItem item = (WeaponItem) mAdapter.getItem(arg2);
+				if (item != null) {
+					Intent intent = new Intent(mView.getContext(),
+							WeaponDetialsActivity.class);
+					intent.putExtra("id", item.getId());
+					startActivity(intent);
+				}
+			}
+		});
+		mCountryBtn.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				initItems(mCountryBtn, mCountries, mCountryCodes);
+				getSingleChoiceDialog().show();
+			}
+		});
+		
+		mWeaponTypeBtn.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				initItems(mWeaponTypeBtn, mWeaponTypes, mWeaponTypeCodes);
+				getSingleChoiceDialog().show();
+			}
+		});
+	}
+
+	@Override
+	protected void uninstallListeners() {
+
+	}
+
+	public void initItems(Button currentView, String[] items, String[] codes) {
+		if (currentView == mCountryBtn) {
+			getSingleChoiceDialog().setSelectedItem(
+					mCountries[mCurrentCountryIndex]);
+		} else if (currentView == mWeaponTypeBtn) {
+			getSingleChoiceDialog().setSelectedItem(
+					mWeaponTypes[mCurrentWeaponTypeIndex]);
+		}
+		getSingleChoiceDialog().setItems(items, codes);
+		mCurrentEditView = currentView;
+		if (currentView == mCountryBtn) {
+			getSingleChoiceDialog().setTitle("选择国家");
+		} else if (currentView == mWeaponTypeBtn) {
+			getSingleChoiceDialog().setTitle("选择武器类型");
+		}
+	}
+
+	protected SingleChoiceDialog getSingleChoiceDialog() {
+		if (mSingleChoiceDialog == null) {
+			mSingleChoiceDialog = new SingleChoiceDialog(this.getActivity());
+			mSingleChoiceDialog.setOnCancelListener(new OnCancelListener() {
+
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					getSingleChoiceDialog().setSelectedItem(null);
+				}
+			});
+			mSingleChoiceDialog.setListener(this);
+		}
+		return mSingleChoiceDialog;
+	}
+
+	@Override
+	public void onItemSelected(String value, int index) {
+		if (value != null && mCurrentEditView != null) {
+			if (mCurrentEditView == mCountryBtn) {
+				mCurrentCountryIndex = index;
+			} else if (mCurrentEditView == mWeaponTypeBtn) {
+				mCurrentWeaponTypeIndex = index;
+			}
+			YiActivityProxy ActivityProxy = this.mActivityProxy; 
+			showProgressDialog();
+			getLocalService().execute(new Runnable() {
+				@Override
+				public void run() {
+					loadWeapon(mCountryCodes[mCurrentCountryIndex],
+							mWeaponTypeCodes[mCurrentWeaponTypeIndex]);
+				}
+			});
+			mCurrentEditView.setText(value);
+		}
+		getSingleChoiceDialog().setSelectedItem(null);
+		getSingleChoiceDialog().dismiss();
+	}
+
+//	@Override
+//	public void changeToNightMode() {
+//		// TODO Auto-generated method stub
+//		super.changeToNightMode();
+//
+//		ImageButton imageButton = (ImageButton) findViewById(R.id.btn_set);
+//		if (imageButton != null) {
+//			imageButton.setImageResource(R.drawable.set_icon_night);
+//		}
+//
+//		imageButton = (ImageButton) findViewById(R.id.btn_search);
+//		if (imageButton != null) {
+//			imageButton.setImageResource(R.drawable.search_icon_nigth);
+//		}
+//
+//		View view = findViewById(R.id.main_weapon_type);
+//		if (view != null) {
+//			view.setBackgroundResource(R.drawable.twomenu_bg_night);
+//			view.setPadding(12, 17, 12, 17);
+//		}
+//	}
+
+//	@Override
+//	public void changeToDayMode() {
+//		// TODO Auto-generated method stub
+//		super.changeToDayMode();
+//
+//		ImageButton imageButton = (ImageButton) findViewById(R.id.btn_set);
+//		if (imageButton != null) {
+//			imageButton.setImageResource(R.drawable.set_icon);
+//		}
+//
+//		imageButton = (ImageButton) findViewById(R.id.btn_search);
+//		if (imageButton != null) {
+//			imageButton.setImageResource(R.drawable.search_icon);
+//		}
+//
+//		View view = findViewById(R.id.main_weapon_type);
+//		if (view != null) {
+//			view.setBackgroundResource(R.drawable.twomenu_bg);
+//			view.setPadding(12, 17, 12, 17);
+//		}
+//	}
+
+}

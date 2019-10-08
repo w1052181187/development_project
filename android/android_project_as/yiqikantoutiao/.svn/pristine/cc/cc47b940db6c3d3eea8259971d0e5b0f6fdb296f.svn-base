@@ -1,0 +1,9 @@
+package com.chengning.yiqikantoutiao.event;
+
+public class CircleBgChangeEvent {
+	
+	public CircleBgChangeEvent(){
+
+	}
+
+}

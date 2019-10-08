@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="errorHint">发生了一个错误  %1$s.请点击<i><b>"报告"</b></i> 发送错误信息到我们的邮箱!!!</string>
+
+    <!-- 检测版本更新文件位置 -->
+    <string name="about">环球新军事（www.xinjunshi.net）运营团队是一个年轻有活力的队伍，主编和责任编辑有3年以上互联网社区媒体从业经验，网站负责人从事互联网运营也已10年之久。本站成立于2002年，前身是中国军队网(www.cnarmy.net)，2003年9月网站正式启用新域名www.xinjunshi.net。作为国内最早的一批军事类站点，本站建站伊始便立志将公正客观的立场带到文章中，以满足广大网友所需的军事相关方面的内容资讯和爱国情感的交流，致力于提供一个理性爱国者、军事爱好者聚集和交流的网络平台，为用户提供全面的咨讯互动需求，引导理性、爱国的军事氛围</string>
+    <string name="serverurl">http://down.xinjunshi.com/xjsappversion.xml</string>
+    <string name="dbname">xjs.db</string>
+    <string name="select">选择</string>
+    <string name="share">分享</string>
+    <string name="sharing">分享中...</string>
+    <string name="publishing">发布中...</string>
+    <string name="footbar_refresh">刷新</string>
+    <string name="footbar_comment">评论</string>
+    <string name="footbar_share">分享</string>
+    <string name="footbar_favorite">收藏</string>
+    <string name="footbar_more">更多</string>
+    <!-- sina share message -->
+    <string name="app_name">环球新军事</string>
+    <!-- 字体大小 -->
+    <string name="front_size1">特大号</string>
+    <string name="front_size2">大号</string>
+    <string name="front_size3">中号</string>
+    <string name="front_size4">小号</string>
+    <!-- 滑动刷新 -->
+ 
+    <!-- 上部导航按钮 -->
+    <string name="news_top_left_text1">博客</string>
+    <string name="news_top_left_text2">新闻</string>
+    <string name="top_category_title_re">推荐</string>
+    <string name="top_category_title_info">聚焦</string>
+    <string name="top_category_title_blog">军事</string>
+    <string name="top_category_title_magazine">社会</string>
+    <string name="top_category_title_domain">历史</string>
+    <string name="top_category_title_more">更多</string>
+    <string name="img_duoyun_desc">天气预报</string>
+
+    <!-- 下部导航按钮 -->
+    <string name="bottom_category_title_1">军情</string>
+    <string name="bottom_category_title_2">环球</string>
+    <string name="bottom_category_title_3">历史</string>
+    <string name="bottom_category_title_4">图片</string>
+    <string name="bottom_category_title_5">话题</string>
+    <string name="bottom_category_title_6">E品</string>
+    <string name="bottom_category_title_7">资料</string>
+
+    <string name="tab_home_index1">资讯</string>
+    <string name="tab_home_index2">视频</string>
+    <string name="tab_home_index3">商城</string>
+    <string name="tab_home_index4">我的</string>
+    
+    <!-- 滑动区域文字及链接 -->
+
+    <string name="str_about">About us!</string>
+    <string name="str_country">国家</string>
+    <string name="str_weapon_type">武器类型</string>
+    <string name="title_activity_weapon_detials">WeaponDetialsActivity</string>
+    <string name="title_activity_compare">武器对比</string>
+    <string name="title_activity_comment">CommentActivity</string>
+    <string name="title_activity_main">武器库</string>
+    <string name="title_activity_search">搜索</string>
+    <string name="title_activity_weapon_detail">武器详情</string>
+    <string name="title_activity_settings">设置</string>
+    <string name="search_editext_hint">请输入搜索内容</string>
+    <string name="search_editext_tip">搜索内容不能为空</string>
+    <string name="str_ok">确定</string>
+    <string name="str_cancel">取消</string>
+    <string name="str_clear_confirm">确定要清空吗？</string>
+    <string name="err_load_data_failed">加载数据失败</string>
+    <string name="str_exit_tip">再按一次退出程序</string>
+    <string name="settings_night_mode">夜间模式</string>
+    <string name="settings_compare">对比</string>
+    <string name="settings_feedback">意见反馈</string>
+    <string name="settings_check_version">检查升级</string>
+    <string name="settings_about">关于</string>
+    <string name="str_detail_menu">选项</string>
+    <string name="str_compare_edit">编辑</string>
+    <string name="str_compare_complete">完成</string>
+    <string name="str_add_to_compare">加入对比</string>
+    <string name="str_remove_from_compare">取消对比</string>
+    <string name="str_comment">评论</string>
+    <string name="str_search">搜索</string>
+    <string name="str_compare_tip">仅支持2个武器对比</string>
+    <string name="title_activity_compare_manager">对比管理</string>
+    
+    <string name="compare_add">添加武器</string>
+    <string name="str_del">删除</string>
+    <string name="str_clear">清空</string>
+    <string name="str_on">开</string>
+    <string name="str_off">关</string>
+    <string name="str_loading">加载中</string>
+    
+    <string name="intent_timeout">网络连接超时</string>
+    <string name="server_fail">网络异常，请重试</string>
+    <string name="intnet_fail">网络已断开，请检查网络设置</string>
+    <string name="no_login_tip">请先登录</string>
+
+    <!-- 登录注册个人中心 -->
+    <string name="login_third_hint">使用社交账号登录</string>
+    <string name="login_or">或</string>
+    <string name="please_input_account">请输入手机号码/昵称</string>
+    <string name="please_input_phone">请输入手机号码</string>
+    <string name="please_input_password">请输入密码</string>
+    <string name="please_input_oldpassword">输入旧密码</string>
+    <string name="please_input_newpassword">请输入新密码</string>
+    <string name="please_input_newpasswordagain">确认新密码</string>
+    <string name="please_input_code">请输入验证码</string>
+    <string name="please_input_nickname">请输入昵称</string>
+	<string name="please_first_login">请先登录</string>
+    <string name="login">登录</string>
+    <string name="login_skip">跳过登录</string>
+    <string name="login_tip">登录后做任务可获得积分、军衔，还可与更多军迷互动</string>
+    <string name="register">注册</string>
+    <string name="finishregister">完成注册</string>
+    <string name="phoneverify">手机验证</string>
+    <string name="no_account">没有账号?</string>
+    <string name="quick_register">快速注册</string>
+    <string name="forget_password">忘记密码</string>
+    <string name="get_code">获取验证码</string>
+    <string name="set_password">设定至少6位密码</string>
+    <string name="click_login">点击登录</string>
+    <string name="headquart">指挥部</string>
+    <string name="myfav">我的收藏</string>
+    <string name="mycomment">我的评论</string>
+    <string name="myorder">我的订单</string>
+    <string name="setting">设置</string>
+    <string name="exit">退出登录</string>
+    <string name="my">我的</string>
+    <string name="findpassword">密码找回</string>
+    <string name="nextstep">下一步</string>
+    <string name="commit">完成</string>
+    <string name="modifypwd">修改密码</string>
+    <string name="setnewpwd">设置新密码</string>
+    <string name="completeinfo">完善资料</string>
+	<string name = "myProfile_edit_activity_takephoto">拍照</string>
+    <string name = "myProfile_edit_activity_localphoto">选择本地照片</string>
+    <string name = "myProfile_edit_activity_modify_nickname">修改昵称</string>
+	<string name = "handle_hint">请稍候..</string>
+	<string name = "change_phone">更换绑定手机</string>
+    <string name = "bind_phone">手机号绑定</string>
+    <!--任务详情  -->
+    <string name="directorate_task_detail_login_text1">1.如果您还没有账号,请先点击注册账号</string>
+    <string name="directorate_task_detail_login_text2">2.每天登录账号即可获取奖励</string>
+    <string name="directorate_task_detail_share_text1">1.打开任意一篇文章</string>
+    <string name="directorate_task_detail_share_text2">2.文章结束区域有分享按钮,点击分享到相应的社交账号,即可获得积分奖励</string>
+    <string name="directorate_task_detail_comment_text1">1.打开任意一篇文章</string>
+    <!-- &#8220;&#8221; 表示双引号 -->
+    <string name="directorate_task_detail_comment_text2">2.点击&#8220;评论框&#8221;,输入您想表达的观点,字数需要在两字以上,即可获得积分奖励</string>
+    
+    <!--文章 -->
+    <string name="article_collect_hint">文章已收藏，请到[我的][我的收藏]中查看</string>
+    <string name="collect_merge_hint">发现有本地收藏文章，是否上传至云端永久保存？</string>
+    <string name="comment_copy_hint">内容已复制成功</string>
+    
+    <!--common-->
+    <string name="common_item_title_line_space">1.3</string>
+    <string name="common_item_title_line_space_relative">1.45</string>
+    
+	<!-- 打赏 -->
+    <string name="no_wx_no_pay">"未安装微信客户端，无法打赏"</string>
+    <string name="loading_get_order">"获取订单中..."</string>
+    <string name="notice_format_error">"格式错误"</string>
+    
+</resources>

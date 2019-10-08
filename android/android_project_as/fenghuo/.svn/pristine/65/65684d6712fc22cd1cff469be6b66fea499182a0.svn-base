@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <View
+        android:id="@+id/dialog_upgrade_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/half_transparent" />
+
+    <RelativeLayout 
+        android:id="@+id/dialog_upgrade_bg"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content" 
+	    android:layout_centerInParent="true"
+        android:layout_gravity="center"
+	    android:paddingBottom="12dp"
+	    android:layout_centerHorizontal="true"
+	    android:background="@drawable/bg"
+	    >
+
+        <RelativeLayout
+            android:id="@+id/dialog_upgrade_bg_rl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/top_bg2"  
+            >
+
+            <ImageView
+		        android:id="@+id/dialog_upgrade_close_btn"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentLeft="true"
+		        android:layout_alignParentTop="true"
+		        android:layout_marginLeft="12dp"
+		        android:layout_marginTop="12dp"
+		        android:padding="10dp"
+		        android:background="@drawable/alert_close_btn" />
+		
+		    <ImageView
+		        android:id="@+id/dialog_upgrade_img2"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_centerInParent="true"
+		        android:src="@drawable/gongxi" />
+            
+        </RelativeLayout>
+	
+	    <TextView
+	        android:id="@+id/dialog_upgrade_content"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/dialog_upgrade_bg_rl"
+	        android:layout_centerHorizontal="true"
+	        android:layout_marginTop="20dp"
+	        android:layout_marginLeft="20dp"
+	        android:layout_marginRight="20dp"
+	        android:textColor="@color/article_time"
+	        />
+	
+	    <View
+	        android:id="@+id/dialog_upgrade_line"
+	        android:layout_width="match_parent"
+	        android:layout_height="1px"
+	        android:layout_below="@+id/dialog_upgrade_content"
+	        android:layout_centerHorizontal="true"
+	        android:layout_marginTop="20dp" 
+	        android:background="@color/line_gray"
+	        />
+	
+	    <TextView
+	        android:id="@+id/dialog_upgrade_confirm_btn"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/dialog_upgrade_line"
+	        android:layout_centerHorizontal="true"
+	        android:gravity="center"
+	        android:layout_marginTop="12dp"
+	        android:layout_marginLeft="20dp"
+	        android:layout_marginRight="20dp"
+	        android:textSize="17sp"
+	        android:textColor="@color/home_bottom_txt_sel"
+	        android:text="确定" />
+	
+	</RelativeLayout>
+
+</RelativeLayout>

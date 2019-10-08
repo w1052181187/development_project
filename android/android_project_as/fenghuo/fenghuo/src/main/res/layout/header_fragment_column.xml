@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_item_bg_state_value"
+    android:layout_gravity="center" >
+
+    <!-- <RadioGroup -->
+    <!-- android:id="@+id/heander_column_radioGroup" -->
+    <!-- android:layout_width="match_parent" -->
+    <!-- android:layout_height="wrap_content" -->
+    <!-- android:layout_alignParentLeft="true" -->
+    <!-- android:layout_alignParentTop="true" -->
+    <!-- android:orientation="horizontal" > -->
+
+
+    <!-- <RadioButton -->
+    <!-- android:id="@+id/heander_column_article" -->
+    <!-- android:layout_width="wrap_content" -->
+    <!-- android:layout_height="wrap_content" -->
+    <!-- android:layout_weight="1" -->
+    <!-- android:background="?attr/column_tab_indicator_value" -->
+    <!-- android:button="@null" -->
+    <!-- android:gravity="center" -->
+    <!-- android:paddingBottom="10dp" -->
+    <!-- android:paddingLeft="@dimen/common_horizontal_margin" -->
+    <!-- android:paddingRight="@dimen/common_horizontal_margin" -->
+    <!-- android:paddingTop="10dp" -->
+    <!-- android:text="最新文章" -->
+    <!-- android:textColor="?attr/column_tab_text_value" -->
+    <!-- android:textSize="14dp" /> -->
+
+
+    <!-- <RadioButton -->
+    <!-- android:id="@+id/heander_column_my" -->
+    <!-- android:layout_width="wrap_content" -->
+    <!-- android:layout_height="wrap_content" -->
+    <!-- android:layout_weight="1" -->
+    <!-- android:background="?attr/column_tab_indicator_value" -->
+    <!-- android:button="@null" -->
+    <!-- android:gravity="center" -->
+    <!-- android:paddingBottom="10dp" -->
+    <!-- android:paddingLeft="@dimen/common_horizontal_margin" -->
+    <!-- android:paddingRight="@dimen/common_horizontal_margin" -->
+    <!-- android:paddingTop="10dp" -->
+    <!-- android:text="我关注的" -->
+    <!-- android:textColor="?attr/column_tab_text_value" -->
+    <!-- android:textSize="14dp" -->
+    <!-- android:visibility="gone" /> -->
+
+
+    <!-- <RadioButton -->
+    <!-- android:id="@+id/heander_column_my_columnist" -->
+    <!-- android:layout_width="wrap_content" -->
+    <!-- android:layout_height="wrap_content" -->
+    <!-- android:layout_weight="1" -->
+    <!-- android:background="?attr/column_tab_indicator_value" -->
+    <!-- android:button="@null" -->
+    <!-- android:gravity="center" -->
+    <!-- android:paddingBottom="10dp" -->
+    <!-- android:paddingLeft="@dimen/common_horizontal_margin" -->
+    <!-- android:paddingRight="@dimen/common_horizontal_margin" -->
+    <!-- android:paddingTop="10dp" -->
+    <!-- android:text="关注作家" -->
+    <!-- android:textColor="?attr/column_tab_text_value" -->
+    <!-- android:textSize="14dp" -->
+    <!-- android:visibility="gone" /> -->
+    <!-- </RadioGroup> -->
+
+    <TextView
+        android:id="@+id/header_fragment_column_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="6dp"
+        android:layout_marginLeft="@dimen/common_horizontal_margin"
+        android:layout_marginRight="@dimen/common_horizontal_margin"
+        android:layout_marginTop="6dp"
+        android:drawableLeft="@drawable/tuijian_zhuanlan_guanli_icon"
+        android:drawablePadding="6dp"
+        android:gravity="center"
+        android:text="管理专栏作家"
+        android:textColor="?attr/article_time_value"
+        android:textSize="16sp" />
+
+    <View
+        style="@style/SettingDivider"
+        android:layout_height="2px"
+        android:layout_below="@+id/header_fragment_column_tv"
+        android:layout_marginLeft="0dp" />
+
+</RelativeLayout>

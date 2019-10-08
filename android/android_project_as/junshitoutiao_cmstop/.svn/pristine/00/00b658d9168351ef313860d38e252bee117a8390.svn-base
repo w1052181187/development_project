@@ -1,0 +1,58 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/common_bg_value"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/main_weapon_type"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/twomenu_bg"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="9dip" >
+
+        <Button
+            android:id="@+id/main_country_btn"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:gravity="left|center_vertical"
+            android:paddingLeft="9dip"
+            android:text="@string/str_country"
+            android:textColor="@color/main_weapon_type_color"
+            android:textSize="@dimen/common_text_size" />
+
+        <Button
+            android:id="@+id/main_weapon_type_btn"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:gravity="left|center_vertical"
+            android:paddingLeft="18dip"
+            android:text="@string/str_weapon_type"
+            android:textColor="@color/main_weapon_type_color"
+            android:textSize="@dimen/common_text_size" />
+    </LinearLayout>
+
+    <GridView
+        android:id="@+id/main_grid"
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:background="?attr/common_bg_value"
+        android:cacheColorHint="@null"
+        android:fadingEdge="none"
+        android:fastScrollEnabled="true"
+        android:horizontalSpacing="18dip"
+        android:numColumns="2"
+        android:padding="9dip"
+        android:scrollbarStyle="outsideOverlay"
+        android:verticalSpacing="18dip" />
+
+</LinearLayout>

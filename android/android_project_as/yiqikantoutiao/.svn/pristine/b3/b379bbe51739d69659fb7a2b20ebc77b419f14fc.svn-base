@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources> 
+     <color name="new_top_bg">#fcfcfc</color>
+     <color name="new_top_title">#333333</color>
+    
+    <color name="home_bottom_txt">#999999</color>
+    <color name="home_bottom_txt_sel">#0066cc</color> 
+    <color name="home_bottom_bg">#fafafa</color>
+
+    <color name="home_bottom_radio_bg">#f9f9f9</color>
+    <color name="home_bottom_radio_text">#505050</color>
+    <color name="home_bottom_radio_text_checked">#e73829</color>
+    <color name="home_red">#e73829</color>
+
+    <color name="topbar_fontcolor">#333333</color>
+    <color name="topbar_bg_2">#e83428</color>
+    <color name="topbar_presses_bg_2">#be2a20</color>
+    <color name="topbar_fontcolor_2">#FFFFFF</color>
+    
+    <color name="list_fontcolor">#333333</color>
+    <color name="list_divier">#e5e5e5</color>
+    <color name="list_desccolor">#cccccc</color>
+    
+    <color name="setting_bg">#E9E9E9</color>
+    
+    <color name="contentcolor">#333333</color> 
+    <color name="desccolor">#b2b2b2</color> 
+    
+    <color name="about_font">#4c4c4c</color>
+    <color name="about_ver">#b2b1b1</color>
+    
+    <!-- 原f2f2f2 -->
+    <color name="main_bg">#e9e9e9</color>
+    <color name="dynamic_list_divider">#e9e9e9</color>
+    <!-- title bar -->
+    <color name="title_bar_back_text">#999999</color>
+    <color name="title_bar_title_text">#333333</color>
+    <color name="title_bar_second_text">#333333</color>
+    <color name="title_bar_second_text_highlight">#0066cc</color>
+    <!-- Tab -->
+    <color name="tab_top_line">#a3a3a3</color>
+    <color name="tab_bg">#ebdbdb</color>
+    <color name="tab_text_normal">#4d4d4d</color>
+    <color name="tab_text_selected">#343434</color>
+    <color name="tab_indicator_bg">#fcfcfc</color>
+    <!-- 常用颜色 --> 
+    <color name="list_item_bg">#fafafa</color>
+    <color name="list_item_bg_pressed">#f8f8f8</color>
+    <color name="tips_text">#b2b2b2</color>
+    <color name="line_gray">#e8e8e8</color>
+    <color name="line_gray_dark">#b2b2b2</color>
+    <color name="home_top_line_gray">#bababa</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color> 
+    <color name="half_transparent">#80000000</color>
+    <color name="half_transparent_white">#80ffffff</color>
+    <color name="transparent">#00000000</color>
+    <color name="wode_statusbar_color">#262626</color>
+
+    <!-- common -->
+    <color name="nav_bg">#fcfcfc</color>
+    <color name="common_bg">#ffffff</color>
+    <color name="common_bg_gray">#f4f5f6</color>
+    <color name="common_bg_gray_light">#f5f5f5</color>
+    <color name="commom_item_bg">#ffffff</color>
+    <color name="commom_item_bg_pressed">#f4f5f6</color>
+    <color name="common_blue">#0066cc</color>
+    <color name="common_gray">#a5a5a5</color>
+    <color name="common_follow_tx_color">#666666</color>
+    <color name="common_item_tag_text">#ff3838</color>
+    <color name="common_divider">#e6e6e6</color>
+	<color name="common_item_divider">#e8e8e8</color>
+	<color name="common_text_summary">#999999</color>
+    <!-- splash -->
+    <color name="splash_bg">#fafafa</color>
+    <!-- home -->
+    <color name="home_bg">#fffffe</color>
+    <color name="channel_tab_text">#0b0b0b</color>
+    <color name="channel_top_title_text">#333333</color>
+    <color name="channel_top_summary_text">#999999</color>
+    <color name="channel_top_btn_text">#ff0000</color>
+    <color name="extend_header_text_bg_gray">#e6e6e6</color>
+    <color name="home_item_click_refresh_color">#2a90d7</color>
+    <!-- article -->
+	<color name="article_title">#222222</color>
+    <color name="article_time">#999999</color>
+    <color name="article_img_empty_bg">#e5e5e5</color>
+    <color name="draft_txt">#999999</color>
+    <!-- <color name="article_title">#000000</color> 
+    <color name="article_time">#999999</color>  -->
+    <color name="article_top_divider">#e6e6e6</color>
+    <color name="article_bottom_btn_text">#9b9b9b</color>
+    <color name="article_bottom_btn_bg">#cccccc</color>
+    <color name="article_bottom_divider_color">#d8d8d8</color>
+    <color name="article_content_text">#4f4f4f</color>
+    <color name="article_setting_bg">#f7f7f7</color>
+    <color name="article_setting_divider">#d9d9d9</color>
+    <color name="article_cmt_name">#406599</color>
+    <color name="article_cmt_zan">#979fac</color>
+    <color name="article_bottom_hint_text">#262626</color>
+    <color name="article_comment_item_name_color">#5387b1</color>
+    <color name="desc_color">#b2b2b2</color> 
+    <!-- setting -->
+    <color name="setting_group_bg">#f4f5f6</color>
+    <color name="setting_group_text">#999999</color>
+    <color name="setting_child_text">#222222</color>
+    <color name="setting_offline_progress_text">#b2b2b2</color>
+    <color name="setting_divider">#e8e8e8</color>
+    <!-- pulltorefresh -->
+    <!-- <color name="about_ver">#b2b1b1</color> -->
+    <!-- channel item -->
+    <color name="item_title_color_normal">#222222</color>
+    <color name="item_title_color_readed">#999999</color>
+    <color name="item_summary_color">#999999</color>
+    <color name="item_channel_tag">#0066cc</color>
+    <color name="item_channel_tag_orange">#fc8146</color>
+    <color name="item_dynamic_content_color">#373737</color> 
+    <color name="item_dynamic_cmt_content_color">#565656</color> 
+    
+    <color name="red">#FF7633</color><!--红色 -->
+    <color name="directorate_bg_color">#0066cc</color><!--指挥部背景图颜色 -->  
+    <color name="task_detail_divider">#cccccc</color>
+    
+    <!-- 滑动删除 -->
+    <color name="swipe_del_bg_color">#ff0000</color><!--滑动删除背景颜色 -->  
+    <!-- main_myprofile_activity -->
+    <color name="main_big_picture_title_bg">#e6e6e6</color>
+    <color name="main_list_item_title">#4c4c4c</color>
+    <color name="main_list_item_description">#b2b1b1</color>
+    <color name="main_list_item_bg">#fafafa</color>
+    <color name="main_list_divider">#e6e6e6</color>
+    
+    <color name="regist_text_pushing">#b3b3b3</color>
+    <color name="dialog_point_color">#FF6000</color><!--弹窗积分颜色 -->  
+    <color name="dialog_medal_color">#f0ae07</color><!--弹窗积分颜色 -->
+    <!-- 夜间模式 -->
+    <color name="night_bg_color">#333333</color>
+    <color name="night_text_color">#666666</color>
+    <color name="night_img_color">#999999</color>
+    <color name="night_tab_sec_color">#969696</color>
+    <color name="night_setting_group_bg">#292929</color>
+    
+    <!-- login -->
+    <color name="login_forget_pwd_text_color">#b3b3b3</color>
+    <color name="login_pwd_hint_text_color">#c8c8c8</color>
+    <color name="login_third_text_color">#c4c4c8</color>
+
+    <!-- 链接 -->
+	<color name="link_color">#067bb1</color>
+	<color name="link_color_pressed">#d0e9f5</color>
+	
+	<!-- dialog -->
+    <color name="dialog_common_bg">#fafafa</color>
+    <color name="dialog_common_list_pressed">#e9e9e9</color>
+    <color name="dialog_common_line">#c9c9c9</color>
+    <color name="dialog_common_title_text">#333333</color>
+    <color name="dialog_common_content_text">#4f4f4f</color>
+    <color name="dialog_common_hint_text">#b2b2b2</color>
+    <color name="dialog_common_cancel_text">#b2b2b2</color>
+    <color name="dialog_common_confirm_text">#0066cc</color>
+	<!-- 搜索-->
+    <color name="search_edit_bottom_line">#c2c2c2</color>
+	<!-- at -->
+    <color name="at_search_cancel_text">#ff8200</color>
+    <color name="at_search_content_title_text">#929292</color>
+    <color name="at_search_net_list_bg_pressed">#f0f0f0</color>
+    <color name="dynamic_content_text">#4f4f4f</color>
+    
+    <!-- message -->
+    <color name="mesage_item_parent_bg">#f5f5f5</color>
+    <color name="chat_bg">#ededed</color>
+    
+    
+    <!--  dynamic-->
+    <color name="home_circle_head_name_color">#fffbf2</color>
+    <color name="dynamic_comment_color_bg_night">#313131</color>
+    <color name="dynamic_comment_click_bg_color">#e4e4e4</color>
+    <color name="dynamic_comment_bg_color">#eeeeee</color>
+
+    <color name="dialog_modify_nickname_ok_color">#ffffff</color>
+
+    <!-- my -->
+    <color name="my_quanzi_color">#6a6a6a</color>
+    <color name="my_income_money_color">#e73829</color>
+    <color name="my_income_exchange_rate_color">#cacaca</color>
+</resources>

@@ -1,0 +1,195 @@
+package com.cmstop.jstt.views;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import android.provider.Settings;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
+
+import com.chengning.common.base.BaseDialogFragment;
+import com.chengning.common.base.BaseFragmentActivity;
+import com.cmstop.jstt.SettingManager;
+import com.cmstop.jstt.SettingManager.FontSize;
+import com.cmstop.jstt.utils.BrightnessTools;
+import com.cmstop.jstt.utils.Common;
+import com.cmstop.jstt.R;
+import com.umeng.analytics.MobclickAgent;
+
+public class ArticleSettingDialog extends BaseDialogFragment {
+	
+	private View mSetting;
+
+	private View mTop;
+	private SwitchButton mNightModeSwitch;
+	private SeekBar mLightSeekBar;
+	private TextView mFontSmall;
+	private TextView mFontMiddle;
+	private TextView mFontLarge;
+	private TextView mFontExtraLarge;
+	private View mConfirm;
+	
+	private OnArticleSettingListener mListener;
+	
+	private BrightnessTools mBrightnessTools;
+	
+	private OnClickListener mFontOnClickListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			FontSize font = (FontSize) v.getTag();
+			setFont(font);
+			saveFont(font);
+			mListener.onFontChange(font);
+		}
+	};
+	
+	public static interface OnArticleSettingListener{
+		public void onFontChange(FontSize font);
+		public void onNightModeChange(boolean mode);
+	}
+
+	@Override
+	public BaseFragmentActivity getContext() {
+		return (BaseFragmentActivity)getActivity();
+	}
+
+	@Override
+	public View configContentView() {
+		mSetting = LayoutInflater.from(getContext()).inflate(R.layout.dialog_article_setting, null);
+		return mSetting;
+	}
+
+	@Override
+	public void initView() {
+		mTop = mSetting.findViewById(R.id.article_setting_top);
+		mNightModeSwitch = (SwitchButton) mSetting.findViewById(R.id.article_setting_night_mode_switch);
+		mLightSeekBar = (SeekBar) mSetting.findViewById(R.id.article_setting_light_seekbar);
+		mFontSmall = (TextView) mSetting.findViewById(R.id.article_setting_font_small);
+		mFontMiddle = (TextView) mSetting.findViewById(R.id.article_setting_font_middle);
+		mFontLarge = (TextView) mSetting.findViewById(R.id.article_setting_font_large);
+		mFontExtraLarge = (TextView) mSetting.findViewById(R.id.article_setting_font_extra_large);
+		mConfirm = mSetting.findViewById(R.id.article_setting_confirm);
+	}
+
+	@Override
+	public void initData() {
+		mFontSmall.setTag(FontSize.Small);
+		mFontMiddle.setTag(FontSize.Middle);
+		mFontLarge.setTag(FontSize.Large);
+		mFontExtraLarge.setTag(FontSize.ExtraLarge);
+		
+		// 夜间模式
+		mNightModeSwitch.setChecked(!Common.isTrue(SettingManager.getInst().getNightModel()));
+		
+		mBrightnessTools = new BrightnessTools(getContext(), getContext().getContentResolver());
+		mLightSeekBar.setProgress(mBrightnessTools.getScreenBrightness());
+		
+		readFont();
+	}
+
+	@Override
+	public void initListener() {
+		// TODO Auto-generated method stub
+		mFontSmall.setOnClickListener(mFontOnClickListener);
+		mFontMiddle.setOnClickListener(mFontOnClickListener);
+		mFontLarge.setOnClickListener(mFontOnClickListener);
+		mFontExtraLarge.setOnClickListener(mFontOnClickListener);
+		
+		mTop.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dismissAllowingStateLoss();
+			}
+		});
+		mLightSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+				mBrightnessTools.setScreenMode(Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+				mBrightnessTools.setScreenBrightness(progress);
+				mBrightnessTools.saveScreenBrightness(progress);
+			}
+		});
+		mConfirm.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dismissAllowingStateLoss();
+			}
+		});
+		
+		mNightModeSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				mListener.onNightModeChange(isChecked);
+				Map<String, String> map_ekv = new HashMap<String, String>();
+				if(isChecked)
+					map_ekv.put("status", "off");
+				else
+					map_ekv.put("status", "on");
+	            MobclickAgent.onEvent(getActivity(), "setting_nightmode", map_ekv);
+			}
+		});
+	}
+	
+	public void shouldRefreshUI(){
+		if(mSetting != null){
+			mSetting.postInvalidate();
+		}
+	}
+	
+	public void setListenr(OnArticleSettingListener listener){
+		this.mListener = listener;
+	}
+	
+	private void readFont(){
+		int size = SettingManager.getInst().getFontSize();
+		FontSize font = FontSize.getFontSize(size);
+
+		setFont(font);
+	}
+	
+	private void saveFont(FontSize font){
+		SettingManager.getInst().saveFontSize(font.getSize());
+	}
+	
+	public void setFont(FontSize font){
+		mFontSmall.setSelected(false);
+		mFontMiddle.setSelected(false);
+		mFontLarge.setSelected(false);
+		mFontExtraLarge.setSelected(false);
+		
+		switch (font) {
+		case Small:
+			mFontSmall.setSelected(true);
+			break;
+		case Middle:
+			mFontMiddle.setSelected(true);
+			break;
+		case Large:
+			mFontLarge.setSelected(true);
+			break;
+		case ExtraLarge:
+			mFontExtraLarge.setSelected(true);
+			break;
+		}
+	}
+}

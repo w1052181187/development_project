@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/root"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/common_bg_value">
+
+    <!-- View that will be hidden when video goes fullscreen -->
+
+    <RelativeLayout
+        android:id="@+id/nonVideoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/article_content_content_frame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/article_content_content_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"></RelativeLayout>
+
+            <include
+                android:id="@+id/title_bar_layout"
+                layout="@layout/title_bar"/>
+        </FrameLayout>
+
+        <include
+            android:id="@+id/article_comment_bottom_toolbar"
+            layout="@layout/article_comment_bottom_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"/>
+
+        <com.chengning.fenghuo.widget.NoFocusingBottomListenerScrollView
+            android:id="@+id/article_content_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/article_comment_bottom_toolbar"
+            android:layout_below="@id/article_content_content_frame"
+            android:fadingEdge="none"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/article_content_scroll_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/article_content_top"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="14dp">
+
+                    <TextView
+                        android:id="@+id/article_content_top_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/common_horizontal_margin"
+                        android:layout_marginRight="@dimen/common_horizontal_margin"
+                        android:lineSpacingMultiplier="1.2"
+                        android:textColor="?attr/article_title_value"
+                        android:textSize="18sp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/article_content_top_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/article_content_top_title"
+                        android:layout_marginLeft="@dimen/common_horizontal_margin"
+                        android:layout_marginTop="6dp"
+                        android:textColor="?attr/article_time_value"
+                        android:textSize="12sp"/>
+
+                    <LinearLayout
+                        android:id="@+id/article_content_bottom_zan_layout"
+                        android:layout_width="107dp"
+                        android:layout_height="36dp"
+                        android:layout_below="@id/article_content_top_time"
+                        android:layout_marginLeft="@dimen/common_horizontal_margin"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="15dp"
+                        android:background="@drawable/article_zanshang"
+                        android:gravity="center"
+                        android:padding="8dp">
+
+                        <TextView
+                            android:id="@+id/article_content_bottom_zan_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawableLeft="@drawable/article_ding_state"
+                            android:drawablePadding="4dp"
+                            android:gravity="center"
+                            android:text="上头条"
+                            android:textColor="@drawable/common_zan_text_color"
+                            android:textSize="12sp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/article_content_bottom_cai_layout"
+                        android:layout_width="107dp"
+                        android:layout_height="36dp"
+                        android:layout_alignTop="@id/article_content_bottom_zan_layout"
+                        android:layout_toRightOf="@id/article_content_bottom_zan_layout"
+                        android:background="@drawable/article_zanshang"
+                        android:gravity="center"
+                        android:padding="8dp">
+
+                        <TextView
+                            android:id="@+id/article_content_bottom_cai_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawableLeft="@drawable/article_cai_state"
+                            android:drawablePadding="4dp"
+                            android:gravity="center"
+                            android:text="不喜欢"
+                            android:textColor="@drawable/common_zan_text_color"
+                            android:textSize="12sp"/>
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/article_content_bottom_share_img"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_below="@id/article_content_top_title"
+                        android:layout_marginLeft="@dimen/common_horizontal_margin"
+                        android:layout_marginRight="@dimen/common_horizontal_margin"
+                        android:layout_marginTop="6dp"
+                        android:src="@drawable/video_article_fenxiang"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:layout_below="@id/article_content_bottom_zan_layout"
+                        android:layout_marginTop="15dp"
+                        android:background="?attr/item_divider_color_value"/>
+                </RelativeLayout>
+
+                <include
+                    android:id="@+id/article_relative_bottom_layout"
+                    layout="@layout/video_article_relative_bottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
+
+                <include
+                    android:id="@+id/article_comment_bottom_layout"
+                    layout="@layout/article_comment_bottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"/>
+            </LinearLayout>
+        </com.chengning.fenghuo.widget.NoFocusingBottomListenerScrollView>
+
+        <RelativeLayout
+            android:id="@+id/cover_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/common_bg_value">
+
+            <include
+                android:id="@+id/progress_refresh_layout"
+                layout="@layout/progress_refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="gone"/>
+        </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/article_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></FrameLayout>
+    </RelativeLayout>
+
+    <!-- View where the video will be shown when video goes fullscreen -->
+
+    <RelativeLayout
+        android:id="@+id/videoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </RelativeLayout>
+
+</RelativeLayout>

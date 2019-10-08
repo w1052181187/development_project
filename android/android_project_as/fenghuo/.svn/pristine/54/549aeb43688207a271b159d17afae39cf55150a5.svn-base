@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/reward_dialog_ll1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:layout_marginTop="@dimen/reward_dialog_common_margin"
+    android:orientation="horizontal" >
+
+    <RadioButton
+        android:id="@+id/reward_btn_index1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/reward_dialog_item_selector"
+        android:button="@null"
+        android:gravity="center"
+        android:text="2元"
+        android:textColor="@drawable/reward_dialog_item_text_selector" />
+
+    <RadioButton
+        android:id="@+id/reward_btn_index2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/reward_dialog_common_margin"
+        android:layout_weight="1"
+        android:background="@drawable/reward_dialog_item_selector"
+        android:button="@null"
+        android:gravity="center"
+        android:text="5元"
+        android:textSize="18sp"
+        android:textColor="@drawable/reward_dialog_item_text_selector" />
+
+</LinearLayout>

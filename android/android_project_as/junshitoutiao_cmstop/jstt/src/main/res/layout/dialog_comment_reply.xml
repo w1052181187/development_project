@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/half_transparent" >
+
+    <RelativeLayout
+        android:layout_width="272dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="?attr/common_bg_value"
+        android:paddingBottom="12dp" >
+
+        <ImageView
+            android:id="@+id/dialog_comment_reply_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/btn_comment_dialog_cancel" />
+
+        <TextView
+            android:id="@+id/dialog_comment_reply_reply"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/dialog_comment_reply_cancel"
+            android:layout_marginLeft="36dp"
+            android:layout_marginTop="12dp"
+            android:drawableLeft="@drawable/btn_comments"
+            android:drawablePadding="10dp"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="回复"
+            android:textColor="@color/night_text_color"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dialog_comment_reply_like"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/dialog_comment_reply_reply"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="36dp"
+            android:layout_marginRight="36dp"
+            android:layout_marginTop="12dp"
+            android:drawableLeft="@drawable/btn_like"
+            android:drawablePadding="10dp"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="点赞"
+            android:textColor="@color/night_text_color"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dialog_comment_reply_report"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/dialog_comment_reply_reply"
+            android:layout_below="@+id/dialog_comment_reply_reply"
+            android:drawableLeft="@drawable/btn_report"
+            android:drawablePadding="10dp"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="举报"
+            android:textColor="@color/night_text_color"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dialog_comment_reply_copy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/dialog_comment_reply_report"
+            android:layout_alignLeft="@+id/dialog_comment_reply_like"
+            android:layout_below="@+id/dialog_comment_reply_like"
+            android:drawableLeft="@drawable/btn_copy"
+            android:drawablePadding="10dp"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="复制"
+            android:textColor="@color/night_text_color"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dialog_comment_reply_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/dialog_comment_reply_report"
+            android:layout_below="@+id/dialog_comment_reply_report"
+            android:drawableLeft="@drawable/btn_delete"
+            android:drawablePadding="10dp"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="删除"
+            android:textColor="@color/night_text_color"
+            android:textSize="13sp" />
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/half_transparent"
+    android:padding="30dp" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/img_alert_bg"
+        android:orientation="vertical"
+        android:padding="20dp" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="请输入您的新昵称:"
+            android:textColor="@color/article_bottom_hint_text"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="13dp"
+            android:background="@drawable/btn_bg"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:paddingTop="8dp" >
+
+            <EditText
+                android:id="@+id/dialog_modify_nickname_edittext"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@null"
+                android:textColor="@color/article_bottom_hint_text"
+                android:textSize="18sp" >
+            </EditText>
+
+            <Button
+                android:id="@+id/dialog_modify_nickname_btn_clear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_close_nickname_modify"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="13dp"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/nickname_btn_cancle"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@drawable/btn_bg"
+                android:text="取消"
+                android:textColor="@color/common_text_summary"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/nickname_btn_confirm"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="13dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_bg_blue_modify_nickname"
+                android:text="确定"
+                android:textColor="@color/dialog_modify_nickname_ok_color"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

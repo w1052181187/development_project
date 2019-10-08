@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <View
+        android:id="@+id/dialog_pic_article_share_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/half_transparent" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:background="@drawable/img_alert_bg"
+        android:padding="20dp" >
+
+        <TextView
+            android:id="@+id/dialog_pic_article_share_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:text="分享到："
+            android:textColor="?attr/item_title_color_value"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_below="@+id/dialog_pic_article_share_title"
+            android:layout_marginTop="20dp" >
+
+            <ImageButton
+                android:id="@+id/dialog_pic_article_share_weixin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/transparent"
+                android:src="@drawable/alert_share_wechat" />
+
+            <ImageButton
+                android:id="@+id/dialog_pic_article_share_pyq"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:background="@color/transparent"
+                android:src="@drawable/alert_share_pyq" />
+
+            <ImageButton
+                android:id="@+id/dialog_pic_article_share_weibo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:background="@color/transparent"
+                android:src="@drawable/alert_share_weibo" />
+
+            <ImageButton
+                android:id="@+id/dialog_pic_article_share_qzone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:background="@color/transparent"
+                android:src="@drawable/alert_share_qzone" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

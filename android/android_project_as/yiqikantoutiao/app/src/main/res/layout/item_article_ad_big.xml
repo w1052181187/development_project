@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/item_article_relative_one_big_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/item_list_news_bg"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/common_horizontal_margin"
+        android:layout_marginRight="@dimen/common_horizontal_margin"
+        android:background="?attr/item_divider_color_value"
+        android:duplicateParentState="true"
+        android:padding="1dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/common_item_bg_state_value"
+            android:duplicateParentState="true"
+            android:padding="11dp">
+
+            <ImageView
+                android:id="@+id/item_channel_item_image"
+                android:layout_width="match_parent"
+                android:layout_height="170dp"
+                android:layout_below="@+id/item_channel_item_title_layout"
+                android:scaleType="centerCrop"
+                android:src="@color/transparent"/>
+
+            <ImageView
+                android:id="@+id/item_channel_item_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignRight="@id/item_channel_item_image"
+                android:layout_alignTop="@id/item_channel_item_image"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="4dp"
+                android:src="@drawable/article_ad_close"/>
+
+            <TextView
+                android:id="@+id/item_channel_item_ad_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/item_channel_item_image"
+                android:layout_alignRight="@id/item_channel_item_image"
+                android:layout_marginBottom="6dp"
+                android:layout_marginRight="6dp"
+                android:background="@drawable/guanggao_bg"
+                android:gravity="center"
+                android:paddingBottom="1dp"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp"
+                android:paddingTop="1dp"
+                android:text="广告"
+                android:textColor="@color/white"
+                android:textSize="10sp"/>
+
+            <TextView
+                android:id="@+id/item_channel_item_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/item_channel_item_image"
+                android:layout_marginTop="7dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="?attr/item_title_color_value"
+                android:textSize="16sp"/>
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/item_channel_item_line"
+            android:layout_width="0dp"
+            android:layout_height="0dp"/>
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,62 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="?attr/home_bg_value" >
+
+    <include
+        android:id="@+id/progress_refresh_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        layout="@layout/progress_refresh"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <com.cmstop.jstt.views.MyTabPageIndicator
+            android:id="@+id/indicator"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/home_tab_height"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/indicator_slide_right"
+            android:layout_width="16dp"
+            android:layout_height="@dimen/home_tab_height"
+            android:layout_alignRight="@id/indicator"
+            android:scaleType="fitXY"
+            android:src="?attr/home_indicator_slide_right"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/top"
+            style="@style/SunTabPageIndicator"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/home_tab_height"
+            android:background="?attr/home_tab_bar_bg_value"
+            android:text="独家"
+            android:textSize="@dimen/home_tab_text_size" />
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/top" />
+        <Button
+            android:id="@+id/topbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="@dimen/common_horizontal_margin"
+            android:layout_marginRight="@dimen/common_horizontal_margin"
+            android:background="@drawable/top_btn"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</RelativeLayout>

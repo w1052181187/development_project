@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/common_item_bg_state_value"
+    android:minHeight="1dp"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/item_channel_item_content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <ViewStub
+            android:id="@+id/item_channel_item_stub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:id="@+id/item_channel_item_click_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#f4f5f6"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#e8e8e8" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawablePadding="5dp"
+                android:drawableRight="@drawable/shouye_shuaxin_icon"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="刚刚看到这里，点击刷新"
+                android:textColor="@color/home_item_click_refresh_color"
+                android:textSize="15sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#e8e8e8" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

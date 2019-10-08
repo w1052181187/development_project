@@ -1,0 +1,68 @@
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+        release {
+            keyAlias 'shenyuan_xjs'
+            keyPassword 'shenyuan'
+            storeFile file('E:/work/Apk/shenyuan_keystore.keystore')
+            storePassword 'shenyuan'
+        }
+    }
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
+    aaptOptions.cruncherEnabled = false
+    aaptOptions.useNewCruncher = false
+    defaultConfig {
+        applicationId "com.shenyuan.militarynews"
+        minSdkVersion 14
+        targetSdkVersion 19
+        multiDexEnabled true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+            manifestPlaceholders = [qqappid: "100990706"]
+        }
+        debug {
+            signingConfig signingConfigs.release
+            manifestPlaceholders = [qqappid: "100990706"]
+        }
+
+    }
+    dexOptions {
+        javaMaxHeapSize "2g"
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+        disable 'LongLogTag'
+    }
+    productFlavors {
+    }
+    repositories {
+        flatDir {
+            dirs  'libs'
+        }
+    }
+}
+
+dependencies {
+    implementation "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
+    implementation(name: 'alicloud-android-feedback-3.1.1', ext: 'aar')
+    //    compile 'com.android.support:multidex:1.0.2'
+    implementation project(':common')
+    implementation project(':alicloud_feedback')
+    implementation project(':leancloudpush')
+    implementation project(':pulltorefresh')
+    implementation project(':shortcutBadger')
+    implementation project(':tengxun_gdt')
+    implementation files('libs/js-rhino.jar')
+    implementation files('libs/MiPush_SDK_Client_3_1_2.jar')
+    implementation files('libs/eventbus-3.0.0-beta1.jar')
+    implementation files('libs/Baidu_MobAds_SDK.jar')
+    implementation files('libs/GetuiSDK2.9.3.0.jar')
+    implementation files('libs/json_simple-1.1.jar')
+}

@@ -1,0 +1,1 @@
+include ':appcompat_v7', ':umeng_sdk', ':ali_feedback', ':ali_securityguard', ':baidu_mtj_sdk', ':design', ':leancloudpush', ':pulltorefresh', ':recyclerview', ':umeng_share', ':viewpagerlibrary', ':common', ':shortcutBadger'

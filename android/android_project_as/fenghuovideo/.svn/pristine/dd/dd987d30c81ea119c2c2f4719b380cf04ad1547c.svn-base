@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="7dp" >
+
+    <TextView
+        android:id="@+id/item_channel_item_ad_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="6dp"
+        android:layout_marginTop="2dp"
+        android:background="@null"
+        android:gravity="center"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:text="广告"
+        android:textColor="#2b90d7"
+        android:textSize="10sp"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/item_channel_item_ad_tag"
+        android:paddingBottom="13dp" >
+
+        <TextView
+            android:id="@+id/item_channel_item_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="6dp"
+            android:text="图说军事"
+            android:textColor="?attr/item_summary_color_value"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/item_channel_item_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="6dp"
+            android:layout_toRightOf="@id/item_channel_item_author"
+            android:drawableLeft="@mipmap/pinglun"
+            android:drawablePadding="4dp"
+            android:textColor="?attr/article_time_value"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/item_channel_item_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/item_channel_item_comment"
+            android:text="刚刚"
+            android:textColor="?attr/article_time_value"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+</RelativeLayout>
