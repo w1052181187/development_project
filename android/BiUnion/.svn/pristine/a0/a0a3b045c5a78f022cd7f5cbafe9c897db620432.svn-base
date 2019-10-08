@@ -1,0 +1,202 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.bean.RegisterBean;
+import com.bibinet.biunion.project.bean.VerifCodeBean;
+import com.bibinet.biunion.project.models.BaseModel;
+import com.bibinet.biunion.project.net.emit.RegisterEmit;
+import com.bibinet.biunion.project.net.firing.RegisterFiring;
+import com.bibinet.biunion.project.ui.base.BaseActivity;
+import com.bibinet.biunion.project.ui.expand.TitleActivity;
+import com.bibinet.biunion.project.utils.PhoneNumberUtils;
+import com.bibinet.biunion.project.utils.TimeUtils;
+import com.bibinet.biunion.project.utils.ToastUtils;
+import com.bibinet.biunion.project.utils.ViewCheckUtils;
+import com.bibinet.biunion.project.utils.cityselectutil.SharedPreferencesUtils;
+import com.umeng.analytics.MobclickAgent;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+/**
+ * Created by bibinet on 2017-6-15.
+ */
+
+public class RegisterActivity extends TitleActivity implements RegisterEmit, TimeUtils.OnTimeUtilsListener {
+    public final static int resultCode = 1100;
+    public final static int requestCode = 1101;
+    private final long AGAINSENDTIME = 60 * 1000;
+
+    @BindView(R.id.act_register_company_name)
+    EditText companyET;
+    @BindView(R.id.act_register_email)
+    EditText emailET;
+    @BindView(R.id.act_register_name)
+    EditText nameET;
+    @BindView(R.id.act_register_position)
+    EditText positionET;
+    @BindView(R.id.act_register_phone)
+    EditText phoneET;
+    @BindView(R.id.act_register_code)
+    EditText codeET;
+    @BindView(R.id.act_register_get_code)
+    Button getCodeB;
+    @BindView(R.id.act_register_password)
+    EditText passwordET;
+    @BindView(R.id.act_register_confirm)
+    Button confirmB;
+    @BindView(R.id.act_register_show_password)
+    View showPasswordV;
+
+    private TimeUtils timeUtils;
+    private RegisterBean register;
+    private RegisterFiring registerFiring;
+
+    @Override
+    protected void onTitleCreate(@Nullable Bundle savedInstanceState) {
+        initView();
+        timeUtils = new TimeUtils();
+
+        //检测验证码时间是否到期
+        long historyTime = SharedPreferencesUtils.getInstence().getCheckCodeAgainSendTime(this);
+        long currentTime = System.currentTimeMillis();
+        if (currentTime < historyTime) {
+            long time = historyTime - currentTime;
+            timeUtils.startCountDownTime(time, 1000, this);
+            getCodeB.setEnabled(false);
+        } else {
+            getCodeB.setEnabled(true);
+        }
+
+        //检测
+        ViewCheckUtils.inputConfirm(confirmB, companyET, emailET, nameET, positionET, phoneET, codeET, passwordET);
+        //检测验证码
+        ViewCheckUtils.getCodeCheck(getCodeB, phoneET);
+        //展示密码
+        ViewCheckUtils.showPassword(showPasswordV, passwordET);
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_register;
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_register;
+    }
+
+    private void initView() {
+        registerFiring = new RegisterFiring(this);
+        register = new RegisterBean();
+    }
+
+    @OnClick({R.id.act_register_get_code, R.id.act_register_confirm})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.act_register_get_code:
+                String phoneNumb = phoneET.getText().toString().trim();
+                if (PhoneNumberUtils.isMobileNumber(phoneNumb)) {
+                    registerFiring.getCode(phoneNumb);
+//                    //保存一段时间后的时间点
+//                    long time = System.currentTimeMillis() + AGAINSENDTIME;
+//                    SharedPreferencesUtils.getInstence().setCheckCodeAgainSendTime(this, time);
+//                    //启动倒计时
+//                    timeUtils.startCountDownTime(AGAINSENDTIME, 1000, this);
+                } else {
+                    Toast.makeText(this, "请输入正确的手机号", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.act_register_confirm:
+                register.setCompany(companyET.getText().toString().trim());
+                register.setEmail(emailET.getText().toString().trim());
+                register.setName(nameET.getText().toString().trim());
+                register.setPosition(positionET.getText().toString().trim());
+                register.setPhone(phoneET.getText().toString().trim());
+                register.setCode(codeET.getText().toString().trim());
+                register.setPassword(passwordET.getText().toString().trim());
+                if(register.checkInput()){
+                    //调用注册
+//                    ToastUtils.showShort("注册");
+                    registerFiring.register(register);
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onVerifGetSucess(VerifCodeBean verifInfo) {
+        if (verifInfo.getModelAndView().getModel().getResCode().equals("0000")) {
+            Toast.makeText(this, "验证码获取成功", Toast.LENGTH_SHORT).show();
+
+            //保存一段时间后的时间点
+            long time = System.currentTimeMillis() + AGAINSENDTIME;
+            SharedPreferencesUtils.getInstence().setCheckCodeAgainSendTime(this, time);
+            //启动倒计时
+            timeUtils.startCountDownTime(AGAINSENDTIME, 1000, this);
+
+        } else {
+            //失败了可以直接重发 不用等
+            Toast.makeText(this, verifInfo.getResMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onVerifGetFailed(String errMessage) {
+        Toast.makeText(this, errMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRegistSucess(BaseModel baseBean) {
+        if (baseBean.getResCode().equals("0000")) {
+            Toast.makeText(this, "您已注册成功！", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent();
+            intent.putExtra("phone", register.getPhone());
+            setResult(resultCode, intent);
+            finish();
+        } else {
+            Toast.makeText(this, baseBean.getResMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //间隔倒计时
+    @Override
+    public void onTick(long millisUntilFinished) {
+        getCodeB.setText("（" + (millisUntilFinished / 1000) + "）秒后可重发");
+        getCodeB.setEnabled(false);
+    }
+
+    //完成
+    @Override
+    public void onFinish() {
+        getCodeB.setText("重新获取");
+        getCodeB.setEnabled(true);
+    }
+
+    @Override
+    public void onRegistFailed(String s) {
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("RegisterActivity");
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("RegisterActivity");
+        MobclickAgent.onPause(this);
+    }
+}

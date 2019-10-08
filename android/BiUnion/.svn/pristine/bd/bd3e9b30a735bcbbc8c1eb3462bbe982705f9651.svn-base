@@ -1,0 +1,230 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.dao.MediaMusicData;
+import com.bibinet.biunion.project.event.MediaMusicStudyEvent;
+import com.bibinet.biunion.project.models.MediaMusicChildModel;
+import com.bibinet.biunion.project.models.MediaMusicDataModel;
+import com.bibinet.biunion.project.net.UrlConfig;
+import com.bibinet.biunion.project.ui.custom.MoveLineView;
+import com.bibinet.biunion.project.ui.expand.TitleActivity;
+import com.bibinet.biunion.project.ui.fragment.MediaMusicDetailListFragment;
+import com.bibinet.biunion.project.ui.fragment.MediaMusicDetailSummaryFragment;
+import com.bibinet.biunion.project.utils.DateFormatUtils;
+import com.bibinet.biunion.project.utils.GlideHelper;
+import com.bumptech.glide.request.RequestOptions;
+import com.umeng.analytics.MobclickAgent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.BindViews;
+import butterknife.OnClick;
+
+
+/**
+ * Created by bibinet on 2017-6-15.
+ */
+
+public class MediaMusicDetailActivity extends TitleActivity implements ViewPager.OnPageChangeListener {
+    private static final String DATA = "DATA";
+    private static final String MUSIC_DATA = "music_data";
+
+    private int TYPE_COUNT = 2;
+    private int TYPE_LIST = 0;
+    private int TYPE_INTRO = 1;
+
+    @BindView(R.id.act_media_music_detail_study_tv)
+    TextView studyTv;
+
+    @BindView(R.id.act_media_music_detail_main)
+    ViewPager mainVP;
+
+    @BindView(R.id.act_media_music_detail_line)
+    MoveLineView moveLineView;
+
+    @BindViews({R.id.act_media_music_detail_title_list, R.id.act_media_music_detail_title_intro})
+    TextView[] tabTV;
+
+    @BindView(R.id.act_media_music_detail_time)
+    TextView timeTV;
+
+    @BindView(R.id.act_media_music_detail_img)
+    ImageView imgIV;
+
+    private List<Fragment> fragmentList;
+    private MediaMusicDataModel mediaVideoData;
+    private MediaMusicDetailListFragment detailListFragment;
+
+    @OnClick({R.id.act_media_music_detail_title_list, R.id.act_media_music_detail_title_intro})
+    void titleOnClick(View v) {
+        switch (v.getId()) {
+            case R.id.act_media_music_detail_title_list:
+                mainVP.setCurrentItem(TYPE_LIST);
+                break;
+            case R.id.act_media_music_detail_title_intro:
+                mainVP.setCurrentItem(TYPE_INTRO);
+                break;
+        }
+    }
+
+    private MediaMusicChildModel mediaMusicChildModel;
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+        mediaMusicChildModel = (MediaMusicChildModel) getIntent().getSerializableExtra(DATA);
+        mediaVideoData = (MediaMusicDataModel) getIntent().getSerializableExtra(MUSIC_DATA);
+//        MediaVideoDataDao dao = BiUnionApplication.getInstance().getDaoSession().getMediaVideoDataDao();
+//        mediaVideoData = dao.queryBuilder()
+//                .where(MediaVideoDataDao.Properties.Code.eq(mediaVideoChildModel.getCode())).unique();
+//        mediaVideoData = dao.queryBuilder()
+//                .where(MediaVideoDataDao.Properties.Code.eq(mediaVideoChildModel.getCode())).unique();
+        StringBuffer studyContent = new StringBuffer();
+        if (mediaVideoData != null) {
+            studyContent.append("学习到第").
+                    append(mediaVideoData .getPitch() + 1).append("节").append(mediaVideoData.getContent()).
+                    append("  ").append(mediaVideoData.getStudyTime());
+            studyTv.setSelected(true);
+        } else {
+            studyContent.append("还没有开始学习");
+            studyTv.setSelected(false);
+        }
+        studyTv.setText(studyContent.toString());
+        RequestOptions options = GlideHelper.getInst().getMediaMusicOptions();
+        GlideHelper.GlideImageType imageType = GlideHelper.GlideImageType.rounded;
+        imageType.setRadius(getResources().getDimensionPixelSize(R.dimen.common_round_corner));
+        moveLineView.setCount(2);
+        fragmentList = new ArrayList<Fragment>();
+        detailListFragment = new MediaMusicDetailListFragment().setData(mediaMusicChildModel, mediaVideoData);
+        fragmentList.add(detailListFragment);
+        fragmentList.add(new MediaMusicDetailSummaryFragment().setData(mediaMusicChildModel));
+        mainVP.setAdapter(new MediaDetailAdapter(getSupportFragmentManager()));
+        mainVP.setOnPageChangeListener(this);
+        try {
+            String date = DateFormatUtils.format(Long.valueOf(mediaMusicChildModel.getCreateDate()), "yyyy-MM-dd HH:mm");
+            timeTV.setText(date);
+        } catch (Exception e) {
+            String date = DateFormatUtils.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm");
+            timeTV.setText(date);
+        }
+        String url = UrlConfig.getBaseUrl(UrlConfig.TYPE_MSOP) + mediaMusicChildModel.getCoverPath();
+        GlideHelper.getInst().loadImageWithPlace(this, url, imgIV, imageType, options);
+
+        EventBus.getDefault().register(this);
+    }
+
+
+    @Subscribe
+    public void onMainEventBus(MediaMusicStudyEvent event) {
+        if (event == null) {
+            return;
+        }
+
+        MediaMusicData musicData = event.getMusicData();
+        StringBuffer studyContent = new StringBuffer();
+        if (musicData != null) {
+            studyContent.append("学习到").
+                    append(musicData .getPitch() + 1).append(" ").append(musicData.getContent()).
+                    append("  ").append(musicData.getStudyTime());
+            if (!studyTv.isSelected()) {
+                studyTv.setSelected(true);
+            }
+            studyTv.setText(studyContent.toString());
+            if (detailListFragment == null) {
+                return;
+            }
+            detailListFragment.updateStudyState(musicData .getPitch());
+        }
+
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_media_music_detail;
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_media_music_detail;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("MediaMusicDetailActivity");
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("MediaMusicDetailActivity");
+        MobclickAgent.onPause(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        moveLineView.setCurrentPos(position + 1);
+        for (int i = 0; i < tabTV.length; i++) {
+            if (position == i) {
+                tabTV[i].setTextColor(getResources().getColor(R.color.col_title_background));
+            } else {
+                tabTV[i].setTextColor(getResources().getColor(R.color.color_666666));
+            }
+        }
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+    public static void start(Context context, MediaMusicChildModel model, MediaMusicDataModel mediaMusicDataModel) {
+        Intent intent = new Intent(context, MediaMusicDetailActivity.class);
+        intent.putExtra(DATA, model);
+        intent.putExtra(MUSIC_DATA, mediaMusicDataModel);
+        context.startActivity(intent);
+    }
+
+    private class MediaDetailAdapter extends FragmentPagerAdapter {
+
+        public MediaDetailAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return fragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return TYPE_COUNT;
+        }
+    }
+}

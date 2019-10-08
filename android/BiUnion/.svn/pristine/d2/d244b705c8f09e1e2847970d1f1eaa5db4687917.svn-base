@@ -1,0 +1,65 @@
+package com.bibinet.biunion.project.utils;
+
+import android.util.Log;
+
+import com.bibinet.biunion.project.application.BiUnionApplication;
+import com.bibinet.biunion.project.bean.statistics.ToLoginBean;
+import com.google.gson.Gson;
+import com.umeng.analytics.MobclickAgent;
+
+import java.util.HashMap;
+
+/**
+ * 统计工具封装类
+ * 自定义
+ * Created by Wh on 2017-11-14.
+ */
+
+public class StatisticsUtils {
+    //自定义事件参数定义
+    public static final int TYPE_TO_LOGIN_PROJECT_INFO_DESIGN = 1;
+    public static final int TYPE_TO_LOGIN_TENDER_INFO_DESIGN = 2;
+    public static final int TYPE_TO_LOGIN_PURCHASE_INFO_DESIGN = 3;
+    public static final int TYPE_TO_LOGIN_CUSTOM_SERVICE = 4;
+    public static final int TYPE_TO_LOGIN_EXPERT_CHAT = 5;
+    public static final int TYPE_TO_LOGIN_WRITE_BOOK = 6;
+    public static final int TYPE_TO_LOGIN_TENDER_HELP = 7;
+    public static final int TYPE_TO_LOGIN_LOGIN = 8;
+    public static final int TYPE_TO_LOGIN_COMPANY_INFO = 9;
+    public static final int TYPE_TO_LOGIN_MY_FOUCS = 10;
+    public static final int TYPE_TO_LOGIN_FAVORITE_INFO = 11;
+    public static final int TYPE_TO_LOGIN_ADD_BOOKMARK = 12;
+    public static final int TYPE_TO_LOGIN_BOOKMARK_LIST = 13;
+    private static final String toLoginId = "toLogin";
+    private static final String bannerClickId = "bannerClick";
+
+    public static void toLogin(int type){
+        String js = AssetsUtils.getJsonFile("toLogin.json");
+        ToLoginBean toLoginBean = new Gson().fromJson(js, ToLoginBean.class);
+        String key = toLoginBean.getToLogin().get(type-1).getKey();
+        String value = toLoginBean.getToLogin().get(type-1).getValue();
+//        Log.e("js", "key-"+key+"-value-"+value);
+
+        HashMap<String,String> map = new HashMap<String,String>();
+        map.put(key, value);
+        MobclickAgent.onEvent(BiUnionApplication.context, toLoginId, map);
+    }
+
+    public static void bannerClick(int pos, String describe){
+        HashMap<String,String> map = new HashMap<String,String>();
+        String keyPos = "position";
+        String valuePos = (pos+1)+"";
+        String keyType = "type";
+        String valueType;
+        if(describe == null || describe.equals("")){
+            valueType = "无";
+        }else{
+            valueType = describe;
+        }
+        Log.e("js", "key-"+keyPos+"-value-"+valuePos);
+        Log.e("js", "key-"+keyType+"-value-"+valueType);
+        map.put(keyPos, valuePos);
+        map.put(keyType, valueType);
+        MobclickAgent.onEvent(BiUnionApplication.context, bannerClickId, map);
+    }
+}

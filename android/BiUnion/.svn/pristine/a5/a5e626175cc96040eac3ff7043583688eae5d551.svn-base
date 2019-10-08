@@ -1,0 +1,281 @@
+package com.bibinet.biunion.project.ui.fragment;
+
+
+import android.content.Context;
+import android.graphics.Rect;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.application.BiUnionApplication;
+import com.bibinet.biunion.project.dao.MediaVideoData;
+import com.bibinet.biunion.project.dao.MediaVideoDataDao;
+import com.bibinet.biunion.project.event.MediaVideoStudyEvent;
+import com.bibinet.biunion.project.models.MediaVideoChildModel;
+import com.bibinet.biunion.project.models.MediaVideoDetailSectionModel;
+import com.bibinet.biunion.project.net.UrlConfig;
+import com.bibinet.biunion.project.net.emit.MediaVideoEmit;
+import com.bibinet.biunion.project.net.firing.MediaVideoFiring;
+import com.bibinet.biunion.project.ui.activity.MediaVideoDetailActivity;
+import com.bibinet.biunion.project.ui.custom.AdaptImageView;
+import com.bibinet.biunion.project.ui.expand.MultiplePageRefreshFragment;
+import com.bibinet.biunion.project.ui.expand.PageActivityAdapter;
+import com.bibinet.biunion.project.utils.Common;
+import com.bibinet.biunion.project.utils.DensityUtil;
+import com.bibinet.biunion.project.utils.GlideHelper;
+import com.bumptech.glide.request.RequestOptions;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.HashMap;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class MediaVideoFragment extends MultiplePageRefreshFragment<MediaVideoChildModel> implements MediaVideoEmit {
+
+    @BindView(R.id.fra_media_video_main)
+    RecyclerView mainRV;
+
+    private MediaVideoFiring mediaVideoFiring;
+    private int clickPos;
+    private MediaVideoAdapter adapter;
+
+    @Override
+    protected int getTitleString() {
+        return 0;
+    }
+
+    @Override
+    protected int getXRefreshLayoutId() {
+        return R.id.fra_media_video_xrefresh;
+    }
+
+    @Override
+    protected int getNotDataViewId() {
+        return R.id.fra_media_video_not_data;
+    }
+
+    @Override
+    protected PageActivityAdapter getPageAdapter(List<MediaVideoChildModel> dataList) {
+        adapter = new MediaVideoAdapter(getActivity(), dataList);
+        return adapter;
+    }
+
+    @Override
+    protected void initLoad(int pageNumb) {
+        mediaVideoFiring.getVideoListData(pageNumb);
+    }
+
+    @Override
+    protected void onPageCreate(View view, Bundle savedInstanceState) {
+        mediaVideoFiring = new MediaVideoFiring(this);
+        mainRV.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mainRV.addItemDecoration(new SpaceItemDecoration(DensityUtil.dip2px(10)));
+        if (!EventBus.getDefault().isRegistered(this)){
+            EventBus.getDefault().register(this);
+        }
+    }
+
+    @Subscribe
+    public void onMainEventBus(MediaVideoStudyEvent event) {
+        if (event == null) {
+            return;
+        }
+        MediaVideoData videoData = event.getVideoData();
+        if (videoData != null) {
+            adapter.notifyItemChanged(clickPos);
+            adapter.updateStudy(clickPos,videoData);
+        }
+
+    }
+
+    @Override
+    protected int getRecyclerViewId() {
+        return R.id.fra_media_video_main;
+    }
+
+    @Override
+    protected int getPageLayoutId() {
+        return R.layout.fragment_media_video;
+    }
+
+    @Override
+    protected void nextPageLoad(int pageNumb) {
+        mediaVideoFiring.getVideoListData(pageNumb);
+    }
+
+    @Override
+    protected void refreshLoad(int pageNumb) {
+        mediaVideoFiring.getVideoListData(pageNumb);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    class MediaVideoAdapter extends PageActivityAdapter {
+        private final MediaVideoDataDao dao;
+        private final StringBuffer studyContent;
+        private final HashMap<Integer, MediaVideoDetailSectionModel> map;
+        private RequestOptions options;
+        private final int TYPE_ITEM = 0;
+        private boolean isStudyed = false;
+
+        private List<MediaVideoChildModel> dataList;
+
+        public MediaVideoAdapter(Context context, List<MediaVideoChildModel> dataList) {
+            super(context);
+            this.dataList = dataList;
+            options = GlideHelper.getInst().getMediaVideoOptions();
+            dao = BiUnionApplication.getInstance().getDaoSession().getMediaVideoDataDao();
+            studyContent = new StringBuffer();
+            map = new HashMap();
+        }
+
+        public void updateStudy(int pos, MediaVideoData videoData) {
+            MediaVideoDetailSectionModel videoDataModel = new MediaVideoDetailSectionModel();
+            videoDataModel.setHourNo(videoData.getHourNo());
+            videoDataModel.setHourName(videoData.getHourName());
+            videoDataModel.setHourTime(videoData.getHourTime());
+            videoDataModel.setStudyTime(videoData.getStudyTime());
+            videoDataModel.setVideo(videoData.getVideo());
+            videoDataModel.setSectionCode(videoData.getSectionCode());
+            map.put(pos,videoDataModel);
+        }
+
+        @Override
+        protected RecyclerView.ViewHolder onChildCreateViewHolder(ViewGroup parent, int viewType) {
+            return new ViewHolder(LayoutInflater.from(getActivity()).inflate(R.layout.adapter_media_video, parent, false));
+        }
+
+        @Override
+        protected void onChildBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            ViewHolder h = (ViewHolder) holder;
+            h.imgAIV.setInitImage(R.mipmap.img_media_video_loading);
+            MediaVideoChildModel model = dataList.get(position);
+            h.titleTV.setText(model.getCourseName());
+            h.chapterTV.setText("共" + model.getCourseChapter() + "章" + model.getCoursePitch() + "节");
+
+            String url = UrlConfig.getBaseUrl(UrlConfig.TYPE_MSOP) + model.getCourseCover();
+            GlideHelper.getInst().loadImageWithPlace(getActivity(), url, options, h.imgAIV);
+
+            h.mainV.setTag(position);
+
+            final MediaVideoData videoData = dao.queryBuilder()
+                    .where(MediaVideoDataDao.Properties.Code.eq(model.getCode())).unique();
+            studyContent.setLength(0);
+            if (videoData == null) {
+                isStudyed = false;
+                studyContent.append("还未开始学习");
+            } else {
+                isStudyed = true;
+                studyContent.append("学习到").append(videoData.getHourNo()).append(videoData.getHourName());
+                MediaVideoDetailSectionModel videoDataModel = new MediaVideoDetailSectionModel();
+                videoDataModel.setHourNo(videoData.getHourNo());
+                videoDataModel.setHourName(videoData.getHourName());
+                videoDataModel.setStudyTime(videoData.getStudyTime());
+                videoDataModel.setHourTime(videoData.getHourTime());
+                videoDataModel.setVideo(videoData.getVideo());
+                videoDataModel.setSectionCode(videoData.getSectionCode());
+
+                map.put(position,videoDataModel);
+            }
+            h.studyTV.setSelected(isStudyed);
+            h.studyTV.setText(studyContent.toString());
+
+        }
+
+        @Override
+        protected int getChildItemViewType(int position) {
+            return TYPE_ITEM;
+        }
+
+        @Override
+        protected int getChildCount() {
+            return Common.isListEmpty(dataList) ? 0 : dataList.size();
+        }
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+            @BindView(R.id.ada_media_video_img)
+            AdaptImageView imgAIV;
+            @BindView(R.id.act_media_video_title)
+            TextView titleTV;
+            @BindView(R.id.ada_media_video_chapter)
+            TextView chapterTV;
+
+            @BindView(R.id.ada_media_video_main)
+            View mainV;
+
+            @BindView(R.id.ada_media_video_study_tv)
+            TextView studyTV;
+
+            public ViewHolder(View itemView) {
+                super(itemView);
+                ButterKnife.bind(this, itemView);
+            }
+
+            @OnClick(R.id.ada_media_video_main)
+            void goDetail(View view) {
+                int pos = (int) view.getTag();
+                clickPos = pos;
+                MediaVideoDetailActivity.start(getActivity(), dataList.get(pos), map.get(pos));
+            }
+        }
+    }
+
+    class SpaceItemDecoration extends RecyclerView.ItemDecoration {
+        int mSpace;
+
+        /**
+         * Retrieve any offsets for the given item. Each field of <code>outRect</code> specifies
+         * the number of pixels that the item view should be inset by, similar to padding or margin.
+         * The default implementation sets the bounds of outRect to 0 and returns.
+         * <p>
+         * <p>
+         * If this ItemDecoration does not affect the positioning of item views, it should set
+         * all four fields of <code>outRect</code> (left, top, right, bottom) to zero
+         * before returning.
+         * <p>
+         * <p>
+         * If you need to access Adapter for additional data, you can call
+         * {@link RecyclerView#getChildAdapterPosition(View)} to get the adapter position of the
+         * View.
+         *
+         * @param outRect Rect to receive the output.
+         * @param view    The child view to decorate
+         * @param parent  RecyclerView this ItemDecoration is decorating
+         * @param state   The current state of RecyclerView.
+         */
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            super.getItemOffsets(outRect, view, parent, state);
+            //outRect.left = mSpace;
+            //outRect.right = mSpace;
+            outRect.bottom = mSpace;
+            if (parent.getChildAdapterPosition(view) == 0) {
+                outRect.top = mSpace;
+            }
+
+        }
+
+        public SpaceItemDecoration(int space) {
+            this.mSpace = space;
+        }
+    }
+
+}

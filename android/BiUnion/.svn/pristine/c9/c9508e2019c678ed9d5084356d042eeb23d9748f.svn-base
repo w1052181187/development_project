@@ -1,0 +1,107 @@
+package com.bibinet.biunion.project.models;
+
+import android.support.annotation.NonNull;
+
+import java.io.Serializable;
+import java.util.Objects;
+
+public class MagazineChildModel implements Serializable, Comparable<MagazineChildModel> {
+    private String objectId; //唯一id
+    private String magazineCover;  //封面
+    private String magazineContent;  //下载链接
+    private String magazineName;  //名称
+    private String magazinePeriods;  //期数
+
+    private boolean isReading = false;
+
+    public boolean isReading() {
+        return isReading;
+    }
+
+    public void setReading(boolean reading) {
+        isReading = reading;
+    }
+
+    public String getMagazineCover() {
+        return magazineCover;
+    }
+
+    public String getMagazineCoverReview() {
+        return "review?filePath=" + magazineCover;
+    }
+
+    public void setMagazineCover(String magazineCover) {
+        this.magazineCover = magazineCover;
+    }
+
+    public String getMagazineContent() {
+        return magazineContent;
+    }
+
+    public void setMagazineContent(String magazineContent) {
+        this.magazineContent = magazineContent;
+    }
+
+    public String getMagazineName() {
+        return magazineName;
+    }
+
+    public void setMagazineName(String magazineName) {
+        this.magazineName = magazineName;
+    }
+
+    public String getMagazinePeriods() {
+        return magazinePeriods;
+    }
+
+    public void setMagazinePeriods(String magazinePeriods) {
+        this.magazinePeriods = magazinePeriods;
+    }
+
+    public String getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
+    }
+
+    @Override
+    public String toString() {
+        return "MagazineChildModel{" +
+                "objectId='" + objectId + '\'' +
+                ", magazineCover='" + magazineCover + '\'' +
+                ", magazineContent='" + magazineContent + '\'' +
+                ", magazineName='" + magazineName + '\'' +
+                ", magazinePeriods='" + magazinePeriods + '\'' +
+                '}';
+    }
+
+    @Override
+    public int compareTo(@NonNull MagazineChildModel magazineChildModel) {
+        try {
+//            int tRes = Integer.valueOf(this.magazinePeriods);
+//            int oRes = Integer.valueOf(magazineChildModel.getMagazinePeriods());
+//            return tRes - oRes;
+            return this.magazinePeriods.compareTo(magazineChildModel.getMagazinePeriods());
+        }catch (Exception e){
+
+        }
+        return 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MagazineChildModel model = (MagazineChildModel) o;
+
+        return objectId.equals(model.objectId);
+    }
+
+    @Override
+    public int hashCode() {
+        return objectId.hashCode();
+    }
+}

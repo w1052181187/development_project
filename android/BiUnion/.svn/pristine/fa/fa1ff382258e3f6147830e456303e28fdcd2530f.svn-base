@@ -1,0 +1,66 @@
+package com.bibinet.biunion.project.ui.fragment;
+
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.text.Html;
+import android.view.View;
+import android.widget.TextView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.models.MediaMusicChildModel;
+import com.bibinet.biunion.project.ui.base.BaseFragment;
+import com.umeng.analytics.MobclickAgent;
+
+import butterknife.BindView;
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class MediaMusicDetailSummaryFragment extends BaseFragment {
+
+    private final String DATA = "DATA";
+
+    @BindView(R.id.v_media_video_detail_intro_main)
+    TextView mainTV;
+
+    @BindView(R.id.v_media_video_detail_intro_intro)
+    TextView introTV;
+
+    @BindView(R.id.fra_media_video_detail_summary_main)
+    TextView summaryTV;
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.fragment_media_music_detail_summary;
+    }
+
+    @Override
+    protected void onBaseViewCreated(View view, Bundle savedInstanceState) {
+        mainTV.setText(getData().getAlbumName());
+        introTV.setText(getData().getAlbumIntroduce());
+        summaryTV.setText(Html.fromHtml(getData().getAlbumContent()));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("MediaMusicDetailSummaryFragment");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("MediaMusicDetailSummaryFragment");
+    }
+
+    public MediaMusicDetailSummaryFragment setData(MediaMusicChildModel mediaMusicChildModel) {
+        setSerializable(DATA, mediaMusicChildModel);
+        return this;
+    }
+
+    private MediaMusicChildModel getData() {
+        return (MediaMusicChildModel) getSerializable(DATA);
+    }
+
+}

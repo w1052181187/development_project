@@ -1,0 +1,215 @@
+package com.bibinet.biunion.project.ui.fragment;
+
+
+import android.Manifest;
+import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.application.Constants;
+import com.bibinet.biunion.project.ui.activity.MediaLiveRecordGuideActivity;
+import com.bibinet.biunion.project.ui.custom.MoveLineView;
+import com.bibinet.biunion.project.ui.expand.TitleFragment;
+import com.bibinet.biunion.project.utils.Common;
+import com.bibinet.biunion.project.utils.ToastUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class MediaFragment extends TitleFragment implements ViewPager.OnPageChangeListener {
+
+    private static final int RECORD_OK = 1;
+
+    private int TYPE_COUNT = 3;
+    private int TYPE_VIDEO = 0;
+    private int TYPE_MUSIC = 1;
+    private int TYPE_LIVE = 2;
+
+    @BindView(R.id.fra_media_main)
+    ViewPager mainVP;
+
+    @BindView(R.id.fra_media)
+    LinearLayout mediaLL;
+
+    private List<Fragment> fragmentList;
+
+    @BindView(R.id.fra_media_line)
+    MoveLineView lineMLV;
+    private boolean hasLive;
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.fragment_media;
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_main_media;
+    }
+
+    @BindView(R.id.fra_media_title_video)
+    TextView videoTV;
+    @BindView(R.id.fra_media_title_music)
+    TextView musicTV;
+    @BindView(R.id.fra_media_title_live)
+    TextView liveTV;
+    @BindView(R.id.fra_media_title_live_flag)
+    ImageView liveFlagImg;
+
+    @Override
+    protected void onTitleViewCreated(View view, Bundle savedInstanceState) {
+        setLeftBtn(0, null);
+        lineMLV.setCount(TYPE_COUNT);
+        fragmentList = new ArrayList<Fragment>();
+        fragmentList.add(new MediaVideoFragment());
+        fragmentList.add(new MediaMusicFragment());
+        MediaLiveFragment liveFragment = new MediaLiveFragment();
+        liveFragment.setHasLiveCallback(new MediaLiveFragment.IisHasLiveCallback() {
+            @Override
+            public void hasLive(boolean isHas) {
+                hasLive = isHas;
+                if (isHas) {
+                    liveFlagImg.setVisibility(View.VISIBLE);
+                } else {
+                    liveFlagImg.setVisibility(View.GONE);
+                }
+            }
+        });
+        fragmentList.add(liveFragment);
+        mainVP.setAdapter(new MediaAdapter(getChildFragmentManager()));
+        mainVP.setOnPageChangeListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onSupportVisible() {
+        if (Constants.loginresultInfo != null && Constants.loginresultInfo.getUser().getLiveFlag() == 1) {
+            setRightBtn(R.mipmap.zhiboa, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    handlerRecordPermission(getActivity(), hasLive);
+                }
+            });
+        } else {
+            setRightBtn(0, null);
+        }
+        super.onSupportVisible();
+    }
+
+    private void handlerRecordPermission(Activity activity, boolean hasLive) {
+        if (hasLive) {
+            ToastUtils.showShort("直播间已达上限");
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if (activity.checkSelfPermission(Manifest.permission.CAMERA) !=  PackageManager.PERMISSION_GRANTED &&
+                    activity.checkSelfPermission(Manifest.permission.RECORD_AUDIO) !=  PackageManager.PERMISSION_GRANTED ){
+                //先判断有没有权限 ，没有就在这里进行权限的申请
+                requestPermissions( new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.RECORD_AUDIO}, RECORD_OK);
+            }else {
+                handleLauchActivty();
+            }
+        }
+    }
+
+    private void handleLauchActivty() {
+        MediaLiveRecordGuideActivity.launch(getActivity());
+//        Common.startQQChat(getActivity(),"1229337176");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == RECORD_OK) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission Granted
+                handleLauchActivty();
+            } else {
+                // Permission Denied
+                Toast.makeText(getActivity(), "开启“相机和录音”权限，才能进行直播！", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    @OnClick({R.id.fra_media_title_video, R.id.fra_media_title_music, R.id.fra_media_title_live})
+    void titleOnClick(View v){
+        switch (v.getId()){
+            case R.id.fra_media_title_video:
+                mainVP.setCurrentItem(TYPE_VIDEO);
+                break;
+            case R.id.fra_media_title_music:
+                mainVP.setCurrentItem(TYPE_MUSIC);
+                break;
+            case R.id.fra_media_title_live:
+                mainVP.setCurrentItem(TYPE_LIVE);
+                break;
+        }
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        lineMLV.setCurrentPos(position + 1);
+        if(position == TYPE_VIDEO){
+            videoTV.setSelected(true);
+            musicTV.setSelected(false);
+            liveTV.setSelected(false);
+        }else if(position == TYPE_MUSIC) {
+            videoTV.setSelected(false);
+            musicTV.setSelected(true);
+            liveTV.setSelected(false);
+        }else{
+            videoTV.setSelected(false);
+            musicTV.setSelected(false);
+            liveTV.setSelected(true);
+        }
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+    private class MediaAdapter extends FragmentPagerAdapter{
+
+        public MediaAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return fragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return TYPE_COUNT;
+        }
+    }
+
+}

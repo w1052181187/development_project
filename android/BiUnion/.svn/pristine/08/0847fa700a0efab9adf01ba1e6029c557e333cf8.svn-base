@@ -1,0 +1,215 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.adapter.SearchActivityAdapter;
+import com.bibinet.biunion.project.net.emit.SearchEmit;
+import com.bibinet.biunion.project.net.firing.SearchFiring;
+import com.bibinet.biunion.project.ui.custom.HistoryTagShowView;
+import com.bibinet.biunion.project.ui.expand.TitleActivity;
+import com.bibinet.biunion.project.utils.DialogUtils;
+import com.bibinet.biunion.project.utils.SearchHistoryUtils;
+import com.bibinet.biunion.project.utils.SoftKeyboardUtils;
+import com.bibinet.biunion.project.utils.ToastUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+/**
+ * Created by bibinet on 2017-6-5.
+ */
+
+public class SearchActivity extends TitleActivity implements SearchEmit {
+    @BindView(R.id.doSearch)
+    View doSearch;
+    @BindView(R.id.searchEdit)
+    EditText searchEdit;
+
+//    @BindView(R.id.hotOne)
+//    TextView hotOne;
+//    @BindView(R.id.hotTwo)
+//    TextView hotTwo;
+//    @BindView(R.id.hotThree)
+//    TextView hotThree;
+//    @BindView(R.id.hotFour)
+//    TextView hotFour;
+//    @BindView(R.id.hotFive)
+//    TextView hotFive;
+//    @BindView(R.id.hotSix)
+//    TextView hotSix;
+    @BindView(R.id.act_search_hot_tag)
+    HistoryTagShowView hotTagShowView;
+
+    @BindView(R.id.act_search_history_tag)
+    HistoryTagShowView historyTagShowView;
+    @BindView(R.id.act_search_not_history)
+    View notHistoryV;
+
+    private List<String> searchDataList;
+    private SearchActivityAdapter adapter;
+    private int lastvisibleitem;
+    private int pageNum;
+    private String content;
+    private SearchFiring searchFiring;
+    private TextView[] tvHot;
+    private DialogUtils dialogUtils;
+    private List<String> hotWords;
+
+    @Override
+    protected int getTitleString() {
+        return 0;
+    }
+
+    @OnClick(R.id.act_search_exit)
+    void exitC() {
+        SoftKeyboardUtils.hintKbTwo(this);
+        finish();
+    }
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+        hideTitleBar();
+        searchDataList = new ArrayList<String>();
+        initView();
+        initListener();
+        updateSearchData();
+    }
+
+    private void initListener() {
+        hotTagShowView.setOnClickTagShowViewListener(new HistoryTagShowView.OnClickTagShowViewListener() {
+            @Override
+            public void onTagShowViewClick(int pos) {
+                String key = hotWords.get(pos);
+                content = key;
+                loadData(false);
+            }
+
+            @Override
+            public void onTagShowViewLongClick(int pos) {
+
+            }
+        });
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_search;
+    }
+
+    private void initView() {
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        searchFiring = new SearchFiring(this);
+        searchFiring.getHotWords();//热词presenter
+    }
+
+    private void loadData(boolean isLoadMore) {
+//        if (isLoadMore) {
+//            adapter.changeMoreStatus(SocailFooterAdapter.LOADING_MORE);
+//            pageNum++;
+//        } else {
+//            pageNum = 1;
+//            progressDialogUtils1.showProgressDialog(this);
+//        }
+//        presenter.getSearchData(pageNum, content, isLoadMore);//搜索presenter
+        Intent intent = new Intent(this, SearchResultActivity.class);
+        intent.putExtra("key", content);
+        startActivity(intent);
+
+        //写入数据
+        SearchHistoryUtils.writeData(this, content);
+//        searchDataList.add(0, content);
+        updateSearchData();
+    }
+
+    @OnClick(R.id.doSearch)
+    public void onViewClicked() {
+        content = searchEdit.getText().toString().trim();
+        if (content.equals("")) {
+            ToastUtils.showShort("没有输入关键词");
+            return;
+        }
+        //跳转新界面展示
+        loadData(false);
+        //清空输入
+        searchEdit.setText("");
+    }
+
+    @Override//加载热词
+    public void onGetHotWordsSuccess(List<String> hotWords) {
+        this.hotWords = hotWords;
+        hotTagShowView.setDataList(hotWords);
+    }
+
+    @Override
+    public void onGetHotWordsFail(String error) {
+
+    }
+
+    private void updateSearchData() {
+        // TODO Auto-generated method stub
+        List<String> d = SearchHistoryUtils.getData(this);
+        searchDataList.clear();
+//		for(SearchHistoryData data : d){
+//			commentSearchMainDataList.add(data.getMain());
+//		}
+        searchDataList.addAll(d);
+        if (searchDataList.size() <= 0) {
+            notHistoryV.setVisibility(View.VISIBLE);
+        } else {
+            notHistoryV.setVisibility(View.GONE);
+        }
+        historyTagShowView.setDataList(searchDataList);
+        //点击搜索
+        historyTagShowView.setOnClickTagShowViewListener(new HistoryTagShowView.OnClickTagShowViewListener() {
+            @Override
+            public void onTagShowViewClick(int pos) {
+                String key = searchDataList.get(pos);
+                content = key;
+                loadData(false);
+            }
+
+            @Override
+            public void onTagShowViewLongClick(final int pos) {
+                String key = searchDataList.get(pos);
+                content = key;
+//                Toast.makeText(SearchActivity.this,content,Toast.LENGTH_SHORT).show();
+                dialogUtils = new DialogUtils();
+                dialogUtils.diloagShow(SearchActivity.this, R.layout.dialog_delete_item);
+                View dialogView = dialogUtils.getView();
+                TextView isDelete = (TextView) dialogView.findViewById(R.id.isDelete);
+                TextView noDelete = (TextView) dialogView.findViewById(R.id.noDelete);
+                isDelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+//                        searchDataList.remove(pos);
+                        SearchHistoryUtils.removeData(SearchActivity.this, searchDataList.get(pos));
+                        updateSearchData();
+                        dialogUtils.dialogDismiss();
+                    }
+                });
+                noDelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialogUtils.dialogDismiss();
+                    }
+                });
+            }
+        });
+    }
+
+    @OnClick(R.id.act_search_delete_history)
+    void deleteHistory() {
+        SearchHistoryUtils.clearData(this);
+        updateSearchData();
+    }
+
+}

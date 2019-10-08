@@ -1,0 +1,131 @@
+package com.bibinet.biunion.project.ui.fragment;
+
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.models.MediaVideoChildModel;
+import com.bibinet.biunion.project.models.MediaVideoDetailTeacherModel;
+import com.bibinet.biunion.project.net.UrlConfig;
+import com.bibinet.biunion.project.net.emit.MediaVideoDetailTeacherEmit;
+import com.bibinet.biunion.project.net.firing.MediaVideoFiring;
+import com.bibinet.biunion.project.ui.base.BaseFragment;
+import com.bibinet.biunion.project.ui.custom.HeaderWaveHelper;
+import com.bibinet.biunion.project.ui.custom.HeaderWaveView;
+import com.bibinet.biunion.project.utils.GlideHelper;
+import com.bibinet.biunion.project.utils.ToastUtils;
+import com.bumptech.glide.request.RequestOptions;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class MediaVideoDetailIntroFragment extends BaseFragment implements MediaVideoDetailTeacherEmit {
+
+    private final String DATA = "DATA";
+
+    @BindView(R.id.fra_media_video_detail_intro_teacher_main)
+    LinearLayout teacherLL;
+
+    private MediaVideoFiring mediaVideoFiring;
+
+    private RequestOptions options;
+
+    @BindView(R.id.v_media_video_detail_intro_main)
+    TextView mainTV;
+
+    @BindView(R.id.v_media_video_detail_intro_intro)
+    TextView introTV;
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.fragment_media_video_detail_intro;
+    }
+
+    @Override
+    protected void onBaseViewCreated(View view, Bundle savedInstanceState) {
+        headerWaveHelperList = new ArrayList<HeaderWaveHelper>();
+        mediaVideoFiring = new MediaVideoFiring(this, getActivity());
+        options = GlideHelper.getInst().getTeacherIconOptions();
+        mediaVideoFiring.getVideoTeacher(getData().getCode());
+
+        mainTV.setText(getData().getCourseName());
+        introTV.setText(getData().getCourseIntro());
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        //mHeaderWaveHelper.cancel();
+        setHeaderWaveViewState(false);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //mHeaderWaveHelper.start();
+        setHeaderWaveViewState(true);
+    }
+
+    public MediaVideoDetailIntroFragment setData(MediaVideoChildModel mediaVideoChildModel) {
+        setSerializable(DATA, mediaVideoChildModel);
+        return this;
+    }
+
+    private MediaVideoChildModel getData() {
+        return (MediaVideoChildModel) getSerializable(DATA);
+    }
+
+    private List<HeaderWaveHelper> headerWaveHelperList;
+
+    @Override
+    public void onGetTeacherSuccess(List<MediaVideoDetailTeacherModel> dataList) {
+        //清除已经有的
+        headerWaveHelperList.clear();
+        teacherLL.removeAllViews();
+        //初始化老师列表
+        for (MediaVideoDetailTeacherModel model : dataList) {
+            View la = LayoutInflater.from(getActivity()).inflate(R.layout.view_media_video_detail_teacher, teacherLL, false);
+            ((TextView)la.findViewById(R.id.v_media_video_detail_teacher_name)).setText(model.getTeacherName());
+            ((TextView)la.findViewById(R.id.v_media_video_detail_teacher_intro)).setText(model.getTeacherIntro());
+            ((TextView)la.findViewById(R.id.v_media_video_detail_teacher_detail)).setText(model.getTeacherIntroduction());
+            ImageView iconIV = (ImageView) la.findViewById(R.id.v_media_video_detail_teacher_icon);
+            String url = UrlConfig.getBaseUrl(UrlConfig.TYPE_IIP) + model.getTeacherHead();
+            GlideHelper.getInst().loadImageWithPlace(getActivity(), url, iconIV, GlideHelper.GlideImageType.circled,options);
+
+            HeaderWaveView headerWaveView = (HeaderWaveView) la.findViewById(R.id.v_media_video_detail_teacher_header_wave);
+            HeaderWaveHelper mHeaderWaveHelper = new HeaderWaveHelper(headerWaveView, Color.parseColor("#fffae5"), Color.parseColor("#fff2b7"), null);
+            headerWaveHelperList.add(mHeaderWaveHelper);
+            mHeaderWaveHelper.start();
+            teacherLL.addView(la);
+        }
+    }
+
+    @Override
+    public void onGetTeacherFail(String error) {
+        ToastUtils.showShort("网络异常");
+    }
+
+    private void setHeaderWaveViewState(boolean isStart) {
+        for (HeaderWaveHelper helper : headerWaveHelperList) {
+            if (helper != null) {
+                if (isStart) {
+                    helper.start();
+                } else {
+                    helper.cancel();
+                }
+            }
+        }
+    }
+}

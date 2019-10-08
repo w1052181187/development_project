@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp" >
+
+        <TextView
+            android:id="@+id/cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:clickable="true"
+            android:text="取消" />
+
+        <TextView
+            android:id="@+id/sure"
+            android:layout_width="wrap_content"
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:clickable="true"
+            android:text="确定" />
+    </RelativeLayout>
+ <!--   <NumberPicker
+        android:id="@+id/deTail"
+        android:layout_width="match_parent"
+        android:background="#d9d9d9"
+        android:layout_height="100dp"
+        />-->
+<ListView
+    android:id="@+id/dia_show_company_info_select_main"
+    android:layout_width="match_parent"
+    android:layout_height="166dp"
+    android:dividerHeight="0dp"
+    android:divider="@null"
+    android:background="#F4F4F4">
+
+</ListView>
+
+</LinearLayout>

@@ -1,0 +1,347 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.animations.AnimationManager;
+import com.bibinet.biunion.project.application.Constants;
+import com.bibinet.biunion.project.manager.BrightnessManager;
+import com.bibinet.biunion.project.manager.StatusBarManager;
+import com.bibinet.biunion.project.models.MagazineChildModel;
+import com.bibinet.biunion.project.net.UrlConfig;
+import com.bibinet.biunion.project.net.emit.MagazineDetailEmit;
+import com.bibinet.biunion.project.net.firing.MagazineFiring;
+import com.bibinet.biunion.project.ui.base.BaseActivity;
+import com.bibinet.biunion.project.ui.manager.BookmarkManager;
+import com.bibinet.biunion.project.ui.manager.MagazineDetailManager;
+import com.bibinet.biunion.project.ui.pop.MagazineLightPop;
+import com.bibinet.biunion.project.utils.DensityUtil;
+import com.bibinet.biunion.project.utils.StatisticsUtils;
+import com.bibinet.biunion.project.utils.ToastUtils;
+import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
+import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
+import com.github.barteksc.pdfviewer.listener.OnPageErrorListener;
+import com.github.barteksc.pdfviewer.listener.OnTapListener;
+import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
+import com.umeng.analytics.MobclickAgent;
+
+import java.io.File;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+import static android.view.View.GONE;
+
+
+/**
+ * Created by bibinet on 2017-6-15.
+ */
+
+public class MagazineDetailActivity extends BaseActivity implements OnPageChangeListener, OnLoadCompleteListener, OnPageErrorListener, MagazineDetailEmit {
+
+    private final int MSG_PDF_FAILL = 2;
+    private final int MSG_PDF_SUCCESS = 1;
+
+    private MagazineFiring magazineFiring;
+
+    @BindView(R.id.act_magazine_detail_top_title)
+    TextView titleTV;
+
+    private MagazineLightPop magazineLightPop;
+
+    private static final String TAG_MAGAZINE = "TAG_MAGAZINE";
+
+    @BindView(R.id.act_magazine_detail_pdf)
+    PDFView pdfView;
+
+    @BindView(R.id.act_magazine_detail_process)
+    SeekBar processSB;
+
+    @BindView(R.id.act_magazine_detail_top)
+    LinearLayout topV;
+    @BindView(R.id.act_magazine_detail_bottom)
+    LinearLayout bottomV;
+
+    @BindView(R.id.act_magazine_detail_light)
+    View lightV;
+
+    @BindView(R.id.act_magazine_detail_bookmark)
+    View bookmarkV;
+
+    @BindView(R.id.act_magazine_detail_tag)
+    TextView tagTV;
+
+    private MagazineDetailManager magazineDetailManager;
+
+    private BookmarkManager bookmarkManager;
+    private int magazinePageNum;
+    private DefaultScrollHandle defaultScrollHandler;
+    private MagazineDetailActivity mContext;
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_magazine_detail;
+    }
+
+
+    @OnClick(R.id.v_title_exit)
+    void exit() {
+        finish();
+    }
+
+    @OnClick(R.id.act_magazine_detail_light)
+    void light() {
+        magazineLightPop.showAtLocation(lightV, Gravity.TOP | Gravity.RIGHT, DensityUtil.dip2px(this, 28), DensityUtil.dip2px(this, 53));
+    }
+
+    private boolean checkLogin() {
+        if (Constants.loginresultInfo != null && Constants.loginresultInfo.getUser() != null && Constants.loginresultInfo.getUser().getUserId() != null && !Constants.loginresultInfo.getUser().getUserId().equals("")) {
+            return true;
+        }
+        return false;
+    }
+
+    @OnClick(R.id.act_magazine_detail_bookmark)
+    void bookmark() {
+        //验证登录
+        if (!checkLogin()) {
+            startActivity(new Intent(this, LoginActivity.class));
+            StatisticsUtils.toLogin(StatisticsUtils.TYPE_TO_LOGIN_ADD_BOOKMARK);
+            return;
+        }
+        int page = 0;
+        if (bookmarkV.getTag() != null) {
+            page = (int) bookmarkV.getTag();
+        }
+        if (page == 0) {
+            return;
+        }
+        if (bookmarkV.isSelected()) {
+            bookmarkV.setSelected(false);
+            bookmarkManager.removeBookmark(magazineChildModel);
+            ToastUtils.showShort("书签取消成功");
+        } else {
+            bookmarkV.setSelected(true);
+            bookmarkManager.addBookmark(page, magazineChildModel);
+            ToastUtils.showShort("第" + magazineChildModel.getMagazinePeriods() + "期杂志第" + page + "页书签添加成功");
+            magazinePageNum = page;
+        }
+    }
+
+    private MagazineChildModel magazineChildModel;
+
+    @Override
+    protected void onBaseCreate(Bundle savedInstanceState) {
+        mContext = this;
+        StatusBarManager.initStateBarLight(this);
+        //设置状态栏字体颜色
+        StatusBarManager.FlymeSetStatusBarLightMode(this, false);
+        StatusBarManager.MIUISetStatusBarLightMode(this, false);
+        StatusBarManager.addTitleBar(this, topV, R.color.col_magazine_detail_bottom_bar_background);
+        magazineFiring = new MagazineFiring(this);
+        magazineDetailManager = new MagazineDetailManager();
+        magazineLightPop = new MagazineLightPop(this, magazineDetailManager);
+        bookmarkManager = new BookmarkManager();
+        overridePendingTransition(R.anim.tr_void, R.anim.tr_void);
+        //Uri uri = Uri.fromFile(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/test/招标采购经理人2018.2.9(1).pdf"));
+        magazineChildModel = (MagazineChildModel) getIntent().getSerializableExtra(TAG_MAGAZINE);
+        magazinePageNum = bookmarkManager.getBookPage(magazineChildModel);
+        String url = UrlConfig.MAGAZINE_DETAIL_URL + magazineChildModel.getMagazineContent();
+        magazineFiring.getPdfFile(url);
+        titleTV.setText("第 " + magazineChildModel.getMagazinePeriods() + " 期");
+        BrightnessManager.setBrightness(this, magazineDetailManager.getBrightness());
+        processSB.setEnabled(false);
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.tr_void, R.anim.tr_void);
+    }
+
+    public static void start(Context context, MagazineChildModel magazineChildModel) {
+        Intent intent = new Intent(context, MagazineDetailActivity.class);
+        intent.putExtra(TAG_MAGAZINE, magazineChildModel);
+        context.startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("MagazineDetailActivity");
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("MagazineDetailActivity");
+        MobclickAgent.onPause(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //AnimationManager.destory();
+        AnimationManager.closeBook();
+    }
+
+    @Override
+    public void onPageChanged(int page, int pageCount) {
+        if (page == 0) {
+            page = 1;
+        }
+        tagTV.setText(page + "/" + pageCount);
+        if (topV.getVisibility() == View.VISIBLE) {
+            tagTV.setVisibility(View.VISIBLE);
+        } else {
+            tagTV.setVisibility(View.GONE);
+        }
+        processSB.setMax(pageCount);
+        processSB.setProgress(page);
+        defaultScrollHandler.setPageNum(page);
+
+        updateBookmark(page);
+    }
+
+    private void updateBookmark(int page) {
+        //验证登录
+        if (!checkLogin()) {
+            return;
+        }
+        if (bookmarkManager.isAddBookmark(magazineChildModel) != BookmarkManager.FLAG_NO_ADD && page == magazinePageNum) {
+            bookmarkV.setSelected(true);
+        } else {
+            bookmarkV.setSelected(false);
+        }
+        bookmarkV.setTag(page);
+    }
+
+
+    @Override
+    public void loadComplete(int nbPages) {
+        //AnimationManager.destory();
+        updateBookmark(nbPages);
+    }
+
+    @Override
+    public void onPageError(int page, Throwable t) {
+        ToastUtils.showShort("打开失败");
+    }
+
+    @Override
+    public void onGetPdfFileSuccess(String path) {
+        mHandler.obtainMessage(MSG_PDF_SUCCESS, path).sendToTarget();
+    }
+
+    @Override
+    public void onGetPdfFileFail(String error) {
+        mHandler.obtainMessage(MSG_PDF_FAILL).sendToTarget();
+    }
+
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_PDF_SUCCESS:
+                    String path = (String) msg.obj;
+                    if (TextUtils.isEmpty(path)) {
+                        return;
+                    }
+                    Uri uri = Uri.fromFile(new File(path));
+                    defaultScrollHandler = new DefaultScrollHandle(mContext);
+                    pdfView.fromUri(uri)
+                            //.pages(3)
+                            .defaultPage(magazinePageNum)
+                            .onPageChange(mContext)
+                            .enableAnnotationRendering(true)
+                            .onLoad(mContext)
+                            .scrollHandle(defaultScrollHandler)
+                            .spacing(10) // in dp
+                            .onPageError(mContext)
+                            .onTap(new OnTapListener() {
+                                @Override
+                                public boolean onTap(MotionEvent e) {
+                                    toggleMenu(false);
+                                    return false;
+                                }
+                            })
+                            .load();
+                    break;
+                case MSG_PDF_FAILL:
+                    ToastUtils.showShort("打开失败");
+                    break;
+                default:
+                    break;
+            }
+            super.handleMessage(msg);
+        }
+    };
+
+
+    /**
+     * 切换菜单栏的可视状态
+     * 默认是隐藏的
+     */
+    private void toggleMenu(boolean hideStatusBar) {
+        initMenuAnim();
+
+        if (topV.getVisibility() == View.VISIBLE) {
+            //关闭
+            topV.startAnimation(mTopOutAnim);
+            bottomV.startAnimation(mBottomOutAnim);
+            topV.setVisibility(GONE);
+            bottomV.setVisibility(GONE);
+            StatusBarManager.initStateBar(this);
+            if (hideStatusBar) {
+                //hideSystemBar();
+            }
+            tagTV.setVisibility(View.GONE);
+        } else {
+            topV.setVisibility(View.VISIBLE);
+            bottomV.setVisibility(View.VISIBLE);
+            topV.startAnimation(mTopInAnim);
+            bottomV.startAnimation(mBottomInAnim);
+            StatusBarManager.initStateBarLight(this);
+            //showSystemBar();
+            tagTV.setVisibility(View.VISIBLE);
+        }
+    }
+
+
+    /*****************view******************/
+    //private ReadSettingDialog mSettingDialog;
+    //private PageLoader mPageLoader;
+    private Animation mTopInAnim;
+    private Animation mTopOutAnim;
+    private Animation mBottomInAnim;
+    private Animation mBottomOutAnim;
+
+    //初始化菜单动画
+    private void initMenuAnim() {
+        if (mTopInAnim != null) return;
+
+        mTopInAnim = AnimationUtils.loadAnimation(this, R.anim.slide_top_in);
+        mTopOutAnim = AnimationUtils.loadAnimation(this, R.anim.slide_top_out);
+        mBottomInAnim = AnimationUtils.loadAnimation(this, R.anim.slide_bottom_in);
+        mBottomOutAnim = AnimationUtils.loadAnimation(this, R.anim.slide_bottom_out);
+        //退出的速度要快
+        mTopOutAnim.setDuration(200);
+        mBottomOutAnim.setDuration(200);
+    }
+}

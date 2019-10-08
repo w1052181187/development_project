@@ -1,0 +1,58 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.webkit.WebView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.net.UrlConfig;
+import com.bibinet.biunion.project.ui.expand.WebViewActivity;
+
+/**
+ * Created by bibinet on 2017-6-10.
+ */
+
+public class MessageDetailActivity extends WebViewActivity {
+    public static final String OBJECT_ID = "objectid";
+
+    private WebView webview;
+    private String objectId;
+
+    public static void start(Context context, String objectId){
+        Intent intent = new Intent(context, MessageDetailActivity.class);
+        intent.putExtra(OBJECT_ID, objectId);
+        context.startActivity(intent);
+    }
+
+    @Override
+    protected void onWebCreate(Bundle savedInstanceState) {
+        initView();
+    }
+
+    @Override
+    protected int getWebViewId() {
+        return R.id.act_message_detail_web;
+    }
+
+    @Override
+    protected int getWebLayoutId() {
+        return R.layout.activity_message_detail;
+    }
+
+    private void initView() {
+        Intent intent = getIntent();
+        objectId = intent.getStringExtra(OBJECT_ID);
+        webview = getWebView();
+//        String detailUrl = new UrlConfig().INN_MESSAGE_DETAIL + objectId;
+        String detailUrl = new UrlConfig().DETAIL_MESSAGE + objectId;
+        Log.e("0-0", detailUrl + "-=");
+        webview.loadUrl(detailUrl);
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_message_detail;
+    }
+}

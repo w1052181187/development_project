@@ -1,0 +1,248 @@
+package com.bibinet.biunion.project.ui.fragment;
+
+
+import android.content.Context;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.application.BiUnionApplication;
+import com.bibinet.biunion.project.dao.MediaMusicData;
+import com.bibinet.biunion.project.dao.MediaMusicDataDao;
+import com.bibinet.biunion.project.event.MediaMusicStudyEvent;
+import com.bibinet.biunion.project.models.MediaMusicChildModel;
+import com.bibinet.biunion.project.models.MediaMusicDataModel;
+import com.bibinet.biunion.project.net.UrlConfig;
+import com.bibinet.biunion.project.net.emit.MediaMusicEmit;
+import com.bibinet.biunion.project.net.firing.MediaMusicFiring;
+import com.bibinet.biunion.project.ui.activity.MediaMusicDetailActivity;
+import com.bibinet.biunion.project.ui.expand.MultiplePageRefreshFragment;
+import com.bibinet.biunion.project.ui.expand.PageActivityAdapter;
+import com.bibinet.biunion.project.utils.Common;
+import com.bibinet.biunion.project.utils.GlideHelper;
+import com.bumptech.glide.request.RequestOptions;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.HashMap;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class MediaMusicFragment extends MultiplePageRefreshFragment<MediaMusicChildModel> implements MediaMusicEmit {
+
+    @BindView(R.id.fra_media_music_main)
+    RecyclerView mainRV;
+    private int clickPos;
+    private MediaMusicAdapter adapter;
+
+    @Override
+    protected int getXRefreshLayoutId() {
+        return R.id.fra_media_music_xrefresh;
+    }
+
+    @Override
+    protected int getNotDataViewId() {
+        return R.id.fra_media_music_not_data;
+    }
+
+    @Override
+    protected PageActivityAdapter getPageAdapter(List<MediaMusicChildModel> dataList) {
+        adapter = new MediaMusicAdapter(getActivity(), dataList);
+        return adapter;
+    }
+
+    @Override
+    protected void initLoad(int pageNumb) {
+        mediaMusicFiring.getMusicListData(pageNumb);
+    }
+
+    @Override
+    protected void onPageCreate(View view, Bundle savedInstanceState) {
+        mediaMusicFiring = new MediaMusicFiring(this);
+        mainRV.setLayoutManager(new LinearLayoutManager(getActivity()));
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected int getRecyclerViewId() {
+        return R.id.fra_media_music_main;
+    }
+
+    private MediaMusicFiring mediaMusicFiring;
+
+    @Override
+    protected int getPageLayoutId() {
+        return R.layout.fragment_media_music;
+    }
+
+    @Override
+    protected void nextPageLoad(int pageNumb) {
+        mediaMusicFiring.getMusicListData(pageNumb);
+    }
+
+    @Override
+    protected void refreshLoad(int pageNumb) {
+        mediaMusicFiring.getMusicListData(pageNumb);
+    }
+
+
+    @Override
+    protected int getTitleString() {
+        return 0;
+    }
+
+    @Subscribe
+    public void onMainEventBus(MediaMusicStudyEvent event) {
+        if (event == null) {
+            return;
+        }
+        MediaMusicData musicData = event.getMusicData();
+        if (musicData != null) {
+            adapter.notifyItemChanged(clickPos);
+            adapter.updateStudy(clickPos,musicData);
+        }
+
+    }
+
+
+    @Override
+    public void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
+
+    class MediaMusicAdapter extends PageActivityAdapter {
+        private final MediaMusicDataDao dao;
+        private final StringBuffer studyContent;
+        private final HashMap<Integer,MediaMusicDataModel> map;
+        private RequestOptions options;
+        private final int TYPE_ITEM = 0;
+        private List<MediaMusicChildModel> dataList;
+        private boolean isStudyed = false;
+        GlideHelper.GlideImageType imageType = GlideHelper.GlideImageType.rounded;
+
+        public MediaMusicAdapter(Context context, List<MediaMusicChildModel> dataList) {
+            super(context);
+            this.dataList = dataList;
+            options = GlideHelper.getInst().getMediaMusicOptions();
+            imageType.setRadius(getResources().getDimensionPixelSize(R.dimen.common_round_corner));
+            dao = BiUnionApplication.getInstance().getDaoSession().getMediaMusicDataDao();
+            studyContent = new StringBuffer();
+            map = new HashMap();
+        }
+
+        public void updateStudy(int pos, MediaMusicData musicData) {
+            MediaMusicDataModel musicDataModel = new MediaMusicDataModel();
+            musicDataModel.setPitch(musicData.getPitch());
+            musicDataModel.setContent(musicData.getContent());
+            musicDataModel.setStudyTime(musicData.getStudyTime());
+            map.put(pos,musicDataModel);
+        }
+
+        @Override
+        protected RecyclerView.ViewHolder onChildCreateViewHolder(ViewGroup parent, int viewType) {
+            return new ViewHolder(LayoutInflater.from(getActivity()).inflate(R.layout.adapter_media_music, parent, false));
+        }
+
+        @Override
+        protected void onChildBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            ViewHolder h = (ViewHolder) holder;
+            MediaMusicChildModel model = dataList.get(position);
+            h.chapterTV.setText(model.getContainAudioNums() + "集");
+            h.titleTV.setText(model.getAlbumName());
+            h.introTV.setText(model.getAlbumIntroduce());
+
+            //0，收费，1，免费
+            if (model.getIsFree().equals("1")) {
+                h.freeV.setVisibility(View.VISIBLE);
+            } else {
+                h.freeV.setVisibility(View.GONE);
+            }
+
+            String url = UrlConfig.getBaseUrl(UrlConfig.TYPE_MSOP) + model.getCoverPath();
+            GlideHelper.getInst().loadImageWithPlace(getActivity(),url,h.imgIV,imageType,options);
+            h.mainV.setTag(position);
+
+            final MediaMusicData musicData = dao.queryBuilder()
+                    .where(MediaMusicDataDao.Properties.Code.eq(model.getCode())).unique();
+            studyContent.setLength(0);
+            if (musicData == null) {
+                isStudyed = false;
+                studyContent.append("还未开始学习");
+            } else {
+                isStudyed = true;
+                studyContent.append("学习到第").
+                        append(musicData.getPitch() + 1).append("节 ").append(musicData.getContent());
+                MediaMusicDataModel musicDataModel = new MediaMusicDataModel();
+                musicDataModel.setPitch(musicData.getPitch());
+                musicDataModel.setContent(musicData.getContent());
+                musicDataModel.setStudyTime(musicData.getStudyTime());
+                map.put(position,musicDataModel);
+            }
+            h.studyTV.setSelected(isStudyed);
+            h.studyTV.setText(studyContent.toString());
+
+        }
+
+        @Override
+        protected int getChildItemViewType(int position) {
+            return TYPE_ITEM;
+        }
+
+        @Override
+        protected int getChildCount() {
+            return Common.isListEmpty(dataList) ? 0 : dataList.size();
+        }
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+
+            @BindView(R.id.ada_media_music_chapter)
+            TextView chapterTV;
+
+            @BindView(R.id.ada_media_music_title)
+            TextView titleTV;
+
+            @BindView(R.id.ada_media_music_intro)
+            TextView introTV;
+
+            @BindView(R.id.ada_media_music_img)
+            ImageView imgIV;
+
+            @BindView(R.id.ada_media_music_main)
+            View mainV;
+
+            @BindView(R.id.ada_media_music_free)
+            View freeV;
+
+            @BindView(R.id.ada_media_music_study_tv)
+            TextView studyTV;
+
+            public ViewHolder(View itemView) {
+                super(itemView);
+                ButterKnife.bind(this, itemView);
+            }
+
+            @OnClick(R.id.ada_media_music_main)
+            void goDetail(View view) {
+                int pos = (int) view.getTag();
+                clickPos = pos;
+                MediaMusicDetailActivity.start(getActivity(), dataList.get(pos), map.get(pos));
+            }
+        }
+    }
+
+}

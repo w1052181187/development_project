@@ -1,0 +1,272 @@
+package com.bibinet.biunion.project.adapter;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.animations.AnimationManager;
+import com.bibinet.biunion.project.models.MagazineChildModel;
+import com.bibinet.biunion.project.net.UrlConfig;
+import com.bibinet.biunion.project.ui.activity.MagazineActivity;
+import com.bibinet.biunion.project.ui.activity.MagazineDetailActivity;
+import com.bibinet.biunion.project.ui.expand.PageActivityAdapter;
+import com.bibinet.biunion.project.ui.manager.MagazineManager;
+import com.bibinet.biunion.project.utils.Common;
+import com.bibinet.biunion.project.utils.GlideHelper;
+import com.bumptech.glide.request.RequestOptions;
+
+import java.util.Collections;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+/**
+ * Created by bibinet on 2017-6-27.
+ */
+
+public class MagazineAdapter extends PageActivityAdapter {
+    private final StringBuffer period;
+
+    private final int TYPE_TOP = 0;
+    private final int TYPE_MAIN = 2;
+    private final RequestOptions options;
+
+    private List<MagazineChildModel> magazineModelList;
+
+    private Context context;
+
+
+    private MagazineActivity activity;
+    private MagazineManager magazineManager;
+
+    public boolean initReading() {
+        MagazineChildModel model = magazineManager.loadReading();
+        if(model!=null){
+            magazineModelList.remove(model);
+            magazineModelList.add(0, model);
+            return true;
+        }
+        return false;
+    }
+
+    public void updateReading() {
+        if (initReading()) {
+            handleSort(!isAbove);
+        }
+
+    }
+
+    public MagazineAdapter(Context context, List<MagazineChildModel> magazineModelList, MagazineManager magazineManager) {
+        super(context);
+        this.context = context;
+        this.magazineModelList = magazineModelList;
+        this.magazineManager = magazineManager;
+        this.activity = (MagazineActivity) context;
+        this.options = GlideHelper.getInst().getMagazineOptions();
+        period = new StringBuffer();
+        //添加第一个阅读中
+        initReading();
+    }
+
+
+    @Override
+    protected RecyclerView.ViewHolder onChildCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = null;
+        switch (viewType) {
+            case TYPE_TOP:
+                view = LayoutInflater.from(context).inflate(R.layout.adapter_magazine_top, parent, false);
+                return new TopItemHolder(view);
+            case TYPE_MAIN:
+                view = LayoutInflater.from(context).inflate(R.layout.adapter_magazine_main, parent, false);
+                return new MainItemHolder(view);
+        }
+        return null;
+    }
+
+    @Override
+    protected void onChildBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof MainItemHolder) {
+            int p = position * 3 - 2 - 1;
+            int p2 = p + 1;
+            int p3 = p2 + 1;
+
+            MagazineChildModel model1 = magazineModelList.get(p);
+            MainItemHolder mainItemHolder = (MainItemHolder) holder;
+            String url1 = UrlConfig.getBaseUrl(UrlConfig.TYPE_IIP) + model1.getMagazineCoverReview();
+            GlideHelper.getInst().loadImageWithPlace(activity, url1, options, mainItemHolder.img1);
+
+            period.setLength(0);
+            mainItemHolder.txt1.setText(period.append("第 ").append(model1.getMagazinePeriods()).append(" 期"));
+            mainItemHolder.main1.setTag(p);
+            if (position == 1 && magazineManager.loadReading() != null) {
+                mainItemHolder.reading1.setVisibility(View.VISIBLE);
+            } else {
+                mainItemHolder.reading1.setVisibility(View.GONE);
+            }
+
+            try {
+                MagazineChildModel model2 = magazineModelList.get(p2);
+                String url2 = UrlConfig.getBaseUrl(UrlConfig.TYPE_IIP) + model2.getMagazineCoverReview();
+                GlideHelper.getInst().loadImageWithPlace(activity, url2, options, mainItemHolder.img2);
+                period.setLength(0);
+                mainItemHolder.txt2.setText(period.append("第 ").append(model2.getMagazinePeriods()).append(" 期"));
+                mainItemHolder.main2.setVisibility(View.VISIBLE);
+                mainItemHolder.main2.setTag(p2);
+            } catch (Exception e) {
+                mainItemHolder.main2.setVisibility(View.INVISIBLE);
+            }
+            try {
+                MagazineChildModel model3 = magazineModelList.get(p3);
+                String url3 = UrlConfig.getBaseUrl(UrlConfig.TYPE_IIP) + model3.getMagazineCoverReview();
+                GlideHelper.getInst().loadImageWithPlace(activity, url3, options, mainItemHolder.img3);
+                period.setLength(0);
+                mainItemHolder.txt3.setText(period.append("第 ").append(model3.getMagazinePeriods()).append(" 期"));
+                mainItemHolder.main3.setVisibility(View.VISIBLE);
+                mainItemHolder.main3.setTag(p3);
+            } catch (Exception e) {
+                mainItemHolder.main3.setVisibility(View.INVISIBLE);
+            }
+        }
+
+    }
+
+    @Override
+    protected int getChildItemViewType(int position) {
+        if (position == 0) {
+            return TYPE_TOP;
+        }
+        return TYPE_MAIN;
+    }
+
+    @Override
+    protected int getChildCount() {
+        if (Common.isListEmpty(magazineModelList)) {
+            return 0;
+        }
+        return magazineModelList.size() % 3 == 0 ? magazineModelList.size() / 3 + 1 : magazineModelList.size() / 3 + 2;
+    }
+
+    private boolean isAbove = false;
+
+    public void reorder() {
+        handleSort(isAbove);
+        //更新外部按钮状态
+        isAbove = !isAbove;
+        activity.updateOrderV(isAbove);
+    }
+
+    /**
+     * 排序处理
+     * @param isAbove
+     */
+    public void handleSort(boolean isAbove) {
+        if (isAbove) {
+            //要大到小
+//            isAbove = false;
+            if(magazineManager.loadReading()!=null){
+                MagazineChildModel model = magazineModelList.get(0);
+                magazineModelList.remove(0);
+                Collections.sort(magazineModelList, Collections.reverseOrder());
+                magazineModelList.add(0, model);
+            }else{
+                Collections.sort(magazineModelList, Collections.reverseOrder());
+            }
+        } else {
+            //小到大
+//            isAbove = true;
+            if(magazineManager.loadReading()!=null){
+                MagazineChildModel model = magazineModelList.get(0);
+                magazineModelList.remove(0);
+                Collections.sort(magazineModelList);
+                magazineModelList.add(0, model);
+            }else{
+                Collections.sort(magazineModelList);
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    class TopItemHolder extends RecyclerView.ViewHolder {
+        @OnClick(R.id.ada_magazine_top_order)
+        void orderClick() {
+            reorder();
+            //更新内部按钮状态
+            orderV.setSelected(isAbove);
+        }
+
+        @BindView(R.id.ada_magazine_top_order)
+        View orderV;
+
+        public TopItemHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
+
+    class MainItemHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.ada_magazine_main_reading1)
+        View reading1;
+        @BindView(R.id.act_magazine_main_img1)
+        ImageView img1;
+        @BindView(R.id.act_magazine_main_txt1)
+        TextView txt1;
+        @BindView(R.id.act_magazine_main_img2)
+        ImageView img2;
+        @BindView(R.id.act_magazine_main_txt2)
+        TextView txt2;
+        @BindView(R.id.act_magazine_main_img3)
+        ImageView img3;
+        @BindView(R.id.act_magazine_main_txt3)
+        TextView txt3;
+        @BindView(R.id.ada_magazine_main1)
+        View main1;
+        @BindView(R.id.ada_magazine_main2)
+        View main2;
+        @BindView(R.id.ada_magazine_main3)
+        View main3;
+
+        public MainItemHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+        @OnClick({R.id.ada_magazine_main1, R.id.ada_magazine_main2, R.id.ada_magazine_main3})
+        void goDetail(View view) {
+            final int pos = (int) view.getTag();
+            int p = pos % 3;
+            ImageView img = null;
+//            ToastUtils.showShort("位置+" + pos);
+            switch (p) {
+                case 0:
+                    img = img1;
+                    break;
+                case 1:
+                    img = img2;
+                    break;
+                case 2:
+                    img = img3;
+                    break;
+            }
+            AnimationManager.openBook(activity, img, new AnimationManager.OnOpenBookListener() {
+                @Override
+                public void onOpenFinish() {
+                    MagazineChildModel model = magazineModelList.get(pos);
+                    magazineManager.saveReading(model);
+                    MagazineDetailActivity.start(activity, model);
+                }
+
+                @Override
+                public void onCloseFinish() {
+                    updateReading();
+                }
+            });
+        }
+    }
+}

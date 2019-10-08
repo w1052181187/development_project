@@ -1,0 +1,27 @@
+-- Merging decision tree log ---
+manifest
+ADDED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml:1:1-7:12
+INJECTED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml:1:1-7:12
+INJECTED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml:1:1-7:12
+	package
+		ADDED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml:2:11-45
+		INJECTED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml
+		INJECTED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml:1:11-69
+application
+ADDED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml:4:5-5:19
+uses-sdk
+INJECTED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml
+INJECTED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml
+INJECTED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml
+INJECTED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml
+		ADDED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml
+		INJECTED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml
+		ADDED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml
+		INJECTED from D:\workSpace\androidProject\BiUnion\nicevideoplayer\src\main\AndroidManifest.xml

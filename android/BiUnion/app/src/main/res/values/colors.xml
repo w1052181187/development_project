@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="white">#FFFFFF</color><!--白色 -->
+
+    <color name="antiquewhite">#FAEBD7</color><!--古董白 -->
+    <color name="gray">#808080</color><!--灰色 -->
+    <color name="red">#FF0000</color><!--红色 -->
+    <color name="black">#000000</color>
+
+    <color name="main_background">#fafafa</color>
+    <color name="col_title_background">#ffd000</color>
+    <color name="col_live_reply_top_txt">#FBE89C</color>
+    <color name="color_333333">#333333</color>
+    <color name="color_666666">#666666</color>
+    <color name="color_111111">#111111</color>
+    <color name="color_999999">#999999</color>
+    <color name="company_info_line_col">#E3E4E7</color>
+
+    <color name="homenew_block_line">#70f7fbff</color>
+
+    <color name="col_magazine_detail_bottom_bar_background">#191919</color>
+    <color name="transparent">#00000000</color>
+    <color name="half_transparent">#80000000</color>
+    <color name="half_transparent_white">#80ffffff</color>
+    <color name="text_blue">#2d44f4</color>
+
+
+    //会员服务相关色值
+    <color name="member_zuanshi">#ff4b16</color>
+    <color name="member_baijin">#dc28fb</color>
+    <color name="member_vip">#24a1fe</color>
+    <color name="member_gaoji">#ff950b</color>
+    <color name="member_biaozhun">@color/color_999999</color>
+
+    //搜索关键字高亮颜色
+    <color name="keyword_color">#f99e32</color>
+</resources>

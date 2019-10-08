@@ -1,0 +1,85 @@
+/**
+ * Copyright 2017 bejson.com
+ */
+package com.bibinet.biunion.project.models;
+
+
+import java.io.Serializable;
+import java.util.List;
+
+public class MediaVideoChildModel implements Serializable {
+    private String courseName; //课程名称
+    private String courseCover; //图片
+    private String courseIntro; //介绍
+    private String courseChapter; //章数
+    private String coursePitch; //节数
+    private String courseSummarize; //详细介绍
+    private String code; // 根据code请求老师和章节
+
+    //本地
+    private boolean isStudyed;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getCourseName() {
+        return courseName;
+    }
+
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
+
+    public String getCourseCover() {
+        return "review?filePath=" + courseCover;
+    }
+
+    public void setCourseCover(String courseCover) {
+        this.courseCover = courseCover;
+    }
+
+    public String getCourseIntro() {
+        return courseIntro;
+    }
+
+    public void setCourseIntro(String courseIntro) {
+        this.courseIntro = courseIntro;
+    }
+
+    public String getCourseChapter() {
+        return courseChapter;
+    }
+
+    public void setCourseChapter(String courseChapter) {
+        this.courseChapter = courseChapter;
+    }
+
+    public String getCoursePitch() {
+        return coursePitch;
+    }
+
+    public void setCoursePitch(String coursePitch) {
+        this.coursePitch = coursePitch;
+    }
+
+    public String getCourseSummarize() {
+        return courseSummarize;
+    }
+
+    public void setCourseSummarize(String courseSummarize) {
+        this.courseSummarize = courseSummarize;
+    }
+
+    public boolean isStudyed() {
+        return isStudyed;
+    }
+
+    public void setStudyed(boolean studyed) {
+        isStudyed = studyed;
+    }
+}

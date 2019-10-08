@@ -1,0 +1,432 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f5f7f8"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:id="@+id/fra_my_top_move"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="fitXY"
+                android:src="@mipmap/img_my_top_background" />
+
+            <LinearLayout
+                android:id="@+id/fra_my_top_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp">
+
+                    <TextView
+                        android:id="@+id/title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:text="@string/bottom_my"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/dim_title_txt" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp">
+
+                </View>
+
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/fra_my_bottom_move"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="85dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="16dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@mipmap/img_my_top" />
+                    <ScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#f5f7f8">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:id="@+id/companyInfo"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dim_my_item_height"
+                                android:layout_marginTop="32dp"
+                                android:orientation="horizontal">
+
+                                <android.support.v7.widget.AppCompatImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="50dp"
+                                    android:layout_gravity="center_vertical"
+                                    app:srcCompat="@drawable/ic_company" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center_vertical"
+                                    android:paddingLeft="15dp"
+                                    android:text="@string/companyInfo"
+                                    android:textColor="#333333" />
+
+                                <View
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1" />
+
+                                <ImageView
+                                    android:layout_width="7dp"
+                                    android:layout_height="13dp"
+                                    android:layout_marginRight="12dp"
+                                    android:layout_gravity="center_vertical"
+                                    android:src="@mipmap/wode_qianjin"
+                                    android:visibility="gone" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/foucsMy"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dim_my_item_height"
+                                android:orientation="horizontal">
+
+                                <android.support.v7.widget.AppCompatImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="50dp"
+                                    android:layout_gravity="center_vertical"
+                                    app:srcCompat="@drawable/ic_my_focus" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center_vertical"
+                                    android:paddingLeft="15dp"
+                                    android:text="@string/string_my_collect"
+                                    android:textColor="#333333"
+                                    android:textSize="14sp" />
+
+                                <View
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1" />
+
+                                <ImageView
+                                    android:layout_width="7dp"
+                                    android:layout_height="13dp"
+                                    android:layout_marginRight="12dp"
+                                    android:layout_gravity="center_vertical"
+                                    android:src="@mipmap/wode_qianjin"
+                                    android:visibility="gone" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/memberService"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dim_my_item_height"
+                                android:orientation="horizontal">
+
+                                <android.support.v7.widget.AppCompatImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="50dp"
+                                    android:layout_gravity="center_vertical"
+                                    app:srcCompat="@drawable/ic_member_service" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center_vertical"
+                                    android:paddingLeft="15dp"
+                                    android:text="@string/memberService"
+                                    android:textColor="#333333"
+                                    android:textSize="14sp" />
+
+                                <View
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1" />
+
+                                <ImageView
+                                    android:layout_width="7dp"
+                                    android:layout_height="13dp"
+                                    android:layout_marginRight="12dp"
+                                    android:layout_gravity="center_vertical"
+                                    android:src="@mipmap/wode_qianjin"
+                                    android:visibility="gone" />
+                            </LinearLayout>
+
+
+                            <LinearLayout
+                                android:id="@+id/aboutOur"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dim_my_item_height"
+                                android:orientation="horizontal">
+
+                                <android.support.v7.widget.AppCompatImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="50dp"
+                                    android:layout_gravity="center_vertical"
+                                    app:srcCompat="@drawable/ic_about" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center_vertical"
+                                    android:paddingLeft="15dp"
+                                    android:text="@string/aboutOur"
+                                    android:textColor="#333333"
+                                    android:textSize="14sp" />
+
+                                <View
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1" />
+
+                                <ImageView
+                                    android:layout_width="7dp"
+                                    android:layout_height="13dp"
+                                    android:layout_marginRight="12dp"
+                                    android:layout_gravity="center_vertical"
+                                    android:src="@mipmap/wode_qianjin"
+                                    android:visibility="gone" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/serviceTerm"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dim_my_item_height"
+                                android:orientation="horizontal">
+
+                                <android.support.v7.widget.AppCompatImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="50dp"
+                                    android:layout_gravity="center_vertical"
+                                    app:srcCompat="@drawable/ic_term_service" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center_vertical"
+                                    android:paddingLeft="15dp"
+                                    android:text="@string/serviceTerm"
+                                    android:textColor="#333333"
+                                    android:textSize="14sp" />
+
+                                <View
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1" />
+
+                                <ImageView
+                                    android:layout_width="7dp"
+                                    android:layout_height="13dp"
+                                    android:layout_marginRight="12dp"
+                                    android:layout_gravity="center_vertical"
+                                    android:src="@mipmap/wode_qianjin"
+                                    android:visibility="gone" />
+                            </LinearLayout>
+
+
+                            <LinearLayout
+                                android:id="@+id/legalStatement"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dim_my_item_height"
+                                android:orientation="horizontal">
+
+                                <android.support.v7.widget.AppCompatImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="50dp"
+                                    android:layout_gravity="center_vertical"
+                                    app:srcCompat="@drawable/ic_legal" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center_vertical"
+                                    android:paddingLeft="15dp"
+                                    android:text="@string/legalStatement"
+                                    android:textColor="#333333"
+                                    android:textSize="14sp" />
+
+                                <View
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1" />
+
+                                <ImageView
+                                    android:layout_width="7dp"
+                                    android:layout_height="13dp"
+                                    android:layout_marginRight="12dp"
+                                    android:layout_gravity="center_vertical"
+                                    android:src="@mipmap/wode_qianjin"
+                                    android:visibility="gone" />
+                            </LinearLayout>
+
+                            <!--<LinearLayout-->
+                                <!--android:id="@+id/disclaimer"-->
+                                <!--android:layout_width="match_parent"-->
+                                <!--android:layout_height="@dimen/dim_my_item_height"-->
+                                <!--android:orientation="horizontal">-->
+
+                                <!--<android.support.v7.widget.AppCompatImageView-->
+                                    <!--android:layout_width="wrap_content"-->
+                                    <!--android:layout_height="wrap_content"-->
+                                    <!--android:layout_marginLeft="50dp"-->
+                                    <!--android:layout_gravity="center_vertical"-->
+                                    <!--app:srcCompat="@drawable/ic_disclaimer" />-->
+
+                                <!--<TextView-->
+                                    <!--android:layout_width="wrap_content"-->
+                                    <!--android:layout_height="match_parent"-->
+                                    <!--android:gravity="center_vertical"-->
+                                    <!--android:paddingLeft="15dp"-->
+                                    <!--android:text="@string/disclaimer"-->
+                                    <!--android:textColor="#333333"-->
+                                    <!--android:textSize="14sp" />-->
+
+                                <!--<View-->
+                                    <!--android:layout_width="0dp"-->
+                                    <!--android:layout_height="match_parent"-->
+                                    <!--android:layout_weight="1" />-->
+
+                                <!--<ImageView-->
+                                    <!--android:layout_width="7dp"-->
+                                    <!--android:layout_height="13dp"-->
+                                    <!--android:layout_marginRight="12dp"-->
+                                    <!--android:layout_gravity="center_vertical"-->
+                                    <!--android:src="@mipmap/wode_qianjin"-->
+                                    <!--android:visibility="gone" />-->
+                            <!--</LinearLayout>-->
+
+                            <LinearLayout
+                                android:id="@+id/setting"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dim_my_item_height"
+                                android:orientation="horizontal">
+
+                                <android.support.v7.widget.AppCompatImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="50dp"
+                                    android:layout_gravity="center_vertical"
+                                    app:srcCompat="@drawable/ic_setting" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center_vertical"
+                                    android:paddingLeft="15dp"
+                                    android:text="@string/str_setting"
+                                    android:textColor="#333333"
+                                    android:textSize="14sp" />
+
+                                <View
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1" />
+
+                                <ImageView
+                                    android:layout_width="7dp"
+                                    android:layout_height="13dp"
+                                    android:layout_marginRight="12dp"
+                                    android:layout_gravity="center_vertical"
+                                    android:src="@mipmap/wode_qianjin"
+                                    android:visibility="gone" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1" />
+                        </LinearLayout>
+
+                </ScrollView>
+            </LinearLayout>
+
+            <com.bibinet.biunion.project.ui.custom.UserIconView
+                android:id="@+id/fra_my_login_icon"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginLeft="50dp"
+                android:background="@drawable/shape_my_icon_background"
+                android:padding="2dp"
+                android:src="@mipmap/wode_toux" />
+
+            <TextView
+                android:id="@+id/fra_my_login_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:layout_marginTop="30dp"
+                android:layout_toRightOf="@id/fra_my_login_icon"
+                android:background="@null"
+                android:text="请点击登录"
+                android:textColor="@color/black"
+                android:textSize="15sp" />
+            <RelativeLayout
+                android:id="@+id/fra_my_login_member_rl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/fra_my_login_name"
+                android:layout_alignLeft="@+id/fra_my_login_name"
+                android:layout_marginTop="10dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/fra_my_login_member_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:gravity="center"
+                    android:paddingLeft="28dp"
+                    android:paddingRight="10dp"
+                    android:textSize="12sp"
+                    android:layout_toRightOf="@+id/fra_my_login_member_img"
+                    android:layout_marginLeft="-20dp"
+                    />
+                <android.support.v7.widget.AppCompatImageView
+                    android:id="@+id/fra_my_login_member_img"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:padding="3dp"
+                    android:scaleType="centerCrop"/>
+
+            </RelativeLayout>
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+    <com.mobike.library.JBox2DView
+        android:id="@+id/JBox2D_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </com.mobike.library.JBox2DView>
+
+</FrameLayout>

@@ -1,0 +1,248 @@
+package com.bibinet.biunion.project.ui.fragment;
+
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.models.MediaVideoChildModel;
+import com.bibinet.biunion.project.models.MediaVideoDetailChapterModel;
+import com.bibinet.biunion.project.models.MediaVideoDetailSectionModel;
+import com.bibinet.biunion.project.net.emit.MediaVideoDetailChapterEmit;
+import com.bibinet.biunion.project.net.firing.MediaVideoFiring;
+import com.bibinet.biunion.project.ui.activity.MediaVideoPlayActivity;
+import com.bibinet.biunion.project.ui.base.BaseFragment;
+import com.bibinet.biunion.project.utils.Common;
+import com.bibinet.biunion.project.utils.NumberUtils;
+import com.bibinet.biunion.project.utils.ToastUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class MediaVideoDetailListFragment extends BaseFragment implements MediaVideoDetailChapterEmit {
+    @BindView(R.id.fra_media_video_detail_list_main)
+    RecyclerView mainRV;
+
+    private MediaVideoFiring mediaVideoFiring;
+    private String chapterPitch = "";
+    private MediaVideoDetailListAdapter adapter;
+    private ShareUrlCallback mCallback;
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.fragment_media_video_detail_list;
+    }
+
+    @Override
+    protected void onBaseViewCreated(View view, Bundle savedInstanceState) {
+        mediaVideoFiring = new MediaVideoFiring(this, getActivity());
+        mediaVideoFiring.getVideoChapter(getData().getCode());
+        mainRV.setLayoutManager(new LinearLayoutManager(getActivity()));
+        MediaVideoDetailSectionModel mediaVideoData = (MediaVideoDetailSectionModel) getSerializable(VIDEO_DATA);
+        if (mediaVideoData != null) {
+            chapterPitch = mediaVideoData.getHourNo();
+        }
+
+    }
+
+    @Override
+    public void onGetChapterSuccess(List<MediaVideoDetailChapterModel> dataList, String shareUrl) {
+        if (mCallback != null) {
+            mCallback.success(shareUrl);
+        }
+        adapter = new MediaVideoDetailListAdapter(dataList);
+        mainRV.setAdapter(adapter);
+    }
+
+    @Override
+    public void onGetChapterFail(String error) {
+        ToastUtils.showShort("网络异常");
+    }
+
+    public MediaVideoDetailSectionModel getSection() {
+        if (adapter == null || adapter.getAdapterList().isEmpty()) {
+            return null;
+        }
+        List<MediaVideoDetailChapterModel> chapterList = adapter.getAdapterList();
+        if (chapterList.isEmpty()) {
+            return null;
+        }
+        MediaVideoDetailChapterModel chapterModel = chapterList.get(0);
+        if (chapterModel == null) {
+            return null;
+        }
+        List<MediaVideoDetailSectionModel> sectionList = chapterModel.getHours();
+        if (sectionList.isEmpty()) {
+            return null;
+        }
+        return sectionList.get(0);
+    }
+
+    public void updateStudyState(String chapterPitch) {
+        this.chapterPitch = chapterPitch;
+        adapter.notifyDataSetChanged();
+    }
+
+    class MediaVideoDetailListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private final int TYPE_CHAPTER = 0;
+        private final int TYPE_SECTION = 1;
+
+        private List<MediaVideoDetailChapterModel> dataList;
+        private List<Object> dList;
+
+        public MediaVideoDetailListAdapter(List<MediaVideoDetailChapterModel> dataList) {
+            this.dataList = dataList;
+            dList = new ArrayList<Object>();
+            for (int i = 0; i < dataList.size(); i++) {
+                MediaVideoDetailChapterModel model = dataList.get(i);
+                model.setSectionNo("第" + NumberUtils.numberArab2CN(i + 1) + "章");
+                dList.add(model);
+                List<MediaVideoDetailSectionModel> modelList = model.getHours();
+                for (int j = 0; j < modelList.size(); j++) {
+                    MediaVideoDetailSectionModel model1 = modelList.get(j);
+                    model1.setHourNo((i + 1) + "-" + (j + 1));
+                    dList.add(model1);
+                }
+            }
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            Object model = dList.get(position);
+            if (model instanceof MediaVideoDetailChapterModel) {
+                return TYPE_CHAPTER;
+            }
+            if (model instanceof MediaVideoDetailSectionModel) {
+                return TYPE_SECTION;
+            }
+            return TYPE_CHAPTER;
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            switch (viewType) {
+                case TYPE_CHAPTER:
+                    return new ViewHolderChapter(LayoutInflater.from(getActivity()).inflate(R.layout.adapter_media_video_detail_list_chapter, parent, false));
+                case TYPE_SECTION:
+                    return new ViewHolderSection(LayoutInflater.from(getActivity()).inflate(R.layout.adapter_media_video_detail_list_section, parent, false));
+            }
+            return null;
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            if (holder instanceof ViewHolderChapter) {
+                ViewHolderChapter viewHolderChapter = (ViewHolderChapter) holder;
+                if (position == 0) {
+                    viewHolderChapter.hornTopV.setVisibility(View.INVISIBLE);
+                    viewHolderChapter.topV.setVisibility(View.INVISIBLE);
+                } else {
+                    viewHolderChapter.hornTopV.setVisibility(View.VISIBLE);
+                    viewHolderChapter.topV.setVisibility(View.VISIBLE);
+                }
+                MediaVideoDetailChapterModel modelChapter = (MediaVideoDetailChapterModel) dList.get(position);
+                viewHolderChapter.titleTV.setText(modelChapter.getSectionNo() + " " + modelChapter.getSectionName());
+
+            } else if (holder instanceof ViewHolderSection) {
+                ViewHolderSection viewHolderSection = (ViewHolderSection) holder;
+                final MediaVideoDetailSectionModel model = (MediaVideoDetailSectionModel) dList.get(position);
+
+                viewHolderSection.titleTV.setSelected(TextUtils.equals(model.getHourNo(), chapterPitch) ? true : false);
+
+                viewHolderSection.titleTV.setText(model.getHourNo() + " " + model.getHourName());
+                viewHolderSection.timeTV.setText(model.getHourTime());
+                viewHolderSection.view.setTag(position);
+                viewHolderSection.view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        MediaVideoPlayActivity.start(MediaVideoDetailListFragment.this.getActivity(),getData(),model);
+                    }
+                });
+            }
+        }
+
+        public List<MediaVideoDetailChapterModel> getAdapterList() {
+            return dataList;
+        }
+
+        public List<Object> getList() {
+            return dList;
+        }
+
+        @Override
+        public int getItemCount() {
+            return Common.isListEmpty(dList) ? 0 : dList.size();
+        }
+
+        class ViewHolderChapter extends RecyclerView.ViewHolder {
+            @BindView(R.id.ada_media_video_detail_list_chapter_top)
+            View topV;
+            @BindView(R.id.ada_media_video_detail_list_chapter_bottom)
+            View bottomV;
+
+            @BindView(R.id.ada_media_video_detail_list_chapter_top_horn_top)
+            View hornTopV;
+            @BindView(R.id.ada_media_video_detail_list_chapter_top_horn_bottom)
+            View hornBottomV;
+
+            @BindView(R.id.ada_media_video_detail_list_chapter_title)
+            TextView titleTV;
+
+            public ViewHolderChapter(View itemView) {
+                super(itemView);
+                ButterKnife.bind(this, itemView);
+            }
+        }
+
+        class ViewHolderSection extends RecyclerView.ViewHolder {
+            @BindView(R.id.ada_media_video_detail_list_section_line)
+            View lineV;
+
+            @BindView(R.id.ada_media_video_detail_list_section_title)
+            TextView titleTV;
+
+            @BindView(R.id.ada_media_video_detail_list_section_time)
+            TextView timeTV;
+            @BindView(R.id.ada_media_video_detail_list_section_parent)
+            View view;
+
+            public ViewHolderSection(View itemView) {
+                super(itemView);
+                ButterKnife.bind(this, itemView);
+            }
+        }
+    }
+
+    public MediaVideoDetailListFragment setData(MediaVideoChildModel mediaVideoChildModel, MediaVideoDetailSectionModel mediaVideoData, ShareUrlCallback callback) {
+        this.mCallback = callback;
+        Bundle b = new Bundle();
+        b.putSerializable(DATA, mediaVideoChildModel);
+        b.putSerializable(VIDEO_DATA, mediaVideoData);
+        setArguments(b);
+        return this;
+    }
+
+    private final String DATA = "DATA";
+    private final String VIDEO_DATA = "video_data";
+
+    private MediaVideoChildModel getData() {
+        return (MediaVideoChildModel) getSerializable(DATA);
+    }
+
+    public interface ShareUrlCallback {
+        void success(String url);
+    }
+}

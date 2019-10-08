@@ -1,0 +1,119 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.adapter.TenderHistoryAdapter;
+import com.bibinet.biunion.project.application.Constants;
+import com.bibinet.biunion.project.bean.DeleteHistoryBean;
+import com.bibinet.biunion.project.bean.HelpTenderHistoryReusltBean;
+import com.bibinet.biunion.project.net.emit.TenderHelpHistoryEmit;
+import com.bibinet.biunion.project.net.firing.TenderHelpFiring;
+import com.bibinet.biunion.project.ui.expand.PageActivity;
+import com.bibinet.biunion.project.ui.expand.PageActivityAdapter;
+import com.umeng.analytics.MobclickAgent;
+
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+/**
+ * Created by bibinet on 2017-6-29.
+ */
+
+public class TenderHelpHistoryActivity extends PageActivity<HelpTenderHistoryReusltBean.ItemBean> implements TenderHelpHistoryEmit {
+
+    private TenderHelpFiring tenderHelpFiring;
+
+    @Override
+    protected int getNotDataViewId() {
+        return R.id.act_tender_help_history_not_data;
+    }
+
+    @Override
+    protected PageActivityAdapter getPageAdapter(List<HelpTenderHistoryReusltBean.ItemBean> dataList) {
+        return new TenderHistoryAdapter(this, dataList, tenderHelpFiring);
+    }
+
+    @Override
+    protected void initLoad(int pageNumb) {
+        loadData(pageNumb);
+    }
+
+    @Override
+    protected void onPageCreate(Bundle savedInstanceState) {
+        initView();
+    }
+
+    @Override
+    protected int getRecyclerViewId() {
+        return R.id.act_tender_help_history_recycler;
+    }
+
+    @Override
+    protected int getSwipeRefreshLayoutId() {
+        return R.id.act_tender_help_history_swipe_refresh;
+    }
+
+    @Override
+    protected int getPageLayoutId() {
+        return R.layout.activity_tender_help_history;
+    }
+
+    @Override
+    protected void nextPageLoad(int pageNumb) {
+        loadData(pageNumb);
+    }
+
+    @Override
+    protected void refreshLoad(int pageNumb) {
+        loadData(pageNumb);
+    }
+
+    private void initView() {
+        tenderHelpFiring = new TenderHelpFiring(this);
+    }
+
+    private void loadData(int pageNumb) {
+        tenderHelpFiring.getTenderHelp(Constants.loginresultInfo.getUser().getUserId(), pageNumb);
+    }
+
+    @Override
+    public void onDeleteTenderHelpSuccess(DeleteHistoryBean bean) {
+        if (bean.isDelResult()) {
+            Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
+            initRefresh();
+        } else {
+            Toast.makeText(this, "删除失败", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onDeleteTenderHelpFail(String s) {
+        Toast.makeText(this, "网络异常", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("TenderHelpHistoryActivity");
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("TenderHelpHistoryActivity");
+        MobclickAgent.onPause(this);
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_history_record;
+    }
+}

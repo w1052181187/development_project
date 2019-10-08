@@ -1,0 +1,37 @@
+/**
+ * Copyright 2017 bejson.com
+ */
+package com.bibinet.biunion.project.models;
+
+
+import java.util.List;
+
+public class MediaVideoDetailModel extends PageModel {
+    private List<MediaVideoDetailTeacherModel> teacherList;
+    private List<MediaVideoDetailChapterModel> sectionList;
+    private String shareUrl;
+
+    public List<MediaVideoDetailTeacherModel> getTeacherList() {
+        return teacherList;
+    }
+
+    public void setTeacherList(List<MediaVideoDetailTeacherModel> teacherList) {
+        this.teacherList = teacherList;
+    }
+
+    public List<MediaVideoDetailChapterModel> getSectionList() {
+        return sectionList;
+    }
+
+    public void setSectionList(List<MediaVideoDetailChapterModel> sectionList) {
+        this.sectionList = sectionList;
+    }
+
+    public String getShareUrl() {
+        return shareUrl;
+    }
+
+    public void setShareUrl(String shareUrl) {
+        this.shareUrl = shareUrl;
+    }
+}

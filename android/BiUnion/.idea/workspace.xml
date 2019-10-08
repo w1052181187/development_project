@@ -1,0 +1,1301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AndroidLayouts">
+    <shared>
+      <config />
+    </shared>
+  </component>
+  <component name="AndroidLogFilters">
+    <option name="TOOL_WINDOW_LOG_LEVEL" value="error" />
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="No Filters" />
+  </component>
+  <component name="AvailableLibraryUpdateStorage">
+    <library-updates>
+      <library-update>
+        <group-id>org.greenrobot</group-id>
+        <name>greendao-generator</name>
+        <version>3.2.2</version>
+        <repository>JCenter</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.squareup.okhttp3</group-id>
+        <name>okhttp</name>
+        <version>4.0.0-alpha01</version>
+        <repository>JCenter</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.davemorrissey.labs</group-id>
+        <name>subsampling-scale-image-view</name>
+        <version>3.10.0</version>
+        <repository>JCenter</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.squareup.retrofit2</group-id>
+        <name>converter-gson</name>
+        <version>2.5.0</version>
+        <repository>JCenter</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.squareup.retrofit2</group-id>
+        <name>adapter-rxjava2</name>
+        <version>2.5.0</version>
+        <repository>JCenter</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.android.support.test.espresso</group-id>
+        <name>espresso-core</name>
+        <version>3.0.2</version>
+        <repository>Google,Android Repository</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.android.support</group-id>
+        <name>recyclerview-v7</name>
+        <version>28.0.0</version>
+        <repository>Google,Android Repository</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.jakewharton</group-id>
+        <name>butterknife-compiler</name>
+        <version>10.1.0</version>
+        <repository>JCenter</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.android.support</group-id>
+        <name>appcompat-v7</name>
+        <version>28.0.0</version>
+        <repository>Google,Android Repository</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.android.support</group-id>
+        <name>design</name>
+        <version>28.0.0</version>
+        <repository>Google,Android Repository</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.github.bumptech.glide</group-id>
+        <name>glide</name>
+        <version>4.9.0</version>
+        <repository>JCenter</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.android.support</group-id>
+        <name>multidex</name>
+        <version>1.0.3</version>
+        <repository>Google,Android Repository</repository>
+      </library-update>
+      <library-update>
+        <group-id>junit</group-id>
+        <name>junit</name>
+        <version>4.13-beta-3</version>
+        <repository>JCenter</repository>
+      </library-update>
+    </library-updates>
+    <last-search-timestamp>1558575581248</last-search-timestamp>
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="05eed8cf-9acd-4977-8a01-4c8d64ef3779" name="Default" comment="修改招采杂志分页和排序问题">
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/android-pdf-viewer.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/android" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/android/support" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/android/support/compat" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/android/support/compat/R.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/android/support/coreui" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/android/support/coreui/R.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/android/support/coreutils" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/android/support/coreutils/R.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/android/support/fragment" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/android/support/fragment/R.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/android/support/mediacompat" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/android/support/mediacompat/R.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/android/support/v4" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/android/support/v4/R.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/com" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/com/github" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/com/github/barteksc" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/com/github/barteksc/pdfviewer" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/com/github/barteksc/pdfviewer/R.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/com/shockwave" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/com/shockwave/pdfium" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/debug/generateDebugRFile/out/com/shockwave/pdfium/R.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/android" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/android/support" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/android/support/compat" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/android/support/compat/R.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/android/support/coreui" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/android/support/coreui/R.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/android/support/coreutils" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/android/support/coreutils/R.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/android/support/fragment" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/android/support/fragment/R.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/android/support/mediacompat" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/android/support/mediacompat/R.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/android/support/v4" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/android/support/v4/R.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/com" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/com/github" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/com/github/barteksc" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/com/github/barteksc/pdfviewer" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/com/github/barteksc/pdfviewer/R.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/com/shockwave" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/com/shockwave/pdfium" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/not_namespaced_r_class_sources/release/generateReleaseRFile/out/com/shockwave/pdfium/R.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/res" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/res/pngs" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/res/pngs/debug" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/res/pngs/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/res/resValues" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/res/resValues/debug" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/res/resValues/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/res/rs" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/res/rs/debug" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/res/rs/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/apt" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/apt/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/buildConfig" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/buildConfig/debug" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/buildConfig/debug/com" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/buildConfig/debug/com/github" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/buildConfig/debug/com/github/barteksc" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/buildConfig/debug/com/github/barteksc/pdfviewer" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/buildConfig/debug/com/github/barteksc/pdfviewer/BuildConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/buildConfig/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/buildConfig/release/com" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/buildConfig/release/com/github" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/buildConfig/release/com/github/barteksc" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/buildConfig/release/com/github/barteksc/pdfviewer" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/buildConfig/release/com/github/barteksc/pdfviewer/BuildConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/rs" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/rs/debug" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/generated/source/rs/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/aapt_friendly_merged_manifests" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/aapt_friendly_merged_manifests/debug" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/aapt_friendly_merged_manifests/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/aapt_friendly_merged_manifests/release/processReleaseManifest" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/aapt_friendly_merged_manifests/release/processReleaseManifest/aapt" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/aapt_friendly_merged_manifests/release/processReleaseManifest/aapt/AndroidManifest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/aapt_friendly_merged_manifests/release/processReleaseManifest/aapt/output.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/annotation_processor_list" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/annotation_processor_list/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/annotation_processor_list/release/javaPreCompileRelease" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/annotation_processor_list/release/javaPreCompileRelease/annotationProcessors.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/check-manifest" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/check-manifest/debug" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/check-manifest/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/mergeReleaseJniLibFolders" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/mergeReleaseShaders" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/mergeReleaseShaders/merger.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/packageDebugResources" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/packageDebugResources/compile-file-map.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/packageDebugResources/merged.dir" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/packageDebugResources/merged.dir/values" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/packageDebugResources/merged.dir/values/values.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/packageDebugResources/merger.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/packageDebugResources/stripped.dir" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/packageReleaseAssets" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/packageReleaseAssets/merger.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/packageReleaseResources" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/packageReleaseResources/merged.dir" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/packageReleaseResources/merged.dir/values" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/packageReleaseResources/merged.dir/values/values.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/packageReleaseResources/merger.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/packageReleaseResources/stripped.dir" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/release-mergeJniLibs" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/release-mergeJniLibs/merge-state" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/incremental/release-mergeJniLibs/zip-cache" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/intermediate-jars" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/intermediate-jars/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/intermediate-jars/release/classes.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/intermediate-jars/release/jni" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/intermediate-jars/release/res.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/android" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/android/support" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/android/support/compat" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/android/support/compat/R.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/android/support/coreui" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/android/support/coreui/R.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/android/support/coreutils" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/android/support/coreutils/R.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/android/support/fragment" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/android/support/fragment/R.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/android/support/mediacompat" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/android/support/mediacompat/R.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/android/support/v4" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/android/support/v4/R.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/AnimationManager$XAnimation.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/AnimationManager$YAnimation.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/AnimationManager$ZoomAnimation.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/AnimationManager.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/BuildConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/CacheManager$PagePartComparator.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/CacheManager.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/DecodingAsyncTask.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/DragPinchManager.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/PDFView$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/PDFView$Configurator.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/PDFView$ScrollDir.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/PDFView$State.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/PDFView.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/PagesLoader$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/PagesLoader$GridSize.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/PagesLoader$Holder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/PagesLoader.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/PdfFile.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/R$attr.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/R$drawable.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/R$styleable.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/R.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/RenderingHandler$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/RenderingHandler$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/RenderingHandler$RenderingTask.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/RenderingHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/exception" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/exception/FileNotFoundException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/exception/PageRenderingException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/link" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/link/DefaultLinkHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/link/LinkHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/listener" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/listener/Callbacks.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/listener/OnDrawListener.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/listener/OnErrorListener.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/listener/OnLoadCompleteListener.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/listener/OnPageChangeListener.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/listener/OnPageErrorListener.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/listener/OnPageScrollListener.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/listener/OnRenderListener.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/listener/OnTapListener.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/model" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/model/LinkTapEvent.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/model/PagePart.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/scroll" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/scroll/DefaultScrollHandle$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/scroll/DefaultScrollHandle.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/scroll/ScrollHandle.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/source" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/source/AssetSource.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/source/ByteArraySource.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/source/DocumentSource.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/source/FileSource.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/source/InputStreamSource.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/source/UriSource.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/util" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/util/ArrayUtils.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/util/Constants$Cache.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/util/Constants$Pinch.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/util/Constants.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/util/FileUtils.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/util/FitPolicy.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/util/MathUtils.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/util/PageSizeCalculator$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/util/PageSizeCalculator.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/github/barteksc/pdfviewer/util/Util.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/shockwave" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/shockwave/pdfium" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/com/shockwave/pdfium/R.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/jniLibs" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/jniLibs/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/library_assets" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/library_assets/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/library_assets/release/packageReleaseAssets" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/library_assets/release/packageReleaseAssets/out" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/merged_manifests" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/merged_manifests/debug" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/merged_manifests/debug/processDebugManifest" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/merged_manifests/debug/processDebugManifest/merged" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/merged_manifests/debug/processDebugManifest/merged/AndroidManifest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/merged_manifests/debug/processDebugManifest/merged/output.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/merged_manifests/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/merged_manifests/release/processReleaseManifest" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/merged_manifests/release/processReleaseManifest/merged" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/merged_manifests/release/processReleaseManifest/merged/AndroidManifest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/merged_manifests/release/processReleaseManifest/merged/output.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/packaged_res" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/packaged_res/debug" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/packaged_res/debug/drawable" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/packaged_res/debug/drawable/default_scroll_handle_bottom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/packaged_res/debug/drawable/default_scroll_handle_left.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/packaged_res/debug/drawable/default_scroll_handle_right.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/packaged_res/debug/drawable/default_scroll_handle_top.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/packaged_res/debug/values" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/packaged_res/debug/values/values.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/packaged_res/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/packaged_res/release/drawable" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/packaged_res/release/drawable/default_scroll_handle_bottom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/packaged_res/release/drawable/default_scroll_handle_left.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/packaged_res/release/drawable/default_scroll_handle_right.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/packaged_res/release/drawable/default_scroll_handle_top.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/packaged_res/release/values" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/packaged_res/release/values/values.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/public_res" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/public_res/debug" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/public_res/debug/packageDebugResources" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/public_res/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/public_res/release/packageReleaseResources" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/res" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/res/symbol-table-with-package" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/res/symbol-table-with-package/debug" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/res/symbol-table-with-package/debug/package-aware-r.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/res/symbol-table-with-package/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/res/symbol-table-with-package/release/package-aware-r.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/rs" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/rs/debug" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/rs/debug/lib" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/rs/debug/obj" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/rs/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/rs/release/lib" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/rs/release/obj" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/shader_assets" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/shader_assets/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/shader_assets/release/compileReleaseShaders" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/shader_assets/release/compileReleaseShaders/out" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/shaders" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/shaders/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/symbols" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/symbols/debug" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/symbols/debug/R.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/symbols/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/symbols/release/R.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/transforms" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/transforms/mergeJniLibs" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/transforms/mergeJniLibs/release" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/intermediates/transforms/mergeJniLibs/release/__content__.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/outputs" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/outputs/logs" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/outputs/logs/manifest-merger-debug-report.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/outputs/logs/manifest-merger-release-report.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/tmp" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/build/tmp/compileReleaseJavaWithJavac" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/AndroidManifest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/AnimationManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/CacheManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/DecodingAsyncTask.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/DragPinchManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/PDFView.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/PagesLoader.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/PdfFile.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/RenderingHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/exception" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/exception/FileNotFoundException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/exception/PageRenderingException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/link" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/link/DefaultLinkHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/link/LinkHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/listener" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/listener/Callbacks.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/listener/OnDrawListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/listener/OnErrorListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/listener/OnLoadCompleteListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/listener/OnPageChangeListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/listener/OnPageErrorListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/listener/OnPageScrollListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/listener/OnRenderListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/listener/OnTapListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/model" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/model/LinkTapEvent.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/model/PagePart.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/scroll" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/scroll/DefaultScrollHandle.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/scroll/ScrollHandle.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/source" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/source/AssetSource.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/source/ByteArraySource.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/source/DocumentSource.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/source/FileSource.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/source/InputStreamSource.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/source/UriSource.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/util" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/util/ArrayUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/util/Constants.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/util/FileUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/util/FitPolicy.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/util/MathUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/util/PageSizeCalculator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/java/com/github/barteksc/pdfviewer/util/Util.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/res" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/res/drawable" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/res/drawable/default_scroll_handle_bottom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/res/drawable/default_scroll_handle_left.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/res/drawable/default_scroll_handle_right.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/res/drawable/default_scroll_handle_top.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/res/values" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/android-pdf-viewer/src/main/res/values/attrs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/net/UrlConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/net/UrlConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/intermediates/Mob/assets/ShareSDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/build/intermediates/Mob/assets/ShareSDK.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loopview/build/intermediates/incremental/packageDebugResources/compile-file-map.properties" beforeDir="false" afterPath="$PROJECT_DIR$/loopview/build/intermediates/incremental/packageDebugResources/compile-file-map.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loopview/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties" beforeDir="false" afterPath="$PROJECT_DIR$/loopview/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loopview/build/intermediates/incremental/packageReleaseResources/merged.dir/values/values.xml" beforeDir="false" afterPath="$PROJECT_DIR$/loopview/build/intermediates/incremental/packageReleaseResources/merged.dir/values/values.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loopview/build/intermediates/incremental/release-mergeJniLibs/merge-state" beforeDir="false" afterPath="$PROJECT_DIR$/loopview/build/intermediates/incremental/release-mergeJniLibs/merge-state" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loopview/build/intermediates/packaged_res/release/values/values.xml" beforeDir="false" afterPath="$PROJECT_DIR$/loopview/build/intermediates/packaged_res/release/values/values.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loopview/build/intermediates/symbols/release/R.txt" beforeDir="false" afterPath="$PROJECT_DIR$/loopview/build/intermediates/symbols/release/R.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loopview/loopview.iml" beforeDir="false" afterPath="$PROJECT_DIR$/loopview/loopview.iml" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view />
+      </state>
+    </system>
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="BiUnion" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="375" />
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>variant</find>
+      <find>mainRV</find>
+      <find>isAbove</find>
+      <find>swipeVertical</find>
+      <find>swipeHorizontal</find>
+      <find>orderState</find>
+      <find>magazineModelList</find>
+      <find>mEllipsize</find>
+      <find>www.gqcgbb.com</find>
+      <find>FORMAL_MSOP</find>
+      <find>TYPE_MSOP</find>
+      <find>msop</find>
+      <find>gqcgbb.com</find>
+      <find>MobclickAgent</find>
+      <find>com.android.support</find>
+      <find>SelectAddressActivity</find>
+    </findStrings>
+    <replaceStrings>
+      <replace />
+    </replaceStrings>
+  </component>
+  <component name="GenerateSignedApkSettings">
+    <option name="KEY_STORE_PATH" value="D:\比比文档\比比招标交接资料\签名\biunion_key.jks" />
+    <option name="KEY_ALIAS" value="biunion_key" />
+    <option name="REMEMBER_PASSWORDS" value="true" />
+    <option name="BUILD_TARGET_KEY" value="apk" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/CollectActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/CustomServiceActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/ExpertAskActivtiy.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/ExpertAskHistoryActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/ExpertAskResultActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/GuideActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/InformationDetailActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/InfoSearchDetailActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/LoginFastActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MagazineBookmarkActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MagazineDetailActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MediaVideoDetailActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MediaVideoPlayActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MessageActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MessageDetailActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MoreProjectActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/PasswordForgetActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/PasswordForgetConfirmActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/PasswordUpdateActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/PlatFormActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/RegisterActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/SearchActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/SearchResultActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/SelectAddressActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/SettingActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/SplashActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/TenderHelpActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/TenderHelpHistoryActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/WriteTenderBookActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/WriteTenderHistoryActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/base/BaseActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/expand/WebViewActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/utils/StatisticsUtils.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MediaMusicDetailActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MediaMusicPlayActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MainActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/InnFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/HomeFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaLiveFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaMusicDetailListFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaMusicDetailSummaryFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaMusicFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaVideoFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaVideoDetailIntroFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaVideoDetailListFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaVideoDetailSummaryFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MyFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/CompanyInfoActivity.java" />
+        <option value="$PROJECT_DIR$/app/build.gradle" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/net/UrlConfig.java" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="260" />
+    <option name="y" value="20" />
+    <option name="width" value="1400" />
+    <option name="height" value="1000" />
+  </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+    <ConfirmationsSetting value="1" id="Remove" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="PackagesPane" />
+      <pane id="ProjectPane" />
+      <pane id="Scope" />
+      <pane id="AndroidView" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DEBUGGABLE_DEVICE" value="xiaomi-redmi_note_4x-1ffaf2a80104" />
+    <property name="DEBUGGABLE_PROCESS" value="com.bibinet.biunion" />
+    <property name="DEBUGGER_ID" value="Auto" />
+    <property name="ExportApk.ApkPath" value="D:\workSpace\apk\比比招标" />
+    <property name="ExportApk.BuildVariants" value="debug" />
+    <property name="ExportApk.SignV1" value="true" />
+    <property name="ExportApk.SignV2" value="true" />
+    <property name="SHOW_ALL_PROCESSES" value="false" />
+    <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
+    <property name="device.picker.selection" value="1ffaf2a80104" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../apk/比比招标" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.17" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="PsdUISettings">
+    <option name="MODULE_TAB" value="Default Config" />
+    <option name="LAST_EDITED_SIGNING_CONFIG" value="config_sign" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.bibinet.biunion.project.ui.custom" />
+      <recent name="com.bibinet.biunion.project.ui.expand" />
+      <recent name="com.bibinet.biunion.project.adapter" />
+      <recent name="com.bibinet.biunion.project.ui.rewrite" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\workSpace\androidProject\BiUnion\app\libs" />
+      <recent name="D:\workSpace\androidProject\BiUnion\app\src\main\res\mipmap-xxxhdpi" />
+      <recent name="D:\workSpace\androidProject\BiUnion\app\src\main\res\mipmap-xxhdpi" />
+      <recent name="D:\workSpace\androidProject\BiUnion\app\src\main\res\layout" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="&lt;template&gt;" type="JUnit" default="true" selected="false">
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
+    </configuration>
+    <configuration default="true" type="AndroidJUnit" factoryName="Android JUnit">
+      <option name="TEST_OBJECT" value="class" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
+      <module name="app" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
+      <option name="PREFERRED_AVD" value="" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="DEBUGGER_TYPE" value="Auto" />
+      <Auto>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Auto>
+      <Hybrid>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Hybrid>
+      <Java />
+      <Native>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Native>
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Sampled (Java)" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="TestNG">
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
+      <properties />
+      <listeners />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SvnConfiguration" cleanupOnStartRun="true">
+    <configuration>C:\Users\WangYungang\AppData\Roaming\Subversion</configuration>
+    <supportedVersion>125</supportedVersion>
+  </component>
+  <component name="SvnFileUrlMappingImpl">
+    <option name="myMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\workSpace\androidProject\BiUnion" />
+          <option name="myCopyRoot" value="D:\workSpace\androidProject\BiUnion" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\workSpace\androidProject\BiUnion\.idea" />
+          <option name="myCopyRoot" value="D:\workSpace\androidProject\BiUnion\.idea" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\workSpace\androidProject\BiUnion\app" />
+          <option name="myCopyRoot" value="D:\workSpace\androidProject\BiUnion\app" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\workSpace\androidProject\BiUnion\build\intermediates\Mob\assets" />
+          <option name="myCopyRoot" value="D:\workSpace\androidProject\BiUnion\build\intermediates\Mob\assets" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\workSpace\androidProject\BiUnion\JBox2DLibrary" />
+          <option name="myCopyRoot" value="D:\workSpace\androidProject\BiUnion\JBox2DLibrary" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\workSpace\androidProject\BiUnion\loopview" />
+          <option name="myCopyRoot" value="D:\workSpace\androidProject\BiUnion\loopview" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\workSpace\androidProject\BiUnion\nicevideoplayer" />
+          <option name="myCopyRoot" value="D:\workSpace\androidProject\BiUnion\nicevideoplayer" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+    <option name="myMoreRealMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\workSpace\androidProject\BiUnion" />
+          <option name="myCopyRoot" value="D:\workSpace\androidProject\BiUnion" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="05eed8cf-9acd-4977-8a01-4c8d64ef3779" name="Default" comment="" />
+      <created>1554279065887</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1554279065887</updated>
+    </task>
+    <task id="LOCAL-00001" summary="修改招采杂志分页和排序问题">
+      <created>1558347180121</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1558347180121</updated>
+    </task>
+    <task id="LOCAL-00002" summary="重构搜索热词，搜索结果页关键词高亮；更换招采杂志pdf展示">
+      <created>1558429245852</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1558429245852</updated>
+    </task>
+    <task id="LOCAL-00003" summary="修改友盟页面统计为自动模式（activity删除相关代码）；删除jar包，改为maven集成；更换msop域名">
+      <created>1561169699515</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1561169699515</updated>
+    </task>
+    <task id="LOCAL-00004">
+      <created>1561448997160</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1561448997160</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
+    <servers />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49907234" visible="true" weight="0.20225322" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Designer" order="2" />
+      <window_info id="Build Variants" order="3" sideWeight="0.5009276" side_tool="true" weight="0.26180258" />
+      <window_info id="Image Layers" order="4" />
+      <window_info id="Favorites" order="5" sideWeight="0.5009276" side_tool="true" weight="0.26180258" />
+      <window_info id="Captures" order="6" side_tool="true" weight="0.25" />
+      <window_info id="Capture Tool" order="7" />
+      <window_info id="Resources Explorer" order="8" />
+      <window_info anchor="bottom" id="Flutter Performance" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info active="true" anchor="bottom" id="Find" order="1" visible="true" weight="0.44341803" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32924107" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39838338" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.3290993" />
+      <window_info anchor="bottom" id="Build" order="7" visible="true" weight="0.27745664" />
+      <window_info anchor="bottom" id="Android Profiler" order="8" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="bottom" id="Logcat" order="10" weight="0.4907621" />
+      <window_info anchor="bottom" id="Version Control" order="11" weight="0.3290993" />
+      <window_info anchor="bottom" id="Terminal" order="12" weight="0.3290993" />
+      <window_info anchor="bottom" id="Messages" order="13" weight="0.32998884" />
+      <window_info anchor="right" id="Flutter Inspector" />
+      <window_info anchor="right" id="Flutter Outline" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Capture Analysis" order="3" />
+      <window_info anchor="right" id="Device File Explorer" order="4" side_tool="true" />
+      <window_info anchor="right" id="Assistant" order="5" weight="0.23658799" />
+      <window_info anchor="right" id="Gradle" order="6" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
+      <window_info anchor="right" id="Theme Preview" order="8" />
+      <window_info anchor="right" id="Preview" order="9" weight="0.3299356" />
+    </layout>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="修改招采杂志分页和排序问题" />
+    <MESSAGE value="重构搜索热词，搜索结果页关键词高亮；更换招采杂志pdf展示" />
+    <MESSAGE value="修改友盟页面统计为自动模式（activity删除相关代码）；删除jar包，改为maven集成；更换msop域名" />
+    <option name="LAST_COMMIT_MESSAGE" value="" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/net/firing/MagazineFiring.java</url>
+          <line>49</line>
+          <properties />
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/expand/PageActivity.java</url>
+          <line>57</line>
+          <properties />
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/expand/MultiplePageRefreshActivity.java</url>
+          <line>182</line>
+          <properties />
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/expand/MultiplePageRefreshActivity.java</url>
+          <line>57</line>
+          <properties />
+          <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/adapter/SearchActivityAdapter.java</url>
+          <line>89</line>
+          <properties />
+          <option name="timeStamp" value="22" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-field">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/PlatFormActivity.java</url>
+          <line>24</line>
+          <properties field="TYPE_SERVICE" class="com.bibinet.biunion.project.ui.activity.PlatFormActivity" />
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="Remote">
+        <watch expression="model.coverPath" language="JAVA" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="watch">
+      <expression>
+        <expression-string>model.coverPath</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MagazineDetailActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="74">
+          <caret line="211" column="5" selection-start-line="211" selection-start-column="5" selection-end-line="211" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MediaVideoDetailActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-520">
+          <caret line="191" column="5" selection-start-line="191" selection-start-column="5" selection-end-line="191" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MediaVideoPlayActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="87">
+          <caret line="94" column="5" selection-start-line="94" selection-start-column="5" selection-end-line="94" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MessageActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="132" column="5" selection-start-line="132" selection-start-column="5" selection-end-line="132" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MessageDetailActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="257">
+          <caret line="58" lean-forward="true" selection-start-line="58" selection-end-line="58" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MoreProjectActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="590">
+          <caret line="191" column="63" selection-start-line="191" selection-start-column="63" selection-end-line="191" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/PasswordForgetActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="185">
+          <caret line="157" column="5" selection-start-line="157" selection-start-column="5" selection-end-line="157" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/PasswordForgetConfirmActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="239">
+          <caret line="91" lean-forward="true" selection-start-line="91" selection-end-line="91" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/PasswordUpdateActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="160" selection-start-line="160" selection-end-line="160" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/PlatFormActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="284">
+          <caret line="110" lean-forward="true" selection-start-line="110" selection-end-line="110" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/RegisterActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="184" selection-start-line="184" selection-end-line="184" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/SearchActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="257">
+          <caret line="215" lean-forward="true" selection-start-line="215" selection-end-line="215" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/SearchResultActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-54">
+          <caret line="105" column="5" selection-start-line="105" selection-start-column="5" selection-end-line="105" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/SettingActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="185">
+          <caret line="156" column="5" selection-start-line="156" selection-start-column="5" selection-end-line="156" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/SplashActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="78" selection-start-line="78" selection-end-line="78" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/TenderHelpActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="257">
+          <caret line="105" lean-forward="true" selection-start-line="105" selection-end-line="105" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/TenderHelpHistoryActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="122">
+          <caret line="91" column="5" selection-start-line="91" selection-start-column="5" selection-end-line="91" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/WriteTenderBookActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="41">
+          <caret line="126" column="5" selection-start-line="126" selection-start-column="5" selection-end-line="126" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/WriteTenderHistoryActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="257">
+          <caret line="100" lean-forward="true" selection-start-line="100" selection-end-line="100" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/base/BaseActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="257">
+          <caret line="18" selection-start-line="18" selection-end-line="18" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/expand/WebViewActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="149">
+          <caret line="151" selection-start-line="151" selection-end-line="151" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/assets/toLogin.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1026">
+          <caret line="7" column="10" selection-start-line="7" selection-start-column="10" selection-end-line="7" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/bean/statistics/ToLoginBean.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="139">
+          <caret line="13" column="34" selection-start-line="13" selection-start-column="34" selection-end-line="13" selection-end-column="34" />
+          <folding>
+            <element signature="e#328#329#0" expanded="true" />
+            <element signature="e#358#359#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/utils/StatisticsUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="47" column="31" selection-start-line="47" selection-start-column="31" selection-end-line="47" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/manager/BannerManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="92" column="21" selection-start-line="92" selection-start-column="21" selection-end-line="92" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MediaMusicDetailActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="284">
+          <caret line="31" column="27" selection-start-line="31" selection-start-column="27" selection-end-line="31" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MediaMusicPlayActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="149">
+          <caret line="38" selection-start-line="38" selection-end-line="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="35" column="41" lean-forward="true" selection-start-line="35" selection-start-column="41" selection-end-line="35" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nicevideoplayer/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-162" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/loopview/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="324">
+          <caret line="12" column="16" lean-forward="true" selection-start-line="12" selection-start-column="16" selection-end-line="12" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JBox2DLibrary/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="10" column="25" lean-forward="true" selection-start-line="10" selection-start-column="25" selection-end-line="10" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/expand/TitleFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="77">
+          <caret line="21" column="49" lean-forward="true" selection-start-line="21" selection-start-column="49" selection-end-line="21" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/me.yokeyword/fragmentation/1.3.1/bc23eef32c7048d1669f008c70e1de4bf6c2e6ab/fragmentation-1.3.1-sources.jar!/me/yokeyword/fragmentation/SupportFragment.java" />
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/HomeFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="355">
+          <caret line="447" column="13" selection-start-line="447" selection-start-column="13" selection-end-line="447" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/InnFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="167">
+          <caret line="122" column="4" selection-start-line="122" selection-start-column="4" selection-end-line="132" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaLiveFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="157" column="42" selection-start-line="157" selection-start-column="42" selection-end-line="157" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="79">
+          <caret line="210" column="4" selection-start-line="210" selection-start-column="4" selection-end-line="220" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaMusicDetailListFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="239">
+          <caret line="114" column="4" selection-start-line="114" selection-start-column="4" selection-end-line="124" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaMusicDetailSummaryFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="44" column="4" selection-start-line="44" selection-start-column="4" selection-end-line="54" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaMusicFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2079">
+          <caret line="130" column="43" selection-start-line="130" selection-start-column="43" selection-end-line="130" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaVideoFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1890">
+          <caret line="125" column="4" selection-start-line="125" selection-start-column="4" selection-end-line="135" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaVideoDetailListFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1188">
+          <caret line="75" column="4" selection-start-line="75" selection-start-column="4" selection-end-line="85" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaVideoDetailSummaryFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="23" column="54" selection-start-line="23" selection-start-column="54" selection-end-line="23" selection-end-column="54" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/base/BaseFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="27" column="22" selection-start-line="27" selection-start-column="22" selection-end-line="27" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MyFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="8964">
+          <caret line="376" column="73" selection-start-line="376" selection-start-column="73" selection-end-line="376" selection-end-column="73" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2997">
+          <caret line="111" column="52" selection-start-line="111" selection-start-column="52" selection-end-line="111" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/SelectAddressActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3456">
+          <caret line="170" column="20" selection-start-line="170" selection-start-column="20" selection-end-line="170" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/fragment/MediaVideoDetailIntroFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1404">
+          <caret line="80" column="56" selection-start-line="80" selection-start-column="56" selection-end-line="80" selection-end-column="56" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/ui/activity/CompanyInfoActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="401">
+          <caret line="690" lean-forward="true" selection-start-line="690" selection-end-line="690" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/bibinet/biunion/project/net/UrlConfig.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="197">
+          <caret line="28" column="73" lean-forward="true" selection-start-line="28" selection-start-column="73" selection-end-line="28" selection-end-column="73" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="749">
+          <caret line="224" column="11" selection-start-line="224" selection-start-column="11" selection-end-line="224" selection-end-column="11" />
+        </state>
+      </provider>
+      <provider editor-type-id="android-manifest" />
+    </entry>
+  </component>
+</project>

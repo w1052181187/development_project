@@ -1,0 +1,551 @@
+package com.bibinet.biunion.project.ui.fragment;
+
+
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.PermissionGroupInfo;
+import android.graphics.Color;
+import android.location.Location;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.amap.api.location.AMapLocation;
+import com.andview.refreshview.XRefreshView;
+import com.andview.refreshview.listener.OnBottomLoadMoreTime;
+import com.andview.refreshview.listener.OnTopRefreshTime;
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.adapter.HomeItemAdapter;
+import com.bibinet.biunion.project.application.BiUnionApplication;
+import com.bibinet.biunion.project.application.Constants;
+import com.bibinet.biunion.project.bean.InformationBean;
+import com.bibinet.biunion.project.bean.cityselectbean.City;
+import com.bibinet.biunion.project.builder.MyViewPager;
+import com.bibinet.biunion.project.builder.ObservableScrollView;
+import com.bibinet.biunion.project.builder.ScrollViewListener;
+import com.bibinet.biunion.project.config.InformationConfig;
+import com.bibinet.biunion.project.models.BannerModel;
+import com.bibinet.biunion.project.models.DailyUpdatesModel;
+import com.bibinet.biunion.project.models.InformationItemsModel;
+import com.bibinet.biunion.project.models.InformationModel;
+import com.bibinet.biunion.project.net.emit.DailyUpdatesCountEmit;
+import com.bibinet.biunion.project.net.emit.HomeEmit;
+import com.bibinet.biunion.project.net.firing.DailyUpdatesCountFiring;
+import com.bibinet.biunion.project.net.firing.HomeFiring;
+import com.bibinet.biunion.project.ui.activity.LoginActivity;
+import com.bibinet.biunion.project.ui.activity.MoreProjectActivity;
+import com.bibinet.biunion.project.ui.activity.PlatFormActivity;
+import com.bibinet.biunion.project.ui.activity.SearchActivity;
+import com.bibinet.biunion.project.ui.activity.SelectAddressActivity;
+import com.bibinet.biunion.project.ui.activity.subscribe.PrivateInfoShowActivity;
+import com.bibinet.biunion.project.ui.custom.HomeHeaderView;
+
+import static com.bibinet.biunion.project.config.InformationConfig.*;
+import static com.bibinet.biunion.project.net.firing.HomeFiring.*;
+
+import com.bibinet.biunion.project.ui.manager.BannerManager;
+import com.bibinet.biunion.project.utils.ConvertUtils;
+import com.bibinet.biunion.project.utils.DateFormatUtils;
+import com.bibinet.biunion.project.utils.LoactionUtils;
+import com.bibinet.biunion.project.utils.StatisticsUtils;
+import com.umeng.analytics.MobclickAgent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
+import me.yokeyword.fragmentation.SupportFragment;
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class HomeFragment extends SupportFragment implements XRefreshView.XRefreshViewListener, OnTopRefreshTime, OnBottomLoadMoreTime, DailyUpdatesCountEmit, HomeEmit, ScrollViewListener {
+
+    private final int maxItemCount = 5;
+    @BindView(R.id.v_home_tender_item)
+    RecyclerView tenderItemRV;
+    @BindView(R.id.v_home_project_item)
+    RecyclerView projectItemRV;
+    @BindView(R.id.v_home_purchase_item)
+    RecyclerView purchaseItemRV;
+    @BindView(R.id.v_home_hot_message_tender_item)
+    RecyclerView tenderHotMessageRV;
+
+    @BindView(R.id.viewpager)
+    MyViewPager viewpager;
+    @BindView(R.id.group_contain)
+    LinearLayout groupContain;
+    @BindView(R.id.location)
+    TextView locationTv;
+    @BindView(R.id.scrollview)
+    ObservableScrollView scrollview;
+    @BindView(R.id.search_layout)
+    LinearLayout searchlayout;
+    Unbinder unbinder;
+    @BindView(R.id.fra_home_xrefresh)
+    XRefreshView xRefreshView;
+    private List<BannerModel.ItemBean> urls = new ArrayList<>();
+    private HomeFiring homeFiring;
+    private DailyUpdatesCountFiring dailyUpdatesCountFiring;
+    private City citySlect;
+    private String nowLocation;
+    private int cY = 0;
+    private HomeHeaderView headerView;
+
+    private String dCount = "加载中...";
+    private String assist = "本日更新信息总量";
+
+    private List<InformationBean> informationBeanList;
+    private BannerManager bannerManager;
+    private LoactionUtils.IlocationCallback mLocationCallback;
+    private Runnable mBannerRunable;
+
+    public HomeFragment() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        unbinder = ButterKnife.bind(this, view);
+        initView();
+        return view;
+    }
+
+
+    private void initView() {
+        informationBeanList = new InformationConfig().getDataList();
+        homeFiring = new HomeFiring(this);
+        dailyUpdatesCountFiring = new DailyUpdatesCountFiring(this);
+
+        bannerManager = new BannerManager(getActivity(), viewpager, groupContain, urls);
+        scrollview.setScrollViewListener(this);
+
+        headerView = HomeHeaderView.getInstance(getActivity()).getLayoutView();
+        ViewGroup.LayoutParams layoutParams = headerView.getLayoutParams();
+        headerView.init();
+        headerView.setCount(dCount);
+        headerView.setAssist(assist);
+        headerView.setSecondary(true);
+        xRefreshView.setPullRefreshEnable(true);
+        xRefreshView.setMoveForHorizontal(true);
+        xRefreshView.setPullLoadEnable(false);
+        xRefreshView.setCustomHeaderView(headerView);
+        xRefreshView.setXRefreshViewListener(this);
+        xRefreshView.setOnTopRefreshTime(this);
+        xRefreshView.setOnBottomLoadMoreTime(this);
+
+        mLocationCallback = new LoactionUtils.IlocationCallback() {
+            @Override
+            public void success(AMapLocation location) {
+                updateHomeData(location);
+            }
+        };
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            boolean locationPermission = ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED;
+            boolean filePermission = ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED;
+
+            // 定位所需权限
+            if (!locationPermission && !filePermission) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 111);
+
+            } else {
+                if (!filePermission) {
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 111);
+                }
+                if (locationPermission) {
+                    LoactionUtils loactionUtils = new LoactionUtils(getActivity(), mLocationCallback);
+                    loactionUtils.startLoaction();
+                } else {
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 111);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if ( requestCode == 111 && ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LoactionUtils loactionUtils = new LoactionUtils(this.getActivity(), mLocationCallback);
+            loactionUtils.startLoaction();
+        }
+    }
+
+    //获取首页相关数据
+    public void getHomeData() {
+        homeFiring.getBannerData();
+        dailyUpdatesCountFiring.getTotalCount(getDate());
+        if (citySlect != null) {
+            nowLocation = citySlect.getNo();
+        } else {
+            ConvertUtils convertUtils = new ConvertUtils();
+            String str = (String) locationTv.getTag();
+            Log.e("x-x", str + "--");
+            if (str != null) {
+                nowLocation = convertUtils.areaConvert(str);
+            } else {
+                nowLocation = convertUtils.areaConvert(locationTv.getText().toString());
+            }
+        }
+
+        //项目信息最新相关数据
+        homeFiring.getHomeItemInfoData(nowLocation, TYPE_NEW_PROJECT);
+        //招标信息最新相关数据
+        homeFiring.getHomeItemInfoData(nowLocation, TYPE_NEW_TENDER);
+        //采购信息最新相关数据
+        homeFiring.getHomeItemInfoData(nowLocation, TYPE_NEW_PURCHASE);
+        //招标信息热门相关数据
+        homeFiring.getHomeItemInfoData("", TYPE_HOT_TENDER);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        bannerManager.destroy();
+    }
+
+    //平台介绍跳转
+    @OnClick({R.id.bibiPlatform, R.id.companyPlatform, R.id.finacePlatform, R.id.servicePlatform})
+    void platForm(View v) {
+        switch (v.getId()) {
+            case R.id.bibiPlatform:
+                PlatFormActivity.start(getActivity(), PlatFormActivity.TYPE_BIBI);
+                break;
+            case R.id.companyPlatform:
+                PlatFormActivity.start(getActivity(), PlatFormActivity.TYPE_COMPANY);
+                break;
+            case R.id.finacePlatform:
+                PlatFormActivity.start(getActivity(), PlatFormActivity.TYPE_FINACE);
+                break;
+            case R.id.servicePlatform:
+                PlatFormActivity.start(getActivity(), PlatFormActivity.TYPE_SERVICE);
+                break;
+        }
+    }
+
+    //项目信息点击区域
+    @OnClick({R.id.projcetInfo_layout, R.id.niProject_text, R.id.pProject_text, R.id.hostProject_text})
+    void project(View view) {
+        int id = -1;
+        switch (view.getId()) {
+            case R.id.projcetInfo_layout:
+                id = ICT_PROJECT;
+                break;
+            case R.id.niProject_text:
+                id = ICT_PROJECT_NI;
+                break;
+            case R.id.pProject_text:
+                id = ICT_PROJECT_PP;
+                break;
+            case R.id.hostProject_text:
+                id = ICT_PROJECT_YE;
+                break;
+        }
+        MoreProjectActivity.start(getActivity(), informationBeanList.get(id), nowLocation);
+    }
+
+    //招标信息点击区域
+    @OnClick({R.id.tenderProjcetInfo_layout, R.id.tenderPublic_text, R.id.changePublic_text, R.id.getPublci_text, R.id.publicPeople_text})
+    void tender(View view) {
+        int id = -1;
+        switch (view.getId()) {
+            case R.id.tenderProjcetInfo_layout:
+                id = ICT_TENDER;
+                break;
+            case R.id.tenderPublic_text:
+                id = ICT_TENDER_ZA;
+                break;
+            case R.id.changePublic_text:
+                id = ICT_TENDER_BI;
+                break;
+            case R.id.getPublci_text:
+                id = ICT_TENDER_ZO;
+                break;
+            case R.id.publicPeople_text:
+                id = ICT_TENDER_ZR;
+                break;
+        }
+        MoreProjectActivity.start(getActivity(), informationBeanList.get(id), nowLocation);
+    }
+
+    //采购信息点击区域
+    @OnClick({R.id.buyProjectInfo_layout, R.id.governmentBuy_text, R.id.companyBuy_text})
+    void purchase(View view) {
+        int id = -1;
+        switch (view.getId()) {
+            case R.id.buyProjectInfo_layout:
+                id = ICT_PRUCHASE;
+                break;
+            case R.id.governmentBuy_text:
+                id = ICT_PRUCHASE_ZH;
+                break;
+            case R.id.companyBuy_text:
+                id = ICT_PRUCHASE_QI;
+                break;
+        }
+        MoreProjectActivity.start(getActivity(), informationBeanList.get(id), nowLocation);
+    }
+
+    //搜索区域点击
+    @OnClick({R.id.search_layout, R.id.location_text})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.search_layout:
+                getActivity().startActivity(new Intent(getActivity(), SearchActivity.class));
+                break;
+            case R.id.location_text:
+                Intent intentCityName = new Intent(getActivity(), SelectAddressActivity.class);
+                startActivityForResult(intentCityName, 1);
+                break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if (data != null) {
+//                String cityName = data.getStringExtra("resultCityNameHot");
+//                location.setText(cityName);
+                Bundle cityData = data.getExtras();
+                citySlect = (City) cityData.get("resultCityNameHot");
+                locationTv.setText(citySlect.getName());
+                getHomeData();
+            }
+        }
+    }
+
+    @Override
+    public void onLoadBannerSuccess(List<BannerModel.ItemBean> bannerInfo) {
+        urls.clear();
+        urls.addAll(bannerInfo);
+        bannerManager.startPlayBanner();
+    }
+
+    @Override
+    public void onLoadBannerFail(String error) {
+
+    }
+
+    @Override
+    public void onLoadItemDataSuccess(List<InformationItemsModel> homeProjcetInfos, int type) {
+        switch (type) {
+            case TYPE_NEW_PROJECT:
+                projectItemRV.setAdapter(new HomeItemAdapter(getActivity(), projectItemRV, homeProjcetInfos, maxItemCount, true));
+                break;
+            case TYPE_NEW_TENDER:
+                tenderItemRV.setAdapter(new HomeItemAdapter(getActivity(), tenderItemRV, homeProjcetInfos, maxItemCount, true));
+                break;
+            case TYPE_NEW_PURCHASE:
+                purchaseItemRV.setAdapter(new HomeItemAdapter(getActivity(), purchaseItemRV, homeProjcetInfos, maxItemCount, true));
+                break;
+            case TYPE_HOT_TENDER:
+                tenderHotMessageRV.setAdapter(new HomeItemAdapter(getActivity(), tenderHotMessageRV, homeProjcetInfos, maxItemCount, false));
+                break;
+        }
+        headerView.stopRefresh(xRefreshView);
+    }
+
+    @Override
+    public void onLoadItemDataFail(String msg) {
+        headerView.stopRefresh(xRefreshView);
+    }
+
+    //信息订阅跳转
+    @OnClick({R.id.projcetInfo_text, R.id.tenderSubject_text, R.id.buyInfoSubject_text})
+    void privateInfo(View view) {
+        if (!checkLogin()) {
+            startActivity(new Intent(getActivity(), LoginActivity.class));
+            switch (view.getId()) {
+                case R.id.projcetInfo_text:
+                    StatisticsUtils.toLogin(StatisticsUtils.TYPE_TO_LOGIN_PROJECT_INFO_DESIGN);
+                    break;
+                case R.id.tenderSubject_text:
+                    StatisticsUtils.toLogin(StatisticsUtils.TYPE_TO_LOGIN_TENDER_INFO_DESIGN);
+                    break;
+                case R.id.buyInfoSubject_text:
+                    StatisticsUtils.toLogin(StatisticsUtils.TYPE_TO_LOGIN_PURCHASE_INFO_DESIGN);
+                    break;
+            }
+            return;
+        }
+        switch (view.getId()) {
+            case R.id.projcetInfo_text:
+                PrivateInfoShowActivity.start(getActivity(), PrivateInfoShowActivity.TYPE_PROJECT);
+                break;
+            case R.id.tenderSubject_text:
+                PrivateInfoShowActivity.start(getActivity(), PrivateInfoShowActivity.TYPE_TENDER);
+                break;
+            case R.id.buyInfoSubject_text:
+                PrivateInfoShowActivity.start(getActivity(), PrivateInfoShowActivity.TYPE_PURCHASE);
+                break;
+        }
+    }
+
+    private boolean checkLogin() {
+        if (Constants.loginresultInfo != null && Constants.loginresultInfo.getUser() != null && Constants.loginresultInfo.getUser().getUserId() != null && !Constants.loginresultInfo.getUser().getUserId().equals("")) {
+            return true;
+        }
+        return false;
+    }
+
+    //更多跳转
+    @OnClick({R.id.projectInfoMore, R.id.tenderInfoMore, R.id.buyInfoMore, R.id.v_home_hot_message_tender_more})
+    void more(View view) {
+        int id = -1;
+        switch (view.getId()) {
+            //最新信息
+            case R.id.projectInfoMore:
+                id = ICT_PROJECT;
+                break;
+            case R.id.tenderInfoMore:
+                id = ICT_TENDER;
+                break;
+            case R.id.buyInfoMore:
+                id = ICT_PRUCHASE;
+                break;
+            //热门信息
+            case R.id.v_home_hot_message_tender_more:
+                id = ICT_TENDER_RM;
+                MoreProjectActivity.start(getActivity(), informationBeanList.get(id), null);
+                return;
+        }
+        MoreProjectActivity.start(getActivity(), informationBeanList.get(id), nowLocation);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("HomeFragment"); //统计页面，"MainScreen"为页面名称，可自定义
+        bannerManager.resume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("HomeFragment");
+        bannerManager.pause();
+    }
+
+    @Override
+    public void onRefresh() {
+        getHomeData();
+    }
+
+    @Override
+    public void onRefresh(boolean isPullDown) {
+
+    }
+
+    @Override
+    public void onLoadMore(boolean isSilence) {
+
+    }
+
+    @Override
+    public void onRelease(float direction) {
+
+    }
+
+    @Override
+    public void onHeaderMove(double headerMovePercent, int offsetY) {
+
+    }
+
+    @Override
+    public boolean isTop() {
+        return cY == 0;
+    }
+
+    @Override
+    public boolean isBottom() {
+        return false;
+    }
+
+    private String getDate() {
+        return DateFormatUtils.format(System.currentTimeMillis(), "yyyy-MM-dd");
+    }
+
+    //获取每日更新量
+    @Override
+    public void onGetCountSuccess(DailyUpdatesModel model) {
+        dCount = model.getCount();
+        if (headerView != null) {
+            headerView.setCount(dCount);
+        }
+    }
+
+    @Override
+    public void onGetCountFail(String error) {
+
+    }
+
+    @Override
+    public void onScrollChanged(ObservableScrollView observableScrollView, int x, int y, int oldx, int oldy) {
+        searchlayout.setBackgroundColor(Color.parseColor("#f9c432"));
+        HomeFragment.this.cY = y;
+        if (y >= 10) {
+            searchlayout.getBackground().setAlpha(255);
+        } else if (y <= 10) {
+            searchlayout.getBackground().setAlpha(0);
+        }
+    }
+
+    public void updateHomeData(AMapLocation location) {
+
+        if (null != location) {
+            StringBuffer sb = new StringBuffer();
+            //errCode等于0代表定位成功，其他的为定位失败，具体的可以参照官网定位错误码说明
+            if (location.getErrorCode() == 0) {
+                sb.append(location.getCity());
+                BiUnionApplication.getInstance().setCurLocation(location.getCity());
+            } else {
+                locationTv.setText("请定位");
+                getHomeData();
+                return;
+            }
+            //解析定位结果，
+            String result = sb.toString();
+            if(result.equals("")){
+                locationTv.setText("请定位");
+                getHomeData();
+                return;
+            }else{
+                locationTv.setText(result);
+                locationTv.setTag(location.getProvince());
+                getHomeData();
+                return;
+            }
+        } else {
+            locationTv.setText("请定位");
+            Toast.makeText(this.getActivity(), "获取定位失败", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+    }
+}

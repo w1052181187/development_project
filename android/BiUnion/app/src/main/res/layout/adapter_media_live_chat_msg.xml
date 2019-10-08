@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="2dp"
+    android:paddingLeft="@dimen/common_left_right_margin_space">
+
+    <TextView
+        android:id="@+id/ada_media_live_chat_msg_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:textColor="@color/col_live_reply_top_txt"
+        android:textSize="15sp" />
+    <TextView
+        android:id="@+id/ada_media_live_chat_msg_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/ada_media_live_chat_msg_username"
+        android:layout_alignTop="@id/ada_media_live_chat_msg_username"
+        android:layout_marginLeft="6dp"
+        android:textColor="@color/white"
+        android:textSize="15sp" />
+
+</RelativeLayout>

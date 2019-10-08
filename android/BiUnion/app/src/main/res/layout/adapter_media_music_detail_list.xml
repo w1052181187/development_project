@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ada_media_music_detail_list_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:orientation="vertical">
+
+        <!--<TextView-->
+            <!--android:id="@+id/ada_media_music_detail_list_no"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_marginLeft="18dp"-->
+            <!--android:layout_marginRight="13dp"-->
+            <!--android:gravity="center"-->
+            <!--android:text="1"-->
+            <!--android:textColor="@color/color_999999"-->
+            <!--android:textSize="13sp" />-->
+
+        <TextView
+            android:id="@+id/ada_media_music_detail_list_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="广东斜阳污水处理项目"
+            android:drawablePadding="6dp"
+            android:drawableLeft="@drawable/ada_media_video_study_img_bg_sel"
+            android:textColor="@color/ada_media_video_study_tv_color_sel"
+            android:textSize="13sp" />
+        <TextView
+            android:id="@+id/ada_media_music_detail_list_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginLeft="20dp"
+            android:text="20:32"
+            android:textColor="@color/color_999999"
+            android:textSize="12sp" />
+
+
+    </LinearLayout>
+    <View
+        android:background="#e8e8e8"
+        android:layout_marginLeft="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+</LinearLayout>

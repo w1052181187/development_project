@@ -1,0 +1,199 @@
+package com.bibinet.biunion.project.ui.fragment;
+
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.models.MediaMusicChildModel;
+import com.bibinet.biunion.project.models.MediaMusicDataModel;
+import com.bibinet.biunion.project.models.MediaMusicDetailChapterModel;
+import com.bibinet.biunion.project.ui.activity.MediaMusicPlayActivity;
+import com.bibinet.biunion.project.ui.base.BaseFragment;
+import com.bibinet.biunion.project.utils.Common;
+import com.umeng.analytics.MobclickAgent;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class MediaMusicDetailListFragment extends BaseFragment {
+
+
+    @BindView(R.id.fra_media_music_detail_list_main)
+    RecyclerView mainRV;
+
+    @BindView(R.id.fra_media_music_detail_list_order_txt)
+    TextView orderTV;
+
+    @BindView(R.id.fra_media_music_detail_list_order)
+    View orderV;
+    private String content;
+    private int prePos;
+    private MediaVideoDetailListFragment.ShareUrlCallback mCallback;
+
+
+    //private List<CatalogModel> dataList;
+    //全部播放
+    @OnClick({R.id.fra_media_music_detail_list_play_all_img, R.id.fra_media_music_detail_list_play_all_txt})
+    void playAll() {
+        MediaMusicPlayActivity.start(getActivity(), getData(), 0);
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.fragment_media_music_detail_list;
+    }
+
+    @OnClick(R.id.fra_media_music_detail_list_order)
+    void order() {
+        if (orderV.isSelected()) {
+            orderV.setSelected(false);
+            Collections.reverse(dataList);
+            orderTV.setText("正序");
+        } else {
+            orderV.setSelected(true);
+            Collections.reverse(dataList);
+            orderTV.setText("倒序");
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+    private MediaMusicDetailListAdapter adapter;
+
+    @Override
+    protected void onBaseViewCreated(View view, Bundle savedInstanceState) {
+        orderV.setSelected(false);
+        mainRV.setLayoutManager(new LinearLayoutManager(getActivity()));
+        dataList = getData().getAlbumAudios();
+        MediaMusicDataModel musicDataModel = (MediaMusicDataModel) getSerializable(MUSIC_DATA);
+        if (musicDataModel != null) {
+            content = musicDataModel.getContent();
+            prePos = musicDataModel.getPitch();
+            dataList.get(prePos).setStuded(true);
+        }
+        adapter = new MediaMusicDetailListAdapter();
+        mainRV.setAdapter(adapter);
+
+    }
+
+    private List<MediaMusicDetailChapterModel> dataList;
+
+    public void updateStudyState(int pos) {
+        if (mainRV == null || adapter == null) {
+            return;
+        }
+
+        MediaMusicDetailChapterModel premodel = dataList.get(prePos);
+        if (premodel.isStuded()) {
+            premodel.setStuded(false);
+        }
+        MediaMusicDetailChapterModel model = dataList.get(pos);
+        if (!model.isStuded()) {
+            model.setStuded(true);
+        }
+        mainRV.getAdapter().notifyItemChanged(prePos,premodel);
+        mainRV.getAdapter().notifyItemChanged(pos,model);
+
+        prePos = pos;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("MediaMusicDetailListFragment");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("MediaMusicDetailListFragment");
+    }
+
+    class MediaMusicDetailListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new ViewHolder(LayoutInflater.from(getActivity()).inflate(R.layout.adapter_media_music_detail_list, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            ViewHolder h = (ViewHolder) holder;
+            MediaMusicDetailChapterModel model = dataList.get(position);
+
+            h.titleTV.setSelected(model.isStuded());
+            if (orderV.isSelected()) {
+                h.titleTV.setText((getItemCount()- position) + " " + model.getAudioName());
+            } else {
+                h.titleTV.setText((position + 1) + " " + model.getAudioName());
+            }
+
+            h.timeTV.setText(model.getAudioSize());
+
+            h.mainV.setTag(position);
+        }
+
+        @Override
+        public int getItemCount() {
+            return Common.isListEmpty(dataList) ? 0 : dataList.size();
+        }
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+//            @BindView(R.id.ada_media_music_detail_list_no)
+//            TextView noTV;
+            @BindView(R.id.ada_media_music_detail_list_title)
+            TextView titleTV;
+//            @BindView(R.id.ada_media_music_detail_list_date)
+//            TextView dateTV;
+            @BindView(R.id.ada_media_music_detail_list_time)
+            TextView timeTV;
+
+            @BindView(R.id.ada_media_music_detail_list_main)
+            View mainV;
+
+            @OnClick(R.id.ada_media_music_detail_list_main)
+            void play(View view) {
+                int pos = (int) view.getTag();
+                MediaMusicPlayActivity.start(getActivity(), getData(), pos);
+            }
+
+            public ViewHolder(View itemView) {
+                super(itemView);
+                ButterKnife.bind(this, itemView);
+            }
+        }
+    }
+
+    public MediaMusicDetailListFragment setData(MediaMusicChildModel mediaMusicChildModel, MediaMusicDataModel mediaVideoData) {
+//        setSerializable(DATA, mediaMusicChildModel);
+//        this.mCallback = callback;
+        Bundle b = new Bundle();
+        b.putSerializable(DATA, mediaMusicChildModel);
+        b.putSerializable(MUSIC_DATA, mediaVideoData);
+        setArguments(b);
+        return this;
+    }
+
+    private final String DATA = "DATA";
+    private final String MUSIC_DATA = "music_data";
+
+    private MediaMusicChildModel getData() {
+        return (MediaMusicChildModel) getSerializable(DATA);
+    }
+
+}

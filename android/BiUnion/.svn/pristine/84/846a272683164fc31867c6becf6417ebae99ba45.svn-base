@@ -1,0 +1,119 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.widget.ImageView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.adapter.MagazineBookmarkAdapter;
+import com.bibinet.biunion.project.bean.BookmarkBean;
+import com.bibinet.biunion.project.ui.custom.listener.RecyclerTouchListener;
+import com.bibinet.biunion.project.ui.expand.TitleActivity;
+import com.bibinet.biunion.project.ui.manager.BookmarkManager;
+import com.bibinet.biunion.project.utils.ToastUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
+
+/**
+ * Created by bibinet on 2017-6-15.
+ */
+
+public class MagazineBookmarkActivity extends TitleActivity {
+
+    @BindView(R.id.act_magazine_bookmark_main)
+    RecyclerView mainRV;
+
+    @BindView(R.id.act_magazine_bookmark_nodata)
+    ImageView mNoDataIv;
+
+    private RecyclerTouchListener onTouchListener;
+
+
+    private BookmarkManager bookmarkManager;
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_magazine_bookmark;
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_bookmark;
+    }
+
+    private MagazineBookmarkAdapter adapter;
+    private List<BookmarkBean> bookmarkBeanList;
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+        bookmarkManager = new BookmarkManager();
+        bookmarkBeanList = new ArrayList<BookmarkBean>();
+
+        mainRV.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new MagazineBookmarkAdapter(this, bookmarkBeanList);
+        mainRV.setAdapter(adapter);
+
+        //添加触摸监听
+        onTouchListener = new RecyclerTouchListener(this, mainRV);
+        onTouchListener.setSwipeable(true);
+        onTouchListener
+                // .setIndependentViews(R.id.rowButton)
+                //.setViewsToFade(R.id.rowButton)
+                .setSwipeOptionViews(R.id.delete)
+                .setSwipeable(R.id.rowFG, R.id.rowBG, new RecyclerTouchListener.OnSwipeOptionsClickListener() {
+                    @Override
+                    public void onSwipeOptionClicked(int viewID, int position) {//侧拉出现的三个按钮监听事件
+                        //String message = "";
+                        //message += " position-> " + (position + 1);
+                        //Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        if (bookmarkManager.removeBookmark(bookmarkBeanList.get(position).getMagazineChildModel())){
+                            bookmarkBeanList.remove(position);
+                            adapter.notifyDataSetChanged();
+                            mNoDataIv.setVisibility(bookmarkBeanList.isEmpty() ? VISIBLE : GONE);
+                            ToastUtils.showShort("书签删除成功");
+                        }
+
+                    }
+                })
+                .setClickable(new RecyclerTouchListener.OnRowClickListener() {
+                    @Override
+                    public void onRowClicked(int position) {//item点击监听
+                        //启动杂志
+                        MagazineDetailActivity.start(MagazineBookmarkActivity.this,
+                                bookmarkBeanList.get(position).getMagazineChildModel());
+                        //Toast.makeText(MagazineBookmarkActivity.this, "Row " + (position + 1) + " clicked!", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onIndependentViewClicked(int independentViewID, int position) {//button点击监听
+                        //Toast.makeText(getApplicationContext(), "Button in row " + (position + 1) + " clicked!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        mainRV.addOnItemTouchListener(onTouchListener);
+    }
+
+    public static void start(Context context) {
+        Intent intent = new Intent(context, MagazineBookmarkActivity.class);
+        context.startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        bookmarkBeanList.clear();
+        bookmarkBeanList.addAll(bookmarkManager.getAllBookMark());
+        adapter.notifyDataSetChanged();
+        mNoDataIv.setVisibility(bookmarkBeanList.isEmpty() ? VISIBLE : GONE);
+    }
+
+}

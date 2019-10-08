@@ -1,0 +1,176 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.application.Constants;
+import com.bibinet.biunion.project.models.BaseModel;
+import com.bibinet.biunion.project.net.emit.PasswordUpdateEmit;
+import com.bibinet.biunion.project.net.firing.PasswordFiring;
+import com.bibinet.biunion.project.ui.expand.TitleActivity;
+import com.bibinet.biunion.project.utils.PhoneNumberUtils;
+import com.bibinet.biunion.project.utils.SharedPresUtils;
+import com.bibinet.biunion.project.utils.SoftKeyboardUtils;
+import com.bibinet.biunion.project.utils.TimeUtils;
+import com.bibinet.biunion.project.utils.ToastUtils;
+import com.bibinet.biunion.project.utils.ViewCheckUtils;
+import com.bibinet.biunion.project.utils.cityselectutil.SharedPreferencesUtils;
+import com.umeng.analytics.MobclickAgent;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+/**
+ * Created by bibinet on 2017-6-5.
+ */
+
+public class PasswordUpdateActivity extends TitleActivity implements TimeUtils.OnTimeUtilsListener, PasswordUpdateEmit {
+    public final static int REQUEST_CODE = 5001;
+    public final static int RESULT_CODE = 5002;
+    private final long AGAINSENDTIME = 60 * 1000;
+    @BindView(R.id.act_password_update_input_old)
+    EditText oldPasswordET;
+    @BindView(R.id.act_password_update_input_new)
+    EditText newPasswordET;
+    @BindView(R.id.act_password_update_code)
+    EditText vertifCode;
+    @BindView(R.id.act_password_update_phone)
+    TextView phoneTV;
+    @BindView(R.id.act_password_update_confirm)
+    Button confirmB;
+    @BindView(R.id.act_password_update_get_code)
+    TextView getCodeTV;
+    private PasswordFiring passwordFiring;
+    private TimeUtils timeUtils;
+    private String phone;
+
+    @Override
+    protected void onTitleCreate(@Nullable Bundle savedInstanceState) {
+        initView();
+        ViewCheckUtils.inputConfirm(confirmB, oldPasswordET, newPasswordET);
+        phone = Constants.loginresultInfo.getUser().getEnterprise().getContactCellphone();
+        phoneTV.setText(phone);
+        getCodeTV.setSelected(true);
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_password_update;
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_password_update;
+    }
+
+    private void initView() {
+        timeUtils = new TimeUtils();
+        passwordFiring = new PasswordFiring(this);
+        checkCountDown();
+    }
+
+    @OnClick(R.id.act_password_update_get_code)
+    void getCode() {
+        String phone = phoneTV.getText().toString().trim();
+        if (PhoneNumberUtils.isMobileNumber(phone)) {
+            startCountDown();
+        } else {
+            ToastUtils.showShort("请输入正确的手机号");
+        }
+    }
+
+    private void checkCountDown() {
+        long historyTime = SharedPreferencesUtils.getInstence().getCheckCodeAgainSendTime(this);
+        long currentTime = System.currentTimeMillis();
+        if (currentTime < historyTime) {
+            long time = historyTime - currentTime;
+            timeUtils.startCountDownTime(time, 1000, this);
+            getCodeTV.setEnabled(false);
+        } else {
+            getCodeTV.setEnabled(true);
+        }
+    }
+
+    private void startCountDown() {
+        //保存一段时间后的时间点
+        long time = System.currentTimeMillis() + AGAINSENDTIME;
+        SharedPreferencesUtils.getInstence().setCheckCodeAgainSendTime(this, time);
+        //启动倒计时
+        timeUtils.startCountDownTime(AGAINSENDTIME, 1000, this);
+        String phone = phoneTV.getText().toString().trim();
+        passwordFiring.getPasswordUpdateCode(phone);
+    }
+
+    private void doLoginOut() {
+        Constants.loginresultInfo = null;
+        SharedPresUtils sharedPresUtils = SharedPresUtils.getsSharedPresUtils(SharedPresUtils.DATA_CONFIG);
+        sharedPresUtils.putString("loginResultData", null);
+    }
+
+
+    @OnClick(R.id.act_password_update_confirm)
+    void confirm() {
+        String phone = phoneTV.getText().toString().trim();
+        String oldPassword = oldPasswordET.getText().toString().trim();
+        String newPassword = newPasswordET.getText().toString().trim();
+        if (!PhoneNumberUtils.isMobileNumber(phone)) {
+            ToastUtils.showShort("请输入正确的手机号");
+        } else if (!PhoneNumberUtils.isPassword(oldPassword) || !PhoneNumberUtils.isPassword(newPassword)) {
+            ToastUtils.showShort("密码格式不正确");
+        } else if (!oldPassword.equals(newPassword)) {
+            ToastUtils.showShort("请确保两次输入密码一致");
+        } else {
+            passwordFiring.setPasswordUpdate(phone, newPassword, vertifCode.getText().toString().trim());
+        }
+    }
+
+    @Override
+    public void onTick(long millisUntilFinished) {
+        getCodeTV.setText("（" + (millisUntilFinished / 1000) + "）秒后可重发");
+        getCodeTV.setEnabled(false);
+    }
+
+    @Override
+    public void onFinish() {
+        getCodeTV.setText("获取验证码");
+        getCodeTV.setEnabled(true);
+    }
+
+    @Override
+    public void onSetPasswordUpdateSuccess(BaseModel certifiInfo) {
+        if (certifiInfo.getResCode().equals("0000")) {
+            ToastUtils.showShort("修改密码成功");
+            doLoginOut();
+            startActivity(new Intent(PasswordUpdateActivity.this, LoginActivity.class));
+            setResult(RESULT_CODE);
+            SoftKeyboardUtils.hintKbTwo(this);
+            finish();
+        } else {
+            ToastUtils.showShort(certifiInfo.getResMessage());
+        }
+    }
+
+    @Override
+    public void onSetPasswordUpdateFail(String error) {
+        ToastUtils.showShort(error);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("UpdatePasswordActivity");
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("UpdatePasswordActivity");
+        MobclickAgent.onPause(this);
+    }
+}

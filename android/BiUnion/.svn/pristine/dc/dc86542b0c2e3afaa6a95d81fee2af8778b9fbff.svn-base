@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ada_media_video_detail_list_chapter_top"
+        android:layout_width="match_parent"
+        android:layout_height="13dp"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:background="#d9dde1"></View>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:gravity="top"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_marginRight="14dp"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/ada_media_video_detail_list_chapter_top_horn_top"
+                android:layout_width="1dp"
+                android:layout_height="4dp"
+                android:background="#d9dde1"></View>
+
+            <View
+                android:layout_width="9dp"
+                android:layout_height="9dp"
+                android:background="@drawable/select_media_video_detail_list_point" />
+
+            <View
+                android:id="@+id/ada_media_video_detail_list_chapter_top_horn_bottom"
+                android:layout_width="1dp"
+                android:layout_weight="1"
+                android:layout_height="0dp"
+                android:background="#d9dde1"></View>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/ada_media_video_detail_list_chapter_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="第一章 广东斜阳污水厂项目ffdfggdddgggggggggggggggg"
+            android:textColor="@color/color_333333"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+    <View
+        android:id="@+id/ada_media_video_detail_list_chapter_bottom"
+        android:layout_width="1dp"
+        android:layout_height="10dp"
+        android:layout_marginLeft="20dp"
+        android:background="#d9dde1"></View>
+</LinearLayout>

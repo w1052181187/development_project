@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#281F34">
+    <FrameLayout
+        android:id="@+id/act_media_live_finish_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:paddingRight="@dimen/common_left_right_margin_space"
+        android:paddingTop="@dimen/common_left_right_margin_space"
+        android:paddingBottom="@dimen/common_left_right_margin_space"
+        android:paddingLeft="8dp">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@mipmap/shanchu"
+            />
+    </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/act_media_live_finish_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:minHeight="36dp"
+        android:layout_above="@+id/act_media_live_finish_tv_rl"
+        android:layout_marginBottom="60dp">
+        <TextView
+            android:id="@+id/act_media_live_finish_record_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@color/white"
+            android:background="@drawable/dizhia"
+            android:textSize="13sp"
+            android:text="直播录制已保存，稍后即可观看"
+            android:gravity="center"
+            />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/col_title_background"
+        android:textSize="18sp"
+        android:text="直播已结束"
+        android:layout_above="@+id/act_media_live_finish_1"
+        android:gravity="center"
+        android:layout_marginBottom="@dimen/common_left_right_margin_space"
+        />
+    <RelativeLayout
+        android:id="@+id/act_media_live_finish_tv_rl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="60dp"
+        android:layout_centerInParent="true">
+        <TextView
+            android:id="@+id/act_media_live_finish_tv"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="@dimen/common_left_right_margin_space"
+            android:layout_marginRight="@dimen/common_left_right_margin_space"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@color/white"
+            android:background="@drawable/d"
+            android:gravity="center"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:id="@+id/act_media_live_finish_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="40dp"
+        android:gravity="center"
+        android:orientation="vertical">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/act_media_live_finish_2"
+            android:background="@mipmap/fanhui"
+            android:layout_marginBottom="@dimen/common_left_right_margin_space"/>
+        <TextView
+            android:id="@+id/act_media_live_finish_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textColor="@color/white"
+            android:text="返回直播首页"/>
+    </LinearLayout>
+
+</RelativeLayout>
+

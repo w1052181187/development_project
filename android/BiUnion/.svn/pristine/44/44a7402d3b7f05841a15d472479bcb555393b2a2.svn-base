@@ -1,0 +1,423 @@
+package com.bibinet.biunion.project.ui.fragment;
+
+
+import android.content.Context;
+import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.animations.AnimationManager;
+import com.bibinet.biunion.project.application.Constants;
+import com.bibinet.biunion.project.bean.LoginResultBean;
+import com.bibinet.biunion.project.manager.StatusBarManager;
+import com.bibinet.biunion.project.net.emit.MyEmit;
+import com.bibinet.biunion.project.net.firing.MyFiring;
+import com.bibinet.biunion.project.ui.activity.AboutUsActivity;
+import com.bibinet.biunion.project.ui.activity.CollectActivity;
+import com.bibinet.biunion.project.ui.activity.CompanyInfoActivity;
+import com.bibinet.biunion.project.ui.activity.LoginActivity;
+import com.bibinet.biunion.project.ui.activity.MemberServiceActivity;
+import com.bibinet.biunion.project.ui.activity.PlatFormActivity;
+import com.bibinet.biunion.project.ui.activity.SettingActivity;
+import com.bibinet.biunion.project.ui.base.BaseFragment;
+import com.bibinet.biunion.project.ui.custom.UserIconView;
+import com.bibinet.biunion.project.utils.SharedPresUtils;
+import com.bibinet.biunion.project.utils.StatisticsUtils;
+import com.mobike.library.JBox2DView;
+import com.umeng.analytics.MobclickAgent;
+
+import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+import static com.bibinet.biunion.project.ui.activity.PlatFormActivity.TYPE_BIBI;
+
+public class MyFragment extends BaseFragment implements MyEmit, UserIconView.OnUserIconViewListener {
+    @BindView(R.id.companyInfo)
+    LinearLayout companyInfo;
+    @BindView(R.id.foucsMy)
+    LinearLayout foucsMy;
+    @BindView(R.id.aboutOur)
+    LinearLayout aboutOur;
+    @BindView(R.id.serviceTerm)
+    LinearLayout serviceTerm;
+    @BindView(R.id.legalStatement)
+    LinearLayout legalStatement;
+    @BindView(R.id.setting)
+    LinearLayout setting;
+
+    @BindView(R.id.fra_my_login_member_rl)
+    View loginMemberV;
+    @BindView(R.id.fra_my_login_member_tv)
+    TextView loginMemberTv;
+    @BindView(R.id.fra_my_login_member_img)
+    ImageView loginMemberImg;
+
+    @BindView(R.id.fra_my_login_name)
+    TextView loginNameB;
+    @BindView(R.id.fra_my_login_icon)
+    UserIconView loginIconUIV;
+
+    @BindView(R.id.fra_my_top_move)
+    View topMoveV;
+    @BindView(R.id.fra_my_bottom_move)
+    View bottomMoveV;
+
+    @BindView(R.id.fra_my_top_main)
+    LinearLayout topMainLL;
+
+    private MyFiring myFiring;
+
+    @BindView(R.id.JBox2D_view)
+    JBox2DView mJBox2dView;
+
+    private SensorManager sensorManager;
+    private Sensor defaultSensor;
+
+    private ArrayList<JBox2DImgModel> imgs ;
+
+    @OnClick({R.id.fra_my_top_move, R.id.fra_my_bottom_move})
+    void empty(){
+
+    }
+
+    @OnClick(R.id.fra_my_login_name)
+    void loginName(){
+        if (!checkLogin()) {
+            startActivity(new Intent(getActivity(), LoginActivity.class));
+            StatisticsUtils.toLogin(StatisticsUtils.TYPE_TO_LOGIN_LOGIN);
+            return;
+        }
+        startActivity(new Intent(getActivity(), CompanyInfoActivity.class));
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.fragment_my;
+    }
+
+    @Override
+    protected void onBaseViewCreated(View view, Bundle savedInstanceState) {
+        StatusBarManager.addTransparentStatusBar(getActivity(), topMainLL);
+        initView();
+        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        defaultSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    }
+
+    private int[] imgsa = {
+            R.mipmap.i,
+            R.mipmap.z,
+            R.mipmap.v,
+            R.mipmap.i,
+            R.mipmap.z,
+            R.mipmap.v,
+            R.mipmap.a,
+            R.mipmap.a,
+            R.mipmap.c,
+            R.mipmap.d,
+            R.mipmap.e,
+            R.mipmap.f,
+            R.mipmap.g,
+            R.mipmap.h,
+            R.mipmap.j,
+            R.mipmap.n,
+            R.mipmap.q,
+            R.mipmap.w,
+            R.mipmap.d,
+            R.mipmap.e,
+            R.mipmap.c,
+            R.mipmap.q,
+            R.mipmap.h,
+            R.mipmap.j,
+            R.mipmap.n,
+
+    };
+
+    private void initView() {
+        myFiring = new MyFiring(this, getActivity());
+        loginIconUIV.init(getActivity(), this);
+        initJBox2DView();
+    }
+
+    private void initJBox2DView() {
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+
+        for(int i = 0; i < imgsa.length  ; i ++){
+            ImageView imageView = new ImageView(getActivity());
+            imageView.setImageResource(imgsa[i]);
+            final int pos = i;
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (pos == 0 || pos == 1 || pos == 2 || pos == 3 || pos == 4 || pos == 5) {
+                        PlatFormActivity.start(getActivity(), pos % 3 + 1);
+                    } else if (pos == 6 || pos == 7 ){
+                        PlatFormActivity.start(getActivity(), TYPE_BIBI);
+                    }
+
+                }
+            });
+            mJBox2dView.addView(imageView,layoutParams);
+        }
+        mJBox2dView.getjBox2D().setDensity(3.0f);
+        mJBox2dView.getjBox2D().setFriction(0.1f);
+        mJBox2dView.getjBox2D().setRestitution(0.1f);
+        mJBox2dView.getjBox2D().setRatio(50.0f);
+    }
+
+    @Override
+    public void onStart() {
+        mJBox2dView.getjBox2D().onStart();
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        mJBox2dView.getjBox2D().onStop();
+        super.onStop();
+    }
+
+    private SensorEventListener listerner = new SensorEventListener(){
+
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+                float x =  event.values[0];
+                float y =   event.values[1] * 2.0f;
+                mJBox2dView.getjBox2D().onSensorChanged(-x,y);
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("MyFragment");
+        if (Constants.loginresultInfo == null) {
+            //未登录状态
+            loginNameB.setText("请点击登录");
+            loginIconUIV.setLogin(false);
+            loginIconUIV.updateUserIcon(null);
+            loginMemberV.setVisibility(View.GONE);
+        } else {
+            LoginResultBean.ProtalMember protalMember = Constants.loginresultInfo.getUser().getProtalMember();
+            loginNameB.setText(Constants.loginresultInfo.getUser().getEnterprise().getContactName());
+            loginIconUIV.setLogin(true);
+            loginIconUIV.updateUserIcon(Constants.loginresultInfo.getUser().getImage());
+            if (protalMember != null) {
+                loginMemberV.setVisibility(View.VISIBLE);
+                handleMember(protalMember.getType());
+            } else {
+                loginMemberV.setVisibility(View.GONE);
+            }
+        }
+        sensorManager.registerListener(listerner, defaultSensor, SensorManager.SENSOR_DELAY_UI);
+    }
+
+    private void handleMember(int type) {
+        switch (type) {
+            case 5:
+                loginMemberImg.setImageResource(R.drawable.ic_zuanshiw);
+                loginMemberImg.setBackgroundResource(R.drawable.zuanshi_bg_shape);
+                loginMemberTv.setBackgroundResource(R.drawable.zuanshi_tx_shape);
+                loginMemberTv.setText(R.string.member_service_zuanshi);
+                loginMemberTv.setTextColor(getResources().getColor(R.color.member_zuanshi));
+                break;
+            case 4:
+                loginMemberImg.setImageResource(R.drawable.ic_baijine);
+                loginMemberImg.setBackgroundResource(R.drawable.baijin_bg_shape);
+                loginMemberTv.setBackgroundResource(R.drawable.baijin_tx_shape);
+                loginMemberTv.setText(R.string.member_service_baijin);
+                loginMemberTv.setTextColor(getResources().getColor(R.color.member_baijin));
+                break;
+            case 3:
+                loginMemberImg.setImageResource(R.drawable.ic_vipr);
+                loginMemberImg.setBackgroundResource(R.drawable.vip_bg_shape);
+                loginMemberTv.setBackgroundResource(R.drawable.vip_tx_shape);
+                loginMemberTv.setText(R.string.member_service_vip);
+                loginMemberTv.setTextColor(getResources().getColor(R.color.member_vip));
+                break;
+            case 2:
+                loginMemberImg.setImageResource(R.drawable.ic_gaojid);
+                loginMemberImg.setBackgroundResource(R.drawable.gaoji_bg_shape);
+                loginMemberTv.setBackgroundResource(R.drawable.gaoji_tx_shape);
+                loginMemberTv.setText(R.string.member_service_gaoji);
+                loginMemberTv.setTextColor(getResources().getColor(R.color.member_gaoji));
+                break;
+            case 1:
+                loginMemberImg.setImageResource(R.drawable.ic_biaozhunq);
+                loginMemberImg.setBackgroundResource(R.drawable.biaozhun_bg_shape);
+                loginMemberTv.setBackgroundResource(R.drawable.biaozhun_tx_shape);
+                loginMemberTv.setText(R.string.member_service_biaozhun);
+                loginMemberTv.setTextColor(getResources().getColor(R.color.member_biaozhun));
+                break;
+            default:
+                loginMemberV.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    public void moveV(){
+        int baseM = 500;
+        int spM = 70;
+        AnimationManager.topToBottom(topMoveV, 1000, baseM);
+        AnimationManager.bottomToTop(bottomMoveV, 2000, baseM);
+        AnimationManager.bottomToTop(companyInfo, 2000, baseM);
+        AnimationManager.bottomToTop(foucsMy, 2000, baseM + (spM * 1));
+        AnimationManager.bottomToTop(aboutOur, 2000, baseM + (spM * 2));
+        AnimationManager.bottomToTop(serviceTerm, 2000, baseM + (spM * 3));
+        AnimationManager.bottomToTop(legalStatement, 2000, baseM + (spM * 4));
+        AnimationManager.bottomToTop(setting, 2000, baseM + (spM * 5));
+    }
+
+    private boolean checkLogin() {
+        if (Constants.loginresultInfo != null && Constants.loginresultInfo.getUser() != null && Constants.loginresultInfo.getUser().getUserId() != null && !Constants.loginresultInfo.getUser().getUserId().equals("")) {
+            return true;
+        }
+        return false;
+    }
+
+    @OnClick({R.id.companyInfo, R.id.foucsMy, R.id.aboutOur, R.id.serviceTerm, R.id.legalStatement, R.id.memberService, R.id.setting})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.companyInfo:
+                if (!checkLogin()) {
+                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                    StatisticsUtils.toLogin(StatisticsUtils.TYPE_TO_LOGIN_COMPANY_INFO);
+                    return;
+                }
+                startActivity(new Intent(getActivity(), CompanyInfoActivity.class));
+                break;
+            case R.id.foucsMy:
+                if (!checkLogin()) {
+                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                    StatisticsUtils.toLogin(StatisticsUtils.TYPE_TO_LOGIN_MY_FOUCS);
+                    return;
+                }
+                startActivity(new Intent(getActivity(), CollectActivity.class));
+                break;
+            case R.id.memberService:
+                startActivity(new Intent(getActivity(), MemberServiceActivity.class));
+                return;
+            case R.id.aboutOur:
+                Intent intent = new Intent(getActivity(), AboutUsActivity.class);
+                intent.putExtra("Type", AboutUsActivity.TYPE_ABOUTUS);
+                startActivity(intent);
+                return;
+            case R.id.serviceTerm:
+                Intent intent1 = new Intent(getActivity(), AboutUsActivity.class);
+                intent1.putExtra("Type", AboutUsActivity.TYPE_TERM_SERVICE);
+                startActivity(intent1);
+                break;
+            case R.id.legalStatement:
+                Intent intent2 = new Intent(getActivity(), AboutUsActivity.class);
+                intent2.putExtra("Type", AboutUsActivity.TYPE_LEGAL_STATEMENT);
+                startActivity(intent2);
+                break;
+//            case R.id.disclaimer:
+//                Intent intent3 = new Intent(getActivity(), AboutUsActivity.class);
+//                intent3.putExtra("Type", AboutUsActivity.TYPE_DISCLAIMER);
+//                startActivity(intent3);
+//                break;
+            case R.id.setting:
+                startActivity(new Intent(getActivity(), SettingActivity.class));
+                break;
+        }
+
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (loginIconUIV != null) {
+            loginIconUIV.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (loginIconUIV != null) {
+            loginIconUIV.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    //头像上传
+    @Override
+    public void onSetUserIconSuccess(LoginResultBean loginInfo, String loginString) {
+        if (loginInfo.getResCode().equals("0000")) {
+            Constants.loginresultInfo = loginInfo;
+            SharedPresUtils sharedPresUtils = SharedPresUtils.getsSharedPresUtils(SharedPresUtils.DATA_CONFIG);
+            sharedPresUtils.putString("loginResultData", loginString);
+            //更新头像
+            loginIconUIV.updateUserIcon(Constants.loginresultInfo.getUser().getImage());
+        } else {
+            Toast.makeText(getActivity(), loginInfo.getResMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onSetUserIconFail(String s) {
+        Toast.makeText(getActivity(), "网络异常", Toast.LENGTH_SHORT).show();
+    }
+
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("MyFragment");
+        sensorManager.unregisterListener(listerner);
+    }
+
+    @Override
+    public void onUserIconFinish(String fileCode) {
+        String userId = Constants.loginresultInfo.getUser().getUserId();
+        String companyId = Constants.loginresultInfo.getUser().getEnterprise().getEnterpriseCode();
+        myFiring.setUserIcon(userId, companyId, fileCode);
+    }
+
+    @Override
+    public void onNotLogin() {
+        startActivity(new Intent(getActivity(), LoginActivity.class));
+        StatisticsUtils.toLogin(StatisticsUtils.TYPE_TO_LOGIN_LOGIN);
+    }
+
+    class JBox2DImgModel {
+
+        final static int INIT_TYPE = -1;
+
+        int drawable;
+        int imgType = -1;
+
+        public int getDrawable() {
+            return drawable;
+        }
+
+        public void setDrawable(int drawable) {
+            this.drawable = drawable;
+        }
+
+        public int getImgType() {
+            return imgType;
+        }
+
+        public void setImgType(int imgType) {
+            this.imgType = imgType;
+        }
+    }
+}

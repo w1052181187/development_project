@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.andview.refreshview.XRefreshView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fra_media_live_xrefresh"
+    android:layout_width="match_parent"
+    android:background="#f9f9f9"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.bibinet.biunion.project.builder.ObservableScrollView
+            android:id="@+id/fra_media_live_xscrollview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:descendantFocusability="blocksDescendants"
+                android:orientation="vertical">
+                <RelativeLayout
+                    android:id="@+id/fra_media_live_cover_rl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="visible">
+                    <ImageView
+                        android:id="@+id/fra_media_live_cover"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@mipmap/zhibotu"
+                        android:scaleType="centerCrop" />
+                    <ImageView
+                        android:id="@+id/fra_media_live_flag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/common_left_right_margin_space"
+                        android:layout_marginLeft="@dimen/common_left_right_margin_space"
+                        android:src="@mipmap/live_flag"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone"/>
+                    <TextView
+                        android:id="@+id/fra_media_live_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:layout_centerInParent="true"
+                        android:gravity="center"
+                        android:background="@color/half_transparent"
+                        android:textColor="@color/white"
+                        android:visibility="gone"/>
+
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/fra_media_live_record_hint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="直播录制"
+                    android:textSize="15sp"
+                    android:textColor="@color/col_title_background"
+                    android:padding="@dimen/common_left_right_margin_space"
+                    android:background="@color/white"
+                    android:visibility="gone"
+                    />
+
+                <LinearLayout
+                    android:id="@+id/fra_media_live_not_data_ll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="6dp"
+                    android:paddingTop="@dimen/common_left_right_margin_space"
+                    android:background="#FDFAED"
+                    android:visibility="gone">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableTop="@mipmap/zanwu"
+                        android:drawablePadding="6dp"
+                        android:textSize="14sp"
+                        android:text="暂无直播录制，可到视频模块学习！"
+                        />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@mipmap/live_bottom_nodata_line"/>
+                </LinearLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <!--android:descendantFocusability="blocksDescendants"-->
+                    <!--&gt;-->
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/fra_media_live_main"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                    </android.support.v7.widget.RecyclerView>
+                </RelativeLayout>
+
+            </LinearLayout>
+        </com.bibinet.biunion.project.builder.ObservableScrollView>
+    </RelativeLayout>
+</com.andview.refreshview.XRefreshView>
+
+
+

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:gravity="center"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="52dp"
+            android:background="@drawable/shape_media_video_detail_intro_tag_background"
+            android:paddingLeft="1dp"
+            android:paddingRight="1dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="#00ff00">
+
+                <com.bibinet.biunion.project.ui.custom.HeaderWaveView
+                    android:id="@+id/v_media_video_detail_teacher_header_wave"
+                    android:layout_width="match_parent"
+                    android:layout_height="110dp"
+                    android:background="#ffffff" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingTop="35dp">
+
+
+                <TextView
+                    android:id="@+id/v_media_video_detail_teacher_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="王丽"
+                    android:textColor="@color/color_333333"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/v_media_video_detail_teacher_intro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:text="高级app某专家"
+                    android:textColor="@color/color_999999"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/v_media_video_detail_teacher_detail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:background="@color/white"
+                    android:minHeight="95dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:text="王丽，山东大学科技哲学硕士学历，中国招标采购经理人协会常务理事、专家委员会成员，主讲PPP项目、供应链管理等相关政策解读、知识分享、案例分析，逻辑清晰，善于化繁为简，内容通俗易懂。"
+                    android:textColor="@color/color_333333"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/v_media_video_detail_teacher_icon"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_marginTop="17dp"
+            android:layout_centerHorizontal="true"
+            android:background="@mipmap/img_media_video_intro_icon_background"
+            android:padding="6dp"
+            android:src="@mipmap/wode_toux"
+            android:visibility="visible" />
+    </RelativeLayout>
+</LinearLayout>

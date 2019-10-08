@@ -1,0 +1,112 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.ui.expand.WebViewActivity;
+
+import static com.bibinet.biunion.project.net.UrlConfig.TYPE_PIS;
+import static com.bibinet.biunion.project.net.UrlConfig.getBaseUrl;
+
+
+/**
+ * Created by bibinet on 2017-6-15.
+ */
+
+public class PlatFormActivity extends WebViewActivity {
+    public static final int TYPE_BIBI = 1;
+    public static final int TYPE_COMPANY = 2;
+    public static final int TYPE_FINACE = 3;
+    public static final int TYPE_SERVICE = 4;
+    private static final String TYPE = "Type";
+
+    WebView webview;
+
+    public static void start(Context context, int type){
+        Intent intentPlatf = new Intent(context, PlatFormActivity.class);
+        intentPlatf.putExtra(TYPE, type);
+        context.startActivity(intentPlatf);
+    }
+
+    @Override
+    protected void onWebCreate(Bundle savedInstanceState) {
+        initView();
+    }
+
+    @Override
+    protected int getWebViewId() {
+        return R.id.webview;
+    }
+
+    @Override
+    protected int getWebLayoutId() {
+        return R.layout.activity_platform;
+    }
+
+    private void initView() {
+        webview = getWebView();
+        WebSettings seting = webview.getSettings();
+        seting.setJavaScriptEnabled(true);//设置webview支持javascript脚本
+        webview.setVerticalScrollbarOverlay(true); //指定的垂直滚动条有叠加样式
+        seting.setUseWideViewPort(true);//设定支持viewport
+        seting.setLoadWithOverviewMode(true);
+        seting.setBuiltInZoomControls(true);
+        seting.setSupportZoom(true);//设定支持缩放
+        Intent intent = getIntent();
+        int type = intent.getIntExtra(TYPE, TYPE_BIBI);
+        switch (type) {
+            case TYPE_BIBI:
+                webview.loadUrl(getBaseUrl(TYPE_PIS) + "appPage/detail.jsp");
+                break;
+            case TYPE_COMPANY:
+                webview.loadUrl(getBaseUrl(TYPE_PIS) + "appPage/detail1.jsp");
+                break;
+            case TYPE_FINACE:
+                webview.loadUrl(getBaseUrl(TYPE_PIS) + "appPage/detail2.jsp");
+                break;
+            case TYPE_SERVICE:
+                webview.loadUrl(getBaseUrl(TYPE_PIS) + "appPage/detail3.jsp");
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    @Override
+    protected int getTitleString() {
+        int type = getIntent().getIntExtra(TYPE, TYPE_BIBI);
+        switch (type) {
+            case TYPE_BIBI:
+                return R.string.str_plat_form1;
+            case TYPE_COMPANY:
+                return R.string.str_plat_form2;
+            case TYPE_FINACE:
+                return R.string.str_plat_form3;
+            case TYPE_SERVICE:
+                return R.string.str_plat_form4;
+        }
+        return R.string.str_plat_form1;
+    }
+
+    //设置返回键动作（防止按返回键直接退出程序)
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO 自动生成的方法存根
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (webview.canGoBack()) {//当webview不是处于第一页面时，返回上一个页面
+                webview.goBack();
+                return true;
+            } else {//当webview处于第一页面时,直接退出程序
+                //    System.exit(0);
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+}

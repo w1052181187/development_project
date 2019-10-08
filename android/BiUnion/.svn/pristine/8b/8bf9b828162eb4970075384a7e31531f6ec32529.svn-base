@@ -1,0 +1,134 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.application.Constants;
+import com.bibinet.biunion.project.bean.WriteTenderBookBean;
+import com.bibinet.biunion.project.models.BaseModel;
+import com.bibinet.biunion.project.net.emit.WriteTenderBookEmit;
+import com.bibinet.biunion.project.net.firing.WriteTenderBookFiring;
+import com.bibinet.biunion.project.ui.dialog.WriteTenderBookSelectDialog;
+import com.bibinet.biunion.project.ui.expand.TitleActivity;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+/**
+ * Created by bibinet on 2017-6-14.
+ */
+
+public class WriteTenderBookActivity extends TitleActivity implements WriteTenderBookEmit, View.OnClickListener {
+
+    @BindView(R.id.act_write_tender_book_confirm)
+    View confirmV;
+    @BindView(R.id.act_write_tender_book_select_show)
+    TextView bookSelectTV;
+    @BindView(R.id.act_write_tender_book_project_type_show)
+    TextView projectTypeTV;
+    @BindView(R.id.act_write_tender_book_tender_style_show)
+    TextView tenderStyleTV;
+    @BindView(R.id.act_write_tender_book_type_show)
+    TextView bookTypeTV;
+    @BindView(R.id.act_write_tender_book_name)
+    EditText nameET;
+    @BindView(R.id.act_write_tender_book_phone)
+    EditText phoneET;
+    @BindView(R.id.act_write_tender_book_email)
+    EditText emailET;
+
+    private WriteTenderBookFiring writeTenderBookFiring;
+    private WriteTenderBookBean writeTenderBookBean;
+
+    @Override
+    protected void onTitleCreate(@Nullable Bundle savedInstanceState) {
+        setRightBtn(0, R.mipmap.img_write_tender_history_icon, this);
+        initView();
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_write_tender_book;
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_write_tender_book;
+    }
+
+    private void initView() {
+        writeTenderBookFiring = new WriteTenderBookFiring(this);
+        writeTenderBookBean = new WriteTenderBookBean();
+        confirmV.setSelected(true);
+        nameET.requestFocus();
+    }
+
+    @OnClick({R.id.act_write_tender_book_select, R.id.act_write_tender_book_project_type, R.id.act_write_tender_book_tender_style, R.id.act_write_tender_book_type})
+    void clickSelect(View v) {
+        switch (v.getId()) {
+            //标书选择
+            case R.id.act_write_tender_book_select:
+                new WriteTenderBookSelectDialog(this, writeTenderBookBean.getBookSelect(), bookSelectTV).show();
+                break;
+            //项目类型
+            case R.id.act_write_tender_book_project_type:
+                new WriteTenderBookSelectDialog(this, writeTenderBookBean.getProjectType(), projectTypeTV).show();
+                break;
+            //招标方式
+            case R.id.act_write_tender_book_tender_style:
+                new WriteTenderBookSelectDialog(this, writeTenderBookBean.getTenderStyle(), tenderStyleTV).show();
+                break;
+            //标书选择
+            case R.id.act_write_tender_book_type:
+                new WriteTenderBookSelectDialog(this, writeTenderBookBean.getBookType(), bookTypeTV).show();
+                break;
+        }
+    }
+
+    @OnClick(R.id.act_write_tender_book_confirm)
+    void confirm() {
+        writeTenderBookBean.setName(nameET.getText().toString());
+        writeTenderBookBean.setPhone(phoneET.getText().toString());
+        writeTenderBookBean.setEmail(emailET.getText().toString());
+//        Log.e("name", writeTenderBookBean.getName()+"-");
+//        Log.e("phone", writeTenderBookBean.getPhone()+"-");
+//        Log.e("email", writeTenderBookBean.getEmail()+"-");
+//        Log.e("bookselect", writeTenderBookBean.getBookSelect().getId()+"-");
+//        Log.e("projectype", writeTenderBookBean.getProjectType().getId()+"-");
+//        Log.e("tenderstyle", writeTenderBookBean.getTenderStyle().getId()+"-");
+//        Log.e("booktype", writeTenderBookBean.getBookType().getId()+"-");
+        if (writeTenderBookBean.checkInput()) {
+            String userId = Constants.loginresultInfo.getUser().getUserId();
+            writeTenderBookFiring.setWriteTenderBook(userId, writeTenderBookBean);
+        }
+    }
+
+    @Override
+    public void onSetWriteTenderBookSuccess(BaseModel bean) {
+        if (bean.getResCode().equals("0000")) {
+            Toast.makeText(this, "提交成功，会有专人与您联系", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, WriteTenderHistoryActivity.class));
+            finish();
+        } else {
+            Toast.makeText(this, "很抱歉，您的标书申请提交失败", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    @Override
+    public void onSetWriteTenderBookFail(String s) {
+        Toast.makeText(this, "网络异常", Toast.LENGTH_SHORT).show();
+    }
+
+    //代写标书历史
+    @Override
+    public void onClick(View view) {
+        startActivity(new Intent(this, WriteTenderHistoryActivity.class));
+    }
+}

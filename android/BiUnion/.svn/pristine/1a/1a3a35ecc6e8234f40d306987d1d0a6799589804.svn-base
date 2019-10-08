@@ -1,0 +1,266 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.ImageView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.adapter.MagazineAdapter;
+import com.bibinet.biunion.project.animations.AnimationManager;
+import com.bibinet.biunion.project.application.Constants;
+import com.bibinet.biunion.project.models.MagazineChildModel;
+import com.bibinet.biunion.project.models.MagazineModel;
+import com.bibinet.biunion.project.net.UrlConfig;
+import com.bibinet.biunion.project.net.emit.MagazineEmit;
+import com.bibinet.biunion.project.net.firing.MagazineFiring;
+import com.bibinet.biunion.project.ui.expand.MultiplePageRefreshActivity;
+import com.bibinet.biunion.project.ui.expand.PageActivityAdapter;
+import com.bibinet.biunion.project.ui.manager.MagazineManager;
+import com.bibinet.biunion.project.ui.rewrite.ScrollMonitorManager;
+import com.bibinet.biunion.project.utils.DensityUtil;
+import com.bibinet.biunion.project.utils.GlideHelper;
+import com.bibinet.biunion.project.utils.StatisticsUtils;
+import com.bumptech.glide.request.RequestOptions;
+import com.dalong.library.listener.OnItemClickListener;
+import com.dalong.library.view.LoopRotarySwitchView;
+import com.nineoldandroids.view.ViewHelper;
+
+import java.util.List;
+
+import butterknife.BindView;
+
+
+/**
+ * Created by bibinet on 2017-6-15.
+ */
+
+public class MagazineActivity extends MultiplePageRefreshActivity<MagazineChildModel> implements MagazineEmit, OnItemClickListener {
+    private final float minScale = 0.8f; // dp
+
+    private final int maxScroll = 220; // dp
+    private final int spanCount = 3;
+    private int maxScrollPx;
+
+    @BindView(R.id.act_magazine_main)
+    RecyclerView mainRV;
+
+    @BindView(R.id.act_magazine_rotary_switch)
+    LoopRotarySwitchView switchLRSV;
+
+    @BindView(R.id.act_magazine_top)
+    View topV;
+
+    private MagazineManager magazineManager;
+    private RequestOptions options;
+    private MagazineFiring magazineFiring;
+    private ScrollMonitorManager scrollMonitorManager;
+
+    private MagazineModel magazineModel;
+
+    @Override
+    protected int getPageLayoutId() {
+        return R.layout.activity_magazine;
+    }
+
+    @Override
+    protected void nextPageLoad(int pageNumb) {
+        magazineFiring.getMagazine(pageNumb);
+    }
+
+//    @Override
+//    protected int initSpanCount() {
+//        return spanCount;
+//    }
+
+    @Override
+    protected void refreshLoad(int pageNumb) {
+        magazineFiring.getMagazine(pageNumb);
+    }
+
+
+    @Override
+    protected int getRecyclerViewId() {
+        return R.id.act_magazine_main;
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_magazine;
+    }
+
+    private View.OnClickListener bookmarkClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            //跳转书签列表 验证登录
+            if(!checkLogin()){
+                startActivity(new Intent(MagazineActivity.this, LoginActivity.class));
+                StatisticsUtils.toLogin(StatisticsUtils.TYPE_TO_LOGIN_BOOKMARK_LIST);
+                return;
+            }
+            MagazineBookmarkActivity.start(MagazineActivity.this);
+        }
+    };
+
+    private boolean checkLogin(){
+        if(Constants.loginresultInfo!=null && Constants.loginresultInfo.getUser()!=null && Constants.loginresultInfo.getUser().getUserId() != null && !Constants.loginresultInfo.getUser().getUserId().equals("")){
+            return true;
+        }
+        return false;
+    }
+
+    private View.OnClickListener orderClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            ((MagazineAdapter) getAdapter()).reorder();
+        }
+    };
+
+    public void updateOrderV(boolean state) {
+        setRightSecondState(state);
+        updateOrder(state);
+    }
+
+    @Override
+    protected int getXRefreshLayoutId() {
+        return R.id.act_magazine_refresh;
+    }
+
+    @Override
+    protected int getNotDataViewId() {
+        return R.id.act_magazine_not_data;
+    }
+
+    @Override
+    protected PageActivityAdapter getPageAdapter(List<MagazineChildModel> dataList) {
+        return new MagazineAdapter(this, dataList, magazineManager);
+    }
+
+    @Override
+    protected void initLoad(int pageNumb) {
+        magazineFiring.getMagazine(pageNumb);
+    }
+
+    @Override
+    protected void onPageCreate(Bundle savedInstanceState) {
+        magazineManager = new MagazineManager();
+        options = GlideHelper.getInst().getMagazineOptions();
+        magazineFiring = new MagazineFiring(this);
+        topV.bringToFront();
+        maxScrollPx = DensityUtil.dip2px(this, maxScroll);
+        //初始化右按钮 书签
+        setRightBtn(0, R.mipmap.img_magazine_bookmark_icon, bookmarkClick);
+        scrollMonitorManager = new ScrollMonitorManager(this);
+        mainRV.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                onScrollY(scrollMonitorManager.getScrollY());
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                //静止状态 动态移动
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    int sc = scrollMonitorManager.getScrollY();
+                    if (sc >= 0 && sc <= maxScrollPx / 2) {
+                        mainRV.smoothScrollToPosition(0);
+                    } else if (sc < maxScrollPx) {
+                        mainRV.smoothScrollBy(0, maxScrollPx - sc);
+                    }
+                }
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+        });
+        mainRV.setLayoutManager(scrollMonitorManager);
+    }
+
+    //滚动距离监听
+    private void onScrollY(int scrollY) {
+        //判断距离显示按钮
+        if (scrollY >= maxScrollPx) {
+            setRightSecondBtn(0, R.drawable.select_magazine_top_order, orderClick);
+            setTitleString("往期杂志");
+        } else if (scrollY >= 0 && scrollY < maxScrollPx) {
+            setRightSecondBtn(0, R.drawable.select_magazine_top_order, null);
+            setTitleString(R.string.str_magazine);
+        }
+        float s = (float) (scrollY * 0.15 / maxScrollPx);
+        s = 1 - s;
+        if (s < 1 && s >= minScale) {
+            ViewHelper.setScaleX(topV, s);
+            ViewHelper.setScaleY(topV, s);
+        } else if (s == 1) {
+            ViewHelper.setScaleX(topV, 1);
+            ViewHelper.setScaleY(topV, 1);
+        } else {
+            ViewHelper.setScaleX(topV, minScale);
+            ViewHelper.setScaleY(topV, minScale);
+        }
+        if (scrollY > 0) {
+            mainRV.bringToFront();
+        } else {
+            topV.bringToFront();
+        }
+    }
+
+    public static void start(Context context) {
+        context.startActivity(new Intent(context, MagazineActivity.class));
+    }
+
+
+
+    @Override
+    public void onGetMagazineSuccess(MagazineModel models) {
+        this.magazineModel = models;
+        //分页不用这里处理
+        //设置推荐
+        GlideHelper.GlideImageType imageType = GlideHelper.GlideImageType.rounded;
+        imageType.setRadius(4);
+        for (int i = 0; i < 10; i++) {
+            View view = LayoutInflater.from(this).inflate(R.layout.view_magazine_switch_item, null, false);
+            final ImageView iv = (ImageView) view.findViewById(R.id.v_magazine_switch_item_main);
+            String url = UrlConfig.getBaseUrl(UrlConfig.TYPE_IIP) + models.getRecommend().get(i % models.getRecommend().size()).getMagazineCoverReview();
+            GlideHelper.getInst().loadImageWithPlace(this, url, iv, imageType, options);
+            if (switchLRSV.getChildCount() >= 10) {
+                switchLRSV.removeAllViews();
+            }
+            switchLRSV.addView(view);
+        }
+
+        DisplayMetrics dm = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(dm);
+        int width = dm.widthPixels;
+        switchLRSV
+                .setR(width / 3)//设置R的大小
+                .setAutoRotation(true);//是否自动切换
+        switchLRSV.checkChildView();
+        switchLRSV.RAnimation();
+        switchLRSV.setOnItemClickListener(this);
+    }
+
+    @Override
+    public void onItemClick(final int item, View view) {
+        AnimationManager.openBook(this, view, new AnimationManager.OnOpenBookListener() {
+            @Override
+            public void onOpenFinish() {
+                //保存位置
+                MagazineChildModel model = magazineModel.getRecommend().get(item % magazineModel.getRecommend().size());
+                magazineManager.saveReading(model);
+                MagazineDetailActivity.start(MagazineActivity.this, model);
+            }
+
+            @Override
+            public void onCloseFinish() {
+                //更新第一个位置
+                ((MagazineAdapter)getAdapter()).updateReading();
+            }
+        });
+    }
+}

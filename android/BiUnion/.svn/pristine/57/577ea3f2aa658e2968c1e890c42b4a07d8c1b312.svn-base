@@ -1,0 +1,434 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.application.BiUnionApplication;
+import com.bibinet.biunion.project.dao.MediaMusicData;
+import com.bibinet.biunion.project.dao.MediaMusicDataDao;
+import com.bibinet.biunion.project.event.MediaMusicStudyEvent;
+import com.bibinet.biunion.project.models.MediaMusicChildModel;
+import com.bibinet.biunion.project.net.UrlConfig;
+import com.bibinet.biunion.project.net.emit.MediaMusicPlayEmit;
+import com.bibinet.biunion.project.net.firing.MediaMusicFiring;
+import com.bibinet.biunion.project.service.MusicPlayService;
+import com.bibinet.biunion.project.ui.custom.MusicWaitView;
+import com.bibinet.biunion.project.ui.expand.TitleActivity;
+import com.bibinet.biunion.project.utils.BitmapUtils;
+import com.bibinet.biunion.project.utils.GlideHelper;
+import com.bibinet.biunion.project.utils.ToastUtils;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.umeng.analytics.MobclickAgent;
+import com.xiao.nicevideoplayer.NiceUtil;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+import static com.bibinet.biunion.project.net.UrlConfig.TYPE_MSOP;
+import static com.bibinet.biunion.project.service.MusicPlayService.ACTION_MUSIC_PATH;
+import static com.bibinet.biunion.project.service.MusicPlayService.ACTION_START_MUSIC;
+
+
+/**
+ * Created by bibinet on 2017-6-15.
+ */
+
+public class MediaMusicPlayActivity extends TitleActivity implements SeekBar.OnSeekBarChangeListener, MediaMusicPlayEmit {
+
+    private final static String DATA_POS = "DATA_POS";
+    private final static String DATA_MAIN = "DATA_MAIN";
+    private final static String TIME_INIT = "00:00";
+
+    private final static int MSG_PLAY_COMPLETION = 11;
+    private final static int MSG_PLAY_PRE = 10;
+
+    private int pos;
+
+    @BindView(R.id.act_media_music_play_current_time)
+    TextView currentTimeTV;
+    @BindView(R.id.act_media_music_play_total_time)
+    TextView totalTimeTV;
+
+    @BindView(R.id.act_media_music_play_title)
+    TextView titleTV;
+
+    private MediaMusicChildModel mediaMusicChildModel;
+
+    @BindView(R.id.act_media_music_play_center_img_bottom)
+    ImageView mainBottomIV;
+
+    @BindView(R.id.act_media_music_play_center_img)
+    ImageView mainIV;
+
+    @BindView(R.id.act_media_music_play_progress)
+    SeekBar progressSB;
+
+    @BindView(R.id.act_media_music_play_pause)
+    View playV;
+
+    private MediaMusicFiring mediaMusicFiring;
+
+    @BindView(R.id.act_media_music_play_wait)
+    MusicWaitView waitMWV;
+
+    private String mUrl;
+    private boolean isPre;
+    private MediaMusicDataDao dao;
+    private MusicPlayService.MusicBinder musicBinder;
+    private Handler mPlayHandler;
+    private Intent bindIntent;
+    private ServiceConnection serviceConnection  = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            musicBinder = (MusicPlayService.MusicBinder)binder;
+            musicBinder.getService().setMusicPlayCallback(new MusicPlayService.MusicPlayCallback() {
+                @Override
+                public void updateUiPrepare() {
+                    mPlayHandler.sendEmptyMessage(MSG_PLAY_PRE);
+                }
+
+                @Override
+                public void updatePlayCompletion() {
+                    mPlayHandler.sendEmptyMessage(MSG_PLAY_COMPLETION);
+                }
+            });
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+        setTitleBackgroundColor(R.color.white);
+
+        bindIntent = new Intent(this,MusicPlayService.class);
+        bindService(bindIntent, serviceConnection, BIND_AUTO_CREATE);
+
+        RequestOptions options = GlideHelper.getInst().getMediaMusicOptions();
+        mediaMusicFiring = new MediaMusicFiring(this);
+        pos = getIntent().getIntExtra(DATA_POS, 0);
+        mediaMusicChildModel = (MediaMusicChildModel) getIntent().getSerializableExtra(DATA_MAIN);
+
+        String urlImg = UrlConfig.getBaseUrl(UrlConfig.TYPE_MSOP) + mediaMusicChildModel.getCoverPath();
+        mainBottomIV.setAlpha(0.25f);
+
+        BitmapImageViewTarget target = new BitmapImageViewTarget(mainIV) {
+            @Override
+            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                super.onResourceReady(resource, transition);
+                if (resource != null) {
+                    Bitmap b = BitmapUtils.toRoundBitmap(resource);
+                    b = BitmapUtils.blur(MediaMusicPlayActivity.this, b);
+                    mainBottomIV.setImageBitmap(b);
+                }
+            }
+        };
+        Glide.with(this).asBitmap().load(urlImg)
+                .apply(options.transform(GlideHelper.getInst().creatTransform(this,GlideHelper.GlideImageType.circled)))
+                .into(target);
+//        GlideHelper.getInst().loadImageWithPlace(this, urlImg, target, GlideHelper.GlideImageType.circled, options);
+
+        progressSB.setOnSeekBarChangeListener(this);
+        startLoading();
+        dao = BiUnionApplication.getInstance().getDaoSession().getMediaMusicDataDao();
+
+        mPlayHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what){
+                    case MSG_PLAY_COMPLETION:
+                        onCompletion();
+                        break;
+                    case MSG_PLAY_PRE:
+                        onPrepared();
+                        break;
+                    default:
+                        break;
+                }
+                super.handleMessage(msg);
+            }
+        };
+    }
+
+    private void startLoading() {
+        isPre = false;
+        currentTimeTV.setText(TIME_INIT);
+        totalTimeTV.setText(TIME_INIT);
+        titleTV.setText(mediaMusicChildModel.getAlbumAudios().get(pos).getAudioName());
+        //开始加载
+        String img = UrlConfig.getBaseUrl(TYPE_MSOP) + mediaMusicChildModel.getAlbumAudios().get(pos).getFilePath();
+        mediaMusicFiring.getMusicFile(img);
+        waitMWV.start();
+        waitMWV.setVisibility(View.VISIBLE);
+        playV.setSelected(true);
+        pauseRotate();
+        progressSB.setEnabled(false);
+
+    }
+
+    @OnClick(R.id.act_media_music_play_pause)
+    void play() {
+        if (!isPre) {
+            return;
+        }
+        if (musicBinder.isPlaying()) {
+            playV.setSelected(true);
+            pauseRotate();
+        } else {
+            playV.setSelected(false);
+            startRotate();
+        }
+        musicBinder.play();
+    }
+
+    @Override
+    protected void onDestroy() {
+        unbindService(serviceConnection);
+        if (mTimerTask != null) {
+            mTimerTask.cancel();
+            mTimerTask = null;
+        }
+
+        if (mTimer != null) {
+            mTimer.cancel();
+        }
+        super.onDestroy();
+    }
+
+    private Timer mTimer;
+
+    TimerTask mTimerTask = new TimerTask() {
+        @Override
+        public void run() {
+            if (musicBinder.getMediaPlayer() == null)
+                return;
+            handleProgress.sendEmptyMessage(2520);
+        }
+    };
+
+    Handler handleProgress = new Handler() {
+        public void handleMessage(Message msg) {
+            if (isPre) {
+                int position = musicBinder.getCurrenPosition();
+                int duration = musicBinder.getDuration();
+                if (position > duration) {
+                    onCompletion();
+                } else {
+                    currentTimeTV.setText(NiceUtil.formatTime(position));
+                    //更新进度条进度
+                    progressSB.setProgress(position);
+                }
+
+            }
+        }
+    };
+
+    private float cnt = 0;
+    private boolean isRotate = false;
+    //转圈
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            cnt += 0.5;
+            mainIV.setRotation(cnt);
+            mainBottomIV.setRotation(cnt);
+            if (isRotate) {
+                handler.sendEmptyMessageDelayed(2020, 40);
+            }
+        }
+    };
+
+    private void startRotate() {
+        if (!isRotate) {
+            handler.sendEmptyMessageDelayed(2020, 40);
+            isRotate = true;
+        }
+    }
+
+    private void pauseRotate() {
+        if (isRotate) {
+            isRotate = false;
+        }
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_media_music_play;
+    }
+
+    @Override
+    protected int getTitleString() {
+        //不设置标题
+        return 0;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("MediaMusicPlayActivity");
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("MediaMusicPlayActivity");
+        MobclickAgent.onPause(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        String studyTimeStr = currentTimeTV.getText().toString();
+        if (TextUtils.equals(studyTimeStr,TIME_INIT)) {
+            return;
+        }
+        MediaMusicData mediaMusicData = new MediaMusicData(mediaMusicChildModel.getCode(), studyTimeStr,
+                pos, mediaMusicChildModel.getAlbumAudios().get(pos).getAudioName());
+        dao.insertOrReplace(mediaMusicData);
+        EventBus.getDefault().post(new MediaMusicStudyEvent(mediaMusicData));
+    }
+
+    public static void start(Context context, MediaMusicChildModel mediaMusicChildModel, int pos) {
+        Intent intent = new Intent(context, MediaMusicPlayActivity.class);
+        intent.putExtra(DATA_POS, pos);
+        intent.putExtra(DATA_MAIN, mediaMusicChildModel);
+        context.startActivity(intent);
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        int progress = seekBar.getProgress();
+        if (progress >= musicBinder.getDuration()) {
+//            handleNext();
+            onCompletion();
+        } else {
+//            if (pos == mediaMusicChildModel.getAlbumAudios().size() - 1) {
+//                playV.setEnabled(true);
+//            }
+            musicBinder.seekTo(progress);
+        }
+
+    }
+
+    void handleNext() {
+        if (pos == mediaMusicChildModel.getAlbumAudios().size() - 1) {
+            ToastUtils.showShort("没有下一节");
+            playV.setSelected(true);
+            pauseRotate();
+            musicBinder.stop();
+            playV.setEnabled(false);
+        } else {
+            onCompletion();
+        }
+    }
+
+    //获取音频文件的结果
+    @Override
+    public void onGetMusicFileSuccess(String path) {
+        this.mUrl = path;
+        bindIntent.setAction(ACTION_START_MUSIC);
+        bindIntent.putExtra(ACTION_MUSIC_PATH, path);
+        startService(bindIntent);
+    }
+
+    @Override
+    public void onGetMusicFileFail(String error) {
+
+    }
+
+    //播放完成
+    public void onCompletion() {
+        nextClick();
+    }
+
+    //准备完成
+    public void onPrepared() {
+        //关闭等待
+        waitMWV.stop();
+        waitMWV.setVisibility(View.GONE);
+        progressSB.setEnabled(true);
+        //设置总时间
+        int time = musicBinder.getDuration();
+        totalTimeTV.setText(NiceUtil.formatTime(time));
+        //设置进度条最大进度
+        progressSB.setMax(time);
+
+        isPre = true;
+        musicBinder.getMediaPlayer().start();
+        playV.setSelected(false);
+        //转圈
+        startRotate();
+        //计时器 每过一秒更新一次播放时间
+        if (mTimer == null) {
+            mTimer = new Timer();
+            mTimer.schedule(mTimerTask, 0, 500);
+        }
+    }
+
+    @OnClick(R.id.act_media_music_play_above)
+    void aboveClick(){
+        if (musicBinder == null || musicBinder.getMediaPlayer() == null) {
+            return;
+        }
+        pos--;
+        if (pos < 0) {
+            pos = mediaMusicChildModel.getAlbumAudios().size()- 1;
+        }
+        musicBinder.stop();
+        startLoading();
+    }
+
+    @OnClick(R.id.act_media_music_play_next)
+    void nextClick() {
+        if (musicBinder == null ||musicBinder.getMediaPlayer() == null) {
+            return ;
+        }
+        pos++;
+        int size = mediaMusicChildModel.getAlbumAudios().size();
+        if (pos >= size) {
+            pos = 0;
+        }
+        musicBinder.stop();
+        startLoading();
+    }
+
+}

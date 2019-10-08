@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/live_menu_record_root"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dizhia"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:paddingBottom="6dp"
+    android:paddingLeft="@dimen/common_left_right_margin_space"
+    android:paddingRight="@dimen/common_left_right_margin_space"
+    android:paddingTop="6dp">
+
+    <TextView
+        android:id="@+id/live_menu_record_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="6dp"
+        android:drawableTop="@drawable/select_live_menu_lubo"
+        android:text="录播"
+        android:textColor="@color/pop_media_live_menu_tv_color_sel"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/live_menu_meiyan_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:drawablePadding="6dp"
+        android:drawableTop="@drawable/select_live_menu_meiyan"
+        android:text="美颜"
+        android:textColor="@color/pop_media_live_menu_tv_color_sel"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/live_menu_fanzhuan_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="6dp"
+        android:drawableTop="@drawable/select_live_menu_fanzhuan"
+        android:text="翻转"
+        android:textColor="@color/pop_media_live_menu_tv_color_sel"
+        android:textSize="12sp" />
+
+</LinearLayout>

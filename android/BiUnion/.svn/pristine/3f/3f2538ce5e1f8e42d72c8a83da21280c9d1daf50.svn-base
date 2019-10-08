@@ -1,0 +1,105 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.application.Constants;
+import com.bibinet.biunion.project.models.BaseModel;
+import com.bibinet.biunion.project.net.emit.TenderHelpEmit;
+import com.bibinet.biunion.project.net.firing.TenderHelpFiring;
+import com.bibinet.biunion.project.ui.expand.TitleActivity;
+import com.bibinet.biunion.project.utils.PhoneNumberUtils;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+/**
+ * Created by bibinet on 2017-6-14.
+ */
+
+public class TenderHelpActivity extends TitleActivity implements TenderHelpEmit, View.OnClickListener {
+    @BindView(R.id.writeBookInput)
+    EditText writeBookInput;
+    @BindView(R.id.contactPersonInput)
+    EditText contactPersonInput;
+    @BindView(R.id.contactType)
+    EditText contactType;
+    @BindView(R.id.postTenderhelp)
+    View confirmV;
+
+    private TenderHelpFiring tenderHelpFiring;
+
+    @Override
+    protected void onTitleCreate(@Nullable Bundle savedInstanceState) {
+        setRightBtn(0, R.mipmap.img_write_tender_history_icon, this);
+        initView();
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_tender_help;
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_tender_help;
+    }
+
+    private void initView() {
+        confirmV.setSelected(true);
+        tenderHelpFiring = new TenderHelpFiring(this);
+    }
+
+    @Override
+    public void onSetTenderHelpSuccess(BaseModel bean) {
+        if (bean.getResCode().equals("0000")) {
+            Toast.makeText(this, "提交成功，会有专人与您联系", Toast.LENGTH_SHORT).show();
+            //跳转历史记录页面
+            startActivity(new Intent(this, TenderHelpHistoryActivity.class));
+            finish();
+        } else {
+            Toast.makeText(this, bean.getResMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onSetTenderHelpFail(String msg) {
+        Toast.makeText(this, "网络异常", Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick({R.id.postTenderhelp})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.postTenderhelp:
+                String content = writeBookInput.getText().toString().trim();
+                String contactPerson = contactPersonInput.getText().toString().trim();
+                String contactWay = contactType.getText().toString().trim();
+                if (TextUtils.isEmpty(content)) {
+                    Toast.makeText(this, "请输入您需要协助的内容", Toast.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(contactPerson)) {
+                    Toast.makeText(this, "请输入联系人", Toast.LENGTH_SHORT).show();
+                } else if (!PhoneNumberUtils.isMobileNumber(contactWay)) {
+                    Toast.makeText(this, "请输入正确的手机号", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (Constants.loginresultInfo != null) {
+                        tenderHelpFiring.setTenderHelp(contactPerson, contactWay, content, Constants.loginresultInfo.getUser().getUserId());
+                    } else {
+                        Toast.makeText(this, "您还没有登录，请登录后再进行操作", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                break;
+        }
+    }
+
+    //跳转历史记录
+    @Override
+    public void onClick(View view) {
+        startActivity(new Intent(this, TenderHelpHistoryActivity.class));
+    }
+}

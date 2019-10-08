@@ -1,0 +1,171 @@
+package com.bibinet.biunion.project.ui.expand;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.ui.activity.LoginActivity;
+import com.bibinet.biunion.project.ui.activity.MemberServiceActivity;
+import com.bibinet.biunion.project.ui.activity.RegisterActivity;
+import com.bibinet.biunion.project.ui.config.WebViewClientConfig;
+import com.bibinet.biunion.project.ui.custom.WaitView;
+import com.bibinet.biunion.project.utils.WaitUtils;
+import com.umeng.analytics.MobclickAgent;
+
+import org.greenrobot.eventbus.EventBus;
+
+import butterknife.ButterKnife;
+
+
+
+/**
+ * Created by bibinet on 2017-6-15.
+ */
+
+public abstract class WebViewActivity extends TitleActivity {
+
+    private WaitView waitV;
+    private View errorV;
+    private FrameLayout mainV;
+
+    private WebView webview;
+    private Activity mContext;
+
+    @Override
+    protected final void onTitleCreate(@Nullable Bundle savedInstanceState) {
+        mContext = this;
+        mainV = (FrameLayout) findViewById(R.id.act_web_view_main);
+        errorV = findViewById(R.id.act_about_us_error_view);
+        waitV = (WaitView) findViewById(R.id.act_about_us_wait_view);
+
+        View v = LayoutInflater.from(this).inflate(getWebLayoutId(), null, false);
+        webview = (WebView) v.findViewById(getWebViewId());
+        initWebView();
+        mainV.addView(v);
+        ButterKnife.bind(this);
+
+        onWebCreate(savedInstanceState);
+    }
+
+    @Override
+    protected final int getTitleLayoutId() {
+        return R.layout.activity_web_view;
+    }
+
+    protected abstract void onWebCreate(Bundle savedInstanceState);
+
+    protected abstract int getWebViewId();
+
+    protected abstract int getWebLayoutId();
+
+    private void initWebView() {
+        webview.setWebViewClient(new WebViewClient() {
+            //覆写shouldOverrideUrlLoading实现内部显示网页
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                // TODO 自动生成的方法存根
+                view.loadUrl(url);
+                return true;
+            }
+        });
+
+        WebSettings seting = webview.getSettings();
+        seting.setJavaScriptEnabled(true);//设置webview支持javascript脚本
+        webview.addJavascriptInterface(new JavascriptInterface(), "JSInteract");
+        webview.setVerticalScrollbarOverlay(true); //指定的垂直滚动条有叠加样式
+        seting.setUseWideViewPort(true);//设定支持viewport
+        seting.setLoadWithOverviewMode(true);
+        //设定支持缩放
+        seting.setBuiltInZoomControls(true);
+        seting.setSupportZoom(true);
+        //隐藏缩放控制条
+        seting.setDisplayZoomControls(false);
+        webview.setWebViewClient(new WebViewClientConfig(this, webview, new WaitUtils(waitV), errorV){
+            @Override
+            public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
+                handleUpdateHistory(view, url, isReload);
+                super.doUpdateVisitedHistory(view, url, isReload);
+            }
+        });
+
+    }
+
+    public void handleUpdateHistory(WebView view, String url, boolean isReload) {
+
+    }
+
+    public class JavascriptInterface{
+
+        /**
+         * js登录
+         */
+        @android.webkit.JavascriptInterface
+        public void jumpToLoginPage(){
+            Intent intent = new Intent(webview.getContext(), LoginActivity.class);
+            webview.getContext().startActivity(intent);
+        }
+        /**
+         * js注册
+         */
+        @android.webkit.JavascriptInterface
+        public void jumpToRegisterPage(){
+            Intent intent = new Intent(mContext, RegisterActivity.class);
+            mContext.startActivityForResult(intent,RegisterActivity.requestCode);
+        }
+        /**
+         * js登录
+         */
+        @android.webkit.JavascriptInterface
+        public void jumpToMemberPage(){
+            Intent intent = new Intent(webview.getContext(), MemberServiceActivity.class);
+            webview.getContext().startActivity(intent);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == RegisterActivity.requestCode && resultCode == RegisterActivity.resultCode){
+            //带回注册成功的手机号
+            String phone = data.getStringExtra("phone");
+            Intent intent = new Intent(webview.getContext(), LoginActivity.class);
+            intent.putExtra("phone",phone);
+            webview.getContext().startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onBackPressedSupport() {
+        if (webview.canGoBack()) {//当webview不是处于第一页面时，返回上一个页面
+            webview.goBack();
+            return ;
+        } else {
+            //    System.exit(0);
+        }
+        super.onBackPressedSupport();
+    }
+
+    protected WebView getWebView(){
+        return webview;
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+}

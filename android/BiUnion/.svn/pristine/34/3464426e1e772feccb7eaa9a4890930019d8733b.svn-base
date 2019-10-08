@@ -1,0 +1,155 @@
+package com.bibinet.biunion.project.net;
+
+
+import static com.bibinet.biunion.project.application.Constants.NET_INTERFACE_TYPE;
+import static com.bibinet.biunion.project.application.Constants.NET_TYPE_FORMAL;
+
+/**
+ * Created by Wh on 2017-7-13.
+ */
+
+public class UrlConfig {
+
+//    public final static String test="http://192.168.1.14:9514/iip/";
+//    public final static String testMsop ="http://192.168.1.14:9502/msop/";
+//    public final static String testPis ="http://192.168.1.14:9511/pis/";
+//    public final static String testPis ="http://192.168.1.106:8080/pis/";
+    public final static String testIip ="http://wx.bibenet.com/";
+//    public final static String testIip ="http://192.168.1.14:9514/iip/";
+//    public final static String testVue ="http://192.168.1.106:8080/iip/app/";
+
+    public static final int TYPE_PIS = 0;
+    public static final int TYPE_IIP = 1;
+    public static final int TYPE_MSOP = 2;
+
+    private static final String FORMAL_PIS = "https://www.bibenet.com/api/";
+    private static final String FORMAL_IIP = "https://www.bibenet.com/";
+    private static final String FORMAL_MSOP = "http://msop.gqcgbb.com/";
+    private static final String FORMAL_VUE = "https://www.bibenet.com/app/";
+
+    private static final String pis = getBaseUrl(TYPE_PIS);
+//    private static final String pis = testPis;
+    //信息订阅相关
+    public final String PRIVATE_INFO_SET_DESIGN = pis + "appMessageSubscription/saveMessage.json";  //保存信息订阅
+    public final String PRIVATE_INFO_GET_DESIGN = pis + "appMessageSubscription/selectOneConverter.json";  //得到信息订阅
+    public final String PRIVATE_INFO_GET_DATA = pis + "appMessageSubscription/selectOne.json";  //得到订阅后的数据
+    //设置相关
+    public final String ADVICE_SUBMIT = pis + "appFeedBack/apply.json";  //意见反馈
+    //首页相关
+//    public final String HOME_BANNER = pis + "appData/getHomeImg.json";  //banner图
+    public final String HOME_DAY_COUNT = pis + "index/count.json";  //每日更新量
+    public final String HOME_NEW_PROJECT = pis + "appData/selectPageProject.json";  //最新项目信息
+    public final String HOME_NEW_TENDER = pis + "appData/selectPageBiddingInfoIndex.json";  //最新招标信息
+    public final String HOME_NEW_PURCHASE = pis + "appData/selectPagePurchaseIndex.json";  //最新采购信息
+    public final String HOME_HOT_TENDER = pis + "biddingInfos/selectPageBidding.json";  //热门招标信息
+    //更多筛选页
+    public final String MORE_PROJECT = pis + "generalProjects/selectPageGeneral.json";  //banner图
+    public final String MORE_TENDER = pis + "biddingInfos/selectPageBidding.json";  //banner图
+    public final String MORE_PURCHASE = pis + "purchaseInfos/selectPagePurchase.json";  //banner图
+    public final String MORE_PPP = pis + "pppProjects/selectPage.json";  //banner图
+    //比比驿站
+    public static final String INN_MESSAGE = pis + "v2/knowledgeInfos.json";   //资讯信息
+    public final String INN_MESSAGE_DETAIL = pis + "news/detail/";   //资讯详情
+    public final String INN_TENDER_HELP_SET = pis + "appAssistance/apply.json";    //提交投标协助
+    public final String INN_TENDER_HELP_GET = pis + "appAssistance/selectPage.json";    //得到投标协助历史
+    public final String INN_TENDER_HELP_DELETE = pis + "appAssistance/delete.json";    //单删投标协助历史
+    public final String INN_WRITE_TENDER_BOOK_SET = pis + "appProxyTender/apply.json";    //提交代写标书
+    public final String INN_WRITE_TENDER_BOOK_GET = pis + "appProxyTender/selectPage.json";    //得到代写标书历史
+    public final String INN_WRITE_TENDER_BOOK_DELETE = pis + "appProxyTender/delete.json";    //单删代写标书历史
+    //我的相关
+    public final String MY_SET_COLLECT = pis + "appCollection/collect.json";  //关注
+    public final String MY_IS_COLLECT = pis + "appMessageSubscription/checkCollected.json";  //是否关注
+    public final String MY_DELETE_COLLECT = pis + "appCollection/cancellCollect.json";  //取消关注
+    public final String MY_GET_COLLECT = pis + "appCollection/selectPage.json";  //获取关注信息
+    //搜索相关
+    public final String SEARCH_HOT_WORDS = pis + "appKeywords/selectKeywords.json";    //搜索热词
+    public final String SEARCH_RESULT = pis + "appData/indexAndroid.json";    //搜索结果
+    public final String SEARCH_DETAIL = pis + "appData/toAndroidDetail.json";    //搜索结果
+
+//    private static final String iip = getBaseUrl(TYPE_IIP);
+    private static final String iip = testIip;
+    //登录相关
+    public final String LOGIN = iip + "user/login.json";  //登录
+    public final String LOGIN_FAST_CODE = iip + "user/sendLoginSMS.json";  //快捷登录验证码
+    public final String LOGIN_FAST = iip + "user/loginSMS.json";  //快捷登录
+    //注册相关
+    public final String REGISTER_CODE = iip + "user/sendSMS.json";  //注册验证码
+    public final String REGISTER = iip + "user/appRegist.json";  //注册
+    //专家相关
+    public final String EXPERT_GET = iip + "appQuestion/expertListPage.json";  //获取专家列表
+    public final String EXPERT_ASK_SET = iip + "appQuestion/saveQuestion.json";    //提交专家约谈申请
+    public final String EXPERT_ASK_SET_RESULT = iip + "appQuestion/savePay.json";  //提交专家约谈申请结果
+    public final String EXPERT_ASK_GET = iip + "appQuestion/selectPage.json";     //获取专家约谈数据
+    public final String EXPERT_ASK_DELETE = iip + "appQuestion/delete.json";     //单删专家约谈数据
+    public final String EXPERT_ASK_RESULT_GET = iip + "appQuestion/toDetail.json";     //得到评价结果
+    public final String EXPERT_ASK_RESULT_SET = iip + "appQuestion/comment.json";     //得到评价结果
+    //密码相关
+    public final String PASSWORD_UPDATE_CODE = iip + "user/updatePwdSendSMS.json";    //修改密码验证码
+    public final String PASSWORD_UPDATE = iip + "user/changePwd.json";    //修改密码
+    public final String PASSWORD_FORGET_CODE = iip + "user/forgetPwdSendSMS.json";    //忘记密码验证码
+    public final String PASSWORD_FORGET_CODE_CHECK = iip + "user/forgetPwdStep1.json";    //检测忘记密码验证码
+    public final String PASSWORD_FORGET = iip + "user/forgetPwdStep2.json";    //忘记密码
+    public final String MY_SET_USER_ICON = iip + "user/updateLogoFile.json";  //设置用户头像
+    public final static String MY_SET_COMPANY_INFO = iip + "user/enterprise.json";  //设置企业资料
+    public static final String MY_GET_COMPANY_INFO = iip + "user/getEnterpriseInfo.json";  //获取企业资料
+    public static final String MY_COMPANY_INFO_REVOKE_CHANGE = iip + "user/appRevokeChange.json";  //撤销变更审核
+    public final String MY_SET_COMPANY_INFO_BUSINESS_LICENSE = iip + "file/uploadImgFiles.json";  //设置企业资料营业执照
+    private static String vue = getBaseUrl();
+    //详情页相关
+    public final String DETAIL_MESSAGE = vue + "news/detail/";  //资讯信息详情
+    public final String DETAIL_TENDER = vue + "bid/detail?objectId=";  //招标信息详情
+    public final String DETAIL_PROJECT = vue + "project/detail?objectId=";  //项目信息详情
+    public final String DETAIL_PPP = vue + "project/ppp/detail?objectId=";  //ppp信息详情
+    public final String DETAIL_PURCHASE = vue + "purchase/detail?objectId=";  //采购信息详情
+
+    private static final String msop = getBaseUrl(TYPE_MSOP);
+
+    public final String INN_MAGAZINE_GET = iip + "magazinePush/magazineListPage.json";  //得到杂志列表
+    public final String HOME_BANNER_GET = iip + "appBannerPush/appBannerList.json";  //得到首页轮播
+    public final String HOME_BANNER_DISPLAY = iip + "review?filePath=";  //显示banner图片前缀
+
+    //视频，音频相关
+    public static final String MEDIA_VIDEO_GET = iip + "superJudgeVideoPush/superJudgeCourseListPage.json";  //得到视频列表
+    public final String MEDIA_VIDEO_TEACHER_GET = iip + "superJudgeVideoPush/superJudgeTeacher.json";  //得到视频老师列表
+    public final String MEDIA_VIDEO_CHAPTER_GET = iip + "superJudgeVideoPush/superJudgeSection.json";  //得到视频章节列表
+
+    public final String MEDIA_MUSIC_GET = iip + "albumPush/albumListPage.json";  //得到音频列表
+
+    public final String MEDIA_LIVE_PUSH_URL_GET = iip + "appLive/liveList.json?liveStatus=0";  //得到直播列表
+    public final String MEDIA_LIVE_PLAY_URL_GET = iip + "appLive/getPlayUrl.json";  //得到直播播放地址
+    public final String MEDIA_LIVE_FINISH_URL_GET = iip + "appLive/liveEnd.json";  //结束直播
+    public final String MEDIA_LIVE_URL_ADD = iip + "appLive/add.json";  //添加直播
+    public final String MEDIA_LIVE_URL_CHECK_LIVE_NAME = iip + "appLive/checkLiveName.json";  //检查直播标题
+    public final String MEDIA_LIVE_URL_RECORD_ADD = iip + "appLive/addAppRecordConfig.json";  //添加录播配置
+    public final String MEDIA_LIVE_URL_RECORD_START = iip + "appLive/startRecord.json";  //开始或者停止录播
+    public final String MEDIA_LIVE_URL_LEAVE_PLAY = iip + "appLive/leaveRoom.json";  //离开直播间
+    public final String MEDIA_LIVE_URL_COMMENT= iip + "appLive/sendComment.json";  //评论
+    public final String MEDIA_LIVE_URL_ONLINE_USER = iip + "appLive/queryOnlineUserInfo.json";  //在线用户
+    public final String MEDIA_LIVE_URL_RECORD_LIST = iip + "appLive/recordListPage.json?isRecord=1";  //录播列表
+    public final String MEDIA_LIVE_URL_RECORD_PLAY_GET = iip + "appLive/getRecordUrl.json";  //获取录播播放地址
+    public final String MEDIA_LIVE_URL_CHECK_LIVE_STATUS = iip + "appLive/checkLiveStatus.json";  //获取录播播放地址
+
+    public static final String MEMBER_SERVICE = vue + "standardVip?type=";  //会员服务
+    public static final String MAGAZINE_DETAIL_URL = msop + "download?filePath=";  //会员服务
+
+    public static String getBaseUrl(int type){
+        String base = "";
+        switch (NET_INTERFACE_TYPE){
+            case NET_TYPE_FORMAL:
+                if(type==TYPE_PIS){
+                    base+=FORMAL_PIS;
+                }else if(type==TYPE_IIP){
+                    base+=FORMAL_IIP;
+                }else{
+                    base+=FORMAL_MSOP;
+                }
+                return base;
+        }
+        return base;
+    }
+
+    private static String getBaseUrl(){
+        return FORMAL_VUE;
+    }
+
+}

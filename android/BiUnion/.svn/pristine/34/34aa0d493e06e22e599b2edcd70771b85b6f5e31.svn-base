@@ -1,0 +1,140 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.adapter.SearchActivityAdapter;
+import com.bibinet.biunion.project.bean.TypeFilterBean;
+import com.bibinet.biunion.project.models.InformationItemsModel;
+import com.bibinet.biunion.project.net.emit.SearchResultEmit;
+import com.bibinet.biunion.project.net.firing.SearchFiring;
+import com.bibinet.biunion.project.ui.config.SearchResultConfig;
+import com.bibinet.biunion.project.ui.custom.HomeHeaderView;
+import com.bibinet.biunion.project.ui.custom.RefreshHeaderView;
+import com.bibinet.biunion.project.ui.expand.PageActivity;
+import com.bibinet.biunion.project.ui.expand.PageActivityAdapter;
+import com.bibinet.biunion.project.ui.manager.TypeFilterManager;
+
+import java.util.List;
+
+import butterknife.BindView;
+
+/**
+ * Created by bibinet on 2017-6-5.
+ */
+
+public class SearchResultActivity extends PageActivity<InformationItemsModel> implements SearchResultEmit, TypeFilterManager.OnSelectBackListener {
+
+    @BindView(R.id.v_type_filter)
+    View filterV;
+    @BindView(R.id.act_search_result_total_count)
+    TextView totalCountTV;
+    private SearchFiring searchFiring;
+    private String key;
+    private TypeFilterManager typeFilterManager;
+    private String type, area, time;
+    private HomeHeaderView headerView;
+    private SearchActivityAdapter mAdapter;
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_search_result;
+    }
+
+    @Override
+    protected int getNotDataViewId() {
+        return R.id.act_search_not_data;
+    }
+
+    @Override
+    protected PageActivityAdapter getPageAdapter(List<InformationItemsModel> dataList) {
+        mAdapter = new SearchActivityAdapter(this, dataList);
+        mAdapter.setKeyword(key);
+        return mAdapter;
+    }
+
+    @Override
+    protected void initLoad(int pageNumb) {
+        loadData(pageNumb);
+    }
+
+    @Override
+    protected void onPageCreate(Bundle savedInstanceState) {
+        key = getIntent().getStringExtra("key");
+        initView();
+    }
+
+    @Override
+    protected int getRecyclerViewId() {
+        return R.id.act_search_recycler;
+    }
+
+    @Override
+    protected int getXRefreshLayoutId() {
+        return R.id.act_search_result_refresh;
+    }
+
+    @Override
+    protected int getPageLayoutId() {
+        return R.layout.activity_search_result;
+    }
+
+    @Override
+    protected void nextPageLoad(int pageNumb) {
+        loadData(pageNumb);
+    }
+
+    @Override
+    protected void refreshLoad(int pageNumb) {
+        loadData(pageNumb);
+    }
+
+    private void initView() {
+        searchFiring = new SearchFiring(this);
+        List<TypeFilterBean> beanList = new SearchResultConfig().getTypeFilterBeanList();
+        typeFilterManager = new TypeFilterManager(this, filterV, beanList, this);
+        typeFilterManager.init();
+        type = beanList.get(typeFilterManager.TYPE_POS0).getKey();
+        area = beanList.get(typeFilterManager.TYPE_POS1).getKey();
+        time = beanList.get(typeFilterManager.TYPE_POS2).getKey();
+    }
+
+    private void loadData(int pageNum) {
+        searchFiring.getSearchData(pageNum, key, type, area, time);
+    }
+
+    @Override
+    public void select(String key0, String key1, String key2) {
+        type = key0;
+        area = key1;
+        time = key2;
+        initRefresh();
+    }
+
+    @Override
+    protected RefreshHeaderView getHeadView() {
+        if (headerView == null) {
+            headerView = HomeHeaderView.getInstance(this).getLayoutView();
+            headerView.init();
+            headerView.setSecondary(false);
+        }
+        return headerView;
+    }
+
+    //搜索总量
+    @Override
+    public void onSearchCountSuccess(String totalCount) {
+        if (totalCount != null) {
+            totalCountTV.setText(totalCount);
+        }
+
+    }
+
+    @Override
+    public void onSearchTotalCountFail(String msg) {
+        totalCountTV.setText("---");
+    }
+
+}

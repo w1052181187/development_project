@@ -1,0 +1,690 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.application.Constants;
+import com.bibinet.biunion.project.application.PathConfig;
+import com.bibinet.biunion.project.bean.CompanyInfoBean;
+import com.bibinet.biunion.project.bean.CompanyUpImageBean;
+import com.bibinet.biunion.project.bean.KeyValueSelectBean;
+import com.bibinet.biunion.project.bean.LoginResultBean;
+import com.bibinet.biunion.project.models.BaseModel;
+import com.bibinet.biunion.project.models.CompanyInfoModel;
+import com.bibinet.biunion.project.net.MyRetrofitResponseCallback;
+import com.bibinet.biunion.project.net.emit.CompanyInfoEmit;
+import com.bibinet.biunion.project.net.firing.MyFiring;
+import com.bibinet.biunion.project.ui.dialog.CompanyInfoFailHintDialog;
+import com.bibinet.biunion.project.ui.dialog.RevokeChangeCompanyInfoDialog;
+import com.bibinet.biunion.project.ui.dialog.ShowCompanyInfoSelectDialog;
+import com.bibinet.biunion.project.ui.dialog.WaitDialog;
+import com.bibinet.biunion.project.ui.expand.TitleActivity;
+import com.bibinet.biunion.project.utils.Common;
+import com.bibinet.biunion.project.utils.DialogUtils;
+import com.bibinet.biunion.project.utils.ImagePickHelper;
+import com.bibinet.biunion.project.utils.SharedPresUtils;
+import com.bibinet.biunion.project.utils.SoftKeyboardUtils;
+import com.bibinet.biunion.project.utils.ToastUtils;
+import com.bibinet.biunion.project.utils.ViewCheckUtils;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+import static com.bibinet.biunion.project.application.Constants.FILE_TYPE_BUSINESS;
+import static com.bibinet.biunion.project.application.Constants.FILE_TYPE_LEGAL_PERSON_FRONT;
+import static com.bibinet.biunion.project.application.Constants.FILE_TYPE_LEGAL_PERSON_REVERSE;
+import static com.bibinet.biunion.project.application.Constants.FILE_TYPE_LICENCE_OPEN_ACCOUNT;
+
+/**
+ * Created by bibinet on 2017-6-3.
+ */
+public class CompanyInfoActivity extends TitleActivity implements CompanyInfoEmit, View.OnClickListener {
+
+    private static final String PHOTO_BUSINESS = "business.jpg";//营业执照
+    private final String imagePath = PathConfig.cachePathImage + "/" + PHOTO_BUSINESS;
+
+    @BindView(R.id.act_company_info_company_name)
+    EditText companyNameET;
+    @BindView(R.id.act_company_info_code)
+    EditText codeET;
+    @BindView(R.id.act_company_info_legal_person)
+    EditText legalPersonET;
+    @BindView(R.id.act_company_info_legal_person_number)
+    EditText legalPersonNumberET;
+    @BindView(R.id.act_company_info_industry)
+    TextView industryTV;
+    @BindView(R.id.act_company_info_area)
+    TextView areaTV;
+    @BindView(R.id.act_company_info_address)
+    EditText addressET;
+    @BindView(R.id.act_company_info_user_name)
+    TextView userNameET;
+    @BindView(R.id.act_company_info_phone)
+    TextView phoneTV;
+    @BindView(R.id.act_company_info_email)
+    TextView emailTV;
+    @BindView(R.id.act_company_info_business_add)
+    ImageView businessImage;
+    @BindView(R.id.act_company_info_shenfz_add)
+    ImageView shenfzImage;
+    @BindView(R.id.act_company_info_shenfz_add_fan)
+    ImageView shenfzfImage;
+    @BindView(R.id.act_company_info_kaihu_add)
+    ImageView kaihuImage;
+    @BindView(R.id.act_company_info_confirm)
+    Button confirmB;
+    @BindView(R.id.act_company_info_main)
+    View mainV;
+    @BindView(R.id.act_company_info_status)
+    ImageView statusImgV;
+
+    private boolean isEdit = false;
+    private DialogUtils dialogUtils;
+    private MyFiring myFiring;
+    private CompanyInfoBean companyInfoBean;
+    private String operateType = "3";
+    private WaitDialog waitDialog;
+    private RevokeChangeCompanyInfoDialog dialog;
+    private UploadType uploadType;
+    private File mFile;
+    private ImagePickHelper pickHelper;
+    private HashMap<Integer, Integer> mapTypePos;
+    private ArrayList<LoginResultBean.UserBean.Certificate> certificates;
+    private LoginResultBean.UserBean.EnterpriseBean model;
+
+    enum UploadType {
+        YINGYE,
+        SHENFENZ_Z,
+        SHENFENZ_F,
+        KAIHU
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_company_info;
+    }
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+        confirmB.setSelected(true);
+
+        setRightBtn(0, R.mipmap.bianji, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                enEditStatus(true);
+                SoftKeyboardUtils.hideInput(CompanyInfoActivity.this);
+            }
+        });
+        initEditStatus(false);
+        setRightBtnHide();
+
+        myFiring = new MyFiring(this);
+        waitDialog = new WaitDialog(this);
+        waitDialog.open();
+        initInfo();
+        mFile = new File(imagePath);
+    }
+
+    private void initInfo() {
+        myFiring.getCompanyInfo(Constants.loginresultInfo.getUser().getUserId(), new MyRetrofitResponseCallback<CompanyInfoModel>(){
+
+            @Override
+            protected void onRequestFail(String resMessage) {
+                ToastUtils.showShort(resMessage);
+                waitDialog.close();
+            }
+
+            @Override
+            protected void onRequestSuccess(CompanyInfoModel model) {
+                if (model != null) {
+                    initBean(model);
+                }
+                waitDialog.close();
+            }
+
+        });
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_company_info;
+    }
+
+    //提交
+    @OnClick(R.id.act_company_info_confirm)
+    void confirm(){
+
+        companyInfoBean.setCompanyName(companyNameET.getText().toString());
+        companyInfoBean.setCode(codeET.getText().toString());
+        companyInfoBean.setLegalPerson(legalPersonET.getText().toString());
+        companyInfoBean.setLegalPersonNumber(legalPersonNumberET.getText().toString());
+        companyInfoBean.getIndustry().setSelectValue(industryTV.getText().toString());
+        companyInfoBean.getArea().setSelectValue(areaTV.getText().toString());
+        companyInfoBean.setAddress(addressET.getText().toString());
+        companyInfoBean.setUserName(userNameET.getText().toString());
+        if(companyInfoBean.checkInput()){
+            String userId = Constants.loginresultInfo.getUser().getUserId();
+            String companyId = Constants.loginresultInfo.getUser().getEnterprise().getEnterpriseCode();
+            myFiring.setCompanyInfo(userId, companyId, operateType, companyInfoBean);
+        }
+    }
+
+    private void initBean(final CompanyInfoModel bean) {
+        companyInfoBean = new CompanyInfoBean();
+
+        model = bean.getEnterprise();
+        handleStatus(model);
+
+        //企业名称
+        companyInfoBean.setCompanyName(model.getEnterpriseName());
+        //统一信用代码
+        companyInfoBean.setCode(model.getUscCode());
+        //法定代表人
+        companyInfoBean.setLegalPerson(model.getBusinessLicenseName());
+        //法人身份证号
+        companyInfoBean.setLegalPersonNumber(model.getBusinessLicenseCardNo());
+        //所属行业
+        KeyValueSelectBean industry = companyInfoBean.getIndustry();
+        String industryValue = model.getIndustry();
+        industry.setSelectValue(industryValue);
+        industry.setSelectKey(industry.valueToKey(industryValue));
+        //所在地区
+        KeyValueSelectBean area = companyInfoBean.getArea();
+        String areaValue = model.getRegion();
+        area.setSelectValue(areaValue);
+        area.setSelectKey(area.valueToKey(areaValue));
+        //详细地址
+        companyInfoBean.setAddress(model.getAddr());
+        //联系人
+        companyInfoBean.setUserName(model.getContactName());
+        //手机号码
+        companyInfoBean.setPhone(model.getContactCellphone());
+        companyInfoBean.setEmail(bean.getUser().getEmail());
+        //营业执照链接地址
+
+        companyInfoBean.setBusinessLicense(model.getTradingCertificateURL());
+        companyInfoBean.setLegalPersonFrontURL(model.getLegalPersonFrontURL());
+        companyInfoBean.setLegalPersonReverseURL(model.getLegalPersonReverseURL());
+        companyInfoBean.setLicenceOpenAccountURL(model.getLicenceOpenAccountURL());
+
+        companyInfoBean.setCertificates(model.getCertificates());
+
+        initView();
+    }
+
+    private void handleStatus(final LoginResultBean.UserBean.EnterpriseBean model) {
+        int status = model.getStatus();
+        switch (status) {
+            case 0:
+                operateType = "1";
+                statusImgV.setVisibility(View.GONE);
+                setRightBtnShow();
+                break;
+            case 2:
+                operateType = "3";
+                statusImgV.setVisibility(View.VISIBLE);
+                statusImgV.setImageResource(R.mipmap.companyinfo_status2);
+                setRightBtnShow();
+                break;
+            case 3:
+                operateType = "1";
+                statusImgV.setVisibility(View.VISIBLE);
+                statusImgV.setImageResource(R.mipmap.companyinfo_status3);
+                setRightBtnShow();
+                CompanyInfoFailHintDialog hintDialog = new CompanyInfoFailHintDialog();
+                hintDialog.setData(model);
+                hintDialog.show(getSupportFragmentManager(), CompanyInfoFailHintDialog.class.getSimpleName());
+                break;
+            case 5:
+                operateType = "3";
+                statusImgV.setVisibility(View.VISIBLE);
+                statusImgV.setImageResource(R.mipmap.companyinfo_status5);
+                setRightBtnHide();
+                break;
+            case 6:
+                operateType = "3";
+                statusImgV.setVisibility(View.VISIBLE);
+                statusImgV.setImageResource(R.mipmap.companyinfo_status6);
+                setRightBtnHide();
+                break;
+            case 7:
+                operateType = "3";
+                statusImgV.setVisibility(View.VISIBLE);
+                statusImgV.setImageResource(R.mipmap.companyinfo_status7);
+                setRightBtnHide();
+                if (dialog == null) {
+                    dialog = new RevokeChangeCompanyInfoDialog();
+                }
+                dialog.setCallback(model,new Runnable() {
+                    @Override
+                    public void run() {
+                        myFiring.revokeChangeCompanyInfo(model.getEnterpriseCode(), new MyRetrofitResponseCallback<BaseModel>() {
+                            @Override
+                            protected void onRequestFail(String resMessage) {
+
+                            }
+
+                            @Override
+                            protected void onRequestSuccess(BaseModel model) {
+                                if (TextUtils.equals(model.getResCode(),CODE_SUCCESS)) {
+                                    initInfo();
+                                    if (dialog == null) {
+                                        return;
+                                    }
+                                    dialog.dismissAllowingStateLoss();
+                                } else {
+                                    ToastUtils.showShort(model.getResMessage());
+                                }
+                            }
+
+//                            @Override
+//                            public void onRequestSuccess(String result) {
+//                                Gson gson = new Gson();
+//                                BaseModel model = gson.fromJson(result, BaseModel.class);
+//
+//                            }
+                        });
+                    }
+                });
+                dialog.show(getSupportFragmentManager(), RevokeChangeCompanyInfoDialog.class.getSimpleName());
+                break;
+        }
+    }
+
+//    @OnClick(R.id.act_company_info_phone)
+//    void phone() {
+//        ToastUtils.showShort("此手机号码为注册号码，不可修改");
+//    }
+
+    //重写退出方法
+    @Override
+    protected void exit() {
+        if (isEdit) {
+            SoftKeyboardUtils.hintKbTwo(this);
+            enEditStatus(false);
+        } else {
+            SoftKeyboardUtils.hintKbTwo(this);
+            finish();
+        }
+    }
+
+    private void initView() {
+
+        //初始化数据界面
+        //企业名称
+        companyNameET.setText(companyInfoBean.getCompanyName());
+        //统一信用代码
+        codeET.setText(companyInfoBean.getCode());
+        //法定代表人
+        legalPersonET.setText(companyInfoBean.getLegalPerson());
+        //法人身份证号
+        legalPersonNumberET.setText(companyInfoBean.getLegalPersonNumber());
+        //所属行业
+        String industry = companyInfoBean.getIndustry().getSelectValue();
+        if (TextUtils.isEmpty(industry)) {
+            industryTV.setText("");
+        } else {
+            industryTV.setText(industry);
+            industryTV.setTextColor(Color.parseColor("#333333"));
+        }
+        //地址
+        String area = companyInfoBean.getArea().getSelectValue();
+        if (TextUtils.isEmpty(area)) {
+            areaTV.setText("");
+        } else {
+            areaTV.setText(area);
+            areaTV.setTextColor(Color.parseColor("#333333"));
+        }
+        //详细地址
+        addressET.setText(companyInfoBean.getAddress());
+        //联系人
+        userNameET.setText(companyInfoBean.getUserName());
+        //手机号码
+        phoneTV.setText(companyInfoBean.getPhone());
+        emailTV.setText(companyInfoBean.getEmail());
+        //营业执照
+
+        certificates = new ArrayList<>();
+        if (!Common.isListEmpty(companyInfoBean.getCertificates())) {
+            certificates.addAll(companyInfoBean.getCertificates());
+            mapTypePos = new HashMap<>();
+            for (LoginResultBean.UserBean.Certificate certificate : certificates) {
+                mapTypePos.put(certificate.getType(), certificates.indexOf(certificate));
+            }
+        }
+
+        String url = companyInfoBean.getBusinessLicense();
+        ViewGroup.LayoutParams params = businessImage.getLayoutParams();
+        RequestOptions options = new RequestOptions();
+        options.fallback(R.mipmap.yingye_default_add)
+                .placeholder(R.mipmap.yingye_default_add)
+                .error(R.mipmap.yingye_default_add)
+                .override(params.width, params.height);
+        RequestOptions optionsLegal = new RequestOptions();
+        optionsLegal.fallback(R.mipmap.shenfz_default_add)
+                .placeholder(R.mipmap.shenfz_default_add)
+                .error(R.mipmap.shenfz_default_add);
+        if (!TextUtils.isEmpty(url)) {
+            companyInfoBean.setHasBusiness(true);
+            Glide.with(this).load(url).apply(options).into(businessImage);
+        }
+
+        if (!TextUtils.isEmpty(companyInfoBean.getLegalPersonFrontURL())) {
+            companyInfoBean.setHasLegalPersonFront(true);
+            Glide.with(this).load(companyInfoBean.getLegalPersonFrontURL())
+                    .apply(optionsLegal).into(shenfzImage);
+        }
+        if (!TextUtils.isEmpty(companyInfoBean.getLegalPersonReverseURL())) {
+            companyInfoBean.setHasLegalPersonReverse(true);
+            Glide.with(this).load(companyInfoBean.getLegalPersonReverseURL())
+                    .apply(optionsLegal).into(shenfzfImage);
+        }
+        if (!TextUtils.isEmpty(companyInfoBean.getLicenceOpenAccountURL())) {
+            Glide.with(this).load(companyInfoBean.getLicenceOpenAccountURL())
+                    .apply(optionsLegal).into(kaihuImage);
+        }
+    }
+
+    @OnClick({R.id.act_company_info_business_add,R.id.act_company_info_shenfz_add,
+            R.id.act_company_info_shenfz_add_fan, R.id.act_company_info_kaihu_add})
+    public void onViewClicked(View view) {
+        upLoadImage();
+        ViewGroup.LayoutParams params = shenfzfImage.getLayoutParams();
+        pickHelper = new ImagePickHelper(this, mFile, params.width, params.height);
+        switch (view.getId()) {
+            case R.id.act_company_info_business_add:
+                uploadType = UploadType.YINGYE;
+                params = businessImage.getLayoutParams();
+                pickHelper = new ImagePickHelper(this, mFile, params.width, params.height);
+                break;
+            case R.id.act_company_info_shenfz_add:
+                uploadType = UploadType.SHENFENZ_Z;
+                break;
+            case R.id.act_company_info_shenfz_add_fan:
+                uploadType = UploadType.SHENFENZ_F;
+                break;
+            case R.id.act_company_info_kaihu_add:
+                uploadType = UploadType.KAIHU;
+                break;
+        }
+    }
+
+    private void initEditStatus(boolean b) {
+        ViewCheckUtils.setIsCanEdit(mainV, b);
+        isEdit = b;
+        confirmB.setVisibility(b ? View.VISIBLE: View.GONE);
+    }
+
+    void enEditStatus(boolean isEdit) {
+        initEditStatus(isEdit);
+        if (isEdit) {
+            setRightBtnHide();
+        } else {
+            setRightBtnShow();
+        }
+    }
+
+    private void upLoadImage() {
+        if (!isEdit) {
+            return;
+        }
+        dialogUtils = new DialogUtils();
+        dialogUtils.diloagShow(this, R.layout.item_select_business_photo);
+        View itemview = dialogUtils.getView();
+        TextView camera = (TextView) itemview.findViewById(R.id.camera);
+        TextView picstorage = (TextView) itemview.findViewById(R.id.picstorage);
+        camera.setOnClickListener(this);
+        picstorage.setOnClickListener(this);
+    }
+
+    private final int REQUEST_CODE_CAMERA_PERMISSION = 1111;
+    @Override
+    public void onClick(View v) {
+        dialogUtils.dialogDismiss();
+        switch (v.getId()) {
+            case R.id.camera:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    //摄像头权限
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CODE_CAMERA_PERMISSION);
+                    } else {
+                        startCamera();
+                    }
+                } else {
+                    startCamera();
+                }
+                dialogUtils.dialogDismiss();
+                break;
+            case R.id.picstorage:
+                pickHelper.handleAbulmClick(this);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void startCamera() {
+        pickHelper.handleCameraClick(this);
+    }
+
+    @OnClick({R.id.act_company_info_industry, R.id.act_company_info_area})
+    void typeSelect(View v) {
+        switch (v.getId()) {
+            //行业选择
+            case R.id.act_company_info_industry:
+                new ShowCompanyInfoSelectDialog(this, companyInfoBean.getIndustry(), industryTV).show();
+                break;
+            //地区选择
+            case R.id.act_company_info_area:
+                new ShowCompanyInfoSelectDialog(this, companyInfoBean.getArea(), areaTV).show();
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        pickHelper.handleActivityResult(requestCode, resultCode, data, new ImagePickHelper.IfImagePickhelperCallback() {
+            @Override
+            public void cropSuccess(File file) {
+                updateImage(file);
+            }
+        });
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void updateImage(File file) {
+        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+        Bitmap b = getSmallBitmap();
+        saveBitmap(b);
+        switch (uploadType){
+            case YINGYE:
+                Glide.with(this).asBitmap().load(bitmap).into(businessImage);
+                break;
+            case SHENFENZ_Z:
+                Glide.with(this).asBitmap().load(bitmap).into(shenfzImage);
+                break;
+            case SHENFENZ_F:
+                Glide.with(this).asBitmap().load(bitmap).into(shenfzfImage);
+                break;
+            case KAIHU:
+                Glide.with(this).asBitmap().load(bitmap).into(kaihuImage);
+                break;
+        }
+        myFiring.setBusinessLicense(new File(imagePath));
+    }
+
+    @Override
+    public void onSetCompanyInfoSuccess(LoginResultBean updataInfo, String loginString) {
+        String resultCode = updataInfo.getResCode();
+        if (resultCode.equals("0000")) {
+            Toast.makeText(this,  "资料已提交,审核中...", Toast.LENGTH_SHORT).show();
+            //刷新登录信息
+            Constants.loginresultInfo = updataInfo;
+            SharedPresUtils sharedPresUtils = SharedPresUtils.getsSharedPresUtils(SharedPresUtils.DATA_CONFIG);
+            sharedPresUtils.putString("loginResultData", loginString);
+            finish();
+        } else {
+            ToastUtils.showShort(updataInfo.getResMessage());
+        }
+    }
+
+    @Override
+    public void onSetCompanyInfoFail(String s) {
+        ToastUtils.showShort(s);
+    }
+
+    @Override
+    public void onSetBusinessLicenseSuccess(CompanyUpImageBean upImageInfo) {
+        switch (Integer.parseInt(upImageInfo.getResCode())) {
+            case 0000:
+                switch (uploadType) {
+                    case YINGYE:
+                        addOrChangeCertificates(FILE_TYPE_BUSINESS, upImageInfo);
+                        if (!companyInfoBean.isHasBusiness()) {
+                            companyInfoBean.setHasBusiness(true);
+                        }
+                        Toast.makeText(this, "上传营业执照成功", Toast.LENGTH_SHORT).show();
+                        break;
+                    case SHENFENZ_Z:
+                        addOrChangeCertificates(FILE_TYPE_LEGAL_PERSON_FRONT, upImageInfo);
+                        if (!companyInfoBean.isHasLegalPersonFront()) {
+                            companyInfoBean.setHasLegalPersonFront(true);
+                        }
+                        Toast.makeText(this, "上传身份证正面成功", Toast.LENGTH_SHORT).show();
+                        break;
+                    case SHENFENZ_F:
+                        addOrChangeCertificates(FILE_TYPE_LEGAL_PERSON_REVERSE, upImageInfo);
+                        if (!companyInfoBean.isHasLegalPersonReverse()) {
+                            companyInfoBean.setHasLegalPersonReverse(true);
+                        }
+                        Toast.makeText(this, "上传身份证反面成功", Toast.LENGTH_SHORT).show();
+                        break;
+                    case KAIHU:
+                        addOrChangeCertificates(FILE_TYPE_LICENCE_OPEN_ACCOUNT, upImageInfo);
+                        Toast.makeText(this, "上传开户许可证成功", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+
+                companyInfoBean.setCertificates(certificates);
+                break;
+            default:
+                Toast.makeText(this, upImageInfo.getResMessage(), Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    /**
+     * 增加或者替换营业执照、身份证等相关图片
+     * @param file_type
+     * @param upImageInfo
+     */
+    private void addOrChangeCertificates(int file_type, CompanyUpImageBean upImageInfo) {
+        if (mapTypePos != null && mapTypePos.containsKey(file_type)) {
+            certificates.get(mapTypePos.get(file_type)).setOriginalFileInfo(upImageInfo.getOriginal());
+            certificates.get(mapTypePos.get(file_type)).setThumbnailFileInfo(upImageInfo.getThumbnail());
+        } else {
+            LoginResultBean.UserBean.Certificate certificate = new LoginResultBean.UserBean.Certificate();
+            certificate.setType(file_type);
+            certificate.setThumbnailFileInfo(upImageInfo.getThumbnail());
+            certificate.setOriginalFileInfo(upImageInfo.getOriginal());
+            certificate.setEnterpriseId(model.getEnterpriseCode());
+            certificates.add(certificate);
+
+        }
+    }
+
+    @Override
+    public void onSetBusinessLicenseFail(String s) {
+        ToastUtils.showShort(s);
+    }
+
+    /**
+     * @param
+     * @return
+     * @author 吴昊
+     * @time 2017-5-4 14:57
+     * 压缩图片
+     */
+    public Bitmap getSmallBitmap() {
+        // 设置参数
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true; // 只获取图片的大小信息，而不是将整张图片载入在内存中，避免内存溢出
+        BitmapFactory.decodeFile(imagePath, options);
+        int height = options.outHeight;
+        int width = options.outWidth;
+        int inSampleSize = 1; // 默认像素压缩比例，压缩为原图的1/2
+//        int minLen = Math.min(height, width); // 原图的最小边长
+//        if (minLen > 100) { // 如果原始图像的最小边长大于100dp（此处单位我认为是dp，而非px）
+//            float ratio = (float) minLen / 100.0f; // 计算像素压缩比例
+//            inSampleSize = (int) ratio;
+//        }
+        options.inJustDecodeBounds = false; // 计算好压缩比例后，这次可以去加载原图了
+        options.inSampleSize = inSampleSize; // 设置为刚才计算的压缩比例
+        Bitmap bm = BitmapFactory.decodeFile(imagePath, options); // 解码文件
+        return bm;
+    }
+
+
+    /**
+     * 保存方法
+     */
+    public void saveBitmap(Bitmap bitmap) {
+        File f = new File(imagePath);
+        if (f.exists()) {
+            f.delete();
+        }
+        try {
+            FileOutputStream out = new FileOutputStream(f);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.flush();
+            out.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+            if (isEdit) {
+                enEditStatus(false);
+                return true;
+            }
+            return super.onKeyDown(keyCode, event);
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+}

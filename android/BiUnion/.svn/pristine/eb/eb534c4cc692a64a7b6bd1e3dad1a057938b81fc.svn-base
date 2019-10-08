@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="LoopRotarySwitchView">
+        <attr format="integer" name="orientation">
+            <enum name="vertical" value="0"/>
+            <enum name="horizontal" value="1"/>
+        </attr>
+        <attr format="boolean" name="autoRotation"/>
+        <attr format="dimension" name="r"/>
+
+        <attr format="integer" name="direction">
+            <enum name="left" value="0"/>
+            <enum name="right" value="1"/>
+        </attr>
+
+    </declare-styleable>
+    <string name="app_name">Library</string>
+</resources>

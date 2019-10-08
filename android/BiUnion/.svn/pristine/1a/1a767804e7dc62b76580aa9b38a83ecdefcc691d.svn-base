@@ -1,0 +1,1 @@
+include ':app', ':loopview',':android-pdf-viewer',':nicevideoplayer','JBox2DLibrary'

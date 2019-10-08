@@ -1,0 +1,124 @@
+package com.bibinet.biunion.project.ui.base;
+
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.manager.StatusBarManager;
+import com.umeng.analytics.MobclickAgent;
+
+import butterknife.ButterKnife;
+import me.yokeyword.fragmentation.SupportActivity;
+
+
+/**
+ * Created by bibinet on 2017-4-18.
+ */
+
+public abstract class BaseActivity extends SupportActivity {
+
+
+    //创建一个检测权限是否授权的方法
+    public boolean checkHasperisson(String... permissons){
+        for(String permisson:permissons){
+            if (ContextCompat.checkSelfPermission(this,permisson)!= PackageManager.PERMISSION_GRANTED){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //创建一个申请权限的方法
+    public void requesPermisson(int code,String... permissons){
+        ActivityCompat.requestPermissions(this,permissons,code);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 1:
+                requestPhonePermisson();
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    //请求手机状态的权限
+    private void requestPhonePermisson() {
+
+    }
+
+    //退出动画
+    //1，上个页面不动
+    //2，当前页面右移出屏幕
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.tr_void,R.anim.tr_exit);
+    }
+
+    //进入动画
+    //1，当前页面左移入屏幕
+    //2，原本的页面不动
+    @Override
+    protected final void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.tr_entry,R.anim.tr_void);
+        StatusBarManager.initStateBar(this);
+        //设置状态栏字体颜色
+        StatusBarManager.FlymeSetStatusBarLightMode(this, true);
+        StatusBarManager.MIUISetStatusBarLightMode(this, true);
+        View view = getLayoutView();
+        if(view == null){
+            setContentView(getLayoutId());
+        }else{
+            setContentView(view);
+        }
+        ButterKnife.bind(this);
+        onBaseCreate(savedInstanceState);
+    }
+
+    protected abstract int getLayoutId();
+
+    protected View getLayoutView(){
+        return null;
+    }
+
+    protected abstract void onBaseCreate(Bundle savedInstanceState);
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // 加载系统默认设置，字体不随用户设置变化
+        Resources res = super.getResources();
+        Configuration config = new Configuration();
+        config.setToDefaults();
+        res.updateConfiguration(config, res.getDisplayMetrics());
+    }
+
+    protected final View createView(int layoutId){
+        return LayoutInflater.from(this).inflate(layoutId, null, false);
+    }
+
+    protected final View findView(View parent, int viewId){
+        return parent.findViewById(viewId);
+    }
+}

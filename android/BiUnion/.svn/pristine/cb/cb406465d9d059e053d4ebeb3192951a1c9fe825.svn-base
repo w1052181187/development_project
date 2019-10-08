@@ -1,0 +1,118 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.application.BiUnionApplication;
+import com.bibinet.biunion.project.dao.MediaVideoData;
+import com.bibinet.biunion.project.dao.MediaVideoDataDao;
+import com.bibinet.biunion.project.event.MediaVideoStudyEvent;
+import com.bibinet.biunion.project.models.MediaVideoChildModel;
+import com.bibinet.biunion.project.models.MediaVideoDetailSectionModel;
+import com.bibinet.biunion.project.nicevideo.FhVideoPlayerController;
+import com.bibinet.biunion.project.ui.expand.TitleActivity;
+import com.bibinet.biunion.project.utils.DateFormatUtils;
+import com.bibinet.biunion.project.utils.StatusBarUtil;
+import com.xiao.nicevideoplayer.NiceVideoPlayer;
+
+import org.greenrobot.eventbus.EventBus;
+
+import butterknife.BindView;
+
+public class MediaVideoPlayActivity extends TitleActivity {
+
+    private final static String TIME_INIT = "00:00";
+    private static final String DATA_SECTION = "model";
+    private static final String DATA_CHILD =  "data";
+
+    @BindView(R.id.video_layout)
+    View mRootView;
+    @BindView(R.id.nice_video_player)
+    NiceVideoPlayer mVideoPlayer;
+
+    private MediaVideoChildModel childModel;
+    private MediaVideoDetailSectionModel sectionModel;
+    private MediaVideoDataDao dao;
+    private FhVideoPlayerController mController;
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_media_video_play;
+    }
+
+    @Override
+    protected int getTitleString() {
+        return 0;
+    }
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+        setTitleBackgroundColor(R.color.black);
+        StatusBarUtil.setLightBar(this, false);
+        hideTitleBar();
+        childModel = (MediaVideoChildModel) getIntent().getSerializableExtra(DATA_CHILD);
+        sectionModel = (MediaVideoDetailSectionModel) getIntent().getSerializableExtra(DATA_SECTION);
+        if (childModel == null || sectionModel == null) {
+            finish();
+        }
+
+        dao = BiUnionApplication.getInstance().getDaoSession().getMediaVideoDataDao();
+        MediaVideoData videoData = dao.queryBuilder()
+                .where(MediaVideoDataDao.Properties.Code.eq(childModel.getCode())).unique();
+        mVideoPlayer.setPlayerType(NiceVideoPlayer.TYPE_NATIVE);
+        mController = new FhVideoPlayerController(this);
+        mVideoPlayer.setController(mController);
+        mVideoPlayer.release();
+
+        mController.setTitle(sectionModel.getHourName());
+        mController.setLenght(DateFormatUtils.convertTimeToLong(sectionModel.getHourTime()));
+        mController.setBackListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        mVideoPlayer.setUp(sectionModel.getVideo(), null);
+        if (videoData == null || TextUtils.isEmpty(videoData.getStudyTime())
+                || !TextUtils.equals(videoData.getHourNo(),sectionModel.getHourNo())) {
+            mVideoPlayer.start();
+        } else {
+            mVideoPlayer.start(DateFormatUtils.convertTimeToLong(videoData.getStudyTime()));
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        mVideoPlayer.exitTinyWindow();
+        mVideoPlayer.setTinyWindowParent(null);
+        mVideoPlayer.release();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        String studyTimeStr = mController.getCurPlayPositon();
+        if (TextUtils.equals(studyTimeStr,TIME_INIT)) {
+            return;
+        }
+        MediaVideoData videoData = new MediaVideoData(childModel.getCode(), sectionModel.getSectionCode(), studyTimeStr,
+                sectionModel.getHourNo(), sectionModel.getHourName(), sectionModel.getHourTime(), sectionModel.getVideo());
+        dao.insertOrReplace(videoData);
+        EventBus.getDefault().post(new MediaVideoStudyEvent(videoData));
+    }
+
+    public static void start(Context context, MediaVideoChildModel data, MediaVideoDetailSectionModel model) {
+        Intent intent = new Intent(context, MediaVideoPlayActivity.class);
+        intent.putExtra(DATA_CHILD, data);
+        intent.putExtra(DATA_SECTION, model);
+        context.startActivity(intent);
+    }
+
+
+}

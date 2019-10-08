@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/img_message_type_select_background"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <com.bibinet.biunion.project.ui.custom.RadioLayout
+            android:id="@+id/p_message_radio"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="资讯信息"
+                android:textColor="@drawable/select_message_type_select_txt"
+                android:textSize="15dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="热点资讯"
+                android:textColor="@drawable/select_message_type_select_txt"
+                android:textSize="15dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="PPP资讯"
+                android:textColor="@drawable/select_message_type_select_txt"
+                android:textSize="15dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="行业资讯"
+                android:textColor="@drawable/select_message_type_select_txt"
+                android:textSize="15dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="曝光台"
+                android:textColor="@drawable/select_message_type_select_txt"
+                android:textSize="15dp" />
+        </com.bibinet.biunion.project.ui.custom.RadioLayout>
+    </LinearLayout>
+</LinearLayout>

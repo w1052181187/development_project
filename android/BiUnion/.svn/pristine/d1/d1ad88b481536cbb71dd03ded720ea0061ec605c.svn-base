@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#f9f9f9"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/ada_media_music_main"
+        android:layout_width="match_parent"
+        android:layout_height="98dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/shape_media_video_item_background">
+        <ImageView
+            android:id="@+id/ada_media_music_img"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="7dp"
+            android:layout_marginRight="9dp" />
+        <TextView
+            android:id="@+id/ada_media_music_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:layout_toRightOf="@+id/ada_media_music_img"
+            android:layout_alignTop="@+id/ada_media_music_img"
+            android:layout_marginRight="28dp"
+            android:text="比比学院-发改委第二批PPP典型案例解析"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/ada_media_music_intro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:layout_below="@+id/ada_media_music_title"
+            android:layout_alignLeft="@+id/ada_media_music_title"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="关于ppp项目的一切都在这里"
+            android:textColor="@color/color_666666"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/ada_media_music_chapter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:layout_alignLeft="@+id/ada_media_music_title"
+            android:layout_above="@+id/ada_media_music_study_tv"
+            android:text="24集"
+            android:drawablePadding="6dp"
+            android:drawableLeft="@mipmap/img_media_music_frequency"
+            android:textColor="@color/color_999999"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/ada_media_music_study_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/ada_media_music_img"
+            android:layout_alignLeft="@+id/ada_media_music_title"
+            android:lines="1"
+            android:ellipsize="end"
+            android:text="还没开始学习"
+            android:drawablePadding="6dp"
+            android:drawableLeft="@drawable/ada_media_video_study_img_bg_sel"
+            android:textColor="@color/ada_media_video_study_tv_color_sel"
+            android:textSize="11sp"/>
+
+        <ImageView
+            android:layout_alignParentRight="true"
+            android:id="@+id/ada_media_music_free"
+            android:layout_width="wrap_content"
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/img_media_video_free" />
+    </RelativeLayout>
+
+
+</LinearLayout>

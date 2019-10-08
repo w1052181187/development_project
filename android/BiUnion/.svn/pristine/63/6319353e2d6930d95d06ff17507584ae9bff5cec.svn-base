@@ -1,0 +1,307 @@
+package com.bibinet.biunion.project.ui.fragment;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.annotation.Nullable;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.adapter.MediaLiveRecordListAdapter;
+import com.bibinet.biunion.project.application.Constants;
+import com.bibinet.biunion.project.builder.ObservableScrollView;
+import com.bibinet.biunion.project.builder.ScrollViewListener;
+import com.bibinet.biunion.project.interf.RxjavaLoadBitmapInterf;
+import com.bibinet.biunion.project.models.MediaLiveListUrlmodel;
+import com.bibinet.biunion.project.models.MediaLiveRecordItemModel;
+import com.bibinet.biunion.project.models.PageModel;
+import com.bibinet.biunion.project.net.emit.MediaLiveEmit;
+import com.bibinet.biunion.project.net.emit.MediaLivePushUrlEmit;
+import com.bibinet.biunion.project.net.firing.MediaLiveFiring;
+import com.bibinet.biunion.project.ui.activity.MediaLiveDetailActivity;
+import com.bibinet.biunion.project.ui.activity.MediaLiveFinishActivity;
+import com.bibinet.biunion.project.ui.expand.MultiplePageRefreshFragment;
+import com.bibinet.biunion.project.ui.expand.PageActivityAdapter;
+import com.bibinet.biunion.project.utils.Common;
+import com.bibinet.biunion.project.utils.DensityUtil;
+import com.bibinet.biunion.project.utils.ImageUtils;
+import com.bibinet.biunion.project.utils.ToastUtils;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+public class MediaLiveFragment extends MultiplePageRefreshFragment<MediaLiveRecordItemModel> implements MediaLiveEmit {
+
+    private final static int MSG_WHAT_DATA_SUCCESS = 1;
+    private final static int MSG_WHAT_DATA_LIVE_LIST_SUCCESS = 3;
+    private final static int MSG_WHAT_DATA_LIVE_LIST_FAIL = 4;
+    private final static int MSG_WHAT_DATA_FAIL = 2;
+
+    @BindView(R.id.fra_media_live_xscrollview)
+    ObservableScrollView mXscrollView;
+    @BindView(R.id.fra_media_live_cover_rl)
+    View mCoverView;
+    @BindView(R.id.fra_media_live_main)
+    RecyclerView mainRV;
+
+    @BindView(R.id.fra_media_live_cover)
+    ImageView mCoverImg;
+    @BindView(R.id.fra_media_live_flag)
+    ImageView mLiveFlagImg;
+    @BindView(R.id.fra_media_live_title)
+    TextView mLiveTitleTv;
+    @BindView(R.id.fra_media_live_record_hint)
+    TextView mRecordHintTv;
+
+    private MediaLiveFiring mediaLiveFiring;
+    private IisHasLiveCallback liveCallback;
+    private MediaLiveRecordListAdapter adapter;
+    private String objectId;
+    private Constants.LiveType liveType;
+    private boolean isLiving = false;
+    private boolean isHas;
+    private String userId;
+
+    @OnClick(R.id.fra_media_live_cover)
+    void onCoverClick() {
+        if (isLiving) {
+            if (Constants.loginresultInfo == null || Constants.loginresultInfo.getUser() == null || Constants.loginresultInfo.getUser() == null) {
+                ToastUtils.showShort("登录之后，才可以观看哦！");
+                return;
+            }
+            if (TextUtils.equals(Constants.loginresultInfo.getUser().getUserId(), userId)) {
+                ToastUtils.showShort("该账号正在直播中，不可再次进入！");
+                return;
+            }
+            MediaLiveDetailActivity.launch(getActivity(), objectId);
+        } else {
+            MediaLiveFinishActivity.launch(getActivity(), liveType);
+        }
+
+    }
+
+    @Override
+    protected int getXRefreshLayoutId() {
+        return R.id.fra_media_live_xrefresh;
+    }
+
+    @Override
+    protected int getNotDataViewId() {
+        return R.id.fra_media_live_not_data_ll;
+    }
+
+    @Override
+    protected PageActivityAdapter getPageAdapter(List<MediaLiveRecordItemModel> dataList) {
+        adapter = new MediaLiveRecordListAdapter(getActivity(), dataList);
+        return adapter;
+    }
+
+    @Override
+    public void onLazyInitView(@Nullable Bundle savedInstanceState) {
+//        if (Constants.loginresultInfo == null || Constants.loginresultInfo.getUser() == null || Constants.loginresultInfo.getUser() == null) {
+//            ToastUtils.showShort("请先登录！");
+//            return;
+//        }
+        super.onLazyInitView(savedInstanceState);
+    }
+
+    @Override
+    protected void initLoad(int pageNumb) {
+        mediaLiveFiring.getRecordListData(pageNumb);
+        getLiveListData();
+    }
+
+    @Override
+    protected void onPageCreate(View view, Bundle savedInstanceState) {
+        mediaLiveFiring = new MediaLiveFiring(this);
+        mXscrollView.setScrollViewListener(new ScrollViewListener() {
+            @Override
+            public void onScrollChanged(ObservableScrollView observableScrollView, int x, int y, int oldx, int oldy) {
+                setTop(y==0);
+            }
+        });
+
+//        mHandler.sendEmptyMessage(MSG_WHAT_DATA_SUCCESS);
+//        mainRV.addItemDecoration(new MediaVideoFragment.SpaceItemDecoration(DensityUtil.dip2px(10)));
+
+        liveType = Constants.LiveType.TYPE_ANCHOT;
+    }
+
+    @Override
+    public void onResume() {
+        if (Constants.loginresultInfo != null && Constants.loginresultInfo.getUser().getLiveFlag() == 1) {
+            liveType = Constants.LiveType.TYPE_ANCHOT;
+        } else {
+            liveType = Constants.LiveType.TYPE_SPECTATOR;
+        }
+        super.onResume();
+    }
+
+    private void getLiveListData() {
+        new MediaLiveFiring(new MediaLivePushUrlEmit() {
+
+            @Override
+            public void loadSuccess(MediaLiveListUrlmodel model) {
+                mHandler.obtainMessage(MSG_WHAT_DATA_LIVE_LIST_SUCCESS, model).sendToTarget();
+            }
+
+            @Override
+            public void loadFail(String s) {
+                mHandler.sendEmptyMessage(MSG_WHAT_DATA_LIVE_LIST_FAIL);
+            }
+        }).getLiveListUrl();
+    }
+
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_WHAT_DATA_SUCCESS:
+                    if (adapter.getChildCount() <= 1) {
+                        mainRV.setLayoutManager(new LinearLayoutManager(getActivity()) {
+                            @Override
+                            public boolean canScrollVertically() {
+                                return false;
+                            }
+                        });
+                    } else {
+                        mainRV.setLayoutManager(new GridLayoutManager(getActivity(), 2){
+                            @Override
+                            public boolean canScrollVertically() {
+                                return false;
+                            }
+                        });
+                    }
+                    mainRV.setAdapter(adapter);
+                    mainRV.getAdapter().notifyDataSetChanged();
+                    mRecordHintTv.setVisibility(View.VISIBLE);
+                    break;
+                case MSG_WHAT_DATA_LIVE_LIST_SUCCESS:
+                    mRecordHintTv.setVisibility(View.VISIBLE);
+                    mCoverView.setVisibility(View.VISIBLE);
+                    MediaLiveListUrlmodel listUrlmodel = (MediaLiveListUrlmodel) msg.obj;
+                    List list = listUrlmodel.getAppLives();
+                    isHas = listUrlmodel != null && !Common.isListEmpty(list);
+                    ViewGroup.LayoutParams params = mCoverView.getLayoutParams();
+                    if (isHas) {
+
+                        params.width = DensityUtil.getScreenWidth(getActivity());
+                        params.height = params.width * 3 / 2;
+                        MediaLiveRecordItemModel urlmodel = (MediaLiveRecordItemModel) list.get(0);
+                        if (!TextUtils.isEmpty(urlmodel.getLiveCover())) {
+                            final RequestOptions options = new RequestOptions()
+                                    .override(params.width, params.height)
+                                    .centerCrop();
+                            ImageUtils.handleBitmapByRxjava(urlmodel.getLiveCover(), new RxjavaLoadBitmapInterf() {
+                                @Override
+                                public void success(Bitmap bitmap) {
+                                    Glide.with(mCoverImg).asBitmap().load(bitmap).apply(options).into(mCoverImg);
+                                }
+                            });
+                        }
+                        mLiveTitleTv.setText(urlmodel.getLiveName());
+                        objectId = urlmodel.getObjectId();
+                        userId = urlmodel.getUserId();
+                        isLiving = !Common.isTrue(urlmodel.getLiveStatus());
+                    } else {
+                        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.zhibotu);
+                        params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                        mCoverImg.setImageBitmap(ImageUtils.zoomImg(bitmap, DensityUtil.getScreenWidth(getActivity()),0));
+                    }
+                    mCoverView.setLayoutParams(params);
+                    mCoverImg.setEnabled(isHas);
+                    mLiveFlagImg.setVisibility(isHas ? View.VISIBLE :View.GONE);
+                    mLiveTitleTv.setVisibility(isHas ? View.VISIBLE :View.GONE);
+
+                    if (liveCallback != null) {
+                        //有直播
+                        liveCallback.hasLive(isHas);
+                    }
+                    break;
+                case MSG_WHAT_DATA_FAIL:
+                    if (adapter.getChildCount() <= 0) {
+                        mRecordHintTv.setVisibility(View.GONE);
+                    }
+
+                    if (mCoverView.getVisibility() == View.VISIBLE) {
+                        getErrorV().setVisibility(View.GONE);
+                    }
+                    break;
+                case MSG_WHAT_DATA_LIVE_LIST_FAIL:
+//                    mCoverView.setVisibility(View.GONE);
+                    break;
+                default:
+                    break;
+            }
+            super.handleMessage(msg);
+        }
+    };
+
+    @Override
+    public void loadMoreSuccess(List<MediaLiveRecordItemModel> newDataList, PageModel.PageChildModel pageChildModel) {
+        mHandler.sendEmptyMessage(MSG_WHAT_DATA_SUCCESS);
+        super.loadMoreSuccess(newDataList, pageChildModel);
+    }
+
+    @Override
+    public void loadMoreFail(String s) {
+        mHandler.sendEmptyMessage(MSG_WHAT_DATA_FAIL);
+        super.loadMoreFail(s);
+    }
+
+    @Override
+    protected int getRecyclerViewId() {
+        return R.id.fra_media_live_main;
+    }
+
+    @Override
+    protected int getPageLayoutId() {
+        return R.layout.fragment_media_live;
+    }
+
+    @Override
+    protected void nextPageLoad(int pageNumb) {
+        mediaLiveFiring.getRecordListData(pageNumb);
+    }
+
+    @Override
+    protected void refreshLoad(final int pageNumb) {
+
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mediaLiveFiring.getRecordListData(pageNumb);
+                getLiveListData();
+            }
+        },1000);
+
+    }
+
+    @Override
+    protected int getTitleString() {
+        return 0;
+    }
+
+    public void setHasLiveCallback(IisHasLiveCallback callback){
+        this.liveCallback = callback;
+    }
+
+    interface IisHasLiveCallback {
+        void hasLive(boolean isHas);
+    }
+
+}

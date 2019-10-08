@@ -1,0 +1,93 @@
+package com.bibinet.biunion.project.net.firing;
+
+import android.app.Activity;
+
+import com.bibinet.biunion.project.models.MediaVideoDetailModel;
+import com.bibinet.biunion.project.models.MediaVideoModel;
+import com.bibinet.biunion.project.models.PageModel;
+import com.bibinet.biunion.project.net.MyRetrofitResponseCallback;
+import com.bibinet.biunion.project.net.RetrofitPageCallBack;
+import com.bibinet.biunion.project.net.base.BaseFiring;
+import com.bibinet.biunion.project.net.emit.MediaVideoDetailChapterEmit;
+import com.bibinet.biunion.project.net.emit.MediaVideoDetailTeacherEmit;
+import com.bibinet.biunion.project.net.emit.MediaVideoEmit;
+import com.bibinet.biunion.project.net.ready.MediaVideoReady;
+
+/**
+ * Created by bibinet on 2017-6-12.
+ */
+
+public class MediaVideoFiring extends BaseFiring {
+    private MediaVideoReady mediaVideoReady;
+    private MediaVideoEmit mediaVideoEmit;
+    private MediaVideoDetailTeacherEmit mediaVideoDetailTeacherEmit;
+    private MediaVideoDetailChapterEmit mediaVideoDetailChapterEmit;
+
+    public MediaVideoFiring(MediaVideoEmit mediaVideoEmit) {
+        super(null);
+        this.mediaVideoEmit = mediaVideoEmit;
+        mediaVideoReady = new MediaVideoReady();
+    }
+
+    public MediaVideoFiring(MediaVideoDetailTeacherEmit mediaVideoDetailTeacherEmit, Activity activity) {
+        super(activity);
+        this.mediaVideoDetailTeacherEmit = mediaVideoDetailTeacherEmit;
+        mediaVideoReady = new MediaVideoReady();
+    }
+
+    public MediaVideoFiring(MediaVideoDetailChapterEmit mediaVideoDetailChapterEmit, Activity activity) {
+        super(activity);
+        this.mediaVideoDetailChapterEmit = mediaVideoDetailChapterEmit;
+        mediaVideoReady = new MediaVideoReady();
+    }
+
+
+    public void getVideoListData(int pageNumb) {
+        mediaVideoReady.getVideoListData(String.valueOf(pageNumb), new RetrofitPageCallBack<MediaVideoModel>() {
+
+            @Override
+            protected void onPageRequestFail(String resMessage) {
+                mediaVideoEmit.loadMoreFail(resMessage);
+            }
+
+            @Override
+            protected void onPageRequestSuccess(MediaVideoModel model, PageModel.PageChildModel pageChildModel) {
+                mediaVideoEmit.loadMoreSuccess(model.getSuperJudgeCourseList(), pageChildModel);
+            }
+        });
+    }
+
+    public void getVideoTeacher(String code) {
+        waitDialog.open();
+        mediaVideoReady.getVideoTeacher(code, new MyRetrofitResponseCallback<MediaVideoDetailModel>() {
+            @Override
+            protected void onRequestFail(String resMessage) {
+                mediaVideoDetailTeacherEmit.onGetTeacherFail(resMessage);
+                waitDialog.close();
+            }
+
+            @Override
+            protected void onRequestSuccess(MediaVideoDetailModel model) {
+                mediaVideoDetailTeacherEmit.onGetTeacherSuccess(model.getTeacherList());
+                waitDialog.close();
+            }
+        });
+    }
+
+    public void getVideoChapter(String code) {
+        waitDialog.open();
+        mediaVideoReady.getVideoChapter(code, new MyRetrofitResponseCallback<MediaVideoDetailModel>() {
+            @Override
+            protected void onRequestFail(String resMessage) {
+                mediaVideoDetailChapterEmit.onGetChapterFail(resMessage);
+                waitDialog.close();
+            }
+
+            @Override
+            protected void onRequestSuccess(MediaVideoDetailModel model) {
+                mediaVideoDetailChapterEmit.onGetChapterSuccess(model.getSectionList());
+                waitDialog.close();
+            }
+        });
+    }
+}

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.bibinet.biunion"
+    >
+
+    <uses-permission android:name="android.permission.CAMERA"></uses-permission>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"></uses-permission>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"></uses-permission>
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+
+    <!-- 这个权限用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- 这个权限用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- 听筒和扬声器模式切换 -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+
+    <!--用于申请调用A-GPS模块-->
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"></uses-permission>
+    <!--用于申请获取蓝牙信息进行室内定位-->
+    <uses-permission android:name="android.permission.BLUETOOTH"></uses-permission>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"></uses-permission>
+    <!--激光推送-->
+
+    <!-- Required  一些系统要求的权限，如访问网络等-->
+    <!--<uses-permission android:name="com.bibinet.biunion.permission.JPUSH_MESSAGE" />-->
+    <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- Optional for location -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- 用于开启 debug 版本的应用在6.0 系统上 层叠窗口权限 -->
+
+<!--激光推送结束-->
+    <application
+        android:name=".project.application.BiUnionApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/app_icon"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:replace="android:label,android:name"
+        android:networkSecurityConfig="@xml/network_security_config">
+
+        <!-- android o  刘海屏适配，待测试  -->
+        <meta-data android:name="android.notch_support" android:value="true"/>
+
+        <activity android:name=".project.ui.activity.SplashActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            >
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
+        <activity android:name=".project.ui.activity.MainActivity" android:screenOrientation="portrait" android:windowSoftInputMode="adjustPan|stateHidden"/>
+        <activity android:name=".project.ui.activity.GuideActivity" android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <activity android:name=".project.ui.activity.subscribe.PrivateInfoDesignActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.CompanyInfoActivity" android:screenOrientation="portrait" />
+        <activity android:name=".project.ui.activity.SearchActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity android:name=".project.ui.activity.PasswordUpdateActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity android:name=".project.ui.activity.SearchResultActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.SettingActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.MoreProjectActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.BannerActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.subscribe.PrivateInfoShowActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.LoginFastActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity android:name=".project.ui.activity.LoginActivity" android:screenOrientation="portrait"
+            />
+        <activity android:name=".project.ui.activity.PasswordForgetActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity android:name=".project.ui.activity.PasswordForgetConfirmActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity android:name=".project.ui.activity.SelectAddressActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity android:name=".project.ui.activity.InformationDetailActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.InfoSearchDetailActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.MagazineActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.MagazineDetailActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.MagazineBookmarkActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.CollectActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.TenderHelpActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity android:name=".project.ui.activity.WriteTenderBookActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity android:name=".project.ui.activity.WriteTenderHistoryActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.RegisterActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity android:name=".project.ui.activity.PlatFormActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.AboutUsActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.MemberServiceActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.ExpertAskHistoryActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.AdviceSubmitActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.CustomServiceActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.MessageActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.MessageDetailActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.ExpertAskActivtiy" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.TenderHelpHistoryActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.MediaVideoDetailActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.MediaMusicDetailActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.MediaMusicPlayActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.ExpertAskResultActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity android:name=".project.ui.activity.ResetPasswordActivity" android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity android:name=".project.ui.activity.MediaVideoPlayActivity" android:screenOrientation="landscape"/>
+        <activity android:name=".project.ui.activity.MediaLiveDetailActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.MediaRecordDetailActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".project.ui.activity.MediaLiveRecordGuideActivity" android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".project.ui.activity.MediaLiveFinishActivity" android:screenOrientation="portrait"
+            />
+
+        <service android:name=".project.service.MusicPlayService" />
+
+        <!--<activity android:name="com.soundcloud.android.crop.CropImageActivity" />-->
+
+<!--分享所需要的activity-->
+
+        <activity
+            android:name="cn.sharesdk.tencent.qq.ReceiveActivity"
+            android:launchMode="singleTask"
+            android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="tencent1106346484" />
+            </intent-filter>
+        </activity>
+        <!--<activity-->
+            <!--android:name="com.mob.tools.MobUIShell"-->
+            <!--android:configChanges="keyboardHidden|orientation|screenSize"-->
+            <!--android:theme="@android:style/Theme.Translucent.NoTitleBar"-->
+            <!--android:windowSoftInputMode="stateHidden|adjustResize" >-->
+
+            <!--<intent-filter>-->
+                <!--<data android:scheme="tencent1106346484" />-->
+                <!--<action android:name="android.intent.action.VIEW" />-->
+                <!--<category android:name="android.intent.category.BROWSABLE" />-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+            <!--</intent-filter>-->
+
+            <!--&lt;!&ndash; 调用新浪原生SDK，需要注册的回调activity &ndash;&gt;-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.sina.weibo.sdk.action.ACTION_SDK_REQ_ACTIVITY" />-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+            <!--</intent-filter>-->
+
+            <!--&lt;!&ndash;集成line客户端登录授权，需要添如下格式的过滤器&ndash;&gt;-->
+            <!--<intent-filter>-->
+                <!--<data android:scheme="line.1477692153" />-->
+                <!--<action android:name="android.intent.action.VIEW"/>-->
+                <!--<category android:name="android.intent.category.BROWSABLE" />-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+            <!--</intent-filter>-->
+
+        <!--</activity>-->
+        <!--<activity-->
+            <!--android:name=".project.wxapi.WXEntryActivity"-->
+            <!--android:configChanges="keyboardHidden|orientation|screenSize"-->
+            <!--android:exported="true"-->
+            <!--android:screenOrientation="portrait"-->
+            <!--android:theme="@android:style/Theme.Translucent.NoTitleBar" />-->
+        <!--<meta-data android:name="Mob-AppKey" android:value="208e2e44a8e22"/>-->
+        <!--<meta-data android:name="Mob-AppSecret" android:value="b1add102dc8196b938bea24babef5b09"/>-->
+        <!--分享所需要的activity-->
+
+
+        <!--定位service-->
+        <service android:name="com.amap.api.location.APSService"></service>
+        <!--高德地图所使用的key-->
+        <meta-data android:name="com.amap.api.v2.apikey" android:value="@string/map_formal_key">
+        </meta-data>
+
+        <activity
+            android:name=".project.alipay.PayDemoActivity"
+            android:icon="@mipmap/app_icon"
+            android:label="@string/app_name" >
+
+        </activity>
+        <activity
+            android:name=".project.alipay.H5PayDemoActivity"
+            android:configChanges="orientation|keyboardHidden|navigation"
+            android:exported="false"
+            android:screenOrientation="behind" >
+        </activity>
+
+        <!-- alipay sdk begin -->
+
+        <activity
+            android:name="com.alipay.sdk.app.H5PayActivity"
+            android:configChanges="orientation|keyboardHidden|navigation|screenSize"
+            android:exported="false"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="adjustResize|stateHidden" >
+        </activity>
+        <activity
+            android:name="com.alipay.sdk.app.H5AuthActivity"
+            android:configChanges="orientation|keyboardHidden|navigation"
+            android:exported="false"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="adjustResize|stateHidden" >
+        </activity>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.bibinet.biunion.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+        <!--友盟统计-->
+        <meta-data android:name="UMENG_APPKEY" android:value="59faec43f29d980bf4000071"/>
+        <meta-data android:name="UMENG_CHANNEL" android:value="Channel ID"/>
+    </application>
+
+</manifest>

@@ -1,0 +1,148 @@
+apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao'
+apply plugin: 'com.mob.sdk'
+
+MobSDK {
+    appKey "208e2e44a8e22"
+    appSecret "b1add102dc8196b938bea24babef5b09"
+
+    ShareSDK {
+        //平台配置信息
+        devInfo {
+            QQ {
+                appId "1106346484"
+                appKey "loitgnP8uDwNQrk9"
+            }
+            QZone {
+                appId "1106346484"
+                appKey "loitgnP8uDwNQrk9"
+            }
+            Wechat {
+                appId "wxa681109bf648aea6"
+                appSecret "4c464d24061122f0859cd36de5607267"
+                userName "gh_afb25ac019c9"
+                path "pages/index/index.html?id=1"
+            }
+            WechatMoments {
+                appId "wxa681109bf648aea6"
+                appSecret "4c464d24061122f0859cd36de5607267"
+            }
+            WechatFavorite {
+                appId "wxa681109bf648aea6"
+                appSecret "4c464d24061122f0859cd36de5607267"
+            }
+        }
+    }
+}
+
+android {
+    signingConfigs {
+        config_sign {
+            keyAlias 'biunion_key'
+            keyPassword 'bibenetkey'
+            storeFile file('D:/比比文档/比比招标交接资料/签名/biunion_key.jks')
+            storePassword 'bibenetkey'
+        }
+    }
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
+    dexOptions {
+        jumboMode = true
+    }
+    lintOptions {
+        disable 'MissingTranslation', 'ExtraTranslation'
+    }
+    defaultConfig {
+        applicationId "com.bibinet.biunion"
+        minSdkVersion 18
+        targetSdkVersion 28
+        versionCode 317
+        versionName "3.1.7"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+//        ndk {
+//            abiFilters 'armeabi',"armeabi-v7a", "arm64-v8a"
+//        }
+        ndk {
+            //选择要添加的对应cpu类型的.so库。
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86'
+            // 还可以添加 'x86', 'x86_64', 'mips', 'mips64'
+        }
+        vectorDrawables.useSupportLibrary = true
+        signingConfig signingConfigs.config_sign
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config_sign
+        }
+        debug {
+            signingConfig signingConfigs.config_sign
+            minifyEnabled false
+        }
+    }
+    sourceSets{
+        main{
+            jniLibs.srcDirs = ['libs']
+//            jniLibs.srcDirs += ['libs/core', 'libs/beauty']
+        }
+    }
+
+}
+
+greendao {
+    schemaVersion 1
+    targetGenDir 'src/main/java'
+    daoPackage 'com.bibinet.biunion.project.dao'
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.aar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.huxq17.xrefreshview:xrefreshview:3.6.9'
+    implementation 'com.github.promeg:tinypinyin:1.0.0'
+    implementation 'com.android.support:multidex:1.0.3'
+    //方法过多jar
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    implementation project(':loopview')
+    implementation project(':nicevideoplayer')
+    implementation 'org.greenrobot:greendao:3.2.2'
+    // add library
+    implementation 'org.greenrobot:greendao-generator:3.2.2'
+    implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.1'
+    implementation project(':JBox2DLibrary')
+    implementation 'com.github.chrisbanes:PhotoView:2.0.0'
+    implementation 'jp.wasabeef:glide-transformations:3.3.0'
+    implementation 'me.yokeyword:fragmentation:1.3.1'
+
+    // Retrofit库
+    implementation "com.squareup.retrofit2:retrofit:2.4.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.4.0"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:2.4.0"
+    // Okhttp库
+    implementation "com.squareup.okhttp3:okhttp:3.10.0"
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.1'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+
+    //pdf
+    implementation 'es.voghdev.pdfviewpager:library:1.0.6'
+    implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
+
+//    // umeng
+    implementation  'com.umeng.umsdk:analytics:8.0.0'
+    implementation  'com.umeng.umsdk:common:2.0.0'
+//    implementation  'com.umeng.umsdk:utdid:1.1.5.3'
+}

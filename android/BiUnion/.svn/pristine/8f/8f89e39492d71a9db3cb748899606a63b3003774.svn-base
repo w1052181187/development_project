@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/shape_write_tender_book_background"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/submitContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="12dp"
+            android:background="@null"
+            android:gravity="left|top"
+            android:hint="请输入您对我们的建议和问题"
+            android:paddingLeft="10dp"
+            android:textColor="#333333"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/shape_write_tender_book_background"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/writePhoneNum"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            android:background="@null"
+            android:gravity="center_vertical"
+            android:hint="请输入您的手机号"
+            android:inputType="number"
+            android:paddingLeft="10dp"
+            android:textColor="#333333"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/act_advice_submit_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginRight="11dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/select_confirm_btn_background"
+        android:text="提交"
+        style="?android:attr/borderlessButtonStyle"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
+</LinearLayout>

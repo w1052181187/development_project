@@ -1,0 +1,83 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.TextUtils;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.ui.expand.WebViewActivity;
+
+import static com.bibinet.biunion.project.net.UrlConfig.TYPE_PIS;
+import static com.bibinet.biunion.project.net.UrlConfig.getBaseUrl;
+
+
+/**
+ * Created by bibinet on 2017-6-15.
+ */
+
+public class AboutUsActivity extends WebViewActivity {
+
+    public final static int TYPE_ABOUTUS = 1;//关于我们
+    public final static int TYPE_MEMBER_SERVICE = 2;//会员服务
+    public final static int TYPE_DISCLAIMER = 3; //免责声明
+    public final static int TYPE_LEGAL_STATEMENT = 4; //法律声明
+    public final static int TYPE_TERM_SERVICE = 5; //服务条款
+    private int type;
+    private String url;
+
+
+    @Override
+    protected void onWebCreate(Bundle savedInstanceState) {
+        initView();
+    }
+
+    @Override
+    protected int getWebViewId() {
+        return R.id.webview;
+    }
+
+    @Override
+    protected int getWebLayoutId() {
+        return R.layout.activity_about_us;
+    }
+
+    private void initView() {
+        if (TextUtils.isEmpty(url)) {
+            finish();
+        }
+        getWebView().loadUrl(getBaseUrl(TYPE_PIS) + url);
+    }
+
+    @Override
+    protected int getTitleString() {
+
+        Intent intent=getIntent();
+        type = intent.getIntExtra("Type",0);
+        url = "";
+        int titleId = 0;
+        switch (type){
+            case TYPE_ABOUTUS:
+                url = "appPage/aboutUs.jsp";
+                titleId = R.string.aboutOur;
+                break;
+            case TYPE_MEMBER_SERVICE:
+                url = "appPage/aboutUs.jsp";
+                titleId = R.string.memberService;
+                break;
+            case TYPE_DISCLAIMER:
+                url = "appPage/disclaimer.jsp";
+                titleId = R.string.disclaimer;
+                break;
+            case TYPE_TERM_SERVICE:
+                url = "appPage/serviceAgreement.jsp";
+                titleId = R.string.serviceTerm;
+                break;
+            case TYPE_LEGAL_STATEMENT:
+                url = "appPage/legalStatement.jsp";
+                titleId = R.string.legalStatement;
+                break;
+        }
+
+        return titleId;
+    }
+}

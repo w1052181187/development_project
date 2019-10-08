@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    >
+
+    <Button
+        android:id="@+id/v_private_info_design_img_main"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/shape_private_info_design_title_background"
+        android:text="类别"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp" />
+
+    <com.bibinet.biunion.project.ui.custom.PrivateInfoDesignRadioLayout
+        android:id="@+id/v_private_info_design_img_radio"
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+    </com.bibinet.biunion.project.ui.custom.PrivateInfoDesignRadioLayout>
+</LinearLayout>

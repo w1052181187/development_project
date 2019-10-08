@@ -1,0 +1,162 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.TextView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.adapter.MessageAdapter;
+import com.bibinet.biunion.project.models.MessageModel;
+import com.bibinet.biunion.project.net.emit.MessageEmit;
+import com.bibinet.biunion.project.net.firing.MessageFiring;
+import com.bibinet.biunion.project.ui.custom.HomeHeaderView;
+import com.bibinet.biunion.project.ui.custom.RefreshHeaderView;
+import com.bibinet.biunion.project.ui.expand.PageActivity;
+import com.bibinet.biunion.project.ui.expand.PageActivityAdapter;
+
+import com.bibinet.biunion.project.ui.pop.MessagePop;
+import com.bibinet.biunion.project.utils.DensityUtil;
+import com.umeng.analytics.MobclickAgent;
+
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+
+public class MessageActivity extends PageActivity<MessageModel.ItemsModel> implements MessageEmit, MessagePop.OnMessagePopListener, View.OnClickListener {
+    private final int TYPE_ALL = 0;  //资讯信息
+    private final int TYPE_HOT = 1;  //热门资讯
+    private final int TYPE_PPP = 2;  //PPP资讯
+    private final int TYPE_IND = 3;  //行业资讯
+    private final int TYPE_EPE = 4;  //曝光台
+
+    private int currentType = TYPE_ALL;
+    private MessageFiring messageFiring;
+    private HomeHeaderView headerView;
+    private MessagePop messagePop;
+
+    @Override
+    protected int getNotDataViewId() {
+        return R.id.act_message_not_data;
+    }
+
+    @Override
+    protected PageActivityAdapter getPageAdapter(List<MessageModel.ItemsModel> dataList) {
+        return new MessageAdapter(this, dataList);
+    }
+
+    @Override
+    protected void initLoad(int pageNumb) {
+        loadData(pageNumb);
+    }
+
+    private void loadData(int pageNumb) {
+        String request = null;
+        switch (currentType){
+            case TYPE_ALL:
+                break;
+            case TYPE_HOT:
+                request = "2";
+                break;
+            case TYPE_PPP:
+                request = "1";
+                break;
+            case TYPE_IND:
+                request = "4";
+                break;
+            case TYPE_EPE:
+                request = "3";
+                break;
+        }
+        //根据类型请求数据
+        messageFiring.getMessageData(pageNumb, request);
+    }
+
+    @Override
+    protected void onPageCreate(Bundle savedInstanceState) {
+        setTitleBtn(true, this);
+        initView();
+    }
+
+    private void initView() {
+        messageFiring = new MessageFiring(this);
+        messagePop = new MessagePop(this);
+    }
+
+    @Override
+    protected int getRecyclerViewId() {
+        return R.id.act_message_recycler;
+    }
+
+    @Override
+    protected int getPageLayoutId() {
+        return R.layout.activity_message;
+    }
+
+    @Override
+    protected void nextPageLoad(int pageNumb) {
+        loadData(pageNumb);
+    }
+
+    @Override
+    protected void refreshLoad(int pageNumb) {
+        loadData(pageNumb);
+    }
+
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_message;
+    }
+
+    @Override
+    protected int getXRefreshLayoutId() {
+        return R.id.act_message_refresh;
+    }
+
+    @Override
+    protected RefreshHeaderView getHeadView() {
+        if (headerView == null) {
+            headerView = HomeHeaderView.getInstance(this).getLayoutView();
+            headerView.init();
+            headerView.setSecondary(false);
+        }
+        return headerView;
+    }
+
+    @Override
+    public void onDismiss() {
+        setSelectIconState(false);
+    }
+
+    @Override
+    public void onSelect(int pos, String title) {
+        currentType = pos;
+        setTitleString(title);
+        initRefresh();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("MessageActivity");
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("MessageActivity");
+        MobclickAgent.onPause(this);
+    }
+
+    //标题点击
+    @Override
+    public void onClick(View view) {
+        messagePop.setCurrentType(currentType);
+        messagePop.showAtLocation(getTitleTV(), Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, DensityUtil.dip2px(this, 56));
+        setSelectIconState(true);
+    }
+}

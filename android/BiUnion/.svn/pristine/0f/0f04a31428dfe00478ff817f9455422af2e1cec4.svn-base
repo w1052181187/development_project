@@ -1,0 +1,117 @@
+package com.bibinet.biunion.project.application;
+
+import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.database.sqlite.SQLiteDatabase;
+import android.support.multidex.MultiDexApplication;
+
+import com.alivc.player.AliVcMediaPlayer;
+import com.bibinet.biunion.project.RetrofitRequestInterface.ApiInterface;
+import com.bibinet.biunion.project.dao.DaoMaster;
+import com.bibinet.biunion.project.dao.DaoSession;
+import com.bibinet.biunion.project.net.UrlConfig;
+import com.bibinet.biunion.project.utils.RetrofitManager;
+import com.mob.MobSDK;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.commonsdk.UMConfigure;
+
+/**
+ * Created by bibinet on 2017-5-18.
+ */
+
+public class BiUnionApplication extends MultiDexApplication {
+    public static Context context;
+    private DaoSession mDaoSession;
+    private static BiUnionApplication instance;
+    private String mCurLocation;
+    private ApiInterface apiInterface;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        instance = this;
+        initGreenDao();
+        //初始化Mob
+        MobSDK.init(this);
+        context = getApplicationContext();
+        // 加载系统默认设置，字体不随用户设置变化
+        Resources res = super.getResources();
+        Configuration config = new Configuration();
+        config.setToDefaults();
+        res.updateConfiguration(config, res.getDisplayMetrics());
+//        JPushInterface.init(this);
+//        JPushInterface.setDebugMode(true);
+
+        PathConfig.createMkdirs();
+
+        //友盟初始化
+        UMConfigure.init(this, UMConfigure.DEVICE_TYPE_PHONE, null);
+        // 选用AUTO页面采集模式(activity不需要埋点，fragment等非activity页面需要埋点)
+        MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.AUTO);
+//        MobclickAgent.setDebugMode(true);
+//        MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);
+//        MobclickAgent.openActivityDurationTrack(false);
+
+        //初始化播放器（只需调用一次即可，建议在application中初始化）
+        AliVcMediaPlayer.init(getApplicationContext());
+
+        RetrofitManager.getInst().initRetrofit(getApplicationContext(), UrlConfig.getBaseUrl(UrlConfig.TYPE_IIP));
+        apiInterface = RetrofitManager.getInst().createService(ApiInterface.class);
+    }
+
+    private void initGreenDao() {
+        DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(this, Constants.DB_NAME);
+        SQLiteDatabase database = devOpenHelper.getWritableDatabase();
+        DaoMaster daoMaster = new DaoMaster(database);
+        mDaoSession = daoMaster.newSession();
+    }
+
+    public DaoSession getDaoSession() {
+        return mDaoSession;
+    }
+
+//    //统一字体
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        if (newConfig.fontScale != 1)//非默认值
+//            getResources();
+//        super.onConfigurationChanged(newConfig);
+//    }
+//
+//    @Override
+//    public Resources getResources() {
+//        Resources res = super.getResources();
+//        if (res.getConfiguration().fontScale != 1) {//非默认值
+//            Configuration newConfig = new Configuration();
+//            newConfig.setToDefaults();//设置默认
+//            res.updateConfiguration(newConfig, res.getDisplayMetrics());
+//        }
+//        return res;
+//    }
+
+//    protected String getAppkey() {
+//        return null;
+//    }
+//
+//    protected String getAppSecret() {
+//        return null;
+//    }
+
+    public static synchronized BiUnionApplication getInstance() {
+        return instance;
+    }
+
+    public void setCurLocation(String nowLocation) {
+        this.mCurLocation = nowLocation;
+    }
+
+    public String getCurLocation() {
+        return mCurLocation;
+    }
+
+    public ApiInterface getApiInterface() {
+        return apiInterface;
+    }
+
+}

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/fra_media"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="44dp">
+            <TextView
+                android:id="@+id/fra_media_title_video"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:layout_weight="1"
+                android:text="视频"
+                android:textColor="@color/ada_media_video_study_tv_color_sel"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+            <TextView
+                android:id="@+id/fra_media_title_music"
+                android:text="音频"
+                android:gravity="center"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:layout_weight="1"
+                android:textSize="16sp"
+                android:textColor="@color/ada_media_video_study_tv_color_sel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+            <TextView
+                android:id="@+id/fra_media_title_live"
+                android:text="直播"
+                android:gravity="center"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:layout_weight="1"
+                android:textSize="16sp"
+                android:textColor="@color/ada_media_video_study_tv_color_sel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/fra_media_title_live_flag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="24dp"
+            android:src="@mipmap/live_flag_has"
+            android:visibility="gone"/>
+    </RelativeLayout>
+
+    <com.bibinet.biunion.project.ui.custom.MoveLineView
+        android:id="@+id/fra_media_line"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="2dp" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/fra_media_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </android.support.v4.view.ViewPager>
+
+</LinearLayout>

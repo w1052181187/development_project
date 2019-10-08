@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:gravity="center"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="255dp"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <View
+                android:layout_marginTop="50dp"
+                android:layout_marginLeft="11.5dp"
+                android:layout_marginRight="11.4dp"
+                android:layout_width="match_parent"
+                android:layout_height="325dp"
+                android:background="@drawable/shape_version_update_background"/>
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            >
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/img_version_update_top"
+                />
+            <LinearLayout
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="16dp"
+                android:layout_height="30dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:text="最新版本"
+                    android:gravity="center"
+                    android:textSize="14sp"
+                    android:textColor="#ef9d3a"
+                    />
+
+                <TextView
+                    android:id="@+id/dia_version_update_name"
+                    android:layout_marginLeft="6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="14sp"
+                    android:textColor="#ef9d3a"
+                    />
+            </LinearLayout>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:overScrollMode="never"
+                android:scrollbars="none"
+                android:layout_height="150dp">
+                <LinearLayout
+                    android:id="@+id/dia_version_update_main"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginRight="24dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                </LinearLayout>
+            </ScrollView>
+
+            <TextView
+                android:id="@+id/dia_version_update_confirm"
+                android:layout_width="175dp"
+                android:layout_height="30dp"
+                android:text="立即更新"
+                android:gravity="center"
+                android:textSize="15sp"
+                android:textColor="#ffffff"
+                android:background="@drawable/shape_version_update_btn"
+                />
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/dia_version_update_close"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="16dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@mipmap/img_version_update_close"
+            />
+    </RelativeLayout>
+</LinearLayout>

@@ -1,0 +1,335 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.webkit.WebView;
+import android.widget.Toast;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.application.Constants;
+import com.bibinet.biunion.project.bean.InformationBean;
+import com.bibinet.biunion.project.event.LoginSuccessEvent;
+import com.bibinet.biunion.project.models.BaseModel;
+import com.bibinet.biunion.project.models.CollectResultModel;
+import com.bibinet.biunion.project.models.InfoSearchDetailModel;
+import com.bibinet.biunion.project.models.InformationItemsModel;
+import com.bibinet.biunion.project.net.MyRetrofitResponseCallback;
+import com.bibinet.biunion.project.net.UrlConfig;
+import com.bibinet.biunion.project.net.emit.InformationDetailEmit;
+import com.bibinet.biunion.project.net.firing.MyFiring;
+import com.bibinet.biunion.project.net.firing.SearchFiring;
+import com.bibinet.biunion.project.net.ready.SearchReady;
+import com.bibinet.biunion.project.onekeyshare.OnekeyShare;
+import com.bibinet.biunion.project.ui.expand.WebViewActivity;
+import com.bibinet.biunion.project.utils.ScreenShotUtils;
+import com.bibinet.biunion.project.utils.StatisticsUtils;
+import com.bibinet.biunion.project.utils.ToastUtils;
+import com.umeng.analytics.MobclickAgent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import static com.bibinet.biunion.project.net.UrlConfig.TYPE_IIP;
+
+/**
+ * Created by bibinet on 2017-6-10.
+ */
+
+public class InfoSearchDetailActivity extends WebViewActivity implements InformationDetailEmit {
+
+
+    private final static String DATA = "DATA";
+    private final static int MSG_SUCCESS = 1;
+    private final static int MSG_FAIL = 2;
+
+    WebView webview;
+
+    private MyFiring myFiring;
+    private String projectCode;
+    private String projectName;
+    private String dataType;
+    private String collectType;
+    private String objectId;
+
+
+    private String shareUrl;
+    private boolean isUpdate;
+    private String userId = "";
+
+    public static void start(Context context, InformationItemsModel data) {
+        Intent intent = new Intent(context, InfoSearchDetailActivity.class);
+        intent.putExtra(DATA, data);
+        context.startActivity(intent);
+    }
+
+    @Override
+    protected void onWebCreate(Bundle savedInstanceState) {
+        //分享
+        setRightBtn(0, R.mipmap.img_share_icon, 1, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                shareProjcet();
+            }
+        });
+        //收藏
+        setRightSecondBtn(0, R.drawable.select_collect_icon, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                collect();
+            }
+        });
+        initView();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected int getWebViewId() {
+        return R.id.webview;
+    }
+
+    @Override
+    protected int getWebLayoutId() {
+        return R.layout.activity_information_detail;
+    }
+
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_SUCCESS:
+                    InfoSearchDetailModel model = (InfoSearchDetailModel) msg.obj;
+                    InfoSearchDetailModel.Data data = model.getData();
+                    if (data == null) {
+                        return;
+                    }
+                    String titleStr = data.getDetailName();
+                    if (!TextUtils.isEmpty(titleStr)) {
+                        setTitleString(titleStr);
+                    } else {
+                        setTitleString("信息详情");
+                    }
+                    String url = data.getUrl();
+                    if (!TextUtils.isEmpty(url)) {
+                        shareUrl = UrlConfig.getBaseUrl(TYPE_IIP) + url;
+//                        shareUrl = UrlConfig.testIip + url;
+                        webview.loadUrl(shareUrl);
+                    }
+
+                    //初始化收藏按钮
+                    if(checkLogin()){
+                        String userId = Constants.loginresultInfo.getUser().getUserId();
+                        myFiring.isCollect(userId, projectCode);
+                    }
+                    break;
+                case MSG_FAIL:
+                    ToastUtils.showLong((String) msg.obj);
+                    break;
+            }
+            super.handleMessage(msg);
+        }
+    };
+
+    private void initView() {
+        myFiring = new MyFiring(this);
+        Intent intent = getIntent();
+        InformationItemsModel data = (InformationItemsModel) intent.getSerializableExtra(DATA);
+        projectCode = data.getProjectCode();
+        projectName = data.getProjectName();
+        dataType = data.getDataType();
+        switch (dataType) {
+            case "1001":
+                collectType = "1";
+                break;
+            case "2001":
+                collectType = "2";
+                break;
+            case "3001":
+                collectType = "3";
+                break;
+            case "4001":
+                collectType = "4";
+                break;
+        }
+        objectId = data.getObjectId();
+        webview = getWebView();
+        updateLoadUrl();
+    }
+
+    private void updateLoadUrl() {
+        if (Constants.loginresultInfo != null) {
+            userId = Constants.loginresultInfo.getUser().getUserId();
+        }
+        new SearchReady().getSearchDetail(userId, objectId, projectCode, dataType, new MyRetrofitResponseCallback<InfoSearchDetailModel>() {
+            @Override
+            protected void onRequestFail(String resMessage) {
+                mHandler.obtainMessage(MSG_FAIL,resMessage).sendToTarget();
+            }
+
+            @Override
+            protected void onRequestSuccess(InfoSearchDetailModel model) {
+                mHandler.obtainMessage(MSG_SUCCESS, model).sendToTarget();
+            }
+        });
+    }
+
+    @Subscribe
+    public void onMainEventBus(LoginSuccessEvent event) {
+        if (event == null || event.getUserBean() == null) {
+            return;
+        }
+        isUpdate = true;
+        updateLoadUrl();
+    }
+
+    private boolean checkLogin() {
+        if (Constants.loginresultInfo != null && Constants.loginresultInfo.getUser() != null && Constants.loginresultInfo.getUser().getUserId() != null && !Constants.loginresultInfo.getUser().getUserId().equals("")) {
+            return true;
+        }
+        return false;
+    }
+
+    private void collect(){
+        if (!checkLogin()) {
+            startActivity(new Intent(this, LoginActivity.class));
+            StatisticsUtils.toLogin(StatisticsUtils.TYPE_TO_LOGIN_FAVORITE_INFO);
+            return;
+        }
+        if (getRightSecondState()) {
+            myFiring.deleteCollect(Constants.loginresultInfo.getUser().getUserId(), projectCode);
+        } else {
+            if (!TextUtils.isEmpty(collectType)) {
+                myFiring.setCollect(Constants.loginresultInfo.getUser().getUserId(), projectCode, collectType);
+            }
+        }
+    }
+
+    private void shareProjcet() {
+        OnekeyShare oks = new OnekeyShare();
+        //关闭sso授权
+        oks.disableSSOWhenAuthorize();
+
+        // 分享时Notification的图标和文字  2.5.9以后的版本不调用此方法
+        //oks.setNotification(R.drawable.ic_launcher, getString(R.string.app_name));
+        // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
+        oks.setTitle(projectName);
+        // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
+        oks.setTitleUrl(shareUrl);
+        // text是分享文本，所有平台都需要这个字段
+        oks.setText(shareUrl);
+        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
+        // oks.setImagePath("/sdcard/test.jpg");//确保SDcard下面存在此张图片
+        if (ScreenShotUtils.shotBitmap(InfoSearchDetailActivity.this)) {
+            oks.setImagePath("/sdcard/screenshots.png");
+        }
+        // url仅在微信（包括好友和朋友圈）中使用
+        oks.setUrl(shareUrl);
+        // comment是我对这条分享的评论，仅在人人网和QQ空间使用
+        oks.setComment(projectName);
+        // site是分享此内容的网站名称，仅在QQ空间使用
+        oks.setSite(getString(R.string.app_name));
+        // siteUrl是分享此内容的网站地址，仅在QQ空间使用
+        oks.setSiteUrl(shareUrl);
+        // 启动分享GUI
+        oks.show(this);
+    }
+
+    @Override
+    public void onIsCollectSuccess(CollectResultModel collectResultModel) {
+        if (collectResultModel.getResCode().equals("0000")) {
+            if (collectResultModel.isCollected()) {
+                setRightSecondState(true);
+            } else {
+                setRightSecondState(false);
+            }
+        } else {
+            ToastUtils.showShort(collectResultModel.getResMessage());
+        }
+    }
+
+    @Override
+    public void onSetCollectSuccess(BaseModel baseModel) {
+        if (baseModel.getResCode().equals("0000")) {
+            ToastUtils.showShort("收藏成功");
+            setRightSecondState(true);
+        } else {
+            ToastUtils.showShort(baseModel.getResMessage());
+        }
+    }
+
+    @Override
+    public void onSetCollectFail(String msg) {
+        Toast.makeText(this, "网络异常", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDeleteCollectSuccess(BaseModel baseModel) {
+        if (baseModel.getResCode().equals("0000")) {
+            ToastUtils.showShort("取消收藏");
+            setRightSecondState(false);
+        } else {
+            ToastUtils.showShort(baseModel.getResMessage());
+        }
+    }
+
+    @Override
+    public void onDeleteCollectFail(String error) {
+        Toast.makeText(this, "网络异常", Toast.LENGTH_SHORT).show();
+    }
+
+    private void goBack() {
+        finish();
+    }
+
+    @Override
+    public void handleUpdateHistory(WebView view, String url, boolean isReload) {
+        super.handleUpdateHistory(view, url, isReload);
+        if (isUpdate) {
+            view.clearHistory();
+            isUpdate = false;
+        }
+    }
+
+
+    @Override
+    public void onBackPressedSupport() {
+        if (webview.canGoBack()) {//当webview不是处于第一页面时，返回上一个页面
+            webview.goBack();
+            return ;
+        } else {//当webview处于第一页面时,直接退出程序
+            //    System.exit(0);
+            goBack();
+        }
+        super.onBackPressedSupport();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("H5Activity");
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("H5Activity");
+        MobclickAgent.onPause(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
+
+    @Override
+    protected int getTitleString() {
+        return 0;
+    }
+}

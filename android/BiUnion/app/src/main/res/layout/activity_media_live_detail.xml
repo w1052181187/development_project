@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <SurfaceView
+        android:id="@+id/act_media_live_detail_video_player"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/common_left_right_margin_space"
+        android:layout_marginTop="@dimen/common_left_right_margin_space">
+        <TextView
+            android:id="@+id/act_media_live_detail_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/act_media_live_detail_avatar"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="-18dp"
+            android:paddingLeft="24dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingRight="12dp"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:background="@drawable/dizhia"
+            android:textSize="14sp"
+            android:visibility="gone"/>
+
+        <ImageView
+            android:id="@+id/act_media_live_detail_avatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:scaleType="centerCrop"/>
+
+    </RelativeLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/act_media_live_detail_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:transcriptMode="alwaysScroll"
+
+                />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/common_left_right_margin_space">
+
+                <EditText
+                    android:id="@+id/act_media_live_detail_reply_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:background="@drawable/dizhia"
+                    android:layout_marginRight="@dimen/common_left_right_margin_space"
+                    android:textSize="12sp"
+                    android:hint="说点什么..."
+                    android:imeOptions="actionSend"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white"
+                    android:layout_toLeftOf="@+id/act_media_live_detail_close"
+                    android:layout_centerVertical="true"/>
+
+                <ImageView
+                    android:id="@+id/act_media_live_detail_close"
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_gravity="center"
+                    android:src="@mipmap/shanchu"
+                    android:padding="8dp"
+                    android:background="@drawable/live_close_bg"
+                    android:layout_centerVertical="true"
+                    />
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

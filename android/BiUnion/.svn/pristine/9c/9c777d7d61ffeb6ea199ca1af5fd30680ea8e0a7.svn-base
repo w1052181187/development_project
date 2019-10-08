@@ -1,0 +1,100 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.os.Bundle;
+import android.widget.Toast;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.adapter.WriteTenderHistoryAdapter;
+import com.bibinet.biunion.project.application.Constants;
+import com.bibinet.biunion.project.bean.DeleteHistoryBean;
+import com.bibinet.biunion.project.bean.WriteTenderBookHistoryBean;
+import com.bibinet.biunion.project.net.emit.WriteTenderHistoryEmit;
+import com.bibinet.biunion.project.net.firing.WriteTenderBookFiring;
+import com.bibinet.biunion.project.ui.expand.PageActivity;
+import com.bibinet.biunion.project.ui.expand.PageActivityAdapter;
+
+import java.util.List;
+
+/**
+ * Created by bibinet on 2017-6-14.
+ */
+
+public class WriteTenderHistoryActivity extends PageActivity<WriteTenderBookHistoryBean.ItemBean> implements WriteTenderHistoryEmit {
+
+    private WriteTenderBookFiring writeTenderBookFiring;
+
+
+    @Override
+    protected int getNotDataViewId() {
+        return R.id.act_write_tender_history_not_data;
+    }
+
+
+    @Override
+    protected PageActivityAdapter getPageAdapter(List<WriteTenderBookHistoryBean.ItemBean> dataList) {
+        return new WriteTenderHistoryAdapter(this, dataList, writeTenderBookFiring);
+    }
+
+    @Override
+    protected void initLoad(int pageNumb) {
+        loadData(pageNumb);
+    }
+
+    @Override
+    protected void onPageCreate(Bundle savedInstanceState) {
+        initView();
+    }
+
+    @Override
+    protected int getRecyclerViewId() {
+        return R.id.act_write_tender_history_recycler;
+    }
+
+    @Override
+    protected int getSwipeRefreshLayoutId() {
+        return R.id.act_write_tender_history_swipe_refresh;
+    }
+
+    @Override
+    protected int getPageLayoutId() {
+        return R.layout.activity_write_tender_history;
+    }
+
+    @Override
+    protected void nextPageLoad(int pageNumb) {
+        loadData(pageNumb);
+    }
+
+    private void initView() {
+        writeTenderBookFiring = new WriteTenderBookFiring(this);
+    }
+
+    private void loadData(int pageNumb) {
+        writeTenderBookFiring.getWriteTenderBook(Constants.loginresultInfo.getUser().getUserId(), String.valueOf(pageNumb));
+    }
+
+    @Override
+    protected void refreshLoad(int pageNumb) {
+        loadData(pageNumb);
+    }
+
+    @Override
+    public void onDeleteWriteTenderBookSuccess(DeleteHistoryBean bean) {
+        if (bean.isDelResult()) {
+            Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
+            initRefresh();
+        } else {
+            Toast.makeText(this, "删除失败", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onDeleteWriteTenderBookFail(String s) {
+        Toast.makeText(this, "网络异常", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_history_record;
+    }
+}

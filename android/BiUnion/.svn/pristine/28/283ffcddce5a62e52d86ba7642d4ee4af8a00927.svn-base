@@ -1,0 +1,142 @@
+package com.bibinet.biunion.project.adapter;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.models.InformationItemsModel;
+import com.bibinet.biunion.project.models.SearchResultModel;
+import com.bibinet.biunion.project.ui.activity.InfoSearchDetailActivity;
+import com.bibinet.biunion.project.ui.activity.InformationDetailActivity;
+import com.bibinet.biunion.project.ui.expand.PageActivityAdapter;
+import com.bibinet.biunion.project.utils.Common;
+
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+/**
+ * Created by bibinet on 2017-1-6.
+ */
+public class SearchActivityAdapter extends PageActivityAdapter {
+    private static final int TYPE_ITEM = 0;  //普通Item View
+    private final LayoutInflater inflater;
+    private Activity context;
+    private List<InformationItemsModel> socailInfos;
+    private String mStrKeyword;
+
+    public SearchActivityAdapter(Activity context, List<InformationItemsModel> socailInfos) {
+        super(context);
+        this.context = context;
+        this.socailInfos = socailInfos;
+        inflater = LayoutInflater.from(context);
+    }
+
+    public void setKeyword(String value){
+        mStrKeyword = value;
+    }
+
+    @Override
+    protected int getChildItemViewType(int position) {
+        return TYPE_ITEM;
+    }
+
+    @Override
+    protected int getChildCount() {
+        return Common.isListEmpty(socailInfos) ? 0 : socailInfos.size();
+    }
+
+    @Override
+    protected RecyclerView.ViewHolder onChildCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == TYPE_ITEM) {
+            View view = inflater.inflate(R.layout.adapter_search_result, parent, false);
+            //这边可以做一些属性设置，甚至事件监听绑定
+            //view.setBackgroundColor(Color.RED);
+            SearchItemHolder itemViewHolder = new SearchItemHolder(view);
+            return itemViewHolder;
+        }
+        return null;
+    }
+
+    @Override
+    protected void onChildBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+        if (holder instanceof SearchItemHolder) {
+            final SearchActivityAdapter.SearchItemHolder h = (SearchActivityAdapter.SearchItemHolder) holder;
+            String location = socailInfos.get(position).getProjectLocation();
+            if(location==null || location.equals("")){
+                h.projectLoaction.setVisibility(View.GONE);
+            }else{
+                h.projectLoaction.setVisibility(View.VISIBLE);
+                h.projectLoaction.setText(location);
+            }
+            String time = socailInfos.get(position).getProjectTime();
+            h.projectTime.setText(time);
+            h.companyName.setText(matcherSearchTitle(context.getResources().getColor(R.color.keyword_color), socailInfos.get(position).getProjectName(), mStrKeyword));
+            if (socailInfos.get(position).getProjectType().equals("A")) {
+                h.projectTypeImage.setImageResource(R.mipmap.shouye_gongcheng);
+            } else if (socailInfos.get(position).getProjectType().equals("B")) {
+                h.projectTypeImage.setImageResource(R.mipmap.shouye_huowu);
+            } else {
+                h.projectTypeImage.setImageResource(R.mipmap.shouye_fuw);
+            }
+
+            h.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    InfoSearchDetailActivity.start(context, socailInfos.get(position));
+                }
+            });
+        }
+    }
+
+    private SpannableString matcherSearchTitle(int color, String text, String keyword) {
+        if (TextUtils.isEmpty(text)) {
+            return new SpannableString("");
+        }
+        SpannableString s = new SpannableString(text);
+        Pattern p = Pattern.compile(keyword);
+        Matcher m = p.matcher(s);
+        while (m.find()) {
+            int start = m.start();
+            int end = m.end();
+            s.setSpan(new ForegroundColorSpan(color), start, end,  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        return s;
+    }
+
+    class SearchItemHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.projectTypeImage)
+        ImageView projectTypeImage;
+        @BindView(R.id.projectTypeMain)
+        RelativeLayout projectTypeMain;
+        @BindView(R.id.companyName)
+        TextView companyName;
+        @BindView(R.id.projectLoaction)
+        TextView projectLoaction;
+        @BindView(R.id.projectIsTop)
+        ImageView projectIsTop;
+        @BindView(R.id.projectTime)
+        TextView projectTime;
+
+        public SearchItemHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
+}
+

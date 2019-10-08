@@ -1,0 +1,138 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.adapter.ExpertsHistoryAdapter;
+import com.bibinet.biunion.project.application.Constants;
+import com.bibinet.biunion.project.bean.ExpertsAskAnswerResultBean;
+import com.bibinet.biunion.project.net.emit.ExpertAskHistoryEmit;
+import com.bibinet.biunion.project.net.firing.ExpertFiring;
+import com.bibinet.biunion.project.ui.expand.PageActivity;
+import com.bibinet.biunion.project.ui.expand.PageActivityAdapter;
+import com.umeng.analytics.MobclickAgent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+/**
+ * Created by bibinet on 2017-6-19.
+ */
+
+public class ExpertAskHistoryActivity extends PageActivity<ExpertsAskAnswerResultBean.ItemsBean> implements ExpertAskHistoryEmit, ExpertsHistoryAdapter.onDeleteDataListioner {
+
+    private ExpertFiring expertFiring;
+    private ExpertsHistoryAdapter adapter;
+    private List<ExpertsAskAnswerResultBean.ItemsBean> dataListX = new ArrayList<>();
+    private int deletePostion = -1;
+
+    @Override
+    protected int getNotDataViewId() {
+        return R.id.act_experts_answer_not_data;
+    }
+
+    @Override
+    protected PageActivityAdapter getPageAdapter(List<ExpertsAskAnswerResultBean.ItemsBean> dataList) {
+        dataListX = dataList;
+        adapter = new ExpertsHistoryAdapter(this, dataListX);
+        adapter.setOnDeletListioner(this);
+        return adapter;
+    }
+
+    @Override
+    protected void initLoad(int pageNumb) {
+        loadData(pageNumb);
+    }
+
+    @Override
+    protected void onPageCreate(Bundle savedInstanceState) {
+        initView();
+    }
+
+    @Override
+    protected int getRecyclerViewId() {
+        return R.id.act_experts_answer_recycler;
+    }
+
+    @Override
+    protected int getSwipeRefreshLayoutId() {
+        return R.id.act_experts_answer_swipe_refresh;
+    }
+
+    @Override
+    protected int getPageLayoutId() {
+        return R.layout.activity_expert_ask_history;
+    }
+
+    @Override
+    protected void nextPageLoad(int pageNumb) {
+        loadData(pageNumb);
+    }
+
+    @Override
+    protected void refreshLoad(int pageNumb) {
+        loadData(pageNumb);
+    }
+
+    private void initView() {
+        expertFiring = new ExpertFiring(this);
+    }
+
+    private void loadData(int pageNum) {
+        expertFiring.getExpertAsk(Constants.loginresultInfo.getUser().getUserId(), pageNum);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ExpertAskActivtiy.requestCode && resultCode == ExpertAskActivtiy.resultCode) {
+            initRefresh();
+        }
+    }
+
+
+    @Override
+    public void onDelete(int postion) {
+        deletePostion = postion;
+        expertFiring.deleteExpertAsk(String.valueOf(dataListX.get(postion).getObjectId()));
+    }
+
+    @Override
+    public void onDeleteExpertAskSuccess() {
+        dataListX.remove(deletePostion);
+        adapter.notifyDataSetChanged();
+        Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDeleteExpertAskFail(String msg) {
+        Toast.makeText(this, "删除失败", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("ExpertsAnswerActivity");
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("ExpertsAnswerActivity");
+        MobclickAgent.onPause(this);
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_expert_ask_history;
+    }
+}

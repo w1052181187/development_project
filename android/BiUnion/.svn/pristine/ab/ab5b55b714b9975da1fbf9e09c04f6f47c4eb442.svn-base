@@ -1,0 +1,104 @@
+/**
+ * Copyright 2017 bejson.com
+ */
+package com.bibinet.biunion.project.models;
+
+
+import java.io.Serializable;
+import java.util.List;
+
+public class MediaMusicChildModel implements Serializable {
+    private String albumName; //专辑名称
+    private String coverPath; //图片
+    private String albumIntroduce; //介绍
+    private String containAudioNums; //节数
+    private String isFree; //是否免费
+    private String albumContent; //详细介绍
+    private String code; // 根据code请求老师和章节
+    private String createDate; //创建日期
+
+    //本地
+    private boolean isStudyed;
+
+    private List<MediaMusicDetailChapterModel> albumAudios;
+
+    public List<MediaMusicDetailChapterModel> getAlbumAudios() {
+        return albumAudios;
+    }
+
+    public void setAlbumAudios(List<MediaMusicDetailChapterModel> albumAudios) {
+        this.albumAudios = albumAudios;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getAlbumName() {
+        return albumName;
+    }
+
+    public void setAlbumName(String albumName) {
+        this.albumName = albumName;
+    }
+
+    public String getCoverPath() {
+        return "review?filePath=" + coverPath;
+    }
+
+    public void setCoverPath(String coverPath) {
+        this.coverPath = coverPath;
+    }
+
+    public String getAlbumIntroduce() {
+        return albumIntroduce;
+    }
+
+    public void setAlbumIntroduce(String albumIntroduce) {
+        this.albumIntroduce = albumIntroduce;
+    }
+
+    public String getContainAudioNums() {
+        return containAudioNums;
+    }
+
+    public void setContainAudioNums(String containAudioNums) {
+        this.containAudioNums = containAudioNums;
+    }
+
+    public String getIsFree() {
+        return isFree;
+    }
+
+    public void setIsFree(String isFree) {
+        this.isFree = isFree;
+    }
+
+    public String getAlbumContent() {
+        return albumContent;
+    }
+
+    public void setAlbumContent(String albumContent) {
+        this.albumContent = albumContent;
+    }
+
+    public String getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
+
+    public boolean isStudyed() {
+        return isStudyed;
+    }
+
+    public void setStudyed(boolean studyed) {
+        isStudyed = studyed;
+    }
+}

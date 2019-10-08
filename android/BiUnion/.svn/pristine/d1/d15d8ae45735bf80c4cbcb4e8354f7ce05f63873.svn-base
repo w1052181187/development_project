@@ -1,0 +1,63 @@
+package com.bibinet.biunion.project.ui.activity;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+
+import com.bibinet.biunion.R;
+import com.bibinet.biunion.project.ui.expand.TitleActivity;
+import com.bibinet.biunion.project.utils.Common;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+public class CustomServiceActivity extends TitleActivity {
+
+    @BindView(R.id.custom_service_phone_tv)
+    TextView mPhoneTv;
+    @BindView(R.id.custom_service_qq1_tv)
+    TextView mQQ1Tv;
+    @BindView(R.id.custom_service_qq2_tv)
+    TextView mQQ2Tv;
+    @BindView(R.id.custom_service_qq3_tv)
+    TextView mQQ3Tv;
+
+
+    @OnClick({R.id.custom_service_phone_ll, R.id.custom_service_qq1_ll, R.id.custom_service_qq2_ll, R.id.custom_service_qq3_ll})
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.custom_service_phone_ll:
+                Common.startPhone(this, mPhoneTv.getText().toString());
+                break;
+            case R.id.custom_service_qq1_ll:
+                Common.startQQChat(this, mQQ1Tv.getText().toString());
+                break;
+            case R.id.custom_service_qq2_ll:
+                Common.startQQChat(this, mQQ2Tv.getText().toString());
+                break;
+            case R.id.custom_service_qq3_ll:
+                Common.startQQChat(this, mQQ3Tv.getText().toString());
+                break;
+            default:
+                break;
+        }
+    }
+
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+//        setRightBtn(0, R.mipmap.kefuzixun_kefu, this);
+
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_custom_service;
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_custom_service;
+    }
+
+}
