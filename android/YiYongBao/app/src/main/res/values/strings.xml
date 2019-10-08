@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">appmf</string>
+    <string name="reload">重新加载</string>
+    <string name="error_tips">加载错误</string>
+    <!--<string name="base_js">-->
+        <!--window.nativeExports={};-->
+        <!--var callbackFuncName = {};-->
+        <!--var callbackJs=function (method,params) {-->
+          <!--var cb;-->
+          <!--if(method){-->
+            <!--cb = callbackFuncName[method];-->
+          <!--};-->
+          <!--if (cb) {-->
+              <!--cb(params);-->
+          <!--};-->
+        <!--};-->
+
+        <!--window.nativeExports.invokeNative = function(method,params,callback) {-->
+            <!--alert(method)-->
+            <!--if(callback){-->
+                <!--callbackFuncName[method] = callback;-->
+            <!--}-->
+            <!--window.jsInterface.callNative(method,params);-->
+        <!--};-->
+    <!--</string>-->
+</resources>

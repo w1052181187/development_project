@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+
+    <color name="transparent">#00000000</color>
+    <color name="half_transparent">#80000000</color>
+    <color name="white">#ffffff</color>
+
+    <color name="error_text">#5b5d5c</color>
+    <color name="error_color">#049486</color>
+
+    <color name="btn_pressed_stroke">#45c1b5</color>
+    <color name="btn_stroke">#049486</color>
+</resources>

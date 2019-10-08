@@ -1,0 +1,2 @@
+# Referenced at D:\workSpace\androidProject\YiYongBao\app\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:19
+-keep class com.appmf.net.appmf.app.MyApp { <init>(...); }

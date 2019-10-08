@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="page_black_cc">#b01a1a1a</color>
+    <color name="page_colorAccent">#FF4081</color>
+    <color name="page_colorPrimary">#3F51B5</color>
+    <color name="page_colorPrimaryDark">#303F9F</color>
+    <color name="page_gray_cc">#cccccc</color>
+    <color name="page_gray_cccc">#b0cccccc</color>
+    <color name="page_gray_ff">#ded2d2</color>
+    <color name="page_loop_bottom">#a0a1a1a1</color>
+    <color name="page_white">#ffffff</color>
+    <declare-styleable name="ArcImageView">
+        <attr format="dimension" name="arc_height"/> <!--弧度的高度-->
+    </declare-styleable>
+    <declare-styleable name="BannerViewPager">
+        <attr format="boolean" name="banner_isloop"/> <!--是否自动轮播-->
+        <attr format="integer" name="banner_looptime"/> <!--自动轮播的时间-->
+        <attr format="integer" name="banner_switchtime"/> <!--轮播时，viewpager的切换速度-->
+        <attr format="integer" name="banner_loop_max_count"/> <!--超过这个数字时，才会轮播效果-->
+    </declare-styleable>
+    <declare-styleable name="ColorTextView">
+        <attr format="dimension" name="colortext_size"/>
+        <attr format="color|reference" name="colortext_default_color"/> <!--默认颜色-->
+        <attr format="color|reference" name="colortext_change_color"/> <!--渐变颜色-->
+    </declare-styleable>
+    <declare-styleable name="NormalIndicator">
+        <attr format="reference" name="normal_selector"/>
+        <attr format="dimension" name="normal_leftmargin"/>
+        <attr format="boolean" name="normal_dismiss_open"/>
+    </declare-styleable>
+    <declare-styleable name="TabIndicator">
+        <attr format="integer" name="visiabel_size"/> <!--可视化个数，比如有一排，我们就只要显示4个-->
+        <attr format="color|reference" name="tab_color"/> <!--指示器的颜色-->
+        <attr format="dimension" name="tab_width"/>  <!--指示器的宽度-->
+        <attr format="dimension" name="tab_height"/> <!--指示器的高度-->
+        <attr format="dimension" name="tab_textsize"/> <!--顶部文字的大小-->
+        <attr format="color|reference" name="tab_text_default_color"/> <!--顶部文字默认的颜色-->
+        <attr format="color|reference" name="tab_text_change_color"/> <!--移动时，顶部文字的颜色-->
+        <attr format="boolean" name="tab_show"/>  <!--是否显示指示器-->
+        <attr name="tab_text_type">               <!--顶部文字的类型，nromaltext为普通的textview，
+                                                       corlortext为文件渐变-->
+            <enum name="normaltext" value="0"/>
+            <enum name="colortext" value="1"/>
+        </attr>
+        <attr name="tap_type">           <!--指示器类型，有三角形或者圆条-->
+            <enum name="tri" value="0"/>
+            <enum name="rect" value="1"/>
+        </attr>
+    </declare-styleable>
+    <declare-styleable name="TextIndicator">
+        <attr format="boolean" name="word_show_circle"/> <!--是否显示外援的圆圈-->
+        <attr format="reference" name="word_circle_color"/> <!--圆圈的颜色-->
+        <attr format="reference" name="word_text_color"/> <!--文字颜色-->
+        <attr format="dimension" name="word_text_size"/> <!--文字大小-->
+    </declare-styleable>
+    <declare-styleable name="TransIndicator">
+        <attr format="dimension" name="trans_width"/> <!--指示器的大小-->
+        <attr format="dimension" name="trans_height"/> <!--指示器的大小-->
+        <attr format="color|reference" name="trans_defaultcolor"/> <!--指示器默认的颜色-->
+        <attr format="dimension" name="trans_leftmargin"/>
+        <attr format="color|reference" name="trans_movecolor"/> <!--指示器移动的颜色-->
+        <attr format="boolean" name="trans_dismiss_open"/>
+        <attr format="dimension" name="trans_round_radius"/>
+        <attr name="trans_type">
+            <enum name="circle" value="0"/>
+            <enum name="round" value="1"/>
+        </attr>
+    </declare-styleable>
+    <declare-styleable name="ZoomIndicator">
+        <attr format="reference" name="zoom_selector"/> <!--selecotr，一般就一个圆点即可-->
+        <attr format="dimension" name="zoom_leftmargin"/><!--两个圆点之间的间距-->
+        <attr format="float" name="zoom_max"/> <!--小圆点放大的倍数-->
+        <attr format="float" name="zoom_alpha_min"/><!--小圆点缩小的倍数-->
+        <attr format="boolean" name="zoom_dismiss_open"/><!--做引导页的最后一页，是否隐藏圆点-->
+    </declare-styleable>
+    <dimen name="activity_horizontal_margin">64dp</dimen>
+</resources>

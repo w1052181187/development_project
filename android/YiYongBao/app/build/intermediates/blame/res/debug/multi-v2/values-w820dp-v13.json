@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "D:\\workSpace\\androidProject\\YiYongBao\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-w820dp-v13\\values-w820dp-v13.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Administrator\\.gradle\\caches\\transforms-1\\files-1.1\\ViewPagerHelper-v0.8.aar\\8987b3dadeb9c22347ce334b7f3d8cda\\res\\values-w820dp-v13\\values-w820dp-v13.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9,10,11,14,20,25,30,49,55,68,75",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,105,156,208,264,311,362,409,462,507,642,1021,1315,1565,2668,3024,3710,4148",
+                        "endLines": "2,3,4,5,6,7,8,9,10,13,19,24,29,48,54,67,74,75",
+                        "endColumns": "49,50,51,55,46,50,46,52,44,24,24,24,24,24,24,24,24,57",
+                        "endOffsets": "100,151,203,259,306,357,404,457,502,637,1016,1310,1560,2663,3019,3705,4143,4201"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,1 @@
+{"id":"integer","uid":"integer","type":"integer","local_mobile":"text","client_mobile":"text","operator":"text","card_type":"text","start_time":"integer","end_time":"integer","duration":"integer","pk":"id"}

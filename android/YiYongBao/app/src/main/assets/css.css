@@ -1,0 +1,36 @@
+._appmf_label div{
+background:#f69;
+float: left;
+display:flex;
+-webkit-box-align: center;
+align-items: center;
+-webkit-box-pack: center;
+justify-content: center;
+line-height: normal;
+padding-top:10px;
+padding-bottom:10px;
+// vertical-align:middle;
+/*border用来解决安卓端字体偏上的问题*/
+border-top: 1px solid transparent;
+}
+
+._appmf_label1 div{
+background:#f49;
+float:left;
+// display:flex;
+-webkit-box-align: center;
+align-items: center;
+-webkit-box-pack: center;
+justify-content: center;
+line-height: 100%;
+padding-top:10px;
+padding-bottom:10px;
+// padding:10px 0;
+vertical-align:middle;}
+
+._appmf_label2 div{
+background:#f49;
+float:left;
+height: 40px;
+line-height: 40px;
+border-top: 0.02rem solid transparent;}

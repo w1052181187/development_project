@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "D:\\workSpace\\androidProject\\YiYongBao\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-zh\\values-zh.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Administrator\\.gradle\\caches\\transforms-1\\files-1.1\\agentweb-4.0.2.aar\\abf4da0d3e67c31c5ae8dcffc7718895\\res\\values-zh\\values-zh.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,102,149,202,269,343,392,449,535,588,644,716,762,843,896,969,1014",
+                        "endColumns": "46,46,52,66,73,48,56,85,52,55,71,45,80,52,72,44,53",
+                        "endOffsets": "97,144,197,264,338,387,444,530,583,639,711,757,838,891,964,1009,1063"
+                    }
+                }
+            ]
+        }
+    ]
+}
