@@ -1,0 +1,13 @@
+<template name="courseItem">
+  <view class='course-item'>
+    <image src='{{baseImageUrl}}{{courseCover}}' mode='scaleToFill'
+    lazy-load='{{true}}'></image>
+    <text class='course-item-title'>{{courseName}}</text>
+    <text class='course-item-chapter'>共{{courseChapter}}章{{coursePitch}}节</text>
+    <view class='course-item-record' >
+      <image src='../../images/video_{{isStudy === 0 ? "off" : "on"}}.png'></image>
+      <text class='course-item-record-text' wx:if='{{isStudy === 0}}'>还未开始学习</text>
+      <text class='course-item-record-isStudyed' wx:else>学习到{{studyChapter}}-{{studyPitch}} {{hourName}}</text>
+    </view>
+  </view>
+</template>

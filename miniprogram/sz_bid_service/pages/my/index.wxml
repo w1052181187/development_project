@@ -1,0 +1,38 @@
+<!-- <custom-navigationBar title='{{navigationBarTitle}}'></custom-navigationBar> -->
+<view class='container-list' style='height: {{contentHeight}}px'>
+  <!-- banner 中展示数据 -->
+  <view class='my-bannner-bigbox'>
+    <image src='../../images/wode_banner.png'></image>
+    <view class='my-bannner-box'>
+      <image src='../../images/newtoux.png' class='avator-img'></image>
+      <view class='my-bannner-rightbox'>
+        <view class='top-right-box'>
+          <view class='top-son-left'>欢迎您，{{userInfo.userName}}</view>
+          <view class='top-son-right'>
+            <image src='../../images/common_level.png'></image>
+            <text class='common_level'>普通用户</text>
+          </view>
+        </view>
+        <view class='bottom-right-box'>{{userInfo.enterpriseName !== null ? userInfo.enterpriseName : ''}}</view>
+      </view>
+    </view>
+  </view>
+  <!-- banner 中展示数据 -->
+  <!-- 列表数据 -->
+  <view class='my-list-bigbox'>
+    <view class='my-list-box' bindtap='systemBtn'>
+      <image src='../../images/xiaoxi.png' class='list-icon'></image>
+      <text class='list-title'>系统信息</text>
+      <image src='../../images/jiantou.png' class='jiantou'></image>
+    </view>
+    <button class='my-list-box my-list-box-btn' open-type='feedback'>
+      <image src='../../images/yijian.png' class='list-icon'></image>
+      <text class='list-title'>意见反馈</text>
+      <image src='../../images/jiantou.png' class='jiantou'></image>
+    </button>
+  </view>
+  <!-- 列表数据 -->
+  <!-- 退出按钮 -->
+  <view class='exit-btton' bindtap='logout'>退出登录</view>
+  <!-- 退出按钮 -->
+</view>

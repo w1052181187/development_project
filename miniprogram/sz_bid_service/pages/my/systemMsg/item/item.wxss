@@ -1,0 +1,41 @@
+/* pages/my/systemMsg/item/item.wxss */
+.item-bigbox{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 0 43rpx;
+  box-sizing: border-box;
+  background: #fff;
+  border-bottom: 1rpx solid #f3f4f8;
+}
+.item-topbox{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 30rpx;
+}
+.item-title{
+  color: #333333;
+  font-size: 30rpx;
+  flex: 1;
+}
+.item-time{
+  color: #999999;
+  font-size: 24rpx;
+}
+.item-bottombox{
+  font-size: 28rpx;
+  height: 80rpx;
+  color: #999999;
+  margin-top: 25rpx;
+  padding-bottom: 36rpx;
+}
+.new-message{
+  display: inline-block;
+  width: 13rpx;
+  height: 13rpx;
+  background: #ff0000;
+  border-radius: 50%;
+  margin-left: 8rpx;
+  vertical-align: top;
+}

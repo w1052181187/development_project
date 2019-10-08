@@ -1,0 +1,48 @@
+<!--pages/course-dialog/course-dialog.wxml-->
+<view class='root'>
+    <block wx:if='{{!showSuccessDialog}}'>
+      <view class='dialog'>
+        <view class='top-box'>
+          <image class='close' src='../../images/guanbi_c.png' bindtap='close'></image>
+          <image class='top-bg' src='../../images/beijing_s.png'></image>
+          <view class='top'>
+            <image src='../../images/dainhu_da.png'></image>
+            <text>咨询电话：0351-2521212</text>
+          </view>
+        </view>
+        <text class='hint'>也可留下联系信息</text>
+        <text class='hint'>我们的课程顾问将第一时间回复您</text>
+        <form bindsubmit="formSubmit">
+          <view class='input-view'>
+            <image src='../../images/xingming.png'> </image>
+            <input name='name' placeholder='输入姓名'></input>
+          </view>
+          <view class='input-view'>
+            <image src='../../images/dianhua.png'> </image>
+            <input name='contact' placeholder='输入手机'></input>
+          </view>
+          <view class='input-view'>
+            <image src='../../images/qiye_o.png'> </image>
+            <input name='businessName' placeholder='输入企业名称'></input>
+          </view>
+          <view class='input-view'>
+            <image src='../../images/xuqiu.png'> </image>
+            <input name='requirements' placeholder='输入详细需求(选填)'></input>
+          </view>
+          <button form-type="submit">提交</button>
+        </form>
+      </view>
+    </block>
+    <block wx:if='{{showSuccessDialog}}'>
+      <view class='success-dialog'>
+        <!-- <view class='success-top'> -->
+          <image class='close' src='../../images/guanbi_c.png' bindtap='close'></image>
+          <image class='top' src='../../images/cheng_d.png'></image>
+        <!-- </view> -->
+        <view>
+          <text>提交成功</text>
+          <button bindtap='close'>我知道了</button>
+        </view>
+      </view>
+    </block>
+</view>

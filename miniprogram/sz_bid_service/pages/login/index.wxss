@@ -1,0 +1,83 @@
+/* pages/login/index.wxss */
+.login-bigbox{
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+.login-bigbox>image{
+  width: 100%;
+  height: 100%;
+}
+.head-img-bigbox{
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 101rpx;
+}
+.head-img-box{
+  width: 100%;
+  height: 180rpx;
+  overflow: hidden;
+  text-align: center;
+  padding-top: 30rpx;
+}
+.head-img-box>image{
+  height: 180rpx;
+  width: 180rpx;
+}
+.login-inputbibox{
+  width: 100%;
+  min-height: 50rpx;
+  padding: 0 114rpx; 
+  box-sizing: border-box;
+  margin-top: 160rpx;
+}
+.login-inputbox{
+  width: 100%;
+  height: 60rpx;
+  padding: 0 13rpx;
+  padding-bottom: 24rpx;
+  border-bottom: 1rpx solid #dadada;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  color: #666666;
+  margin-bottom: 70rpx;
+}
+.login-inputbox>image{
+  width: 35rpx;
+  height: 35rpx;
+}
+.login-inputbox>input{
+  width: 100%;
+  padding: 0 32rpx;
+  box-sizing: border-box;
+}
+.login-btn-box{
+  width: 609rpx;
+  height: 78rpx;
+  background: #008eff;
+  border-radius: 40rpx;
+  margin: 0 auto;
+  text-align: center;
+  line-height: 78rpx;
+  color: #fff;
+  font-size: 32rpx;
+  margin-top: 120rpx;
+}
+.prompt-title{
+  color: #999999;
+  font-size: 22rpx;
+  margin: 40rpx auto;
+  text-align: center;
+}
+.prompt-title>text::before, .prompt-title>text::after {
+  display: inline-block;
+  content: '';
+  border-top: 1rpx solid #bbb;
+  width: 76rpx;
+  margin: 7rpx 24rpx;
+}

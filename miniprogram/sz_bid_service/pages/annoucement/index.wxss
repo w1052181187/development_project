@@ -1,0 +1,54 @@
+/* pages/annoucement/index.wxss */
+@import "item/item.wxss";
+
+.slide-root {
+  width: 100%;
+  height: 291rpx;
+}
+.slide-image {
+  width: 100%;
+  height: 291rpx;
+}
+.time-address {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 24rpx 40rpx;
+  box-sizing: border-box;
+  font-size: 26rpx;
+  color: #999;
+  background-color: white;
+}
+.time-address .week {
+  flex: 1;
+  padding: 0 12rpx;
+  box-sizing: border-box;
+}
+.time-icon {
+  width: 36rpx;
+  height: 39rpx;
+  margin-right: 12rpx;
+}
+.address {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.address-icon {
+  width: 41rpx;
+  height: 47rpx;
+  margin-right: 12rpx;
+}
+.address-text {
+  color: #333;
+}
+.anno-list {
+  width: 100%;
+  background-color: #f3f4f8;
+  margin-top: 2rpx;
+}
+.anno-item {
+  width: 100%;
+  margin-bottom: 10rpx;
+}

@@ -1,0 +1,50 @@
+/**app.wxss**/
+.container-list {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f3f4f8;
+  /* 滚动条显示 */
+  /* overflow: hidden; */
+}
+/** wx-scroll-view 组件本身已支持 flex 特性 **/
+.container-scroll {
+  height: 100%;
+  background-color: #f3f4f8;
+  /* 滚动条显示 */
+  overflow: hidden;
+}
+.content {
+  flex: 1;
+}
+/* .no-data {
+  width: 100%;
+} */
+
+.search-box {
+  width: 100%;
+  padding: 10rpx 40rpx;
+  box-sizing: border-box;
+  background-color: white;
+}
+.search {
+  width: 100%;
+  background-color: #f3f4f8;
+  border: 1px solid #f3f4f8;
+  border-radius: 12rpx;
+  font-size: 26rpx;
+  color: #333;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 6rpx 24rpx;
+  box-sizing: border-box;
+}
+.search input {
+  flex: 1;
+}
+.search image {
+  width: 34rpx;
+  height: 32rpx;
+}

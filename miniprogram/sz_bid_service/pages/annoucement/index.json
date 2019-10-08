@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "address-dialog": "/components/address-dialog/index",
+    "load-more-view": "/components/load-more-view/index"
+  },
+  "enablePullDownRefresh": true
+}

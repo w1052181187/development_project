@@ -1,0 +1,62 @@
+<!-- <custom-navigationBar title='{{navigationBarTitle}}'></custom-navigationBar> -->
+<view class='container-list' style='height: {{contentHeight}}px'>
+<!-- <view class='container-list' style='height: 400px'> -->
+    <!-- banner -->
+    <swiper
+      class='slide-root'
+      current="{{current}}"
+      circular='{{circular}}'
+      indicator-dots='{{indicatorDots}}'
+      autoplay='{{autoplay}}'
+      interval='{{bannerInterval}}'
+      duration='{{duration}}'>
+      <swiper-item wx:for='{{bannerList}}' wx:key='index' data-url='{{item.linkUrl}}' bindtap='handleBannerClick'>
+        <image src='{{imgUrl + item.relativePath}}' class='slide-image' lazy-load='{{true}}'/>
+      </swiper-item>
+    </swiper>
+    <!-- banner -->
+    <!-- 新消息提示 -->
+    <view class='new-message-bigbox' bindtap='newSysteBtn'>
+      <image src='../../images/laba.png' class='broadcast-icon'></image>
+      <!-- <text class='news-box' animation="{{animationData}}">{{msg.content}}</text> -->
+      <view class="news-box">
+        <text wx:if='{{!isScrollEnable}}'>{{msg.content}}</text>
+        <view class="marquee_box" wx:if='{{isScrollEnable}}'>
+          <view class="marquee_text" style="transform: translateX(-{{marqueeDistance}}px)">
+            <text>{{msg.content}}</text>
+            <text style="margin-right:{{marquee_margin}}px;"></text>
+            <text style="margin-right:{{marquee_margin}}px;">{{msg.content}}</text>
+          </view>
+        </view>
+      </view>
+      <image src='../../images/jiantou.png' class='arrow-icon'></image>
+    </view>
+    <!-- 新消息提示 -->
+    <!-- 功能列表 -->
+    <view class='function-bigbox'>
+      <view class='function-box' data-type='zb' bindtap='handleClick'>
+        <image src='../../images/zhaob.png' class='function-icon'></image>
+        <view class='function-title'>
+          <text class='function-title-big'>我的招标项目</text>
+          <text class='function-title-min'>查看我的招标项目进程状态</text>
+        </view>
+        <image src='../../images/jiantou.png' class='arrow-icon'></image>
+      </view>
+      <view class='function-box' data-type='tb' bindtap='handleClick'>
+        <image src='../../images/toub.png' class='function-icon'></image>
+        <view class='function-title'>
+          <text class='function-title-big'>我的投标项目</text>
+          <text class='function-title-min'>查看我的投标项目进程状态</text>
+        </view>
+        <image src='../../images/jiantou.png' class='arrow-icon'></image>
+      </view>
+      <view class='function-box'>
+        <image src='../../images/gengd.png' class='function-icon'></image>
+        <view class='function-title'>
+          <text class='function-title-big'>更多功能</text>
+          <text class='function-title-min'>更多功能敬请期待</text>
+        </view>
+      </view>
+    </view>
+    <!-- 功能列表 -->
+</view>

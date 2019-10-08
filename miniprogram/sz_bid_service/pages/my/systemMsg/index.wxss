@@ -1,0 +1,5 @@
+/* pages/my/systemMsg/index.wxss */
+@import "item/item.wxss";
+.system-list-box{
+  width: 100%;
+}

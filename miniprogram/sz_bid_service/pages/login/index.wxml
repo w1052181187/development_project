@@ -1,0 +1,32 @@
+<view class='login-bigbox'>
+  <image src='../../images/denglu_beij.png'></image>
+  <view class='head-img-bigbox'>
+    <!-- 头像图片 -->
+    <view class='head-img-box'>
+      <image src='../../images/denglulo.png'></image>
+    </view>
+    <!-- 头像图片 -->
+    <form bindsubmit="formSubmit">
+      <!-- 登录输入框 -->
+      <view class='login-inputbibox'>
+        <view class='login-inputbox'>
+          <image src='../../images/yonghum.png'></image>
+          <input placeholder="请输入用户名/手机号" name='name'/>
+        </view>
+        <view class='login-inputbox'>
+          <image src='../../images/mima.png'></image>
+          <input type='password' placeholder="请输入密码" name='password'/>
+        </view>
+      </view>
+      <!-- 登录输入框 -->
+      <!-- 登录按钮 -->
+      <button class='login-btn-box' form-type="submit">登 录</button >
+      <!-- 登录按钮 -->
+      <!-- 提示 -->
+      <view class="prompt-title">
+          <text >请使用深圳交易平台账号进行登录</text>
+      </view>
+      <!-- 提示 -->
+    </form>
+  </view>
+</view>

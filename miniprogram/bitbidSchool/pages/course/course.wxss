@@ -1,0 +1,8 @@
+@import "../item-course/item-course.wxss";
+
+.root {
+  width: 100%;
+  padding: 40rpx 20rpx;
+  box-sizing: border-box;
+  background-color: #f3f3f3;
+}

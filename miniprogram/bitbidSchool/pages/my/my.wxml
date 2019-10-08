@@ -1,0 +1,37 @@
+<!--my.wxml-->
+<!-- <import src="../item-record/item-record.wxml" /> -->
+<view class="root">
+  <view wx:for="{{recordList}}" wx:key="{{item.id}}" data-code="{{item.code}}" bindtap="handleItemClick">
+    <template is="recordItem" data="{{...item, baseImageUrl}}" />
+    <!-- <circle-progress
+        id='circle{{item.id}}'
+        bg='circle_bg{{item.id}}'
+        draw='circle_draw{{item.id}}'>
+        <text>{{item.studyProgress}}%</text>
+    </circle-progress> -->
+  </view>
+  <text class="list-no-data" hidden='{{recordList.length < totalNum}}'>没有更多数据</text>
+</view>
+
+<template name="recordItem">
+  <view class='record-item'>
+    <image src='{{baseImageUrl}}{{cover}}' mode='aspectFill' lazy-load='{{true}}'></image>
+    <view class='content'>
+      <text class='record-item-name'>{{title}}</text>
+      <text class='record-item-record'>开始学习：第{{sectionNum}}章{{hourNum}}节 {{hourName}}</text>
+    </view>
+    <view class='circle-view'>
+      <template class='circle-template' is="circle" data="{{id, studyProgress}}"/>
+      <text>已学习</text>
+    </view>
+    
+  </view>
+</template>
+<!-- 无法使用自定义组件的形式（原因未知），故采用引用方式 -->
+<template name="circle">
+  <view class="circle_box" >
+    <canvas class="circle_bg" canvas-id="circle_bg{{id}}"></canvas> 
+    <canvas class="circle_draw" canvas-id="circle_draw{{id}}"></canvas> 
+    <text>{{studyProgress}}%</text>    
+  </view>
+</template>
