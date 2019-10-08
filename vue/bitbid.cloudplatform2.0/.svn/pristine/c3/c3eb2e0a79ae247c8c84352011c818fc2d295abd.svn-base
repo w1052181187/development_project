@@ -1,0 +1,31 @@
+import request from '@/utils/axios/components-axios'
+
+export const proposedProject = {
+  /** 列表查询 */
+  list (params) {
+    return request({
+      url: `/proposed-project`,
+      method: 'get',
+      params
+    })
+  },
+  detail (code) {
+    return request({
+      url: `/proposed-project/` + code,
+      method: 'get'
+    })
+  },
+  joinBusinessOpportunities (data) {
+    return request({
+      url: `/proposed-project/join-business-opportunities`,
+      method: 'post',
+      data
+    })
+  },
+  isJoinOpportunity (comparisonCode) {
+    return request({
+      url: `/proposed-project/is-join-opportunity/` + comparisonCode,
+      method: 'get'
+    })
+  }
+}

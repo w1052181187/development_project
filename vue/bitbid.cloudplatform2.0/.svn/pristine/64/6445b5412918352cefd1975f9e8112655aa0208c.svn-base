@@ -1,0 +1,402 @@
+<template>
+  <div class="cloudcontent" id="bid-file">
+    <div class="main">
+      <div class="bid-info">
+        <el-form :model="form">
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="标段编号：">
+                <span>{{form.tenderProjectCode}}标段编号</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="标段名称：">
+                <span>{{form.tenderProjectName}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+<!--      <div class="bid-info">-->
+<!--        <el-row>-->
+<!--          <el-col :span="12">-->
+<!--            标段编号：<span class="bid-code">{{form.tenderProjectCode}}</span>-->
+<!--          </el-col>-->
+<!--          <el-col :span="12">-->
+<!--            标段名称：<span class="bid-code">{{form.tenderProjectName}}</span>-->
+<!--          </el-col>-->
+<!--        </el-row>-->
+<!--      </div>-->
+      <ul class="file-box">
+        <li v-for="(item, index) in fileTypeList" :key="index">
+          <div :class="index === 0 ? 'file-item' : 'file-item-gap'">
+            <span class="file-name">{{index + 1 + ' ' + item.fileName}}</span>
+            <span class="file-action" @click="delBtn(item)">删除</span>
+            <span class="file-action" @click="updateBtn(item)">{{item.fileName === activeName ? '收起' : '编辑'}}</span>
+          </div>
+          <div class="file-collapse" v-if="item.fileName === activeName">
+            <fileUpload :can-edit="canEdit" :file-list="item.fileList" :file-type="9" :file-name='item.fileName' v-if="'委托代理合同' === activeName"></fileUpload>
+            <fileUpload :can-edit="canEdit" :file-list="item.fileList" :file-type="9" :file-name='item.fileName' v-if="'项目实施计划' === activeName"></fileUpload>
+            <fileUpload :can-edit="canEdit" :file-list="item.fileList" :file-type="9" :file-name='item.fileName' v-if="'主管部门批复函件' === activeName"></fileUpload>
+            <fileUpload :can-edit="canEdit" :file-list="item.fileList" :file-type="9" :file-name='item.fileName' v-if="'招标项目及标段信息' === activeName"></fileUpload>
+            <prequalification :can-edit="canEdit" :object-id="objectId" v-if="'资格预审公告（含变更）' === activeName"></prequalification>
+            <tenderer :can-edit="canEdit" :object-id="objectId" v-if="'投标单位报名表' === activeName"></tenderer>
+            <prequalificationDoc :can-edit="canEdit" :object-id="objectId" v-if="'资格预审文件' === activeName"></prequalificationDoc>
+            <prequalificationApplication :can-edit="canEdit" :object-id="objectId" v-if="'资格预审申请文件' === activeName"></prequalificationApplication>
+            <returns :can-edit="canEdit" :object-id="objectId" v-if="'资格预审结果报告' === activeName"></returns>
+            <resultNote :can-edit="canEdit" :object-id="objectId" v-if="'资格预审结果通知书' === activeName"></resultNote>
+            <bidding :can-edit="canEdit" :object-id="objectId" v-if="'招标公告（含变更）' === activeName"></bidding>
+            <fileUpload :can-edit="canEdit" :file-list="item.fileList" :file-type="9" :file-name='item.fileName'
+                        v-if="'投标邀请书（含变更）' === activeName"></fileUpload>
+            <biddingDoc :can-edit="canEdit" :object-id="objectId" v-if="'招标文件' === activeName"></biddingDoc>
+            <fileUpload :can-edit="canEdit" :file-list="item.fileList" :file-type="9" :file-name='item.fileName'
+                        v-if="'招标控制价' === activeName"></fileUpload>
+            <tenderDoc :can-edit="canEdit" :object-id="objectId" v-if="'投标文件' === activeName"></tenderDoc>
+            <bidOpening :can-edit="canEdit" :object-id="objectId" v-if="'开标' === activeName"></bidOpening>
+            <evaluation :can-edit="canEdit" :object-id="objectId" v-if="'评标结果' === activeName"></evaluation>
+            <picketage :can-edit="canEdit" :object-id="objectId" v-if="'定标' === activeName"></picketage>
+            <fileUpload :can-edit="canEdit" :file-list="item.fileList" :file-type="9" :file-name='item.fileName' v-if="'合同' === activeName"></fileUpload>
+            <jobEvaluation :can-edit="canEdit" :object-id="objectId" v-if="'代理工作评价' === activeName"></jobEvaluation>
+            <fileUpload :can-edit="canEdit" :file-list="item.fileList" :file-type="9" :file-name='item.fileName' v-if="'其他' === activeName"></fileUpload>
+          </div>
+        </li>
+      </ul>
+      <!--按钮-->
+      <el-button class="add-file" @click="handleAddFileDir">
+        <span> + 增加文件目录</span>
+      </el-button>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :current-page.sync="currentPage"
+        :page-size='pageSize'
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+
+      <el-dialog :before-close='close' title="新增文件类型" :visible.sync="dialogVisible">
+        <el-form :model="dialogForm" ref="dialogForm" :label-width="formLabelWidth">
+          <el-form-item label="文件类型：">
+            <el-select v-model="dialogForm.fileType" placeholder="请选择">
+              <el-option
+                v-for="item in fileTypeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button class="cancal" @click="close">取 消</el-button>
+          <el-button type="primary" @click="submitForm('dialogForm')">确认</el-button>
+        </div>
+      </el-dialog>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {
+    prequalification: resolve => require(['./public/prequalification'], resolve),
+    tenderer: resolve => require(['./public/tenderer'], resolve),
+    prequalificationDoc: resolve => require(['./public/prequalificationDoc'], resolve),
+    prequalificationApplication: resolve => require(['./public/prequalificationApplication'], resolve),
+    returns: resolve => require(['./public/returns'], resolve),
+    resultNote: resolve => require(['./public/resultNote'], resolve),
+    bidding: resolve => require(['./public/bidding'], resolve),
+    biddingDoc: resolve => require(['./public/biddingDoc'], resolve),
+    tenderDoc: resolve => require(['./public/tenderDoc'], resolve),
+    bidOpening: resolve => require(['./public/bidOpening'], resolve),
+    evaluation: resolve => require(['./public/evaluation'], resolve),
+    picketage: resolve => require(['./public/picketage'], resolve),
+    jobEvaluation: resolve => require(['./public/jobEvaluation'], resolve),
+    fileUpload: resolve => require(['./public/fileUpload'], resolve)
+  },
+  name: 'file',
+  data () {
+    return {
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: null, // 总条数
+      pageSize: 10, // 每页展示条数
+      objectId: '', // 标段id
+      form: {
+      },
+      detailList: [
+        {}
+      ],
+      activeName: '',
+      fileTypeList: [
+        {
+          fileName: '委托代理合同'
+        },
+        {
+          fileName: '项目实施计划'
+        },
+        {
+          fileName: '主管部门批复函件'
+        },
+        {
+          fileName: '招标项目及标段信息'
+        },
+        {
+          fileName: '资格预审公告（含变更）'
+        },
+        {
+          fileName: '投标单位报名表'
+        },
+        {
+          fileName: '资格预审文件'
+        },
+        {
+          fileName: '资格预审申请文件'
+        },
+        {
+          fileName: '资格预审结果报告'
+        },
+        {
+          fileName: '资格预审结果通知书'
+        },
+        {
+          fileName: '招标公告（含变更）'
+        },
+        {
+          fileName: '投标邀请书（含变更）'
+        },
+        {
+          fileName: '招标文件'
+        },
+        {
+          fileName: '招标控制价'
+        },
+        {
+          fileName: '投标文件'
+        },
+        {
+          fileName: '开标'
+        },
+        {
+          fileName: '评标结果'
+        },
+        {
+          fileName: '定标'
+        },
+        {
+          fileName: '合同'
+        },
+        {
+          fileName: '代理工作评价'
+        },
+        {
+          fileName: '其他'
+        }
+      ],
+      canEdit: true,
+      dialogVisible: false,
+      formLabelWidth: '120px',
+      dialogForm: {},
+      fileTypeOptions: [
+        {
+          value: 1,
+          label: '委托代理合同'
+        },
+        {
+          value: 2,
+          label: '项目实施计划'
+        },
+        {
+          value: 3,
+          label: '主管部门批复函件'
+        },
+        {
+          value: 4,
+          label: '招标项目及标段信息'
+        },
+        {
+          value: 5,
+          label: '资格预审公告（含变更）'
+        },
+        {
+          value: 6,
+          label: '投标单位报名表'
+        },
+        {
+          value: 7,
+          label: '资格预审文件'
+        },
+        {
+          value: 8,
+          label: '资格预审申请文件'
+        },
+        {
+          value: 9,
+          label: '资格预审结果报告'
+        },
+        {
+          value: 10,
+          label: '资格预审结果通知书'
+        },
+        {
+          value: 11,
+          label: '招标公告（含变更）'
+        },
+        {
+          value: 12,
+          label: '投标邀请书（含变更）'
+        },
+        {
+          value: 13,
+          label: '招标文件'
+        },
+        {
+          value: 14,
+          label: '招标控制价'
+        },
+        {
+          value: 15,
+          label: '投标文件'
+        },
+        {
+          value: 16,
+          label: '开标'
+        },
+        {
+          value: 17,
+          label: '评标结果'
+        },
+        {
+          value: 18,
+          label: '定标'
+        },
+        {
+          value: 19,
+          label: '合同'
+        },
+        {
+          value: 20,
+          label: '代理工作评价'
+        },
+        {
+          value: 21,
+          label: '其他'
+        }
+      ]
+    }
+  },
+  methods: {
+    // 分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+    },
+    dataIndex (index) {
+      return index + (this.currentPage - 1) * this.pageSize + 1
+    },
+    detail () {
+    },
+    updateBtn (item, index) {
+      if (this.activeName === item.fileName) {
+        this.activeName = ''
+      } else {
+        this.activeName = item.fileName
+      }
+    },
+    // 删除
+    delBtn (item, index) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+      }).catch(() => {
+        return false
+      })
+    },
+    handleAddFileDir () {
+      this.dialogVisible = true
+    },
+    close () {
+      this.dialogVisible = false
+      this.$refs.dialogForm.resetFields()
+    },
+    // 提交
+    submitbtnFun (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  mounted () {
+    this.detail()
+  }
+}
+</script>
+
+<style lang="less">
+  #bid-file{
+    .el-icon-arrow-right:before {
+      content: "";
+    }
+    .bid-code {
+      font-weight: 800;
+    }
+    .bid-info {
+      border: #dcdfe6 1px solid;
+      /*height: 60px;*/
+      /*line-height: 60px;*/
+      padding-top: 12px;
+      box-sizing: border-box;
+      /*font-size: 14px;*/
+      /*margin-bottom: 24px;*/
+    }
+    .file-item {
+      width: 100%;
+      background-color: #e4eefc;
+      font-size: 14px;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      padding-left: 32px;
+      box-sizing: border-box;
+    }
+    .file-item-gap {
+      /*border-top: #dcdfe6 1px solid;*/
+      width: 100%;
+      background-color: #e4eefc;
+      font-size: 14px;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      padding-left: 32px;
+      box-sizing: border-box;
+    }
+    .file-name {
+      color: #111;
+    }
+    .file-action {
+      float: right;
+      margin-right: 24px;
+      cursor: pointer;
+    }
+    .file-collapse {
+      padding: 24px 24px;
+      box-sizing: border-box;
+    }
+    .file-box li{
+      border: #dcdfe6 1px solid;
+      margin-top: 8px;
+    }
+    .add-file {
+      margin-top: 24px;
+      background: #108cee;
+      border-color: #108cee;
+      color: white;
+    }
+  }
+</style>

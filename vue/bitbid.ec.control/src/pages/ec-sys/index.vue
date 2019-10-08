@@ -1,0 +1,226 @@
+<template>
+  <div id="ec-sys-page" class="cont-view">
+    <!-- 面包屑区域start -->
+    <div class="bread-box">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item>电商管理系统</el-breadcrumb-item>
+        <el-breadcrumb-item>交易记录管理</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <!-- 面包屑区域end -->
+    <!-- 搜索区域start -->
+    <div class="search-box">
+      <el-row :gutter="20">
+        <el-form :model="searchForm" label-width="110px" class="demo-ruleForm">
+          <el-col :span="6">
+            <el-form-item label="采购人:">
+              <el-input v-model="searchForm.messageLike" placeholder="采购人"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="接单时间:">
+              <el-date-picker
+                v-model="searchForm.time"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :default-time="['00:00:00', '23:59:59']"
+                value-format="yyyy-MM-dd HH:mm:ss">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="2">
+            <el-button type="primary" @click="onSearch">查询</el-button>
+          </el-col>
+        </el-form>
+      </el-row>
+    </div>
+    <!-- 搜索区域end -->
+    <div class="table-box">
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%">
+        <el-table-column
+          label="序号"
+          type="index"
+          width="60"
+          :index="computedIndex"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="orderNum"
+          label="订单编号"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="buyName"
+          label="采购人"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="商品名称"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip
+          align="center">
+          <template slot-scope="scope">
+            <span v-for="(item, index) in scope.row.articleNameList" :key="index">
+              {{(scope.row.articleNameList.length > index + 1)? item+',' : item}}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="orderAmount"
+          label="订单金额"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="orderStatus"
+          label="订单状态"
+          :formatter="orderStatusFormat"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="orderTime"
+          label="接单时间"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="dealTime"
+          label="成交时间"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="orderSumPrice"
+          label="付款金额"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleTableBtn(scope.row, 'detail')">
+              详情
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="pagination-box">
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="page.total"
+          :page-size='page.pageSize'
+          :current-page.sync="page.currentPage"
+          @current-change="handlePage"
+          @next-click="handlePage">
+        </el-pagination>
+        <!--分页-->
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import {transactionRecord} from '@/api'
+export default {
+  name: 'ec-sys',
+  data () {
+    return {
+      searchForm: {},
+      ecPlatform: [], // 电商平台lsit
+      tableData: [{account: 'qwe'}],
+      page: {
+        total: 0,
+        pageSize: 10,
+        pageNo: 0,
+        currentPage: 1
+      }
+    }
+  },
+  methods: {
+    /** 搜索 */
+    onSearch () {
+      this.page.currentPage = 1
+      this.page.pageNo = 0
+      this.getTableData()
+    },
+    /** 表格操作 */
+    handleTableBtn (row, type) {
+      this.$router.push({path: '/index/ec-trade-details', query: {id: row.id}})
+    },
+    /** 普通格式化数据，空的时候展示"---" */
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '-----'
+    },
+    orderStatusFormat (row, column) {
+      let status = row.orderStatus
+      if (status === 1) {
+        return '已接单'
+      } else if (status === 2) {
+        return '已发货'
+      } else if (status === 3) {
+        return '已验收'
+      } else if (status === 4) {
+        return '已成交'
+      } else if (status === 5) {
+        return '已评价'
+      }
+    },
+    /** 序号计算 */
+    computedIndex (index) {
+      return index + (this.page.currentPage - 1) * this.page.pageSize + 1
+    },
+    /** 分页 */
+    handlePage (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = (nowNum - 1) * this.page.pageSize
+      this.getTableData()
+    },
+    /** 获取列表数据 */
+    getTableData () {
+      this.searchForm.pageNo = this.page.pageNo
+      this.searchForm.pageSize = this.page.pageSize
+      this.searchForm.ecPlatformId = this.$store.getters.authUser.userId
+      if (this.searchForm.time && this.searchForm.time.length > 1) {
+        this.searchForm.startTime = this.searchForm.time[0]
+        this.searchForm.endTime = this.searchForm.time[1]
+      } else {
+        delete this.searchForm.startTime
+        delete this.searchForm.endTime
+      }
+      let queryModel = Object.assign({}, this.searchForm)
+      delete queryModel.time
+      transactionRecord.getList(queryModel).then(res => {
+        this.tableData = res.data.transactionRecordList.list
+        this.page.total = res.data.transactionRecordList.total
+      })
+    }
+  },
+  mounted () {
+    this.getTableData()
+  }
+}
+</script>
+<style lang="less">
+#ec-sys-page {
+  .demo-ruleForm {
+    margin-left: -50px;
+  }
+}
+</style>

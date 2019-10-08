@@ -1,0 +1,140 @@
+<template>
+ <div id="assign-power" class="cont-view">
+  <!-- 面包屑区域start -->
+  <div class="bread-box">
+    <el-breadcrumb separator="/">
+      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item><a href="/">系统管理</a></el-breadcrumb-item>
+      <el-breadcrumb-item><a href="/">角色管理</a></el-breadcrumb-item>
+      <el-breadcrumb-item><a href="/">分配权限</a></el-breadcrumb-item>
+    </el-breadcrumb>
+    <el-button type="info" size="small" class="go-back" @click="$router.go(-1)">返 回</el-button>
+  </div>
+  <!-- 面包屑区域end -->
+  <div clsaa="table-box">
+    <el-tree
+      :data="treeData"
+      show-checkbox
+      node-key="id"
+      :default-expanded-keys="[2, 3]"
+      :default-checked-keys="[5]"
+      :props="defaultProps">
+    </el-tree>
+    <div class="handle-box">
+      <el-button size="small" type="primary" @click="saveData">保 存</el-button>
+    </div>
+  </div>
+ </div>
+</template>
+<script>
+import {role} from '@/api'
+export default {
+  name: 'assign-power',
+  data () {
+    return {
+      treeData: [
+        // {
+        //   id: 1,
+        //   label: '采购人管理',
+        //   children: [{
+        //     id: 11,
+        //     label: '账号管理'
+        //   }]
+        // },
+        // {
+        //   id: 2,
+        //   label: '电商管理员管理',
+        //   children: [{
+        //     id: 21,
+        //     label: '账号管理'
+        //   }]
+        // },
+        // {
+        //   id: 3,
+        //   label: '成交管理',
+        //   children: [{
+        //     id: 31,
+        //     label: '交易记录管理'
+        //   }, {
+        //     id: 32,
+        //     label: '订单核销凭证打印'
+        //   }]
+        // },
+        // {
+        //   id: 4,
+        //   label: '成交管理',
+        //   children: [{
+        //     id: 41,
+        //     label: '交易记录管理'
+        //   }, {
+        //     id: 42,
+        //     label: '订单核销凭证打印'
+        //   }]
+        // },
+        // {
+        //   id: 5,
+        //   label: '平台订单统计',
+        //   children: [{
+        //     id: 51,
+        //     label: '平台订单统计'
+        //   }]
+        // },
+        // {
+        //   id: 6,
+        //   label: '采购人消费统计',
+        //   children: [{
+        //     id: 61,
+        //     label: '采购人消费统计'
+        //   }]
+        // },
+        // {
+        //   id: 7,
+        //   label: '投诉管理',
+        //   children: [{
+        //     id: 71,
+        //     label: '投诉管理'
+        //   }]
+        // },
+        // {
+        //   id: 8,
+        //   label: '门户管理',
+        //   children: [{
+        //     id: 71,
+        //     label: '成交公示管理'
+        //   }, {
+        //     id: 72,
+        //     label: '异常公示管理'
+        //   }, {
+        //     id: 73,
+        //     label: '政策法规管理'
+        //   }, {
+        //     id: 74,
+        //     label: '广告管理'
+        //   }, {
+        //     id: 75,
+        //     label: '信用评价'
+        //   }]
+        // }
+      ],
+      defaultProps: {
+        children: 'childMenuResources',
+        label: 'menuName'
+      }
+    }
+  },
+  methods: {
+    /** 保存 */
+    saveData () {},
+    getTableData () {
+      role.menuList().then(res => {
+        this.treeData = res.data.menuResources
+      })
+    }
+  },
+  mounted () {
+    this.getTableData()
+  }
+}
+</script>
+<style lang="less">
+</style>

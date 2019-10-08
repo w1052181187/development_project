@@ -1,0 +1,509 @@
+<template>
+  <div id="order_manager">
+    <div class="selectbox">
+      <el-form :model="searchForm" ref="searchForm" label-width="80px"
+               style="width: 100%">
+        <el-row>
+          <el-col :span="6">
+            <el-form-item label="选择日期：">
+              <el-date-picker
+                v-model="searchForm.time"
+                type="date"
+                placeholder="选择日期"
+                @change="handleDateChange">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="适用业务：">
+              <el-radio-group v-model="searchForm.checkList" @change="handleTypeChange">
+                <el-radio :label="1">开标</el-radio>
+                <el-radio :label="2">评标</el-radio>
+                <el-radio :label="3">开标/评标</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+    <el-table
+      :data="tableData"
+      header-cell-class-name="tableheader"
+      border>
+      <el-table-column
+        label="开评标室"
+        width="120"
+        align="center"
+        show-overflow-tooltip>
+        <template slot-scope="scope">
+          <el-row>{{scope.row.name}}</el-row>
+          <el-row>
+              <span v-if="scope.row.businessType === 1">开标</span>
+              <span v-if="scope.row.businessType === 2">评标</span>
+              <span v-if="scope.row.businessType === 3">开标/评标</span>
+          </el-row>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        align="center"
+        label="08:00-09:00">
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="bottom-start" :offset="20" :open-delay="100">
+            <div class="room_popover" v-if="scope.row.appointmentRecordMap.t80 !== null">
+              <el-row class="title">{{scope.row.name}}</el-row>
+              <el-row class="line"></el-row>
+              <el-row :gutter="12">
+                <el-col :span="3" class="status">
+                  <span v-if="scope.row.businessType === 1">开标</span>
+                  <span v-if="scope.row.businessType === 2">评标</span>
+                  <span v-if="scope.row.businessType === 3">开标/评标</span>
+                </el-col>
+                <el-col :span="13" class="company">{{scope.row.appointmentRecordMap.t80.tenderProjectName}}</el-col>
+                <el-col :span="8" class="time">{{scope.row.appointmentRecordMap.t80.usedDate}}</el-col>
+              </el-row>
+            </div>
+            <div slot="reference">
+              <div class="room my_select_room" v-if="scope.row.appointmentRecordMap.t80 !== null && scope.row.appointmentRecordMap.mine80 "></div>
+              <div class="room select_room" v-if="scope.row.appointmentRecordMap.t80 !== null && !scope.row.appointmentRecordMap.mine80"></div>
+              <div class="room" v-if="scope.row.appointmentRecordMap.t80 === null"></div>
+            </div>
+          </el-popover>
+          <el-popover trigger="hover" placement="bottom-start" :offset="20" :open-delay="100">
+            <div class="room_popover" v-if="scope.row.appointmentRecordMap.t85 !== null">
+              <el-row class="title">{{scope.row.name}}</el-row>
+              <el-row class="line"></el-row>
+              <el-row :gutter="12">
+                <el-col :span="3" class="status">
+                  <span v-if="scope.row.businessType === 1">开标</span>
+                  <span v-if="scope.row.businessType === 2">评标</span>
+                  <span v-if="scope.row.businessType === 3">开标/评标</span>
+                </el-col>
+                <el-col :span="13" class="company">{{scope.row.appointmentRecordMap.t80.tenderProjectName}}</el-col>
+                <el-col :span="8" class="time">{{scope.row.appointmentRecordMap.t80.usedDate}}</el-col>
+              </el-row>
+            </div>
+            <div slot="reference">
+              <div class="room my_select_room" v-if="scope.row.appointmentRecordMap.t85 !== null && scope.row.appointmentRecordMap.mine85"></div>
+              <div class="room select_room" v-if="scope.row.appointmentRecordMap.t85 !== null && !scope.row.appointmentRecordMap.mine85"></div>
+              <div class="room" v-if="scope.row.appointmentRecordMap.t85 === null"></div>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        align="center"
+        label="09:00-10:00">
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="bottom-start" :offset="20" :open-delay="100">
+            <div class="room_popover">
+              <el-row class="title">{{scope.row.name}}</el-row>
+              <el-row class="line"></el-row>
+              <el-row :gutter="12">
+                <el-col :span="3" class="status">· 开标</el-col>
+                <el-col :span="13" class="company">三投集团工程招标</el-col>
+                <el-col :span="8" class="time">2019.03.18 08:00-08:30</el-col>
+              </el-row>
+            </div>
+            <div slot="reference">
+              <div class="room my_select_room"></div>
+              <div class="room"></div>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        align="center"
+        label="10:00-11:00">
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="bottom-start" :offset="20" :open-delay="100">
+            <div class="room_popover">
+              <el-row class="title">{{scope.row.name}}</el-row>
+              <el-row class="line"></el-row>
+              <el-row :gutter="12">
+                <el-col :span="3" class="status">· 开标</el-col>
+                <el-col :span="13" class="company">三投集团工程招标</el-col>
+                <el-col :span="8" class="time">2019.03.18 08:00-08:30</el-col>
+              </el-row>
+            </div>
+            <div slot="reference">
+              <div class="room"></div>
+              <div class="room"></div>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        align="center"
+        label="11:00-12:00">
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="bottom-start" :offset="20" :open-delay="100">
+            <div class="room_popover">
+              <el-row class="title">{{scope.row.name}}</el-row>
+              <el-row class="line"></el-row>
+              <el-row :gutter="12">
+                <el-col :span="3" class="status">· 开标</el-col>
+                <el-col :span="13" class="company">三投集团工程招标</el-col>
+                <el-col :span="8" class="time">2019.03.18 08:00-08:30</el-col>
+              </el-row>
+            </div>
+            <div slot="reference">
+              <div class="room"></div>
+              <div class="room"></div>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        align="center"
+        label="12:00-13:00">
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="bottom-start" :offset="20" :open-delay="100">
+            <div class="room_popover">
+              <el-row class="title">{{scope.row.name}}</el-row>
+              <el-row class="line"></el-row>
+              <el-row :gutter="12">
+                <el-col :span="3" class="status">· 开标</el-col>
+                <el-col :span="13" class="company">三投集团工程招标</el-col>
+                <el-col :span="8" class="time">2019.03.18 08:00-08:30</el-col>
+              </el-row>
+            </div>
+            <div slot="reference">
+              <div class="room my_select_room"></div>
+              <div class="room"></div>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        align="center"
+        label="13:00-14:00">
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="bottom-start" :offset="20" :open-delay="100">
+            <div class="room_popover">
+              <el-row class="title">{{scope.row.name}}</el-row>
+              <el-row class="line"></el-row>
+              <el-row :gutter="12">
+                <el-col :span="3" class="status">· 开标</el-col>
+                <el-col :span="13" class="company">三投集团工程招标</el-col>
+                <el-col :span="8" class="time">2019.03.18 08:00-08:30</el-col>
+              </el-row>
+            </div>
+            <div slot="reference">
+              <div class="room my_select_room"></div>
+              <div class="room"></div>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        align="center"
+        label="14:00-15:00">
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="bottom-start" :offset="20" :open-delay="100">
+            <div class="room_popover">
+              <el-row class="title">{{scope.row.name}}</el-row>
+              <el-row class="line"></el-row>
+              <el-row :gutter="12">
+                <el-col :span="3" class="status">· 开标</el-col>
+                <el-col :span="13" class="company">三投集团工程招标</el-col>
+                <el-col :span="8" class="time">2019.03.18 08:00-08:30</el-col>
+              </el-row>
+            </div>
+            <div slot="reference">
+              <div class="room"></div>
+              <div class="room"></div>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        align="center"
+        label="15:00-16:00">
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="bottom-start" :offset="20" :open-delay="100">
+            <div class="room_popover">
+              <el-row class="title">{{scope.row.name}}</el-row>
+              <el-row class="line"></el-row>
+              <el-row :gutter="12">
+                <el-col :span="3" class="status">· 开标</el-col>
+                <el-col :span="13" class="company">三投集团工程招标</el-col>
+                <el-col :span="8" class="time">2019.03.18 08:00-08:30</el-col>
+              </el-row>
+            </div>
+            <div slot="reference">
+              <div class="room"></div>
+              <div class="room"></div>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        align="center"
+        label="16:00-17:00">
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="bottom-start" :offset="20" :open-delay="100">
+            <div class="room_popover">
+              <el-row class="title">{{scope.row.name}}</el-row>
+              <el-row class="line"></el-row>
+              <el-row :gutter="12">
+                <el-col :span="3" class="status">· 开标</el-col>
+                <el-col :span="13" class="company">三投集团工程招标</el-col>
+                <el-col :span="8" class="time">2019.03.18 08:00-08:30</el-col>
+              </el-row>
+            </div>
+            <div slot="reference">
+              <div class="room"></div>
+              <div class="room"></div>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        align="center"
+        label="17:00-18:00">
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="bottom-start" :offset="20" :open-delay="100">
+            <div class="room_popover">
+              <el-row class="title">{{scope.row.name}}</el-row>
+              <el-row class="line"></el-row>
+              <el-row :gutter="12">
+                <el-col :span="3" class="status">· 开标</el-col>
+                <el-col :span="13" class="company">三投集团工程招标</el-col>
+                <el-col :span="8" class="time">2019.03.18 08:00-08:30</el-col>
+              </el-row>
+            </div>
+            <div slot="reference">
+              <div class="room"></div>
+              <div class="room"></div>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        align="center"
+        label="18:00-19:00">
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="bottom-start" :offset="20" :open-delay="100">
+            <div class="room_popover">
+              <el-row class="title">{{scope.row.name}}</el-row>
+              <el-row class="line"></el-row>
+              <el-row :gutter="12">
+                <el-col :span="3" class="status">· 开标</el-col>
+                <el-col :span="13" class="company">三投集团工程招标</el-col>
+                <el-col :span="8" class="time">2019.03.18 08:00-08:30</el-col>
+              </el-row>
+            </div>
+            <div slot="reference">
+              <div class="room"></div>
+              <div class="room"></div>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        align="center"
+        label="19:00-20:00">
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="bottom-end" :offset="20" :open-delay="100">
+            <div class="room_popover">
+              <el-row class="title">{{scope.row.name}}</el-row>
+              <el-row class="line"></el-row>
+              <el-row :gutter="12">
+                <el-col :span="3" class="status">· 开标</el-col>
+                <el-col :span="13" class="company">三投集团工程招标</el-col>
+                <el-col :span="8" class="time">2019.03.18 08:00-08:30</el-col>
+              </el-row>
+            </div>
+            <div slot="reference">
+              <div class="room"></div>
+              <div class="room"></div>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="操作" align="center" width="80">
+        <template slot-scope="scope">
+          <el-button type="text" size="small" @click="handleOrder(scope)">预约</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-row class="hint" type="flex">
+      <el-col :span="1" class="hint_txt">提示：</el-col>
+      <el-col :span="2">
+        <div class="order">
+          <span></span>他人预约
+        </div>
+      </el-col>
+      <el-col :span="2">
+        <div class="order my">
+          <span></span>我的预约
+        </div>
+      </el-col>
+      <el-col :span="2">
+        <div class="order no">
+          <span></span>未预约
+        </div>
+      </el-col>
+    </el-row>
+    <!--分页-->
+    <el-pagination
+      background
+      layout="prev, pager, next"
+      :total="total"
+      :page-size='pageSize'
+      :current-page.sync="currentPage"
+      @current-change="handleCurrentChange">
+    </el-pagination>
+    <!--分页-->
+  </div>
+</template>
+
+<script>
+import {bidOpeningRoom} from '@/api/resource'
+export default {
+  name: '',
+  data () {
+    return {
+      time: '',
+      searchForm: {
+        checkList: []
+      },
+      tableData: [],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10 // 每页展示条数
+    }
+  },
+  methods: {
+    // 分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getList()
+    },
+    handleDateChange () {
+    },
+    // 选择开标或者评标
+    handleTypeChange (value) {
+    },
+    handleOrder (scope) {
+      this.$emit('addOrder', scope)
+    },
+    getTableData () {
+      bidOpeningRoom.getBidOpeningRoomAndRecordList({
+        pageNo: this.pageNo,
+        pageSize: this.pageSize
+      }).then(res => {
+        this.tableData = res.data.bidOpeningRoomList.list
+        this.total = res.data.bidOpeningRoomList.total
+      })
+    }
+  },
+  mounted () {
+    this.getTableData()
+  }
+}
+</script>
+
+<style lang="less">
+  .selectbox{
+    padding: 6px 0;
+    /*margin-bottom: 12px;*/
+  }
+  /*.el-form-item__label{*/
+  /*  font-weight: bold;*/
+  /*}*/
+  /*.el-form-item{*/
+  /*  margin-bottom: 5px;*/
+  /*}*/
+  .room{
+    background: #fff;
+    width: 50%;
+    height: 52px;
+    float: left;
+  }
+  .room:nth-child(1){
+    border-right: 1px solid #EBEEF5;
+    box-sizing: border-box;
+  }
+  .select_room{
+    background: #5d97e8;
+  }
+  .my_select_room{
+    background: #beeebe;
+  }
+  #order_manager{
+    .el-table td{
+      padding: 0;
+      height: 52px;
+    }
+    .cell{
+      padding: 0;
+    }
+  }
+  .hint{
+    background-color: #ebecee;
+    height: 40px;
+    line-height: 40px;
+    font-size: 12px;
+    margin: 12px 0;
+    padding: 0 24px;
+    box-sizing: border-box;
+    color: #666;
+  }
+  .hint .hint_txt{
+    color: #333;
+  }
+  .hint .order>span{
+    display: inline-block;
+    width: 20px;
+    height: 10px;
+    line-height: 10px;
+    background-color:  #5d97e8;
+    margin-right: 6px;
+  }
+  .hint .my>span{
+    background-color:  #beeebe;
+  }
+  .hint .no>span{
+    background-color:  white;
+  }
+  .room_popover{
+    width: 500px;
+    font-size: 12px;
+  }
+  .room_popover .title{
+    color: #5d97e8;
+    font-size: 14px;
+  }
+  .room_popover .line{
+    border-bottom: 1px dashed #ebecee;
+    margin: 12px 0;
+  }
+  .room_popover .status{
+    font-weight: bold;
+  }
+  .room_popover .company{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .room_popover .time{
+    color: #5d97e8;
+  }
+</style>

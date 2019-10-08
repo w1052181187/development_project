@@ -1,0 +1,197 @@
+<template>
+  <div class="cloudcontent" id="cloud_processedit">
+    <approve-flow :approvalTaskCode="approvalTaskCode" :subjectCode="$route.params.code" v-if="tableFlag"></approve-flow>
+    <div class="project-info-line"></div>
+    <div class="main viewdetails">
+      <div class="basic-approve-title">中标结果公告</div>
+      <el-form :model="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{updateForm.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目编号：" >
+              <span>{{updateForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段名称：">
+              <span>{{updateForm.bidSectionName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段编号：">
+              <span>{{updateForm.bidSectionCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="中标结果公告名称：">
+              <span>{{updateForm.title}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="公告链接：">
+              <span>{{updateForm.bulletinUrl}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="发布网站：">
+              <span>{{updateForm.publishUrl}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="公告内容：">
+              <editor ref="notice_ueditor" class="ueditor" :editread="editread"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="其他内容：">
+              <editor ref="other_ueditor" class="ueditor" :editread="editread"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="附件：">
+              <el-table
+                :data="updateForm.fileInformationList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  type="index"
+                  label="序号"
+                  width="60"
+                  align="center">
+                </el-table-column>
+                <el-table-column
+                  prop="fileName"
+                  label="文件名称"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  label="操作" align="center" width="200">
+                  <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="lookFile(scope.row)">查看</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+    <template>
+      <div class="project-info-line"></div>
+      <communicate-record v-if="tableFlag" :relatedCode="$route.params.code" :flowType='flowType' :creator="updateForm.submitter" :createName="updateForm.submitterName" :routingPath="routingPath" :nodeContent="nodeContent"></communicate-record>
+      <div class="project-info-line"></div>
+      <approve-record :tableFlag="tableFlag"  :approvalTaskCode="approvalTaskCode" :flowStatus='flowStatus' :subjectCode="$route.params.code" ></approve-record>
+    </template>
+    <approve-handle :isApproved="isApproved" :approvalTaskCode="approvalTaskCode"></approve-handle>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import approveFlow from '@/pages/todoList/commonComponents/approveFlow.vue'
+import communicateRecord from '@/pages/todoList/commonComponents/communicateRecord.vue'
+import approveRecord from '@/pages/todoList/commonComponents/approveRecord.vue'
+import approveHandle from '@/pages/todoList/commonComponents/approveHandle.vue'
+import {downloadFile} from '@/assets/js/common'
+import {bulletinInfo} from '@/api/project/index'
+import {approvalNode} from '@/api/todoList/flow/approval-node'
+export default {
+  components: {
+    editor,
+    approveFlow,
+    approveRecord,
+    communicateRecord,
+    approveHandle
+  },
+  data () {
+    return {
+      flowStatus: 18,
+      updateForm: {
+        fileInformationList: []
+      },
+      isSubmiting: false,
+      // 是否显示审批（0:详情 1：审批 2：审批详情 3：我发起的详情）
+      isApproved: 0,
+      auditStatus: 0,
+      objectId: '',
+      bidSection: {},
+      // 富文本
+      editread: true,
+      approvalTaskCode: '',
+      taskExecutor: '',
+      form: {},
+      // 审批流程
+      flowList: [
+      ],
+      curFlowIndex: 0,
+      communicateRecordList: [
+      ],
+      // 知会人
+      noticeUser: '',
+      routingPath: '', // 路由地址
+      nodeContent: '',
+      flowType: 'tenderProject', // 审批类型
+      tableFlag: false
+    }
+  },
+  methods: {
+    lookFile (file) {
+      downloadFile(file.fileName, file.relativePath)
+    },
+    detail () {
+      bulletinInfo.getOneByRelatedCode(this.$route.params.code, this.$route.query.sectionSystemCode).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.updateForm = res.data.bulletinInfo
+          this.$refs.notice_ueditor.setContent(this.updateForm.content ? this.updateForm.content : '')
+          this.$refs.other_ueditor.setContent(this.updateForm.otherContent ? this.updateForm.otherContent : '')
+        }
+        // 沟通记录
+        this.nodeContent = this.updateForm.tenderProjectName + this.updateForm.bidSectionName + '中标结果公告'
+        this.routingPath = this.updateForm.routingPath + this.$route.params.code
+      })
+    },
+    // 查询当前节点是否需要审批
+    checkedIsNeedFlow (flowStatus) {
+      approvalNode.checkedIsNeedFlow(flowStatus).then((res) => {
+        if (res.data.resCode === '0000') {
+          if (res.data.isNeedFlow === 1) {
+            this.tableFlag = true
+          }
+        }
+      })
+    },
+    init () {
+      this.isApproved = this.$route.query.isApproved
+      this.auditStatus = this.$route.query.auditStatus
+      this.approvalTaskCode = this.$route.query.code
+      this.checkedIsNeedFlow(this.flowStatus)
+      this.detail()
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_processedit{
+  }
+</style>

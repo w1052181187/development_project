@@ -1,0 +1,428 @@
+<template>
+  <div id="commonuseradd" class="smaincontent">
+    <div class="headertitle">
+      <!--面包屑-->
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/main' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/index/commonuser' }">会员管理</el-breadcrumb-item>
+        <el-breadcrumb-item>编辑会员</el-breadcrumb-item>
+      </el-breadcrumb>
+      <!--面包屑-->
+      <div class="returnboxbig">
+        <template>
+          <el-button @click="close">返回</el-button>
+        </template>
+      </div>
+    </div>
+    <div class="contentbigbox">
+      <template>
+        <el-form :model="addForm" :rules="rules" ref="addForm" :validate-on-rule-change="true">
+          <table class="detailtable" style="border:none;">
+            <tr>
+              <td><i class="red">*</i>用户名：</td>
+              <td  colspan="2">
+                <el-form-item label=""  prop="user.account">
+                  <el-input v-model="addForm.user.account"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>公司类型：</td>
+              <td  colspan="2">
+                <el-form-item prop="companyType">
+                  <el-select v-model="addForm.companyType" class="select">
+                    <el-option
+                      v-for="item in companyTypeoptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>登录密码：</td>
+              <td  colspan="2">
+                <el-form-item prop="user.password">
+                  <el-input v-model="addForm.user.password" type="password"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>确认密码：</td>
+              <td  colspan="2">
+                <el-form-item prop="user.userConfirmPwd">
+                  <el-input v-model="addForm.user.userConfirmPwd" type="password"></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>企业名称：</td>
+              <td  colspan="2">
+                <el-form-item prop="name">
+                  <el-input v-model="addForm.name"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>所属地区：</td>
+              <td  colspan="2">
+                <el-form-item prop="provinceId">
+                  <el-cascader
+                    :options="addressOptions"
+                    expand-trigger="hover"
+                    v-model="provinceIdArray"
+                    @change="handlerCityChange">
+                  </el-cascader>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>企业地址：</td>
+              <td  colspan="2">
+                <el-form-item prop="address">
+                  <el-input v-model="addForm.address" ></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>邮政编码：</td>
+              <td colspan="2">
+                <el-form-item prop="postCode">
+                  <el-input v-model="addForm.postCode" ></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>行业：</td>
+              <td  colspan="2">
+                <el-form-item prop="industryTypeFirst">
+                  <el-select v-model="addForm.industryTypeFirst" class="select">
+                    <el-option
+                      v-for="item in options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr style="height: 100px;">
+              <td>组织机构代码证：</td>
+              <td colspan="2">
+                <upLoad-file @upLoadFile="upLoadOrganizationFile" :fileType="fileType" :oldFileName="oldOrganizationFileName"></upLoad-file>
+              </td>
+              <td>营业执照：</td>
+              <td colspan="2">
+                <upLoad-file @upLoadFile="upLoadBusinessFile" :fileType="fileType" :oldFileName="oldBusinessFileName"></upLoad-file>
+              </td>
+            </tr>
+            <tr style="height: 100px;">
+              <td>税务登记证：</td>
+              <td colspan="2" >
+                <upLoad-file @upLoadFile="upLoadTaxationFile" :fileType="fileType" :oldFileName="oldTaxationFileName"></upLoad-file>
+              </td>
+              <td>银行开户证明：</td>
+              <td colspan="2">
+                <upLoad-file @upLoadFile="upLoadOpenAccountFile" :fileType="fileType" :oldFileName="oldOpenAccountFileName"></upLoad-file>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>联系人姓名：</td>
+              <td  colspan="2">
+                <el-form-item prop="user.userName">
+                  <el-input v-model="addForm.user.uername"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>固定电话：</td>
+              <td  colspan="2">
+                <el-form-item prop="user.cellphone">
+                  <el-input v-model="addForm.user.cellphone"></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>手机号：</td>
+              <td  colspan="2">
+                <el-form-item prop="user.mobile">
+                  <el-input v-model="addForm.user.mobile"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>邮箱：</td>
+              <td  colspan="2">
+                <el-form-item prop="user.email">
+                  <el-input v-model="addForm.user.email"></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+          </table>
+          <el-form-item class="submit-radio">
+            <el-button @click="close">取 消</el-button>
+            <el-button type="primary" @click="handleAddSubmit('addForm')">提 交</el-button>
+          </el-form-item>
+        </el-form>
+      </template>
+    </div>
+  </div>
+</template>
+
+<script>
+import {isvalidFixedPhone, isvalidAccount} from '@/assets/js/validate'
+import * as region from '@/assets/js/region'
+import * as industry from '@/assets/js/industry'
+import {enterprise} from '@/api'
+import upLoadFile from '@/components/upload/publicFileUpload'
+export default{
+  components: {
+    upLoadFile
+  },
+  data () {
+    // 电话号码
+    let validPhoneUser = (rule, value, callback) => {
+      if (!value) {
+        callback()
+      } else if (!isvalidFixedPhone(value)) {
+        callback(new Error('请输入正确的11位手机号码或带区号的固话'))
+      } else {
+        callback()
+      }
+    }
+    // 密码(添加)
+    let validatePwd = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('请输入密码'))
+      } else if (this.addForm.user.userConfirmPwd !== '') {
+        this.$refs.addForm.validateField('user.userConfirmPwd')
+        callback()
+      }
+    }
+    // 确认密码(添加)
+    let validateConfirmPwd = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('请再次输入密码'))
+      } else if (value !== this.addForm.user.password) {
+        callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
+    }
+    // 用户名
+    let validateAccount = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('请输入用户名'))
+      } else if (!isvalidAccount(value)) {
+        callback(new Error('请输入4-16位字母或数字'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      addForm: {
+        user: {
+          account: '',
+          name: '',
+          password: '',
+          userConfirmPwd: '',
+          cellphone: '',
+          userName: '',
+          mobile: '',
+          email: ''
+        },
+        name: '',
+        provinceId: '',
+        address: '',
+        postCode: '',
+        industryTypeFirst: ''
+      },
+      // 行业
+      options: industry.industry,
+      // 公司类型
+      companyTypeoptions: [
+        {
+          value: '1',
+          label: '招标人'
+        },
+        {
+          value: '2',
+          label: '投标人'
+        },
+        {
+          value: '3',
+          label: '代理机构'
+        },
+        {
+          value: '4',
+          label: '其他'
+        }
+      ],
+      // 行政区域
+      addressOptions: region.CityInfo,
+      // 行政区域绑定数组
+      provinceIdArray: [],
+      rules: {
+        'user.account': [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 4, max: 16, message: '长度在 4到 16 个字符', trigger: 'blur' },
+          {validator: validateAccount, trigger: ['blur', 'change']}
+        ],
+        name: [
+          { required: true, message: '请输入企业名称', trigger: 'blur' },
+          { min: 1, max: 100, message: '长度在 1到 100 个字符', trigger: 'blur' }
+        ],
+        address: [
+          { required: true, message: '请输入企业地址', trigger: 'blur' }
+        ],
+        postCode: [
+          { required: true, message: '请输入邮编', trigger: 'blur' }
+        ],
+        'user.name': [
+          // { required: true, message: '请输入联系人姓名', trigger: 'blur' },
+          { min: 1, max: 100, message: '长度在 1到 100 个字符', trigger: 'blur' }
+        ],
+        'user.mobile': [
+          // { required: true, message: '请输入手机号', trigger: 'blur' },
+          {validator: validPhoneUser, trigger: 'blur'}
+        ],
+        'user.cellphone': [
+          // { required: true, message: '请输入手机号', trigger: 'blur' },
+          {validator: validPhoneUser, trigger: 'blur'}
+        ],
+        'user.password': [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { validator: validatePwd, trigger: 'blur' },
+          { min: 6, max: 20, message: '长度在 6到 20 个字符', trigger: 'blur' }
+        ],
+        'user.userConfirmPwd': [
+          { required: true, message: '请重新输入密码', trigger: 'blur' },
+          { validator: validateConfirmPwd, trigger: 'blur' },
+          { min: 6, max: 20, message: '长度在 6到 20 个字符', trigger: 'blur' }
+        ],
+        'user.userName': [
+          { required: true, message: '请重新联系人姓名', trigger: 'blur' },
+          { validator: validateConfirmPwd, trigger: 'blur' },
+          { min: 6, max: 20, message: '长度在 6到 20 个字符', trigger: 'blur' }
+        ],
+        'user.email': [
+          { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+          { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+        ],
+        provinceId: [
+          { required: true, message: '请输入所属地区', trigger: 'blur' }
+        ],
+        companyType: [
+          { required: true, message: '请输入公司类型', trigger: 'blur' }
+        ],
+        industryTypeFirst: [
+          { required: true, message: '请输入行业', trigger: 'blur' }
+        ]
+      },
+      fileType: '',
+      oldOrganizationFileName: '',
+      oldBusinessFileName: '',
+      oldTaxationFileName: '',
+      oldOpenAccountFileName: ''
+    }
+  },
+  methods: {
+    // 省市两级联动
+    handlerCityChange (value) {
+      this.editForm.provinceId = value[0]
+      this.editForm.cityId = value[1]
+    },
+    // 新建会员表单 确认按钮
+    handleAddSubmit (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          // 默认未审核
+          this.addForm.user.status = 0
+          // 业务用户
+          this.addForm.user.type = 3
+          enterprise.update(this.addForm).then((res) => {
+            this.addDialog = false
+            this.$refs['addForm'].resetFields()
+            this.list()
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    close () {
+      this.$router.go(-1)
+    },
+    upLoadOrganizationFile (file) {
+      if (file.length === 0) {
+        this.addForm.organizationFileInformations = []
+      } else {
+        this.addForm.organizationFileInformations = file
+        this.addForm.organizationFileInformations[0].businessType = 5
+      }
+    },
+    upLoadBusinessFile (file) {
+      if (file.length === 0) {
+        this.addForm.organizationFileInformations = []
+      } else {
+        this.addForm.organizationFileInformations = file
+        this.addForm.organizationFileInformations[0].businessType = 5
+      }
+    },
+    upLoadTaxationFile (file) {
+      if (file.length === 0) {
+        this.addForm.organizationFileInformations = []
+      } else {
+        this.addForm.organizationFileInformations = file
+        this.addForm.organizationFileInformations[0].businessType = 5
+      }
+    },
+    upLoadOpenAccountFile (file) {
+      if (file.length === 0) {
+        this.addForm.organizationFileInformations = []
+      } else {
+        this.addForm.organizationFileInformations = file
+        this.addForm.organizationFileInformations[0].businessType = 5
+      }
+    },
+    detail () {
+      enterprise.detail(this.$route.params.objectId).then((res) => {
+        this.ruleForm = res.data.enterprise
+        // 注册地址
+        this.ruleForm.registerAddress = ''
+        this.addressArr.map((item) => {
+          if (item.value === this.ruleForm.provinceId) {
+            this.ruleForm.registerAddress += item.label
+            item.children.map((ite) => {
+              if (ite.value === this.ruleForm.cityId) {
+                this.ruleForm.registerAddress += ite.label
+                ite.children.map((it) => {
+                  if (it.value === this.ruleForm.countryId) {
+                    this.ruleForm.registerAddress += it.label
+                  }
+                })
+              }
+            })
+          }
+        })
+        // 行业
+        this.ruleForm.industry = ''
+        this.industryArr.map((item) => {
+          if (item.value === this.ruleForm.industryTypeFirst) {
+            this.ruleForm.industry += item.label
+            item.children.map((ite) => {
+              if (ite.value === this.ruleForm.industryTypeSecond) {
+                this.ruleForm.industry += ite.label
+              }
+            })
+          }
+        })
+      })
+    }
+  },
+  mounted () {
+    this.detail()
+  }
+}
+</script>
+<style lang="less">
+  #commonuseradd{
+    .el-form-item{
+      margin-bottom: 0px;
+    }
+    .el-form-item__error{
+      display: none;
+    }
+  }
+</style>

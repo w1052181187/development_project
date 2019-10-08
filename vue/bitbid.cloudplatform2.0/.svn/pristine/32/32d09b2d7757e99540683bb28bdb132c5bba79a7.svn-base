@@ -1,0 +1,476 @@
+<template>
+  <div class="cloudcontent" id="cloud_business_assess">
+    <div class="main">
+      <div class="tit">
+        <span>山西省国新能源发展集团有限公司</span>
+        <el-button  type="primary" class="fr" @click="dialogTableVisible = true"> 提交评估报告 </el-button>
+      </div>
+      <div class="assess_main">
+        <p class="title"><span>评估报告目录：</span></p>
+        <el-tabs :tab-position="tabPosition">
+          <el-tab-pane label="第一部分  客户基本信息">
+            <proDetail></proDetail>
+          </el-tab-pane>
+          <el-tab-pane label="第二部分  竞争对手信息">
+            <competitorInfo></competitorInfo>
+          </el-tab-pane>
+          <el-tab-pane label="第三部分  项目可行性评估">
+            <el-form :model="addForm">
+              <el-row>
+                <el-col :span="8">
+                  <el-form-item label="评估模板：" label-width="80px">
+                    <el-select v-model="addForm.code" placeholder="请选择评估模板">
+                      <el-option label="工程总承包类项目可行性评估模板" value="1"></el-option>
+                      <el-option label="规划设计类项目可行性评估模板" value="2"></el-option>
+                      <el-option label="监理类项目可行性评估模板" value="3"></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="2" class="fr">
+                  <el-form-item label="发起人：" label-width="60px">
+                    <span>张宇</span>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="3" class="fr">
+                  <el-form-item label="评估日期：" label-width="80px">
+                    <span>2019-03-15</span>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+            <el-table
+              :data="projectData"
+              border
+              show-summary
+              :summary-method="getSummaries"
+              :cell-style="handleCellStyle"
+              :span-method="handleMerge"
+              header-cell-class-name="tableheader">
+              <el-table-column
+                type="index"
+                label="序号"
+                width="80"
+                :index="handleIndex"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="name"
+                label="评估项分组"
+                align="center"
+                show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column
+                prop="item"
+                label="评估项"
+                align="center"
+                show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column
+                prop="description"
+                label="描述"
+                align="center"
+                show-overflow-tooltip>
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.description"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="score"
+                label="分值"
+                align="center"
+                width="160"
+                show-overflow-tooltip>
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.score"></el-input>
+                </template>
+              </el-table-column>
+            </el-table>
+            <p class="red">打分参考：优秀8-10，良好6-8，尚可4-6，较差2-4，很差0-2</p>
+            <div class="submit-radio">
+              <el-button type="primary">保存</el-button>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="第四部分  项目评估建议">
+            <p class="advice">我的评估建议：</p>
+            <el-form :model="addForm">
+              <el-row>
+                <el-col :span="24">
+                  <el-form-item label="是否继续跟进该项目：" label-width="140px">
+                    <el-radio v-model="addForm.radio" label="1">是</el-radio>
+                    <el-radio v-model="addForm.radio" label="2">否</el-radio>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="24">
+                  <el-form-item label="评估建议：" label-width="140px">
+                    <el-input type="textarea"  v-model="addForm.code"></el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-form-item class="submit-radio">
+                <el-button type="primary">保存</el-button>
+              </el-form-item>
+            </el-form>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+    </div>
+    <el-dialog title="选择评估人员" :visible.sync="dialogTableVisible">
+      <el-table :data="userData"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='dataIndex'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="姓名"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="partName"
+          label="所属部门"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="checkbox"
+          label="是否评估人"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <el-checkbox v-model="scope.row.checkbox"></el-checkbox>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="radio"
+          label="是否决策人"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <el-radio v-model="isChecked" :label="scope.row.radio" >&nbsp;</el-radio>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+      <!--分页-->
+      <div class="selectbox">
+        <p><span>评估人：</span></p>
+        <ul>
+          <li><span>习大大</span><i></i></li>
+          <li><span>习大大</span><i></i></li>
+          <li><span>习大大</span><i></i></li>
+          <li><span>习大大</span><i> </i></li>
+          <li><span>习大大</span><i></i></li>
+          <li><span>习大大</span><i></i></li>
+          <li><span>习大大</span><i> </i></li>
+          <li><span>习大大</span><i></i></li>
+          <li><span>习大大</span><i></i></li>
+        </ul>
+      </div>
+      <div class="selectbox">
+        <p><span>决策人：</span>必须指定一名决策人</p>
+        <ul class="jc">
+          <li><span>习大大</span><i></i></li>
+        </ul>
+      </div>
+      <div class="submit-radio">
+        <el-button type="primary">保存</el-button>
+        <el-button type="primary">取消</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import proDetail from './quote/proDetail'
+import competitorInfo from './quote/competitorInfo'
+export default {
+  components: {
+    proDetail,
+    competitorInfo
+  },
+  data () {
+    return {
+      tabPosition: 'left',
+      addForm: {
+        radio: '1'
+      },
+      // 评估表
+      projectData: [
+        {
+          name: '组1',
+          item: '项1',
+          description: '',
+          score: ''
+        },
+        {
+          name: '组1',
+          item: '项2',
+          description: '',
+          score: ''
+        },
+        {
+          name: '组1',
+          item: '项3',
+          description: '',
+          score: ''
+        },
+        {
+          name: '组2',
+          item: '项1',
+          description: '',
+          score: ''
+        },
+        {
+          name: '组2',
+          item: '项2',
+          description: '',
+          score: ''
+        },
+        {
+          name: '组2',
+          item: '项3',
+          description: '',
+          score: ''
+        },
+        {
+          name: '组2',
+          item: '项4',
+          description: '',
+          score: ''
+        }
+      ],
+      mergeArr: [], // 每行需要合并的行数
+      indexArr: [], // 序号索引数组
+      // 提交评估报告弹窗
+      userData: [{
+        name: '张三',
+        partName: '研发部',
+        checkbox: '',
+        radio: 1
+      }, {
+        name: '张三',
+        partName: '研发部',
+        checkbox: '',
+        radio: 2
+      }, {
+        name: '张三',
+        partName: '研发部',
+        checkbox: '',
+        radio: 3
+      }, {
+        name: '张三',
+        partName: '研发部',
+        checkbox: '',
+        radio: 4
+      }],
+      isChecked: null,
+      dialogTableVisible: false,
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10 // 每页展示条数
+    }
+  },
+  methods: {
+    handleCellStyle ({row, column, rowIndex, columnIndex}) {
+      if (columnIndex === 0 || columnIndex === 1) {
+        return 'background-color: #f8faf7;color:#333'
+      }
+    },
+    handleMerge ({ row, column, rowIndex, columnIndex }) {
+      if (columnIndex === 0 || columnIndex === 1) {
+        let rowCount = this.mergeArr[rowIndex]
+        let colCount = rowCount > 0 ? 1 : 0
+        return {
+          rowspan: rowCount,
+          colspan: colCount
+        }
+      }
+    },
+    handleIndex (index) {
+      return this.indexArr[index]
+    },
+    handleMergeData () {
+      this.mergeArr = []
+      this.indexArr = []
+      this.mergeArr.push(1)
+      this.indexArr.push(1)
+      let pos = 0
+      let indexTmp = 1
+      for (let i = 1; i < this.projectData.length; i++) {
+        if (this.projectData[i].name === this.projectData[i - 1].name) {
+          this.mergeArr[pos] += 1
+          this.mergeArr.push(0)
+        } else {
+          this.mergeArr.push(1)
+          pos = i
+          indexTmp++
+        }
+        this.indexArr.push(indexTmp)
+      }
+    },
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData()
+    },
+    getTableData () {
+      this.handleMergeData()
+    },
+    // 合计方法
+    getSummaries (param) {
+      const { columns, data } = param
+      const sums = []
+      let score = 0
+      data.map((item) => {
+        score += Number(item.score)
+      })
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计'
+          return
+        }
+        if (index === 4) {
+          sums[index] = score
+        } else {
+          sums[index] = ''
+        }
+      })
+      return sums
+    },
+    dataIndex () {},
+    radioChange (val) {
+      console.log(val)
+      this.isChecked = val
+    }
+  },
+  mounted () {
+    this.getTableData()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_business_assess {
+    .el-form{
+      width: 100%;
+    }
+    .assess_main{
+      width: 100%;
+      margin-top: 20px;
+      min-height: 100px;
+      border-top: 1px solid #dedede;
+    }
+    .assess_main p.title{
+      width: 100%;
+      height: 50px;
+    }
+    .assess_main p.title span{
+      width: 178px;
+      height: 50px;
+      line-height: 50px;
+      font-weight: bold;
+      display: block;
+      border-right: 1px solid #dedede;
+      padding-right: 20px;
+      text-align: right;
+    }
+    .el-tabs__nav{
+      border-right: 1px solid #dedede;
+      margin-right: 10px;
+      min-height: 700px;
+    }
+    .el-tabs--left .el-tabs__active-bar.is-left, .el-tabs--left .el-tabs__active-bar.is-right, .el-tabs--right .el-tabs__active-bar.is-left, .el-tabs--right .el-tabs__active-bar.is-right{
+      top: 14px;
+      width: 10px;
+      height: 10px!important;
+    }
+    .el-tabs--left .el-tabs__active-bar.is-left, .el-tabs--left .el-tabs__nav-wrap.is-left::after{
+      right: -5px;
+      -webkit-border-radius: 10px;
+      -moz-border-radius: 10px;
+      border-radius: 10px;
+    }
+    .el-tabs__item{
+      height: 100px;
+    }
+    .el-textarea__inner{
+      height: 160px;
+    }
+    p.advice{
+      line-height: 50px;
+      font-weight: bold;
+    }
+    .selectbox{
+      width: 100%;
+      overflow: hidden;
+      margin: 30px 10px;
+    }
+    .selectbox p{
+      width: 100%;
+      height: 30px;
+      line-height: 30px;
+      border-bottom: 1px solid #dedede;
+    }
+    .selectbox p span{
+      color: #409EFF;
+      border-bottom: 2px solid #409EFF;
+      display: inline-block;
+      padding: 0 10px;
+      font-weight: bold;
+    }
+    .selectbox ul{
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #dedede;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+    .selectbox ul li{
+      width: 66px;
+      height: 30px;
+      line-height: 30px;
+      float: left;
+      margin: 8px;
+      position: relative;
+    }
+    .selectbox ul li span{
+      display: block;
+      width: 100%;
+      height: 30px;
+      text-align: center;
+      background: #e9f8d8;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+    }
+    .selectbox ul li i{
+      width: 18px;
+      height: 18px;
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      display: inline-block;
+      cursor: pointer;
+      background: url("../../../../static/images/close.png") center center no-repeat;
+    }
+    .selectbox ul.jc li span{
+      background: #d8f8f8;
+    }
+  }
+</style>

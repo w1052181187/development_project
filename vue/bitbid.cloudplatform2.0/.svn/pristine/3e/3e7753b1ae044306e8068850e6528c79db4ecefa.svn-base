@@ -1,0 +1,279 @@
+<template>
+  <div class="cloudcontent" id="cloud_processedit">
+    <div class="main">
+      <el-form :model="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号：" >
+              <span>{{updateForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{updateForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段编号：">
+              <span>{{updateForm.bidSectionCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段名称：">
+              <span>{{updateForm.bidSectionName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="公示名称："  prop="title">
+              <span>{{updateForm.title}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="中标候选人：">
+              <el-table
+                :data="updateForm.candidateList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  prop="name"
+                  label="中标候选人名称"
+                  show-overflow-tooltip>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="公示内容：">
+              <editor ref="notice_ueditor" class="ueditor" :editread="editread"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="其他内容：">
+              <editor ref="other_ueditor" class="ueditor" :editread="editread"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="附件：">
+              <el-table
+                :data="updateForm.fileInformationList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  type="index"
+                  label="序号"
+                  width="60"
+                  align="center">
+                </el-table-column>
+                <el-table-column
+                  prop="fileName"
+                  label="文件名称"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  label="操作" align="center" width="200">
+                  <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="lookFile(scope.row)">查看</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <approve @approveForm="approveForm" ref="approveForm" v-if="Number(isApproved) === 1"></approve>
+        <el-row v-if="Number(isApproved) === 3">
+          <el-col :span="24">
+            <el-form-item label="当前审批人：">
+              <span>{{taskExecutor}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row v-if="isApproved">
+          <el-col :span="24">
+            <el-form-item label="审核记录：">
+              <el-table
+                :data="recordList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  type="index"
+                  width="60"
+                  label="序号">
+                </el-table-column>
+                <el-table-column
+                  prop="auditStatus"
+                  label="审核结果"
+                  show-overflow-tooltip>
+                  <template slot-scope="scope">
+                    <span  v-if="scope.row.auditStatus === 1">通过</span>
+                    <span  v-if="scope.row.auditStatus === 2">不通过</span>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="auditorName"
+                  label="审核人"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  prop="createDate"
+                  label="审核时间"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  prop="opinion"
+                  label="审核意见"
+                  show-overflow-tooltip>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="cancleApprove" v-if="Number(isApproved) === 3 && recordList.length === 0" :loading="isSubmiting">撤回</el-button>
+          <template v-else>
+            <el-button type="primary" @click="submitApprove" v-if="Number(isApproved) === 1" :loading="isSubmiting">提交</el-button>
+            <el-button class="cancal" @click="$router.go(-1)">返回</el-button>
+          </template>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import {downloadFile} from '@/assets/js/common'
+import {approvalRecord, approvalTask} from '@/api/todoList'
+import {bulletinInfo} from '@/api/project'
+import approve from '@/components/approve.vue'
+export default {
+  components: {
+    editor,
+    approve
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      // 是否显示审批（0:详情 1：审批 2：审批详情 3：我发起的详情）
+      isApproved: 0,
+      recordList: [],
+      updateForm: {},
+      bidSection: {},
+      // 富文本
+      editread: true,
+      objectId: '',
+      approvalTaskCode: '',
+      taskExecutor: '',
+      form: {}
+    }
+  },
+  methods: {
+    lookFile (file) {
+      downloadFile(file.fileName, file.relativePath)
+    },
+    detail () {
+      bulletinInfo.getOneByRelatedCode(this.$route.params.code, this.$route.query.sectionSystemCode).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.updateForm = res.data.bulletinInfo
+          this.$refs.notice_ueditor.setContent(this.updateForm.content ? this.updateForm.content : '')
+          this.$refs.other_ueditor.setContent(this.updateForm.otherContent ? this.updateForm.otherContent : '')
+          // 候选人信息的拆分
+          if (this.updateForm.candidateName) {
+            this.updateForm.candidateList = this.splitCandidateName(this.updateForm.candidateName)
+          }
+        }
+      })
+    },
+    /** 拆分候选人信息 */
+    splitCandidateName (candidateNameStr) {
+      let candidateList = []
+      let list = candidateNameStr.split(',')
+      if (list.length > 0) {
+        for (let i = 0; i < list.length; i++) {
+          candidateList.push({name: list[i]})
+        }
+      }
+      return candidateList
+    },
+    approveForm (formV) {
+      this.form = formV
+    },
+    submitApprove () {
+      // 必填验证
+      this.$refs.approveForm.handleValidate()
+      if (this.form.auditStatus === 2 && !this.form.opinion.trim()) {
+        this.$message({
+          message: '请填写审批意见',
+          type: 'warning'
+        })
+        return false
+      }
+      // 提交数据
+      this.isSubmiting = true
+      this.form.relatedCode = this.approvalTaskCode
+      this.form.subjectCode = this.$route.params.code
+      approvalRecord.approvalRecordSave(this.form).then((res) => {
+        this.isSubmiting = false
+        if (res.data.resCode === '0000') {
+          this.$store.commit('delete_tabs', this.$route.fullPath)
+          if (Number(this.isApproved) === 0) {
+            this.$router.push({path: '/project/projectProcess'})
+          } else {
+            this.$router.push({path: '/todoList/need'})
+          }
+        }
+      })
+    },
+    // 撤回审批
+    cancleApprove () {
+      this.isSubmiting = true
+      approvalTask.recallMyTask(this.approvalTaskCode).then((res) => {
+        this.isSubmiting = false
+        if (res.data.resCode === '0000') {
+          // this.$route.go(-1)
+        }
+      })
+    },
+    approveRecord () {
+      if (this.isApproved) {
+        let query = {
+          subjectCode: this.$route.params.code,
+          relatedCode: this.approvalTaskCode
+        }
+        approvalRecord.approvalRecordList(query).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.recordList = res.data.recordOfApprovalList
+            this.taskExecutor = res.data.taskExecutor
+          }
+        })
+      }
+    },
+    init () {
+      this.isApproved = this.$route.query.isApproved
+      this.approvalTaskCode = this.$route.query.code
+      this.detail()
+      this.approveRecord()
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_processedit{
+  }
+</style>

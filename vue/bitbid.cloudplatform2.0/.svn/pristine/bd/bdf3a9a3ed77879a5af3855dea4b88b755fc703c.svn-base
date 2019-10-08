@@ -1,0 +1,169 @@
+<template>
+  <el-dialog title="赢单" :visible.sync="showVisible" width="30%" :before-close="cancel">
+    <div class="dialogmain">
+      <p class="text-center">
+        <img src="../../../../../static/images/yingdan.png"/>
+      </p>
+      <strong class="text-center">恭喜您赢单！</strong>
+      <p class="checkbox">
+        <el-form :model="submitForm" ref="submitForm" :validate-on-rule-change="true">
+          <el-form-item label="商机阶段：" prop="dicStageCode">
+            <el-select v-model="submitForm.record.dicStageCode" placeholder="请选择">
+              <el-option
+                v-for="item in dicOpportunityStageList"
+                :key="item.code"
+                :label="item.name"
+                :value="item.code">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item prop="status">
+            <el-checkbox v-model="submitForm.transforProject" :label="true">将该商机转为项目</el-checkbox>
+          </el-form-item>
+          <el-form-item prop="status">
+            <el-checkbox v-model="submitForm.transforCustomerStatus" :label="true">将该客户转为“成交客户”</el-checkbox>
+          </el-form-item>
+        </el-form>
+      </p>
+      <div slot="footer" class="submit-radio">
+        <el-button type="primary" @click="submit" v-loading="submitLoading">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </div>
+  </el-dialog>
+</template>
+<script>
+import { business, customer } from '@/api/customer'
+import * as region from '@/assets/js/region'
+export default {
+  data () {
+    return {
+      submitLoading: false,
+      // 地址三级联动
+      longTextOptions: region.CityInfo,
+      submitForm: {
+        record: this.dialogObj,
+        transforProject: false,
+        transforCustomerStatus: false
+      }
+    }
+  },
+  props: ['showVisible', 'dialogObj', 'dicOpportunityStageList'],
+  watch: {
+    showVisible (value) {
+      this.submitForm = {
+        record: this.dialogObj,
+        transforProject: false,
+        transforCustomerStatus: false,
+        regionText: ''
+      }
+      if (value) {
+        this.submitForm.record = Object.assign({}, this.dialogObj)
+      }
+    }
+  },
+  // 包装三级联动地址信息
+  wrapRegionText (obj) {
+    // 初始化省市县数据
+    let regionText = ''
+    this.longTextOptions.map((item) => {
+      if (item.value === obj.provinceId) {
+        regionText += item.label + '/'
+        item.children.map((ite) => {
+          if (ite.value === obj.cityId) {
+            regionText += ite.label + '/'
+            ite.children.map((countyItem) => {
+              if (countyItem.value === obj.countyId) {
+                regionText += countyItem.label
+              }
+            })
+          }
+        })
+      }
+    })
+    if (obj.address) {
+      regionText += '/' + obj.address
+    }
+    return regionText
+  },
+  methods: {
+    // 包装三级联动地址信息
+    wrapRegionText (obj) {
+      // 初始化省市县数据
+      let regionText = ''
+      this.longTextOptions.map((item) => {
+        if (item.value === obj.provinceId) {
+          regionText += item.label + '/'
+          item.children.map((ite) => {
+            if (ite.value === obj.cityId) {
+              regionText += ite.label + '/'
+              ite.children.map((countyItem) => {
+                if (countyItem.value === obj.countyId) {
+                  regionText += countyItem.label
+                }
+              })
+            }
+          })
+        }
+      })
+      if (obj.address) {
+        regionText += '/' + obj.address
+      }
+      return regionText
+    },
+    submit () {
+      this.$confirm('确认要提交吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.submitLoading = true
+        // 获取客户地址
+        customer.querySelfOneByCode(this.dialogObj.customerManagementCode).then(res => {
+          return res.data.data
+        }).then(data => {
+          return this.wrapRegionText(data)
+        }).then(data => {
+          this.submitForm.record.status = 3
+          this.submitForm.regionText = data
+          business.updateStatus(this.submitForm).then(res => {
+            this.submitLoading = false
+            if (res.data.resCode === '0000') {
+              this.$emit('saveSuccess', this.submitForm.record)
+              this.cancel()
+            }
+          })
+        })
+      }).catch(() => {
+        this.loading = false
+        return false
+      })
+    },
+    // 关闭
+    cancel () {
+      this.$emit('showDialog', 'dialogWinVisible')
+    }
+  }
+}
+</script>
+<style scoped>
+  .dialogmain{
+    width: 234px;
+    overflow: hidden;
+    text-align: center;
+    margin: 20px auto;
+  }
+  .dialogmain strong{
+    font-size: 18px;
+    line-height: 36px;
+  }
+  .dialogmain p{
+    margin: 10px 0;
+  }
+  .dialogmain p.checkbox{
+    float: left;
+    margin: 30px 0;
+    line-height: 32px;
+    text-align: left;
+  }
+</style>

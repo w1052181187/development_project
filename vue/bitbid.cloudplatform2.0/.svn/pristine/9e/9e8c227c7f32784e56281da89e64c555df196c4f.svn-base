@@ -1,0 +1,171 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <div class="selectbox">
+        <el-form :model="queryModel" ref="queryModel" label-width="70px" style="width: 100%">
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="模板名称：" prop="messageLike">
+                <el-input v-model="queryModel.messageLike" placeholder="请输入模板名称"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-button type="primary" @click="handlePage(1)">查询</el-button>
+              <el-button @click="reset('queryModel')">重置</el-button>
+            </el-col>
+            <el-col :span="12" v-if="$store.getters.permissions.includes('1040302')">
+              <div class="topmain">
+                <el-button class="addbutton" @click="handleAdd">
+                  <span> + 新增</span>
+                </el-button>
+              </div>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+      <el-table :data="tableData" border  header-cell-class-name="tableheader" v-loading="loading">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="80"
+          :index="computedIndex"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="评估模板名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="状态"
+          align="center"
+          width="120"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span>{{scope.row.status === 1 ? '启用' : '禁用'}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetail(scope)" >详情</el-button>
+            <el-button type="text" size="small" @click="handleUpdate(scope)" v-if="$store.getters.permissions.includes('1040302')">修改</el-button>
+            <el-button type="text" size="small" @click="logoff(scope.row.objectId)" v-if="$store.getters.permissions.includes('1040302')">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="page.total"
+        :page-size='page.pageSize'
+        :current-page.sync="page.currentPage"
+        @current-change="handlePage"
+        @next-click="handlePage">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+
+<script>
+import { template } from '@/api/customer'
+export default {
+  data () {
+    return {
+      loading: false,
+      page: {
+        pageSize: 10,
+        pageNo: 0,
+        total: 0, // 总条数
+        currentPage: 1
+      },
+      queryModel: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        isDelete: 0,
+        messageLike: ''
+      },
+      tableData: []
+    }
+  },
+  methods: {
+    // 获取列表数据,稍作延迟
+    getTableData () {
+      this.loading = true
+      this.queryModel.pageNo = this.page.pageNo
+      this.queryModel.pageSize = this.page.pageSize
+      template.queryList(this.queryModel).then(res => {
+        this.loading = false
+        this.tableData = res.data.data.list
+        this.page.total = res.data.data.total
+      })
+    },
+    handleAdd () {
+      this.$router.push({path: `/customer/template/add`})
+    },
+    handleDetail (scope) {
+      this.$router.push({path: `/customer/template/detail/${scope.row.objectId}`})
+    },
+    handleUpdate (scope) {
+      this.$router.push({path: `/customer/template/update/${scope.row.objectId}`})
+    },
+    // 删除
+    logoff (objectId) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        template.logoff(objectId).then(() => {
+          this.getTableData()
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 序号计算
+    computedIndex (index) {
+      return index + (this.page.currentPage - 1) * this.page.pageSize + 1
+    },
+    // 表单分页
+    handlePage (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = (nowNum - 1) * this.page.pageSize
+      this.getTableData()
+    },
+    // 重置
+    reset (formName) {
+      this.$refs[formName].resetFields()
+      this.page.currentPage = 1
+      this.page.pageNo = 0
+      this.getTableData()
+    }
+  },
+  mounted () {
+    // 初始化数据
+    this.getTableData()
+  }
+}
+</script>
+
+<style scoped>
+  .selectbox{
+    padding: 6px 0;
+  }
+  .search{
+    height: 40px;
+    margin-left: 40px;
+  }
+  .topmain{
+    /*line-height: 40px;*/
+    color: #111111;
+    font-weight: bold;
+    padding: 0px;
+    /*margin: 10px auto;*/
+  }
+  .topmain .addbutton{
+    float: right;
+  }
+</style>

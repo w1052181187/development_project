@@ -1,0 +1,11 @@
+export default [
+  {
+    path: '/archives/query',
+    name: '档案查询',
+    meta: {
+      title: '档案查询',
+      active: '/archives/query'
+    },
+    component: () => import(/* webpackChunkName: 'archives' */ '@/pages/archives/query/index')
+  }
+]

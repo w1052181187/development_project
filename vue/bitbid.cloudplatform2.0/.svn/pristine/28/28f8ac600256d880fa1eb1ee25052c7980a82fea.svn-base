@@ -1,0 +1,328 @@
+<template>
+  <div class="cloudcontent" id="bid-file">
+    <div class="main">
+      <div class="bid-info viewdetails">
+        <el-form :model="info">
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目名称：">
+                <span>{{info.tenderProjectName}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="项目编号：">
+                <span>{{info.tenderProjectCode}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="标段名称：">
+                <span>{{info.bidSectionName}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="标段编号：">
+                <span>{{info.bidSectionCode}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+      <div class="module">
+        <div class="left">
+          <div class="title">移交目录</div>
+          <ul class="left-menu">
+            <li :class="activeMenuIndex === index ? 'active-menu' : ''"
+                v-for="(item, index) in info.archivesClassifyList"
+                :key="index"
+                :title="menuTitle(item.transferStatus, item.status)"
+                @click="handleMenuClick(item.objectId, index)">
+              <img v-if="Number(item.transferStatus) === 1" src="../../../assets/yiyijiao.png">
+              <img v-else-if="Number(item.transferStatus) === 2" src="../../../assets/transfered.png">
+              <img v-else-if="Number(item.transferStatus) === 3" src="../../../assets/cehui.png">
+              <span v-else></span>
+              {{item.name}}
+            </li>
+          </ul>
+        </div>
+        <div class="middle"></div>
+        <div class="right">
+          <div class="title">{{moduleName}}</div>
+          <el-button type="primary" class="return-btn" @click="handleAccept(0)" v-if="(Number(info.archivesClassifyList[activeMenuIndex].transferStatus) === 1 || Number(info.archivesClassifyList[activeMenuIndex].transferStatus) === 2) && Number(info.archivesClassifyList[activeMenuIndex].status) !== 1">退回</el-button>
+          <el-button type="primary" class="accept-btn" @click="handleAccept(1)" v-if="Number(info.archivesClassifyList[activeMenuIndex].transferStatus) === 2 && Number(info.archivesClassifyList[activeMenuIndex].status) !== 1">接收</el-button>
+          <div class="line"></div>
+          <div class="content">
+            <template v-if="activeMenuIndex === 0">
+              <div class="upload-situation"><figure id="pie" class="upload-progress" data-behavior="pie-chart"></figure>上传文件情况：{{info.validFileCount + '/' + info.fileCount}}</div>
+              <ul class="file-box">
+                <li class="file-item-border" v-for="(item, index) in archivesFileList"
+                    :key="index" v-if="index >= (pageSize * currentPage) - pageSize && index < currentPage * pageSize">
+                  <div class="file-item">
+                    <span class="file-name">{{index + 1 + '&nbsp;&nbsp;&nbsp;&nbsp;' + item.archivesCatalog.name}}</span>
+                    <img class="has-file-img" v-if="item.refArchivesFileInformationList && item.refArchivesFileInformationList.length > 0 && item.refArchivesFileInformationList[0].fileInformation" src="../../../assets/qubiezhen.png"/>
+                    <span class="has-file-img" v-else></span>
+                    <div :class="item.archivesCatalog.name === activeName ? 'file-action-active' : 'file-action'" @click="updateBtn(item)">
+                      <span class="file-action-txt">{{item.archivesCatalog.name === activeName ? '收起' : '展开'}}</span>
+                      <img class="pack-reduce" src="../../../assets/reduce.png" v-if="item.archivesCatalog.name === activeName">
+                      <img class="pack-down" src="../../../assets/plus.png" v-else>
+                      <img class="file-action-del" v-show="curHoverIndex === index" src="../../../assets/shanchu_b.png" @click.stop="delBtn(item, index)">
+                    </div>
+                  </div>
+                  <fileItem v-if="item.archivesCatalog.name === activeName" :can-edit="canEdit" :item="item" :active-name="activeName"></fileItem>
+                </li>
+              </ul>
+              <!--分页-->
+              <el-pagination
+                background
+                layout="prev, pager, next"
+                :total="archivesFileList.length"
+                :current-page.sync="currentPage"
+                :page-size='pageSize'
+                @current-change="handleCurrentChange">
+              </el-pagination>
+              <!--分页-->
+            </template>
+            <template v-else>
+              <template v-if="Number(isOnlyPhysical) === 0">
+                <fileUpload class="file-type-enclosure" :canEdit="canEdit"
+                            :file-list="archivesFileForm.refArchivesFileInformationList"
+                            :object-id="archivesFileId" :file-type='9' file-name='no'></fileUpload>
+              </template>
+              <div class="explain">资料说明:</div>
+              <el-input
+                type="textarea"
+                :autosize="{ minRows: 2 }"
+                placeholder="请输入内容"
+                v-model="archivesFileForm.archivesProjectExpands.evaluationInformation">
+              </el-input>
+              <!--<div class="submit-radio">-->
+                <!--<el-button type="primary" @click="handleSave" :loading="isSaving">保存</el-button>-->
+              <!--</div>-->
+            </template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import {archivesFile, archivesInfo} from '@/api/archives'
+import '@/assets/js/progress/jquery-pie-loader.js'
+export default {
+  watch: {
+    'info': {
+      handler () {
+        this.init()
+      },
+      immediate: true
+    }
+  },
+  components: {
+    // () => import(/* webpackChunkName: 'customer' */ '@/pages/customer/business/index')
+    fileItem: resolve => require(['../public/fileItem'], resolve),
+    fileUpload: resolve => require(['../public/fileUpload'], resolve)
+  },
+  name: 'file',
+  props: ['info'],
+  data () {
+    return {
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: null, // 总条数
+      pageSize: 10, // 每页展示条数
+      activeName: '',
+      canEdit: false,
+      moduleName: '电子档案',
+      activeMenuIndex: 0,
+      archivesFileList: [],
+      curHoverIndex: '',
+      fileInformationList: [],
+      fileObjectId: '',
+      fileExplain: '',
+      isSaving: false,
+      isOnlyPhysical: 0, // 是否需要上传文件
+      archivesFileId: '', // 当前选择的文件id
+      archivesFileForm: {
+        archivesProjectExpands: {
+          evaluationInformation: ''
+        },
+        refArchivesFileInformationList: []
+      }
+    }
+  },
+  methods: {
+    menuTitle (value, status) {
+      if (Number(value) === 0) {
+        return '待移交'
+      } else if (Number(value) === 1) {
+        if (+status === 1) {
+          return '已归档'
+        }
+        return '已接收'
+      } else if (Number(value) === 2) {
+        return '已移交'
+      } else if (Number(value) === 3) {
+        return '已退回'
+      }
+    },
+    handleMenuClick (classifyObjectid, index) {
+      if (this.activeMenuIndex === index) {
+        return
+      }
+      this.moduleName = this.info.archivesClassifyList[index].name
+      this.activeMenuIndex = index
+      archivesFile.getArchivesFileList({
+        archivesClassifyId: classifyObjectid
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.archivesFileList = res.data.archivesFileList.list
+          if (res.data.archivesFileList.list[0].archivesProjectExpands) {
+            this.archivesFileForm = res.data.archivesFileList.list[0]
+          } else {
+            this.archivesFileForm = {
+              archivesProjectExpands: {
+                evaluationInformation: ''
+              }
+            }
+          }
+          if (res.data.archivesFileList.list[0].refArchivesFileInformationList) {
+            this.archivesFileForm.refArchivesFileInformationList = res.data.archivesFileList.list[0].refArchivesFileInformationList
+          } else {
+            this.archivesFileForm.refArchivesFileInformationList = []
+          }
+          this.archivesFileId = res.data.archivesFileList.list[0].objectId
+          this.isOnlyPhysical = this.info.archivesClassifyList[index].isOnlyPhysical
+        }
+      })
+    },
+    // 鼠标移上
+    handleMouseOver (index) {
+      if (this.curHoverIndex === index) {
+        return
+      }
+      this.curHoverIndex = index
+    },
+    // 分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+    },
+    dataIndex (index) {
+      return index + (this.currentPage - 1) * this.pageSize + 1
+    },
+    updateBtn (item) {
+      if (this.activeName === item.archivesCatalog.name) {
+        this.activeName = ''
+      } else {
+        this.activeName = item.archivesCatalog.name
+      }
+    },
+    // 删除
+    delBtn (item, index) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        archivesFile.deleteArchivesFile(item.objectId).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.info.archivesFileList.splice(index, 1)
+          }
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 接受、退回
+    handleAccept (type) {
+      let status = 0
+      let message = ''
+      switch (type) {
+        case 1:
+          // 接受
+          status = 1
+          message = '确认要接收吗？'
+          break
+        case 0:
+          // 退回
+          status = 3
+          message = '确认要退回吗？'
+          break
+      }
+      this.$confirm(message, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.info.archivesClassifyList[this.activeMenuIndex].transferStatus = status
+        archivesInfo.receiveOrReturn(this.info.archivesClassifyList[this.activeMenuIndex]).then((res) => {
+          if (res.data.resCode === '0000') {}
+        })
+      })
+    },
+    getInitData (info) {
+      if (info.archivesClassifyList[0]) {
+        archivesFile.getArchivesFileList({
+          archivesClassifyId: this.info.archivesClassifyList[0].objectId
+        }).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.archivesFileList = res.data.archivesFileList.list
+          }
+        })
+      }
+    },
+    initProgress () {
+      let info = this.info
+      window.$(document).ready(function () {
+        let rand = Number(info.validFileCount) * 100 / Number(info.fileCount)
+        window.$('*[data-behavior="pie-chart"]').addSvgPie({
+          percentage: rand
+        })
+      })
+    },
+    init () {
+      this.initProgress()
+      this.getInitData(this.info)
+    }
+  },
+  mounted () {
+    this.init()
+  },
+  destroyed () {
+    window.$('*[data-behavior="pie-chart"]').removeSvgPie()
+  }
+}
+</script>
+
+<style lang="less">
+  @import '../../../assets/css/progress/jquery-pie-loader.css';
+  .accept-btn {
+    background: #108cee;
+    border-color: #108cee;
+    color: white;
+    float: right;
+  }
+  .return-btn {
+    background: #fe8d24;
+    border-color: #fe8d24;
+    color: white;
+    float: right;
+    margin-left: 10px;
+  }
+  .return-btn:hover {
+    background: #e0a186;
+    border-color: #e0a186;
+  }
+  .upload-situation {
+    margin-top: 10px;
+    height: 20px;
+    line-height: 20px;
+    font-weight: 700;
+  }
+  .upload-situation .upload-progress {
+    margin-right: 6px!important;
+    vertical-align: middle;
+  }
+</style>

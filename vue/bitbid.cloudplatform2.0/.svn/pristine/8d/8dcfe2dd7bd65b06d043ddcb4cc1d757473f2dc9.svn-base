@@ -1,0 +1,28 @@
+<template>
+  <div class="cloudcontent" id="cloud_customer_add">
+    <div class="main">
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+    }
+  },
+  watch: {
+    '$route': 'getTableData'
+  },
+  created () {
+    this.getTableData()
+  },
+  methods: {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_customer_add {
+  }
+</style>

@@ -1,0 +1,342 @@
+<template>
+  <div class="cloudcontent"  id="cloud_collaborationAdd">
+    <div class="main">
+      <el-form :model="submitForm" :rules="rulesList" ref="submitForm" label-width="80px" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="接收人："  prop="addresseeNames" class="bitianicon">
+              <el-input v-model="submitForm.addresseeNames">
+                <i slot="suffix" class="el-input__icon icon_people_fill"  @click="showUserDialog"></i>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="抄送人："  prop="copierNames">
+              <el-input v-model="submitForm.copierNames">
+                <i slot="suffix" class="el-input__icon icon_people_fill"  @click="showCopyUserDialog"></i>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="22">
+            <el-form-item label="标题："  prop="title">
+              <el-input v-model="submitForm.title" clearable></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="2">
+            <el-checkbox v-model="submitForm.checked"><i class="red"> * </i> 高优先级</el-checkbox>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="类型："  prop="type">
+              <el-select v-model="submitForm.type" placeholder="请选择" clearable>
+                <el-option
+                  v-for="item in typeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="内容：">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content" @contentChange="handleContentChange"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-form-item label="附件：">
+            <upload-file @uploadSuccess="uploadSuccess" @deleteSuccess="deleteSuccess"
+                         :fileArrays="submitForm.fileInformationList"
+                         fileType="9"
+                         isImage="0"
+                         fileMaxNum="5">
+            </upload-file>
+          </el-form-item>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="handleClickEvent('submitForm','save')" :loading="loading">保存</el-button>
+          <el-button type="primary" class="submitBtn" @click="handleClickEvent('submitForm', 'submit')" :loading="loading">提交</el-button>
+          <el-button class="cancal" @click="handleClickEvent('submitForm','cancel')">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+    <select-user-dialog :showVisible="showUserVisible" :saveSelectedUser="saveSelectedUser" @selected="selectedUser" @showDialog="showUserDialog"></select-user-dialog>
+    <select-user-dialog :showVisible="showCopyUserVisible" :saveSelectedUser="saveSelectedCopyUser" @selected="selectedCopyUser" @showDialog="showCopyUserDialog"></select-user-dialog>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import UploadFile from '@/components/upload/publicFileUpload'
+import selectUserDialog from '@/pages/system/users/search_user_checkbox'
+import {workCollaboration} from '@/api/office'
+export default {
+  components: {
+    editor,
+    UploadFile,
+    selectUserDialog
+  },
+  data () {
+    return {
+      submitForm: {
+        fileInformationList: []
+      },
+      rulesList: {
+        title: {required: true, message: '请填写标题', trigger: 'blur'}
+      },
+      typeOptions: [],
+      loading: false,
+      // 富文本
+      editread: false,
+      content: '',
+      // 选择人员-接收人
+      showUserVisible: false,
+      // 选择人员-抄送人
+      showCopyUserVisible: false,
+      saveSelectedUser: [], // 草稿状态选择的接收人
+      saveSelectedCopyUser: [] // 草稿状态选择的抄送人
+    }
+  },
+  methods: {
+    handleContentChange () {
+      if (this.$refs.ueditor) {
+      }
+    },
+    // 上传附件
+    uploadSuccess (file) {
+      this.submitForm.fileInformationList.push(file)
+    },
+    deleteSuccess (fileId) {
+      this.submitForm.fileInformationList = this.submitForm.fileInformationList.filter(item => item.relativePath !== fileId)
+    },
+    // 接收人 - 选择用户
+    selectedUser (array) {
+      this.submitForm.addresseeIds = ''
+      this.submitForm.addresseeNames = ''
+      if (array) {
+        array.map(user => {
+          if (this.submitForm.addresseeIds) {
+            this.submitForm.addresseeIds += user.objectId + ','
+          } else {
+            this.submitForm.addresseeIds = user.objectId + ','
+          }
+          if (this.submitForm.addresseeNames) {
+            this.submitForm.addresseeNames += user.name + ','
+          } else {
+            this.submitForm.addresseeNames = user.name + ','
+          }
+        })
+        this.submitForm.addresseeIds =
+          this.submitForm.addresseeIds.substring(0, this.submitForm.addresseeIds.length - 1)
+        this.submitForm.addresseeNames =
+          this.submitForm.addresseeNames.substring(0, this.submitForm.addresseeNames.length - 1)
+      }
+    },
+    // 抄送人选择用户
+    selectedCopyUser (array) {
+      this.submitForm.copierIds = ''
+      this.submitForm.copierNames = ''
+      if (array) {
+        array.map(user => {
+          if (this.submitForm.copierIds) {
+            this.submitForm.copierIds += user.objectId + ','
+          } else {
+            this.submitForm.copierIds = user.objectId + ','
+          }
+          if (this.submitForm.copierNames) {
+            this.submitForm.copierNames += user.name + ','
+          } else {
+            this.submitForm.copierNames = user.name + ','
+          }
+        })
+        this.submitForm.copierIds =
+          this.submitForm.copierIds.substring(0, this.submitForm.copierIds.length - 1)
+        this.submitForm.copierNames =
+          this.submitForm.copierNames.substring(0, this.submitForm.copierNames.length - 1)
+      }
+    },
+    // 选择人员弹框打开
+    showUserDialog () {
+      this.showUserVisible = !this.showUserVisible
+    },
+    showCopyUserDialog () {
+      this.showCopyUserVisible = !this.showCopyUserVisible
+    },
+    handleClickEvent (form, operate) {
+      if (Object.is(operate, 'cancel')) {
+        this.close(operate)
+      } else {
+        if (!this.submitForm.addresseeNames) {
+          this.$message({
+            message: '请选择接收人！',
+            type: 'warning'
+          })
+          return
+        }
+        this.$refs[form].validate((vaild) => {
+          if (vaild) {
+            this.loading = true
+            this.submitForm.departmentId = this.$store.getters.authUser.departmentId
+            if (Object.is(this.submitForm.checked, true)) {
+              this.submitForm.isHighPriority = 1
+            } else {
+              this.submitForm.isHighPriority = 0
+            }
+            this.$set(this.submitForm, 'content', this.$refs.ueditor.getContent())
+            if (Object.is(operate, 'save')) {
+              this.submitForm.status = 0
+            } else if (Object.is(operate, 'submit')) {
+              this.submitForm.sendDate = new Date().getTime()
+              this.submitForm.status = 1
+            }
+            this.submitForm.fileInformationList.map(file => {
+              file.objectId = null
+            })
+            workCollaboration.update(this.submitForm).then(res => {
+              if (res.data.resCode === '0000') {
+                this.loading = false
+                this.close(operate)
+              }
+            })
+          } else {
+            this.loading = false
+            return false
+          }
+        })
+      }
+    },
+    // 取消
+    close (operate) {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      if (Object.is(operate, 'cancel')) {
+        this.$router.push({path: `/office/collaboration`})
+      } else if (Object.is(operate, 'save')) {
+        this.$router.push({path: `/office/collaboration`, query: {active: 4}})
+      } else if (Object.is(operate, 'submit')) {
+        this.$router.push({path: `/office/collaboration`, query: {active: 3}})
+      }
+    },
+    getCollaborationTypes () {
+      workCollaboration.getCollaborationTypes().then(res => {
+        this.typeOptions = res.data.collaborationTypes
+      })
+    },
+    getWorkCollaboration () {
+      if (Object.is(this.$route.query.operate, 'edit')) {
+        this.editInitData()
+      } else if (Object.is(this.$route.query.operate, 'reply')) {
+        this.replyInitData()
+      } else if (Object.is(this.$route.query.operate, 'forward')) {
+        this.forwardInitData()
+      }
+    },
+    editInitData () {
+      workCollaboration.getById(this.$route.query.objectId).then(res => {
+        this.submitForm = res.data.workCollaboration
+        this.$refs.ueditor.setContent(this.submitForm.content)
+        if (Object.is(this.submitForm.isHighPriority, 1)) {
+          this.$set(this.submitForm, 'checked', true)
+        }
+        if (this.submitForm.addresseeIds) {
+          let addresseeIds = this.submitForm.addresseeIds.split(',')
+          let addresseeNames = this.submitForm.addresseeNames.split(',')
+          addresseeIds.map((addresseeId, index) => {
+            let user = {
+              objectId: addresseeId,
+              name: addresseeNames[index]
+            }
+            this.saveSelectedUser.push(user)
+          })
+        }
+        if (this.submitForm.copierIds) {
+          let copierIds = this.submitForm.copierIds.split(',')
+          let copierNames = this.submitForm.copierNames.split(',')
+          copierIds.map((copierId, index) => {
+            let user = {
+              objectId: copierId,
+              name: copierNames[index]
+            }
+            this.saveSelectedCopyUser.push(user)
+          })
+        }
+      })
+    },
+    replyInitData () {
+      workCollaboration.getById(this.$route.query.objectId).then(res => {
+        let data = res.data.workCollaboration
+        this.$set(this.submitForm, 'addresseeIds', data.senderId)
+        this.$set(this.submitForm, 'addresseeNames', data.senderName)
+        this.$set(this.submitForm, 'copierIds', data.copierIds)
+        this.$set(this.submitForm, 'copierNames', data.copierNames)
+        this.$set(this.submitForm, 'title', '回复：' + data.title)
+        if (Object.is(data.isHighPriority, 1)) {
+          this.$set(this.submitForm, 'checked', true)
+        }
+        this.$set(this.submitForm, 'type', data.type)
+        let originalContent = `<p></p><p style="height: 100px;"></p><hr/>
+          <p>发送人：${data.senderName}</p><p>接收人：${data.addresseeNames}</p>
+          <p>抄送人：${data.copierNames}</p><p>标题：${data.title}</p><p>内容：${data.content}</p>`
+        this.$refs.ueditor.setContent(originalContent)
+        this.$set(this.submitForm, 'fileInformationList', data.fileInformationList)
+        if (this.submitForm.addresseeIds) {
+          let user = {
+            objectId: this.submitForm.addresseeIds,
+            name: this.submitForm.addresseeNames
+          }
+          this.saveSelectedUser.push(user)
+        }
+        if (this.submitForm.copierIds) {
+          let copierIds = this.submitForm.copierIds.split(',')
+          let copierNames = this.submitForm.copierNames.split(',')
+          copierIds.map((copierId, index) => {
+            let user = {
+              objectId: copierId,
+              name: copierNames[index]
+            }
+            this.saveSelectedCopyUser.push(user)
+          })
+        }
+      })
+    },
+    forwardInitData () {
+      workCollaboration.getById(this.$route.query.objectId).then(res => {
+        let data = res.data.workCollaboration
+        this.$set(this.submitForm, 'title', '转发：' + data.title)
+        if (Object.is(data.isHighPriority, 1)) {
+          this.$set(this.submitForm, 'checked', true)
+        }
+        this.$set(this.submitForm, 'type', data.type)
+        let originalContent = `<p></p><p style="height: 100px;"></p><hr/>
+          <p>发送人：${data.senderName}</p><p>接收人：${data.addresseeNames}</p>
+          <p>抄送人：${data.copierNames}</p><p>标题：${data.title}</p><p>内容：${data.content}</p>`
+        this.$refs.ueditor.setContent(originalContent)
+        this.$set(this.submitForm, 'fileInformationList', data.fileInformationList)
+      })
+    }
+  },
+  mounted () {
+    this.getCollaborationTypes()
+    if (this.$route.query.objectId) {
+      this.getWorkCollaboration()
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_collaborationAdd{
+    .icon_people_fill{
+      width: 32px;
+      height: 32px;
+      border-left: 1px solid #dddddd;
+      display: inline-block;
+      background: url("../../../../static/images/office/icon_people_fill.png") center center no-repeat;
+    }
+  }
+</style>

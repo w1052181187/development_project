@@ -1,0 +1,71 @@
+<template>
+  <div id="policy-law-details-page" class="policy-law-details">
+    <HomeHeader></HomeHeader>
+    <div class="banner">
+      <img src="../../../../static/images/home/banner.png" alt="">
+    </div>
+    <div class="policy-law-details-warp">
+      <p>当前位置：法律法规 > 详情</p>
+      <div class="policy-law-cont">
+        <div class="contents"></div>
+        <div class="file-warp">
+          <label>
+            <span>附件：</span>
+            <el-button type="text" @click="downloadFile">文件</el-button>
+          </label>
+        </div>
+      </div>
+    </div>
+    <HomeFooter></HomeFooter>
+  </div>
+</template>
+<script>
+import HomeHeader from '../header/header'
+import HomeFooter from '../footer/footer'
+export default {
+  name: '',
+  data () {
+    return {}
+  },
+  components: {
+    HomeHeader,
+    HomeFooter
+  },
+  methods: {
+    downloadFile () {}
+  },
+  mounted () {}
+}
+</script>
+<style lang="less">
+#policy-law-details-page {
+  background: #F2F6F9;
+  padding-bottom: 1px;
+  .policy-law-details-warp p {
+    text-align: left;
+    width: 1200px;
+    margin: 0 auto;
+    padding-top: 12px;
+    padding-bottom: 8px;
+  }
+  .policy-law-cont {
+    width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding: 15px 20px;
+    margin-top: 10px;
+    margin-bottom: 40px;
+    background: #fff;
+    .contents {
+      min-height: 300px;
+      border: 1px solid #e1e1e1;
+    }
+    .file-warp {
+      text-align: left;
+      padding-left: 10px;
+      border: 1px solid #e1e1e1;
+      border-top: none;
+    }
+  }
+}
+</style>

@@ -1,0 +1,251 @@
+<template>
+  <div class="announcement-list cloudcontent" id="tenderFeeList">
+    <div class="main">
+      <div class="topmain" style="height:41px;">
+        <el-row>
+          <div class="seacher_box">
+            <span>关键字：</span>
+            <el-input class="keyword-input" v-model="search_input" placeholder="请输入公告名称或招标人名称关键字"></el-input>
+            <el-button @click="tenderFeeSrh">查询</el-button>
+            <el-button @click="resetList">重置</el-button>
+          </div>
+          <div class="fr">
+            <el-button class="addbutton import-button" @click="exportWordBtn">
+              <span>导出word</span>
+            </el-button>
+            <el-button class="addbutton" @click="toCalendarBtn">
+              <span>返回日历</span>
+            </el-button>
+          </div>
+        </el-row>
+      </div>
+      <el-table
+        :data="tableData"
+        border
+        tooltip-effect="dark"
+        style="width: 100%"
+        header-cell-class-name="tableheader"
+        ref="multipleSelectionRef"
+        @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" align="center"></el-table-column>
+        <el-table-column type="index" label="序号" width="60" align="center"></el-table-column>
+        <el-table-column prop="project_name" label="公告名称" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <a href="javascript:;" class="annou-name" @click="toDetail(scope.row)" :formatter="stringFormat">{{scope.row.project_name}}</a>
+          </template>
+        </el-table-column>
+        <el-table-column prop="tender" label="招标人" show-overflow-tooltip :formatter="stringFormat" width="340"></el-table-column>
+        <el-table-column prop="region" label="地区" show-overflow-tooltip :formatter="stringFormat" width="160"></el-table-column>
+        <el-table-column prop="publish_date_str" label="发布时间" show-overflow-tooltip width="160"></el-table-column>
+      </el-table>
+      <el-pagination background layout="prev, pager, next" :total="pages.total" :page-size='pages.pageSize'
+        :current-page.sync="pages.pageNo" @current-change="handlePage"
+        @next-click="handlePage">
+      </el-pagination>
+    </div>
+  </div>
+</template>
+<script>
+import { comparison } from '@/api/biddingSources'
+import * as region from '@/assets/js/region'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      multipleSelectionAll: [], // 所有选中的数据包含跨页数据
+      multipleSelection: [], // 当前页选中的数据
+      idKey: 'related_code', // 标识列表数据中每一行的唯一键的名称(需要按自己的数据改一下)
+      pageText: '', // 哪种收支项目列表
+      search_input: '',
+      tableData: [],
+      pages: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 1
+      },
+      queryModel: {
+        indexType: 2,
+        dayRange: this.$route.query.day,
+        provinceId: this.$route.query.provinceId,
+        orderBy: 'publish_date'
+      },
+      // 地址三级联动
+      addressOptions: region.CityInfo
+    }
+  },
+  watch: {
+  },
+  created () {},
+  methods: {
+    // 设置选中的方法
+    setSelectRow () {
+      if (!this.multipleSelectionAll || this.multipleSelectionAll.length <= 0) {
+        return
+      }
+      // 标识当前行的唯一键的名称
+      let idKey = this.idKey
+      let selectAllIds = []
+      this.multipleSelectionAll.forEach(row => {
+        selectAllIds.push(row[idKey])
+      })
+      this.$refs.multipleSelectionRef.clearSelection()
+      for (var i = 0; i < this.tableData.length; i++) {
+        if (selectAllIds.indexOf(this.tableData[i][idKey]) >= 0) {
+          // 设置选中，记住table组件需要使用ref="table"
+          this.$refs.multipleSelectionRef.toggleRowSelection(this.tableData[i], true)
+        }
+      }
+    },
+    // 记忆选择核心方法
+    changePageCoreRecordData () {
+      // 标识当前行的唯一键的名称
+      let idKey = this.idKey
+      let that = this
+      // 如果总记忆中还没有选择的数据，那么就直接取当前页选中的数据，不需要后面一系列计算
+      if (this.multipleSelectionAll.length <= 0) {
+        this.multipleSelectionAll = this.multipleSelection
+        return
+      }
+      // 总选择里面的key集合
+      let selectAllIds = []
+      this.multipleSelectionAll.forEach(row => {
+        selectAllIds.push(row[idKey])
+      })
+      let selectIds = []
+      // 获取当前页选中的id
+      this.multipleSelection.forEach(row => {
+        selectIds.push(row[idKey])
+        // 如果总选择里面不包含当前页选中的数据，那么就加入到总选择集合里
+        if (selectAllIds.indexOf(row[idKey]) < 0) {
+          that.multipleSelectionAll.push(row)
+        }
+      })
+      let noSelectIds = []
+      // 得到当前页没有选中的id
+      this.tableData.forEach(row => {
+        if (selectIds.indexOf(row[idKey]) < 0) {
+          noSelectIds.push(row[idKey])
+        }
+      })
+      noSelectIds.forEach(id => {
+        if (selectAllIds.indexOf(id) >= 0) {
+          for (let i = 0; i < that.multipleSelectionAll.length; i++) {
+            if (that.multipleSelectionAll[i][idKey] === id) {
+              // 如果总选择中有未被选中的，那么就删除这条
+              that.multipleSelectionAll.splice(i, 1)
+              break
+            }
+          }
+        }
+      })
+    },
+    // 列表查询
+    getTableData () {
+      this.queryModel.pageNo = this.pages.pageNo
+      this.queryModel.pageSize = this.pages.pageSize
+      comparison.annoQueryList(this.queryModel).then((res) => {
+        this.tableData = res.data.list
+        this.pages.total = res.data.total
+        this.tableData.map((item) => {
+          this.addressOptions.map((ite) => {
+            if (Number(item.province_id) === ite.value) {
+              item.region = ite.label
+            }
+          })
+        })
+        setTimeout(() => {
+          this.setSelectRow()
+        }, 20)
+      })
+    },
+    // 查询按钮
+    tenderFeeSrh () {
+      this.queryModel.pageNo = this.pages.pageNo
+      this.queryModel.messageLike = this.search_input ? this.search_input : null
+      this.getTableData()
+    },
+    // 重置按钮
+    resetList () {
+      this.pages.pageNo = 1
+      this.search_input = ''
+      this.queryModel.messageLike = ''
+      this.getTableData()
+    },
+    /** 表格多选 */
+    handleSelectionChange (val) {
+      this.multipleSelection = val
+    },
+    getAllSelectionData () {
+      // 再执行一次记忆勾选数据匹配，目的是为了在当前页操作勾选后直接获取选中数据
+      this.changePageCoreRecordData()
+    },
+    // 导出word按钮
+    exportWordBtn () {
+      this.getAllSelectionData()
+      if (this.multipleSelectionAll.length === 0) {
+        this.$message.warning('请选择需要导出的数据！')
+        return false
+      }
+      let result = ''
+      this.multipleSelectionAll.filter((item, index) => {
+        if (index > 0) {
+          result = result + ','
+        }
+        result = result + item.related_code
+      })
+      window.open(`${process.env.COMPONENTS_BASE_API}/comparison-info/exportWord?relatedCodes=${result}`)
+    },
+    // 返回日历按钮
+    toCalendarBtn () {
+      this.$store.commit('delete_tabs', this.$route.fullPath) // 关闭当前标签
+      this.$router.push({path: `/biddingSources/announcement`}) // 打开新标签
+    },
+    // 跳入详情
+    toDetail (rowData) {
+      this.$router.push({path: `/biddingSources/announcementDetail/${rowData.related_code}`, query: {day: this.$route.query.day, provinceId: this.$route.query.provinceId}})
+    },
+    // 表单分页
+    handlePage (nowNum) {
+      this.pages.pageNo = nowNum
+      this.dataIndex = (nowNum - 1) * this.pages.pageSize + 1
+      this.getTableData()
+      // 改变页的时候调用一次
+      this.changePageCoreRecordData()
+    },
+    stringFormat (row, col, cellValue) {
+      return cellValue || '---'
+    }
+  },
+  mounted () {
+    this.getTableData()
+  }
+}
+</script>
+<style lang="less" scoped>
+.announcement-list{
+  .import-button{
+    margin-left: 10px;
+  }
+}
+
+</style>
+<style lang="less">
+.announcement-list{
+  .el-select{
+    width: 120px;
+  }
+  .keyword-input{
+    width: 260px;
+  }
+  .annou-name{
+    font-size: 14px;
+    color: #606266;
+    text-decoration: none;
+  }
+  .annou-name:hover{
+    text-decoration: underline;
+    color: #409EFF;
+  }
+}
+</style>

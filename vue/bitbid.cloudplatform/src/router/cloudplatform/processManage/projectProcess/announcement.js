@@ -1,0 +1,54 @@
+/**
+ * Created by Administrator on 2019-3-7.
+ * 招标公告/资格预审公告
+ */
+export default [
+  {
+    path: '/processManage/projectProcess/announcement/add',
+    name: 'projectProcess-announcement-add',
+    meta: {
+      title: '流程管理-招标公告-添加'
+    },
+    component: resolve => require(['@/pages/processManage/projectProcess/announcement/add'], resolve)
+  },
+  {
+    path: '/processManage/projectProcess/announcement/update',
+    name: 'projectProcess-announcement-update',
+    meta: {
+      title: '流程管理-招标公告-编辑'
+    },
+    component: resolve => require(['@/pages/processManage/projectProcess/announcement/update'], resolve)
+  },
+  {
+    path: '/processManage/projectProcess/announcement/detail/:code',
+    name: 'projectProcess-announcement-detail',
+    meta: {
+      title: '流程管理-招标公告-查看'
+    },
+    component: resolve => require(['@/pages/processManage/projectProcess/announcement/detail'], resolve)
+  },
+  {
+    path: '/processManage/projectProcess/announcement/add_notice',
+    name: 'projectProcess-announcement-add_notice',
+    meta: {
+      title: '流程管理-招标公告-添加更正公告'
+    },
+    component: resolve => require(['@/pages/processManage/projectProcess/announcement/addNotice'], resolve)
+  },
+  {
+    path: '/processManage/projectProcess/announcement/update_notice',
+    name: 'projectProcess-announcement-update_notice',
+    meta: {
+      title: '流程管理-招标公告-修改更正公告'
+    },
+    component: resolve => require(['@/pages/processManage/projectProcess/announcement/updateNotice'], resolve)
+  },
+  {
+    path: '/processManage/projectProcess/announcement/notice_detail/:code',
+    name: 'projectProcess-announcement-notice_detail',
+    meta: {
+      title: '流程管理-招标公告-查看更正公告'
+    },
+    component: resolve => require(['@/pages/processManage/projectProcess/announcement/noticeDetail'], resolve)
+  }
+]

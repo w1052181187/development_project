@@ -1,0 +1,142 @@
+<template>
+  <div class="announcement-list cloudcontent" id="tenderFeeList">
+    <div class="main">
+      <div class="topmain">
+        <el-row>
+          <div class="seacher_box">
+            <span>关键字：</span>
+            <el-input class="keyword-input" v-model="search_input" placeholder="请输入公告名称或招标人名称关键字"></el-input>
+            <el-button @click="tenderFeeSrh">查询</el-button>
+            <el-button @click="resetList">重置</el-button>
+          </div>
+          <div class="fr">
+            <el-button class="addbutton import-button">
+              <span @click="importBtn">导出word</span>
+            </el-button>
+            <el-button class="addbutton">
+              <span @click="toCalendarBtn">返回日历</span>
+            </el-button>
+          </div>
+        </el-row>
+      </div>
+      <el-table :data="tableData" border tooltip-effect="dark" style="width: 100%"
+        header-cell-class-name="tableheader">
+        <el-table-column type="index" label="序号" width="60" align="center"></el-table-column>
+        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column prop="project_name" label="公告名称" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <a href="javascript:;" @click="toDetail(scope.row)" :formatter="stringFormat">{{scope.row.project_name}}</a>
+          </template>
+        </el-table-column>
+        <el-table-column prop="tender" label="招标人" show-overflow-tooltip :formatter="stringFormat"></el-table-column>
+        <el-table-column prop="region" label="地区" show-overflow-tooltip :formatter="stringFormat"></el-table-column>
+        <el-table-column prop="publish_date_str" label="发布时间" show-overflow-tooltip width="160"></el-table-column>
+      </el-table>
+      <el-pagination background layout="prev, pager, next" :total="pages.total" :page-size='pages.pageSize'
+        :current-page.sync="pages.pageNo" @current-change="handlePage"
+        @next-click="handlePage">
+      </el-pagination>
+    </div>
+  </div>
+</template>
+<script>
+import { comparison } from '@/api/biddingSources'
+import * as region from '@/assets/js/region'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      pageText: '', // 哪种收支项目列表
+      search_input: '',
+      tableData: [],
+      pages: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 1
+      },
+      queryModel: {
+        indexType: 2,
+        dayRange: this.$route.query.day,
+        provinceId: this.$route.query.provinceId,
+        orderBy: 'create_time'
+      },
+      // 地址三级联动
+      addressOptions: region.CityInfo
+    }
+  },
+  watch: {
+  },
+  created () {},
+  methods: {
+    // 列表查询
+    getTableData () {
+      this.queryModel.pageNo = this.pages.pageNo
+      comparison.annoQueryList(this.queryModel).then((res) => {
+        this.tableData = res.data.list
+        this.pages.total = res.data.total
+        this.tableData.map((item) => {
+          this.addressOptions.map((ite) => {
+            if (Number(item.province_id) === ite.value) {
+              item.region = ite.label
+            }
+          })
+        })
+      })
+    },
+    // 查询按钮
+    tenderFeeSrh () {
+      this.queryModel.pageNo = this.pages.pageNo
+      this.queryModel.messageLike = this.search_input ? this.search_input : null
+      this.getTableData()
+    },
+    // 重置按钮
+    resetList () {
+      this.pages.pageNo = 1
+      this.search_input = ''
+      this.queryModel.messageLike = ''
+      this.getTableData()
+    },
+    // 导出按钮
+    importBtn () {},
+    // 返回日历按钮
+    toCalendarBtn () {
+      this.$router.go(-1)
+    },
+    // 跳入详情
+    toDetail (rowData) {
+      this.$router.push({path: `/biddingSources/announcementDetail/${rowData.related_code}`})
+    },
+    // 表单分页
+    handlePage (nowNum) {
+      this.pages.pageNo = nowNum
+      this.dataIndex = (nowNum - 1) * this.pages.pageSize + 1
+      this.getTableData()
+    },
+    stringFormat (row, col, cellValue) {
+      return cellValue || '---'
+    }
+  },
+  mounted () {
+    this.getTableData()
+  }
+}
+</script>
+<style lang="less" scoped>
+.announcement-list{
+  .import-button{
+    margin-left: 10px;
+  }
+}
+
+</style>
+<style lang="less">
+.announcement-list{
+  .el-select{
+    width: 120px;
+  }
+  .keyword-input{
+    width: 260px;
+  }
+}
+</style>

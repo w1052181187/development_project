@@ -1,0 +1,426 @@
+body{
+  margin: 0px;
+}
+ul, ol, li { list-style-type: none; }
+body, input, select, button, textarea { font-size: 14px; }
+h1, h2, h3, h4, p, span, label, del, a, strong, em, li, dt, dd { white-space:normal; word-wrap:break-word; word-break:break-all; }
+table, tr, th, td {  border-collapse:collapse; border-spacing:0; vertical-align: middle;  }
+fieldset { border:0 none; }
+button { cursor: pointer; }
+i, em, cite, address { font-style: normal; }
+a, a:link { text-decoration:none; cursor: pointer; border:0;color:#333; -webkit-tap-highlight-color:rgba(0,0,0,0);    overflow: hidden;  text-overflow:ellipsis;  white-space: nowrap; }
+/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+::-webkit-scrollbar
+{
+  width: 5px;
+  height: 5px;
+  background-color: #F5F5F5;
+}
+
+/*定义滚动条轨道 内阴影+圆角*/
+::-webkit-scrollbar-track
+{
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  border-radius: 10px;
+  background-color: #F5F5F5;
+}
+
+/*定义滑块 内阴影+圆角*/
+::-webkit-scrollbar-thumb
+{
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+  background-color: #cccccc
+}
+.bidroom{
+  width: 100%;
+  overflow: hidden;
+  margin: 0 auto;
+  font-size: 14px;
+}
+.bidroom .title{
+  width: 98%;
+  padding: 0 1%;
+  height: 60px;
+  line-height: 60px;
+  background: #ffffff;
+  margin-bottom: 20px;
+  position: relative;
+  font-size: 16px;
+  overflow: hidden;
+}
+.bidroom .title p{
+  width: 90%;
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden;
+  -ms-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bidroom .title a.return{
+  position: absolute;
+  right: 1%;
+  top: 0px;
+  line-height: 60px;
+  color: #00aaff!important;
+}
+.bidmain{
+  width: 100%;
+  overflow: hidden;
+}
+.bidmain .left{
+  width: 70%;
+  float: left;
+}
+.bidmain .left .top{
+  height: 115px;
+  overflow: hidden;
+}
+.bidmain .left .top .box{
+  width: 48%;
+  height: 111px;
+  border: 2px solid rgb(45, 150, 49);
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  float: left;
+  background: #ffffff;
+  position: relative;
+}
+.bidmain .left .top .box p.small{
+  color: #999999;
+  padding-left: 15px
+}
+.bidmain .left .top .box .ico{
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+.bidmain .left .top .box i{
+  position: absolute;
+  right: 10px;
+  bottom: 15px;
+  font-style: normal;
+  color: #999999;
+}
+.bidmain .left .top .box i font{
+  color: #333333;
+}
+.bidmain .left .top .box .time,.bidmain .left .top .box .money{
+  position: absolute;
+  left: 12px;
+  bottom: 15px;
+  font-size: 16px;
+  color: #000000;
+}
+.bidmain .left .top .box .money{
+  color: red;
+  bottom: 10px;
+}
+.bidmain .left .top .box .money font{
+  font-size: 24px;
+  font-weight: 600;
+  margin-right: 5px;
+}
+.bidmain .left .top .box .time em{
+  font-size: 20px;
+  font-style: normal;
+}
+.bidmain .left .top .money{
+  float: right;
+}
+.bidmain .left .bottom{
+  width: 100%;
+  height: 395px;
+  background: #ffffff;
+  margin-top: 20px;
+  overflow: hidden;
+}
+.bidmain p.sm_title{
+  height: 20px;
+  line-height: 20px;
+  margin: 15px;
+  padding-left: 12px;
+  border-left: 3px solid #ff8c06;
+}
+.bidmain p.sm_title span{
+  float: right;
+  color: #999999;
+}
+.bidmain .left .bottom .record_main{
+  height: 340px;
+  overflow-y: auto;
+}
+.bidmain .left .bottom .record_main ul{
+  margin: 0 0 0 20px;
+  overflow: hidden;
+  padding: 0px;
+}
+.bidmain .left .bottom .record_main ul li{
+  height: 40px;
+  border-bottom: 1px dashed #dddddd;
+  list-style: none;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.bidmain .left .bottom .record_main ul li p{
+  width: 100%;
+  line-height: 40px;
+  overflow: hidden;
+  margin: 0;
+  color: #333333;
+}
+.bidmain .left .bottom .record_main ul li p span{
+  font-weight: 600;
+  display: inline-block;
+}
+.bidmain .left .bottom .record_main ul li p em{
+  color: #999999;
+  display: inline-block;
+  font-style: normal;
+  margin-left: 20px;
+}
+.bidmain .left .bottom .record_main ul li p b{
+  padding: 0 3px;
+  background: #ff1c1c;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  color: #ffffff;
+  margin-left: 5px;
+}
+.bidmain .left .bottom .record_main ul li p i{
+  float: right;
+  color: #333333;
+  display: inline-block;
+  font-style: normal;
+  margin-right: 20px;
+}
+.bidmain .right{
+  width: 29%;
+  float: right;
+}
+.bidmain .right .top{
+  width: 100%;
+  height: 345px;
+  overflow: hidden;
+  background: #ffffff;
+}
+.bidmain .right .top p.sm_title{
+  border-left: 3px solid #0007ff;
+}
+.bidmain .right .bottom{
+  width: 100%;
+  height: 165px;
+  overflow: hidden;
+  margin-top: 20px;
+  background: #ffffff;
+}
+.bidmain .right .bottom p.sm_title{
+  border-left: 3px solid #33922c;
+}
+.bidmain .right .main{
+  overflow: hidden;
+  margin-top: 20px;
+}
+.bidmain .right .main p{
+  width: 94%;
+  padding: 0 3%;
+  margin: 0;
+  height: 40px;
+  line-height: 40px;
+}
+.bidmain .right .main p span{
+  color: #999999;
+  padding-left: 15px;
+}
+.bidmain .right .main p em{
+  font-style: normal;
+  float: right;
+  color: #333333;
+}
+.bidmain .right .main p em font{
+  color: red;
+  font-size: 12px;
+  margin: 0 3px;
+}
+.bidmain .right .main .maininfo{
+  margin-top: 20px;
+  border-top: 1px dashed #d4d4d4;
+}
+.bidmain .right .main ul{
+  overflow: hidden;
+  margin: 0 auto;
+  padding: 0 20px 0 30px;
+}
+.bidmain .right .main ul li{
+  width:100%;
+  float: left;
+  line-height: 24px;
+  margin: 3px 0;
+  color: #999999;
+  display: block;
+}
+.bidmain .right .main ul li:first-child{
+  color: #333333;
+}
+
+/*报价   我的出价记录  项目信息*/
+.promain{
+  width: 100%;
+  overflow: hidden;
+  background: #ffffff;
+  margin: 20px auto;
+  min-height: 300px;
+}
+.promain .hd{
+  width: 100%;
+  overflow: hidden;
+}
+.promain .hd ul{
+  height: 28px;
+  padding: 20px;
+  overflow: hidden;
+}
+.promain .hd ul li{
+  float: left;
+  padding: 0 20px;
+  line-height: 28px;
+  text-align: center;
+  border: 1px solid #2c972f;
+  background: #ffffff;
+}
+.promain .hd ul li a{
+  display: block;
+  text-decoration: none;
+  color: #666666;
+}
+.promain .hd ul li.on{
+  background:#2c972f ;
+}
+.promain .hd ul li.on a{
+  color: #ffffff;
+}
+.promain .bd{
+  width: 100%;
+  overflow: hidden;
+}
+.promain .bd .offer,.promain .bd .offer_record,.promain .bd .project{
+  padding: 0 20px;
+}
+/* 报价 */
+.promain .bd .offer .fl{
+  width: 50%;
+  float: left;
+}
+.promain .bd .offer .fl p{
+  font-weight: 600;
+}
+.promain .bd .offer .fl p.aoffer a{
+  width: 90px;
+  height: 38px;
+  line-height: 38px;
+  display: block;
+  color: #ff8a00;
+  text-align: center;
+  float: left;
+  margin-right: 10px;
+  border: 1px solid #ff8a00;
+}
+.promain .bd .offer .fl p.aoffer a:hover{
+  background: #ff8a00;
+  color: #ffffff;
+}
+.promain .bd .offer input[type="text"]{
+  width: 190px;
+  height:38px;
+  line-height: 38px;
+  background: #f7f7f7;
+  color: #333333;
+  border: 0px;
+  padding: 0 5px;
+  float: left;
+}
+.promain .bd .offer input[type="button"]{
+  width: 83px;
+  height: 32px;
+  line-height: 32px;
+  color: #ffffff;
+  text-align: center;
+  border: 0px;
+  margin: 2px 0 0 5px;
+  background: #2c972f;
+}
+/*我的出价记录*/
+.offer_record{
+  height: 350px;
+  overflow-y: auto;
+}
+.offer_record table{
+  width: 100%;
+  margin-bottom: 20px;
+  overflow: hidden;
+  border: 1px solid #e5e6e7;
+}
+.offer_record table th{
+  background: #f7f8fa;
+  border: 1px solid #e5e6e7;
+  padding-left: 20px;
+  height: 50px;
+  line-height: 50px;
+  text-align: left;
+}
+.offer_record table td{
+  border: 1px solid #e5e6e7;
+  padding-left: 20px;
+  height: 50px;
+  line-height: 50px;
+}
+
+/*项目信息*/
+.row{
+  width: 100%;
+  overflow: hidden;
+  margin: 20px 0;
+}
+.row .list{
+  width: 33%;
+  float: left;
+  overflow: hidden;
+}
+.row  label{
+  width: 130px;
+  height: 100%;
+  text-align: right;
+  display: inline-block;
+  float: left;
+}
+.row span{
+  display: inline-block;
+  float: left;
+}
+.row  .area{
+  width: 500px;
+  height: 100px;
+  padding: 10px;
+  overflow: hidden;
+  background: #f7f7f7;
+  float: left;
+}
+.promain .bd .offer .fl p.gray a{
+  background: #dddddd;
+  border: 1px solid #dddddd;
+  color: #ffffff;
+}
+.promain .bd .offer .fl p.gray a:hover{
+  background: #dddddd;
+  cursor: default ;
+}
+.promain .bd .offer input.gray{
+  background: #dddddd;
+}
+.promain .bd .offer p.redtip{
+  color: red;
+  font-weight: normal;
+}

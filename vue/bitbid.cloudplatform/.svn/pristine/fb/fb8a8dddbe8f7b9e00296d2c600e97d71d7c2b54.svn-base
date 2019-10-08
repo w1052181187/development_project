@@ -1,0 +1,292 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <div class="box">
+      <div class="topmain">
+        招标文件费用
+        <!--按钮-->
+        <el-button class="addbutton" @click="handleAddCost">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="tableData"
+        border>
+        <el-table-column
+          type="index"
+          label="序号"
+          width="50">
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="投标人"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="是否缴费"
+          width="180">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '1'">是</span>
+            <span  v-if="scope.row.status === '2'">否</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="缴费金额(元)"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="缴费方式"
+          width="180">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '0'">支付宝</span>
+            <span  v-if="scope.row.status === '1'">微信</span>
+            <span  v-if="scope.row.status === '2'">金额</span>
+            <span  v-if="scope.row.status === '3'">银联</span>
+            <span  v-if="scope.row.status === '4'">支票</span>
+            <span  v-if="scope.row.status === '5'">保函</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="提交状态"
+          width="180">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '1'">已保存</span>
+            <span  v-if="scope.row.status === '2'">已提交</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          label="缴费时间">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetailCost(scope)">查看</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'" @click="handleEditCost(scope)">编辑</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <div class="box">
+      <div class="topmain">
+        投标文件递交情况
+        <!--按钮-->
+        <el-button class="addbutton" @click="handleAddFile">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="tableData"
+        border>
+        <el-table-column
+          type="index"
+          label="序号"
+          width="50">
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="投标文件名称"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="提交状态"
+          width="180">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '1'">已保存</span>
+            <span  v-if="scope.row.status === '2'">已提交</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          label="提交时间">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetailFile(scope)">查看</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'" @click="handleEditFile(scope)">编辑</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <div class="box">
+      <div class="topmain">
+        保证金费用
+        <!--按钮-->
+        <el-button class="addbutton" @click="handleAdd">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="tableData"
+        border>
+        <el-table-column
+          type="index"
+          label="序号"
+          width="50">
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="投标人"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="是否缴费"
+          width="180">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '1'">是</span>
+            <span  v-if="scope.row.status === '2'">否</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="缴费金额(元)"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="缴费方式"
+          width="180">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '0'">支付宝</span>
+            <span  v-if="scope.row.status === '1'">微信</span>
+            <span  v-if="scope.row.status === '2'">金额</span>
+            <span  v-if="scope.row.status === '3'">银联</span>
+            <span  v-if="scope.row.status === '4'">支票</span>
+            <span  v-if="scope.row.status === '5'">保函</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="提交状态"
+          width="180">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '1'">已保存</span>
+            <span  v-if="scope.row.status === '2'">已提交</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          label="缴费时间">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetail(scope)">查看</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'" @click="handleEdit(scope)">编辑</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+      tableData: [{
+        date: '上海市普陀区金沙江路',
+        status: '1',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '1',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '2',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '2',
+        address: '2016-05-04'
+      }],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10 // 每页展示条数
+    }
+  },
+  methods: {
+    // 编辑
+    handleEdit (scope) {
+      this.$router.push({path: `/processManage/projectProcess/bidresponse/update_bond`, query: {objectId: scope.row.objectId}})
+    },
+    handleAdd () {
+      this.$router.push({path: `/processManage/projectProcess/bidresponse/add_bond`})
+    },
+    handleDetail (scope) {
+      this.$router.push({path: `/processManage/projectProcess/bidresponse/bond_detail/${scope.row.objectId}`})
+    },
+    // 编辑
+    handleEditCost (scope) {
+      this.$router.push({path: `/processManage/projectProcess/bidresponse/update_cost`, query: {objectId: scope.row.objectId}})
+    },
+    handleAddCost () {
+      this.$router.push({path: `/processManage/projectProcess/bidresponse/add_cost`})
+    },
+    handleDetailCost (scope) {
+      this.$router.push({path: `/processManage/projectProcess/bidresponse/cost_detail/${scope.row.objectId}`})
+    }, // 编辑
+    handleEditFile (scope) {
+      this.$router.push({path: `/processManage/projectProcess/bidresponse/update_file`, query: {objectId: scope.row.objectId}})
+    },
+    handleAddFile () {
+      this.$router.push({path: `/processManage/projectProcess/bidresponse/add_file`})
+    },
+    handleDetailFile (scope) {
+      this.$router.push({path: `/processManage/projectProcess/bidresponse/file_detail/${scope.row.objectId}`})
+    },
+    handleCurrentChange () {
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_processtype{
+  }
+</style>

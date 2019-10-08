@@ -1,0 +1,205 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <div class="topmain">
+      <el-row>
+        <div class="seacher_box">
+          <span>业务来源：</span>
+          <el-select v-model="sourceType" class="select">
+            <el-option
+              v-for="item in sourceOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <span class="left">审批状态：</span>
+          <el-select v-model="auditStatus" class="select left">
+            <el-option
+              v-for="item in statusOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <span>标题：</span>
+          <el-input class="input" placeholder="请输入标题关键字" v-model="messageLike"></el-input>
+          <div class="handBtn">
+            <el-button  type="primary" class="search" @click="handlePage(1)">查询</el-button>
+            <el-button  @click="reset">重置</el-button>
+          </div>
+        </div>
+        </el-row>
+    </div>
+    <!--搜索 & 添加按钮-->
+    <div class="main">
+      <el-table
+        :data="tableData"
+        border
+        header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          align="center"
+          :index="indexMethod"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="approvalTask.title"
+          label="标题"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="approvalTask.sourceType"
+          label="业务来源"
+          width="120">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.approvalTask.sourceType === 1">项目管理</span>
+            <span  v-if="scope.row.approvalTask.sourceType === 2">商机评估</span>
+            <span  v-if="scope.row.approvalTask.sourceType === 3">合同管理</span>
+            <span  v-if="scope.row.approvalTask.sourceType === 4">工作审批</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="approvalTask.creatorName"
+          label="申请人"
+          width="140"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="auditStatus"
+          label="审批状态"
+          width="80">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.auditStatus === 0">待审批</span>
+            <span  v-if="scope.row.auditStatus === 1">通过</span>
+            <span  v-if="scope.row.auditStatus === 2">不通过</span>
+            <span  v-if="scope.row.auditStatus === 3">已撤回</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="createDate"
+          label="提交时间"
+          width="160">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="60">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetail(scope)">查看</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="page.total"
+        :page-size='page.pageSize'
+        :current-page.sync="page.currentPage"
+        @current-change="handlePage"
+        @next-click="handlePage">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+
+<script>
+import { approvalRecord } from '@/api/todoList'
+export default {
+  name: '',
+  data () {
+    return {
+      messageLike: '',
+      auditStatus: null,
+      sourceType: null,
+      flowStatus: '',
+      // 审批状态
+      statusOptions: [{
+        value: null,
+        label: '全部'
+      }, {
+        value: 1,
+        label: '通过'
+      }, {
+        value: 2,
+        label: '不通过'
+      }],
+      // 业务来源
+      sourceOptions: [{
+        value: null,
+        label: '全部'
+      }, {
+        value: 1,
+        label: '项目管理'
+      }, {
+        value: 2,
+        label: '商机评估'
+      }, {
+        value: 3,
+        label: '合同管理'
+      }],
+      source: null,
+      typeOptions: [{
+        value: null,
+        label: '全部'
+      }, {
+        value: 1,
+        label: '招标文件'
+      }, {
+        value: 2,
+        label: '招标公告'
+      }],
+      page: {
+        pageSize: 10,
+        pageNo: 0,
+        total: 0, // 总条数
+        currentPage: 1
+      },
+      tableData: []
+    }
+  },
+  methods: {
+    reset () {
+      this.sourceType = null
+      this.auditStatus = null
+      this.messageLike = ''
+      this.handlePage(1)
+    },
+    getData () {
+      approvalRecord.approvalRecordList({
+        pageNo: this.page.pageNo,
+        pageSize: this.page.pageSize,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        messageLike: this.messageLike,
+        sourceType: this.sourceType,
+        auditStatus: this.auditStatus,
+        isApprovaled: 1
+      }).then((res) => {
+        this.tableData = res.data.recordOfApprovalList.list
+        this.page.total = res.data.recordOfApprovalList.total
+      })
+    },
+    indexMethod (index) {
+      return index + (this.page.currentPage - 1) * 10 + 1
+    },
+    handleDetail (scope) {
+      let path = scope.row.approvalTask.routingPath
+      let link = '?'
+      if (path.indexOf('?') !== -1) {
+        link = '&'
+      }
+      path += (link + 'isApproved=2&code=' + scope.row.approvalTask.code)
+      this.$router.push({path: path})
+    },
+    // 表单分页
+    handlePage (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = (nowNum - 1) * this.page.pageSize
+      this.getData()
+    }
+  },
+  mounted () {
+    this.getData()
+  }
+}
+</script>

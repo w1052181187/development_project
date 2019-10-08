@@ -1,0 +1,639 @@
+<template>
+  <div class="cloudcontent"  id="cloud_journalSummary">
+    <div class="tabList">
+      <ul>
+        <li :class="active === 1 ? 'active': ''" @click="getList('未读')">未读({{this.unReadCount}})</li>
+        <li :class="active === 2 ? 'active': ''" @click="getList('我收到的')">我收到的</li>
+        <li :class="active === 3 ? 'active': ''" @click="getList('我发出的')">我发出的</li>
+        <li :class="active === 4 ? 'active': ''" @click="getList('草稿')">草稿</li>
+      </ul>
+    </div>
+    <div class="topmain">
+      <div class="seacher_box advancedsearch_box">
+        <el-form :model="searchForm" ref="searchForm" label-width="85px" :validate-on-rule-change="true">
+          <el-row v-if="active !== 4">
+            <el-col :span="24">
+              <el-form-item label="发送日期：" style="float: left; margin-right: 20px;">
+                <span :class="isTimeSelectAll ? 'all selectall': 'all'" @click="conditionCancel('发送日期')">不限</span>
+                <el-radio-group v-model="searchForm.sendDateType" @change="conditionSelect($event, '发送日期')">
+                  <el-radio v-for="item in timeOption" :label="item.code" :key="item.code">{{item.name}}</el-radio>
+                </el-radio-group>
+              </el-form-item>
+              <el-date-picker
+                v-model="searchForm.customTime"
+                v-if="searchForm.sendDateType === 6"
+                @change = "filterTime"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :default-time="['00:00:00', '23:59:59']"
+                value-format="yyyy-MM-dd HH:mm:ss">
+              </el-date-picker>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col style="width: 320px; float: left;">
+              <el-form-item :label="this.$route.meta.title === '工作日志'? '日志类型':'模板'">
+                <el-select v-model="searchForm.templateCode" placeholder="请选择" clearable>
+                  <el-option
+                    v-for="item in templateNameList"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col style="width: 320px; float: left;" v-if="active !== 4">
+              <el-form-item label="发送人：">
+                <el-input class="search" v-model="searchForm.userName" placeholder="点击选择发送人">
+                  <el-button type="primary" slot="append" @click="showUserDialog">选择</el-button>
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col style="width: 160px; float: left;">
+              <el-button  type="primary" @click="search('searchForm')">查询</el-button>
+              <el-button  @click="reset('searchForm')">重置</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+    </div>
+    <div class="main">
+      <!--按钮-->
+      <div class="btnbigbox" v-if="this.$route.meta.title === '计划总结' && this.$store.getters.permissions.includes('1080502')">
+        <el-button type="primary" class="readbutton" v-if="active === 1 || active === 2" @click="toReadBtn">
+          <span>≡ 全部标为已读 </span>
+        </el-button>
+        <el-button type="primary" class="addbutton" @click="addBtn()">
+          <span> + 新建</span>
+        </el-button>
+      </div>
+      <div class="btnbigbox" v-if="this.$route.meta.title === '工作日志' && this.$store.getters.permissions.includes('1080402')">
+        <el-button type="primary" class="readbutton" v-if="active === 1 || active === 2" @click="toReadBtn">
+          <span>≡ 全部标为已读 </span>
+        </el-button>
+        <el-button type="primary" class="addbutton" @click="addBtn()">
+          <span> 写日志 </span>
+        </el-button>
+      </div>
+      <!--按钮-->
+      <el-table
+        :data="tableData"
+        @cell-click="onclickBtnData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index="indexMethod"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="title"
+          label="标题"
+          class-name="tableTile"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <i v-if="active === 1 || active === 2" :class="scope.row.isReaded ? 'read' : 'unread'"></i>
+            <span :class="scope.row.isReaded ? 'read' : 'unread'" class="pointer">{{scope.row.title}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="senderName"
+          label="发送人"
+          width="120"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="sendDate"
+          label="发送日期"
+          width="160"
+          :formatter="formatDate"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="commentCount"
+          label="评论"
+          width="100"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="220">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleClickEvent(scope, '查看')">查看</el-button>
+            <el-button type="text" size="small" v-if="active === 4 && ((title === '计划总结' && permissions.includes('1080502')) ||
+             (title === '工作日志' && permissions.includes('1080402')))" @click="handleClickEvent(scope, '编辑')">编辑</el-button>
+            <el-button type="text" size="small" v-if="active === 4 && ((title === '计划总结' && permissions.includes('1080502')) ||
+             (title === '工作日志' && permissions.includes('1080402')))" @click="handleClickEvent(scope, '删除')">删除</el-button>
+           </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <select-user-dialog :showVisible="showUserVisible" @selected="selectedUser" @showDialog="showUserDialog"></select-user-dialog>
+    <el-dialog
+      :title="this.$route.meta.title === '工作日志'? '选择日志模板':'选择模板'"
+      :visible.sync="dialogVisible"
+      width="635px"
+      class="dialog">
+      <div class="tabList">
+        <ul>
+          <li :class="dialogActive === 1 ? 'active': ''" @click="getList('最近使用')" v-if="recentUseDialog">最近使用</li>
+          <li :class="dialogActive === 2 ? 'active': ''" @click="getList('全部模板')" v-if="allDialog">全部模板</li>
+          <li :class="dialogActive === 3 ? 'active': ''" @click="getList('推荐模板')">推荐模板</li>
+        </ul>
+      </div>
+      <ul class="">
+        <li v-for="(item, index) in templateList" :key="index">
+          <span class="tem-name" :title="item.name" @click="addJournal(item)">{{item.name}}</span>
+        </li>
+      </ul>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="dialog.total"
+        :page-size='dialog.pageSize'
+        :current-page.sync="dialog.currentPage"
+        @current-change="dialogHandleCurrentChange"
+        @next-click="dialogHandleCurrentNext">
+      </el-pagination>
+      <!--分页-->
+    </el-dialog>
+  </div>
+</template>
+<script>
+import {dateFormat} from '@/assets/js/common'
+import selectUserDialog from '@/pages/system/users/search_user_radio'
+import {journalSummary} from '@/api/office'
+import {templateInfo} from '@/api/system'
+import {readRecord} from '@/api/archives/management/readRecord'
+export default {
+  components: {
+    selectUserDialog
+  },
+  data () {
+    return {
+      active: this.$route.query.active ? Number(this.$route.query.active) : 1,
+      searchForm: {
+        sendDateType: '',
+        customTime: '',
+        templateCode: '',
+        user: ''
+      },
+      templateNameList: [],
+      // 发送日期
+      timeOption: [
+        {
+          name: '今天',
+          code: 7
+        },
+        {
+          name: '本周',
+          code: 8
+        },
+        {
+          name: '本月',
+          code: 9
+        },
+        {
+          name: '自定义',
+          code: 6
+        }
+      ],
+      // 选择发送人
+      showUserVisible: false,
+      tableData: [],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      unReadCount: 0,
+      isTimeSelectAll: true,
+      // 写日志  选择模板弹窗
+      dialogVisible: false,
+      dialogActive: 1,
+      templateList: [],
+      dialog: {
+        // 当前页
+        currentPage: 1,
+        pageNo: 0,
+        total: 0, // 总条数
+        pageSize: 10 // 每页展示条数
+      },
+      recentUseDialog: false, // 最近使用模板tab页是否展示
+      allDialog: false, // 全部模板tab页是否展示
+      title: this.$route.meta.title,
+      permissions: this.$store.getters.permissions
+    }
+  },
+  methods: {
+    // tab菜单
+    getList (type) {
+      switch (type) {
+        case '未读':
+          this.active = 1
+          break
+        case '我收到的':
+          this.active = 2
+          break
+        case '我发出的':
+          this.active = 3
+          break
+        case '草稿':
+          this.active = 4
+          break
+        case '最近使用':
+          this.dialogActive = 1
+          break
+        case '全部模板':
+          this.dialogActive = 2
+          break
+        case '推荐模板':
+          this.dialogActive = 3
+          break
+        default:
+          break
+      }
+    },
+    filterTime (value) {
+    },
+    // 选择人员弹框打开
+    showUserDialog () {
+      this.showUserVisible = !this.showUserVisible
+    },
+    selectedUser (obj) {
+      this.searchForm.userName = obj.name
+      this.searchForm.senderId = obj.objectId
+    },
+    // 查询
+    search () {
+      this.getJournalSummaryList(0, 'search')
+    },
+    // 重置
+    reset () {
+      this.searchForm = {}
+      this.isTimeSelectAll = true
+      this.getJournalSummaryList(0, 'reset')
+    },
+    onclickBtnData (row, column, cell, event) {
+      if (column.label === '标题') {
+        if (this.$route.meta.title === '计划总结') {
+          this.$router.push({path: `/office/planSummary/detail`, query: {objectId: row.objectId, active: this.active, type: 2}})
+        } else {
+          this.$router.push({path: `/office/journal/detail`, query: {objectId: row.objectId, active: this.active, type: 1}})
+        }
+      }
+    },
+    // 高级搜索-搜索条件选择
+    conditionSelect (value, label) {
+      switch (label) {
+        case '发送日期':
+          this.searchForm.sendDateType = value
+          this.isTimeSelectAll = false
+          break
+        default:
+          break
+      }
+    },
+    // 搜索条件 点击不限
+    conditionCancel (label) {
+      switch (label) {
+        case '发送日期':
+          this.searchForm.sendDateType = ''
+          this.isTimeSelectAll = true
+          break
+        default:
+          break
+      }
+    },
+    // 全部标记为已读
+    toReadBtn () {
+      let type = null
+      if (Object.is(this.$route.meta.title, '工作日志')) {
+        type = 1
+      } else if (Object.is(this.$route.meta.title, '计划总结')) {
+        type = 2
+      }
+      readRecord.updateToRead(type, this.$store.getters.authUser.userId).then(res => {
+        this.getJournalSummaryList(0, 'init')
+        this.unReadCount = 0
+      })
+    },
+    // 新增
+    addBtn () {
+      // 选择模板弹窗
+      this.getTemplateList()
+      this.dialogVisible = true
+    },
+    // 选择模板弹框数据展示
+    getTemplateList () {
+      // 查询最近使用模板
+      let query = {
+        pageNo: this.dialog.pageNo,
+        pageSize: this.dialog.pageSize,
+        userId: this.$store.getters.authUser.userId
+      }
+      if (Object.is(this.$route.meta.title, '工作日志')) {
+        query.type = 2
+      } else if (Object.is(this.$route.meta.title, '计划总结')) {
+        query.type = 3
+      }
+      templateInfo.getRecentUseList(query).then(res => {
+        let recentUsedata = res.data.templateInfoList
+        if (recentUsedata && recentUsedata.length > 0) {
+          // 存在：展示该tabs标签页，并默认展示该数据
+          this.dialogActive = 1
+          this.recentUseDialog = true
+          this.templateList = recentUsedata
+          this.dialog.total = recentUsedata.length
+        } else {
+          // 无：不展示该tabs标签页
+          this.recentUseDialog = false
+        }
+        // 查询全部模板
+        query.enterpriseId = this.$store.getters.authUser.enterpriseId
+        query.status = 2
+        templateInfo.getList(query).then(res => {
+          let allData = res.data.templateInfoList
+          if (allData && allData.total > 0) {
+            // 存在：展示该tabs标签页
+            this.allDialog = true
+          } else {
+            // 无：不展示该tabs标签页
+            this.allDialog = false
+          }
+          if (!this.recentUseDialog) {
+            // 无最近使用模板，存在全部模板：定位至全部模板tabs标签页，并展示该数据
+            if (this.allDialog) {
+              this.dialogActive = 2
+              this.templateList = allData.list
+              this.dialog.total = allData.total
+            } else {
+              this.dialogActive = 3
+              // 无最近使用模板，无全部模板：查询推荐模板
+              query.enterpriseId = null
+              query.isShare = 1
+              query.status = null
+              templateInfo.getList(query).then(res => {
+                let recommendData = res.data.templateInfoList
+                if (recommendData && recommendData.total > 0) {
+                  this.templateList = recommendData.list
+                  this.dialog.total = recommendData.total
+                }
+              })
+            }
+          }
+        })
+      })
+    },
+    // 最近使用模板
+    getRecentUseList () {
+      let query = {
+        pageNo: this.dialog.pageNo,
+        pageSize: this.dialog.pageSize,
+        userId: this.$store.getters.authUser.userId
+      }
+      if (Object.is(this.$route.meta.title, '工作日志')) {
+        query.type = 2
+      } else if (Object.is(this.$route.meta.title, '计划总结')) {
+        query.type = 3
+      }
+      templateInfo.getRecentUseList(query).then(res => {
+        let data = res.data.templateInfoList
+        if (data) {
+          this.templateList = data
+          this.dialog.total = data.length
+        }
+      })
+    },
+    // 全部模板或推荐模板
+    getAllList (tab) {
+      let query = {
+        pageNo: this.dialog.pageNo,
+        pageSize: this.dialog.pageSize
+      }
+      if (Object.is(this.$route.meta.title, '工作日志')) {
+        query.type = 2
+      } else if (Object.is(this.$route.meta.title, '计划总结')) {
+        query.type = 3
+      }
+      if (Object.is(tab, '全部模板')) {
+        query.enterpriseId = this.$store.getters.authUser.enterpriseId
+        query.status = 2
+      } else if (Object.is(tab, '推荐模板')) {
+        query.isShare = 1
+      }
+      templateInfo.getList(query).then(res => {
+        let data = res.data.templateInfoList
+        if (data) {
+          this.templateList = data.list
+          this.dialog.total = data.total
+        }
+      })
+    },
+    // 表格序号
+    indexMethod (index) {
+      return index + (this.currentPage - 1) * this.pageSize + 1
+    },
+    // 表格分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getJournalSummaryList(this.pageNo, 'search')
+    },
+    handleCurrentNext (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getJournalSummaryList(this.pageNo, 'search')
+    },
+    // 格式化时间
+    formatDate (row, col, cellValue) {
+      return cellValue ? dateFormat(cellValue, 'yyyy-MM-dd') : '---'
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    handleClickEvent (scope, type) {
+      switch (type) {
+        case '查看':
+          if (this.$route.meta.title === '计划总结') {
+            this.$router.push({path: `/office/planSummary/detail`, query: {objectId: scope.row.objectId, active: this.active, type: 2}})
+          } else {
+            this.$router.push({path: `/office/journal/detail`, query: {objectId: scope.row.objectId, active: this.active, type: 1}})
+          }
+          break
+        case '编辑':
+          if (this.$route.meta.title === '计划总结') {
+            this.$router.push({path: `/office/planSummary/update`, query: {objectId: scope.row.objectId, type: 2}})
+          } else {
+            this.$router.push({path: `/office/journal/update`, query: {objectId: scope.row.objectId, type: 1}})
+          }
+          break
+        case '删除':
+          this.$confirm('确认删除吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'error'
+          }).then(() => {
+            journalSummary.deleteById(scope.row.objectId).then(() => {
+              this.getJournalSummaryList(0, 'delete')
+            })
+          }).catch(() => {
+            return false
+          })
+          break
+        default:
+          break
+      }
+    },
+    getJournalSummaryList (pageNo, operate) {
+      let query = {
+        pageNo: pageNo,
+        pageSize: this.pageSize,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        queryType: this.active,
+        senderId: this.searchForm.senderId || null
+      }
+      if (Object.is(this.$route.meta.title, '工作日志')) {
+        query.type = 1
+      } else if (Object.is(this.$route.meta.title, '计划总结')) {
+        query.type = 2
+      }
+      if (this.searchForm.customTime) {
+        query.sendDateLowerLimit = this.searchForm.customTime[0]
+        query.sendDateUpperLimit = this.searchForm.customTime[1]
+      }
+      if (this.searchForm.templateCode) {
+        query.relatedTemplateCode = this.searchForm.templateCode
+        for (let i = 0; i < this.templateNameList.length; i++) {
+          if (this.templateNameList[i].code === this.searchForm.templateCode) {
+            query.templateName = this.templateNameList[i].name
+            break
+          }
+        }
+      }
+      journalSummary.getList(query).then(res => {
+        let data = res.data.journalSummaryList
+        if (data) {
+          this.tableData = data.list
+          this.total = data.total
+          if (Object.is(this.active, 1) && Object.is(operate, 'init')) {
+            this.unReadCount = this.total
+          }
+        }
+      })
+    },
+    getCodeAndNameList () {
+      let query = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        status: 2
+      }
+      if (Object.is(this.$route.meta.title, '工作日志')) {
+        query.type = 2
+      } else if (Object.is(this.$route.meta.title, '计划总结')) {
+        query.type = 3
+      }
+      templateInfo.getCodeAndNameList(query).then(res => {
+        this.templateNameList = res.data.codeAndNameList
+      })
+    },
+    // 弹窗下列表分页
+    dialogHandleCurrentChange (nowNum) {
+      this.dialog.currentPage = nowNum
+      this.dialog.pageNo = (nowNum - 1) * this.dialog.pageSize
+    },
+    dialogHandleCurrentNext (nowNum) {
+      this.dialog.currentPage = nowNum
+      this.dialog.pageNo = (nowNum - 1) * this.dialog.pageSize
+    },
+    // 写日志选择模板后 跳转到新建页面
+    addJournal (item) {
+      if (Object.is(this.$route.meta.title, '工作日志') && this.$store.getters.permissions.includes('1080402')) {
+        this.$router.push({path: `/office/journal/add`, query: {templateCode: item.code, type: 1}})
+      } else if (Object.is(this.$route.meta.title, '计划总结') && this.$store.getters.permissions.includes('1080502')) {
+        this.$router.push({path: `/office/planSummary/add`, query: {templateCode: item.code, type: 2}})
+      } else {
+        this.$alert('您没有该功能的操作权限，请联系系统管理员授权！', '提示', {
+          confirmButtonText: '确定',
+          callback: () => {}
+        })
+      }
+    }
+  },
+  watch: {
+    active (newVal, oldVal) {
+      this.getJournalSummaryList(0, 'init')
+    },
+    dialogActive (newVal, oldVal) {
+      if (newVal === 1) {
+        this.getRecentUseList()
+      } else if (newVal === 2) {
+        this.getAllList('全部模板')
+      } else if (newVal === 3) {
+        this.getAllList('推荐模板')
+      }
+    },
+    $route (to, from) {
+      this.getJournalSummaryList(0, 'init')
+      this.getCodeAndNameList()
+    }
+  },
+  mounted () {
+    this.getJournalSummaryList(this.pageNo, 'init')
+    this.getCodeAndNameList()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_journalSummary{
+    .dialog .el-dialog__header{
+      border-bottom: 1px solid #eeeeee;
+    }
+    .dialog .el-dialog__body{
+      padding: 10px 20px;
+    }
+    .dialog .el-dialog__body>ul{
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .dialog .el-dialog__body>ul li {
+      float: left;
+      width: 138px;
+      height: 28px;
+      line-height: 28px;
+      border: 1px solid #dbdbdb;
+      margin: 5px;
+      text-align: center;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px ;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .dialog .el-dialog__body>ul li:hover{
+      border: 1px solid #498ce9;
+      color: #498ce9;
+    }
+  }
+</style>

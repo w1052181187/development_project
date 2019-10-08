@@ -1,0 +1,372 @@
+<template>
+  <div class="cloudcontent" id="cloud_ProjectAgent">
+    <!--面包屑-->
+    <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb_box">
+      <el-breadcrumb-item :to="{ path: '/index' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/agentProject' }">代理分配项目</el-breadcrumb-item>
+      <el-breadcrumb-item class="active_bread">分配项目负责人</el-breadcrumb-item>
+    </el-breadcrumb>
+    <!--面包屑-->
+    <div class="main">
+      <el-form :model="addForm" :rules="rules" ref="addForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目名称："  prop="tenderProjectName">
+              <span>{{addForm.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目编号："  prop="tenderProjectCode">
+              <span>{{addForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目行业分类："  prop="name">
+              <span>{{addForm.industry}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目地址："  prop="name">
+              <span>{{addForm.address}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="详细地址："  prop="name">
+              <span>{{addForm.address}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标人："  prop="name">
+              <span>{{addForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="招标人单位地址："  prop="uscCode">
+              <span>{{addForm.name}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="联系人："  prop="name">
+              <span>{{addForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="联系方式："  prop="uscCode">
+              <span>{{addForm.name}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="邮箱：">
+              <span>{{addForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="代理合同：">
+              <span>{{addForm.name}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="项目说明：">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="代理机构项目负责人：">
+              <template>
+                <el-button class="addbtn" @click="addButton">+ 新增</el-button>
+                <el-table
+                  :data="tableData"
+                  border
+                  style="width: 100%" header-cell-class-name="tableheader">
+                  <el-table-column
+                    prop="name"
+                    label="姓名"
+                    show-overflow-tooltip>
+                    <template slot-scope="scope">
+                      <el-input v-model="scope.row.name" placeholder="请输入内容"></el-input>
+                      <el-button type="primary" style="position: absolute; right: 10px; top: 12px;" @click="dialogTableVisible = true">选择</el-button>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="job"
+                    label="职责分工"
+                    show-overflow-tooltip>
+                    <template slot-scope="scope">
+                      <el-select v-model="value" placeholder="请选择">
+                        <el-option
+                          v-for="item in options"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value">
+                        </el-option>
+                      </el-select>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="操作" align="center" width="120">
+                    <template slot-scope="scope">
+                      <el-button type="text" size="small" @click="delButton">删除</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </template>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary">提交</el-button>
+          <el-button type="primary">保存</el-button>
+          <el-button class="cancal">取消</el-button>
+        </el-form-item>
+      </el-form>
+      <el-dialog title="选择项目负责人" :visible.sync="dialogTableVisible">
+        <div class="lefttree">
+          <el-tree :data="data" :props="defaultProps" :highlight-current="true" @node-click="handleNodeClick" default-expand-all
+                   :expand-on-click-node="false" >
+            <span class="custom-tree-node" slot-scope="{ node, data }">
+              <span :title="node.label">{{ node.label }}</span>
+            </span>
+          </el-tree>
+        </div>
+        <div class="rightselect">
+          <el-table
+            :data="selectData"
+            border
+            style="width: 100%" header-cell-class-name="tableheader">
+            <el-table-column
+              width="50"
+              align="center"
+              label="选择"
+              prop="name">
+              <template slot-scope="scope">
+                <el-radio v-model="radio" :label="scope.$index" @change="select">&nbsp;</el-radio>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="tenderProjectCode"
+              label="名称"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="tenderProjectName"
+              label="部门"
+              show-overflow-tooltip>
+            </el-table-column>
+          </el-table>
+          <!--分页-->
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :total="total"
+            :page-size='pageSize'
+            :current-page.sync="currentPage"
+            @current-change="handleCurrentChange">
+          </el-pagination>
+          <!--分页-->
+        </div>
+      </el-dialog>
+    </div>
+  </div>
+</template>
+<script>
+import * as region from '@/assets/js/region'
+import * as industry from '@/assets/js/industry_two'
+import editor from '@/components/ueditor/ueditor.vue'
+export default {
+  components: {
+    editor
+  },
+  data () {
+    return {
+      addForm: {
+        tenderProjectName: '特殊资源特殊资源特殊资源特殊资源',
+        tenderProjectCode: 'SAYY77383',
+        industry: '特殊资源',
+        address: '山西省太原市小店区',
+        name: '项目名称'
+      },
+      rules: {
+        tenderProjectName: [
+          { required: true, message: '项目名称不能为空', trigger: 'blur' }
+        ],
+        tenderProjectCode: [
+          { required: true, message: '项目编号不能为空', trigger: 'blur' }
+        ],
+        name: [
+          { required: true, message: '项目编号不能为空', trigger: 'blur' }
+        ],
+        uscCode: [
+          { required: true, message: '项目编号不能为空', trigger: 'blur' }
+        ]
+      },
+      // 地址三级联动
+      addressOptions: region.CityInfo,
+      selectedcityOptions: [],
+      // 行业三级联动
+      industryOptions: industry.industry,
+      selectedIndustryOptions: [],
+      // 富文本
+      editread: true,
+      content: '',
+      // 代理项目负责人
+      tableData: [
+        {
+          name: '',
+          job: ''
+        }
+      ],
+      input: '',
+      options: [{
+        value: '1',
+        label: '项目经理'
+      }, {
+        value: '2',
+        label: '项目助理'
+      }],
+      value: '1',
+      dialogTableVisible: false,
+      // 弹窗企业树形
+      data: [{
+        label: '一级 1',
+        children: [{
+          label: '二级 1-1',
+          children: [{
+            label: '三级 1-1-1'
+          }]
+        }]
+      }, {
+        label: '一级 2',
+        children: [{
+          label: '二级 2-1',
+          children: [{
+            label: '三级 2-1-1'
+          }]
+        }, {
+          label: '二级 2-2',
+          children: [{
+            label: '三级 2-2-1'
+          }]
+        }]
+      }, {
+        label: '一级 3',
+        children: [{
+          label: '二级 3-1',
+          children: [{
+            label: '三级 3-1-1'
+          }]
+        }, {
+          label: '二级 3-2',
+          children: [{
+            label: '三级 3-2-1'
+          }]
+        }]
+      }],
+      defaultProps: {
+        children: 'children',
+        label: 'label'
+      },
+      //  弹窗选择项目负责人
+      selectData: [
+        {
+          name: 1
+        },
+        {
+          name: 1
+        }
+      ],
+      radio: '',
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10 // 每页展示条数
+    }
+  },
+  methods: {
+    // 所属行业三级联动赋值
+    handleIndustryChange (value) {
+      this.addForm.industry = value[0]
+      this.addForm.industrySecond = value[1]
+    },
+    // 所在地区三级联动赋值
+    handlecityChange (value) {
+      this.addForm.privinceId = value[0]
+      this.addForm.cityId = value[1]
+      this.addForm.countyId = value[2]
+    },
+    // 新增负责人
+    addButton () {
+      this.tableData.push(
+        {
+          name: '',
+          job: ''
+        }
+      )
+    },
+    // 删除项目负责人
+    delButton () {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        // **  注释 当数据只有一条时不能删除
+      }).catch(() => {
+        return false
+      })
+    },
+    // 分页
+    handleCurrentChange () {},
+    // select
+    select () {
+      this.dialogTableVisible = false
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_ProjectAgent {
+    .el-cascader{
+      width: 100%;
+    }
+    .addbtn{
+      border: 1px solid #3f63f6;
+      height: 32px;
+      padding: 7px 12px;
+    }
+    .el-table{
+      margin-top: 25px;
+    }
+    .el-dialog{
+      overflow: hidden;
+      padding-bottom: 20px;
+    }
+    .lefttree{
+      width: 30%;
+      float: left;
+      padding: 10px 0;
+      border: 1px solid #eeeeee;
+    }
+    .rightselect{
+      width: 67%;
+      float: right;
+    }
+    .rightselect .el-table{
+      margin-top: 0px;
+    }
+  }
+</style>

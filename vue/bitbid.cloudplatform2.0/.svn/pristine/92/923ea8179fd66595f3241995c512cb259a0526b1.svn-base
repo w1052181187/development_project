@@ -1,0 +1,21 @@
+<template>
+  <div class="cloudcontent" id="cloud_business_assess">
+    <div class="main">
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+    }
+  },
+  methods: {}
+}
+</script>
+<style lang="less">
+  #cloud_business_assess {
+  }
+</style>

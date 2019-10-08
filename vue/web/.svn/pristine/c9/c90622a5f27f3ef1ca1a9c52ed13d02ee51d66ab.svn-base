@@ -1,0 +1,96 @@
+<template>
+  <div class="main">
+    <h3>内蒙古招投标网招标公告发布回执</h3>
+    <div class="content">
+      <p style="text-indent: 0em"><span>{{enterpriseName}}</span></p>
+      <p>贵单位受<span>{{ownerName}}</span>委托，对<span>{{title}}</span>招标公告已经在我网站正式发布。</p>
+      <p>浏览地址：{{url}}</p>
+      <p>专函特告！</p>
+    </div>
+    <div class="bottom">
+      <p>发布日期：{{publishTime}}</p>
+      <p>打印日期：{{printTime}}</p>
+    </div>
+  </div>
+</template>
+
+<script>
+import {bidanno} from '@/api'
+export default {
+  name: '',
+  data () {
+    return {
+      enterpriseName: '',
+      title: '',
+      publishTime: '',
+      ownerName: '',
+      url: '',
+      printTime: this.getNowFormatDate()
+    }
+  },
+  methods: {
+    getPrintInfo () {
+      bidanno.print(this.$route.params.objectId).then((res) => {
+        this.enterpriseName = res.data.enterpriseName
+        this.title = res.data.title
+        this.publishTime = res.data.publishTime
+        this.ownerName = res.data.ownerName
+        this.url = res.data.url
+      })
+    },
+    getNowFormatDate () {
+      let date = new Date()
+      let seperator1 = '-'
+      var seperator2 = ':'
+      var month = date.getMonth() + 1
+      var strDate = date.getDate()
+      if (month >= 1 && month <= 9) {
+        month = '0' + month
+      }
+      if (strDate >= 0 && strDate <= 9) {
+        strDate = '0' + strDate
+      }
+      var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate +
+        ' ' + date.getHours() + seperator2 + date.getMinutes() +
+        seperator2 + date.getSeconds()
+      return currentdate
+    }
+  },
+  mounted () {
+    this.getPrintInfo()
+  }
+}
+</script>
+
+<style scoped>
+  .main{
+    width: 1000px;
+    margin: 0 auto;
+    padding:30px;
+    text-align: left;
+    background: #ffffff;
+  }
+  .main h3{
+    text-align: center;
+    line-height: 100px;
+    font-size: 30px;
+  }
+  .content{
+    width: 1000px;
+    margin: 0 auto;
+  }
+  .content p{
+    color: #000;
+    font-size: 16px;
+    line-height: 36px;
+    text-indent: 2em
+  }
+  .content p span{
+    text-decoration: underline;
+  }
+  .bottom{
+    width: 1000px;
+    margin: 30px auto;
+    text-align: right;
+  }
+</style>

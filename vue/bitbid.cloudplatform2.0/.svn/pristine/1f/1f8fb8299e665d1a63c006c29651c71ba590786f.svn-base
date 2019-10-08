@@ -1,0 +1,245 @@
+<template>
+  <div class="cloudcontent" id="cloud_prosettlement">
+    <div class="main">
+      <!--搜索 & 添加按钮-->
+      <div class="topmain">
+        <el-row>
+          <div class="seacher_box">
+            <span>结算情况：</span>
+            <el-select v-model="searchForm.isToSettle" class="select">
+              <el-option
+                v-for="item in sourceOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+            <span>项目名称：</span>
+            <el-input class="search left" placeholder="请输入项目名称" v-model="searchForm.tenderProjectNameLike">
+            </el-input>
+            <span>招标人：</span>
+            <el-input class="search left" placeholder="请输入招标人名称" v-model="searchForm.tendererNameLike">
+            </el-input>
+            <el-button icon="el-icon-search"  type="" @click="search"></el-button>
+          </div>
+          <!--按钮-->
+          <div class="fr">
+            <em>找不到符合条件的项目？</em>
+            <el-button class="addbutton" @click="addBtn">
+              <span> + 新增项目</span>
+            </el-button>
+          </div>
+          <!--按钮-->
+        </el-row>
+      </div>
+      <!--搜索 & 添加按钮-->
+      <el-table
+        :data="tableData"
+        border
+        tooltip-effect="dark"
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='indexMethod'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="tenderProjectCode"
+          label="项目编号"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="tenderProjectName"
+          label="项目名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="tendererName"
+          label="招标人"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="firstProjectLeaderName"
+          label="项目经理"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="isToSettle"
+          label="结算情况"
+          width="120">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" v-if="scope.row.isToSettle === 0 || scope.row.isToSettle === null">未结算</el-button>
+            <el-button type="text" size="small" v-if="scope.row.isToSettle === 1">已结算</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="settlementDate"
+          label="结算时间"
+          width="160"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookBtn(scope)">收支管理</el-button>
+            <el-button type="text" size="small" @click="totalBtn(scope)">统计</el-button>
+            <el-button type="text" size="small" v-if="scope.row.isToSettle === 0 || scope.row.isToSettle === null" @click="settleBtn(scope.row, 'complete')">结算完成</el-button>
+            <el-button type="text" size="small" v-if="scope.row.isToSettle === 1" @click="settleBtn(scope.row, 'cancel')">撤销</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+import {tenderProject} from '@/api/project'
+import {dateFormat} from '@/assets/js/common'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      // 搜索
+      searchForm: {
+        isToSettle: '',
+        tenderProjectNameLike: '',
+        tendererNameLike: ''
+      },
+      messageLike: '',
+      sourceType: null,
+      // 业务来源
+      sourceOptions: [{
+        value: null,
+        label: '全部'
+      }, {
+        value: 0,
+        label: '未结算'
+      }, {
+        value: 1,
+        label: '已结算'
+      }],
+      tableData: [],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      dataIndex: 1
+    }
+  },
+  watch: {
+  },
+  created () {
+    this.getTableData()
+  },
+  methods: {
+    /** 结算情况的统计 */
+    settleBtn (row, operation) {
+      let msg = Object.is(operation, 'complete') ? '确认完成吗?' : '确认撤销吗?'
+      this.$confirm(msg, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          done()
+        }
+      }).then(() => {
+        if (Object.is(operation, 'complete')) {
+          row.isToSettle = 1
+          row.settlementDate = dateFormat(new Date(), 'yyyy-MM-dd hh:mm:ss')
+        } else if (Object.is(operation, 'cancel')) {
+          row.isToSettle = 0
+          row.settlementDate = ''
+        }
+        tenderProject.save(row).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.getTableData()
+          }
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    /** 获取列表数据 */
+    getTableData () {
+      tenderProject.getList({
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        isToSettle: this.searchForm.isToSettle || null,
+        messageLike: this.searchForm.tenderProjectNameLike || null,
+        tendererNameLike: this.searchForm.tendererNameLike || null
+      }).then((res) => {
+        if (res.data.tenderProjectList && res.data.tenderProjectList.list) {
+          this.tableData = res.data.tenderProjectList.list
+          this.total = res.data.tenderProjectList.total
+        }
+      })
+    },
+    // 搜索
+    search () {
+      this.getTableData()
+    },
+    addBtn () {
+      this.$router.push({path: `/project/registProject/add`, query: {flag: true}})
+    },
+    // 收支管理
+    lookBtn (scope) {
+      this.$router.push({path: `/project/proSettlement/paymentTerm`, query: {tenderSystemCode: scope.row.code, isToSettle: scope.row.isToSettle}})
+    },
+    // 统计
+    totalBtn (scope) {
+      this.$router.push({path: `/project/proSettlement/payTotal`, query: {tenderSystemCode: scope.row.code}})
+    },
+    indexMethod (index) {
+      return index + (this.currentPage - 1) * 10 + 1
+    },
+    // 表单分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData(parseInt(this.pageNo), parseInt(this.pageSize))
+    },
+    handleCurrentNext (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData(parseInt(this.pageNo), parseInt(this.pageSize))
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_prosettlement {
+    .topmain {
+      height: 42px;
+    }
+    .seacher_box{
+      width: 720px;
+    }
+    .seacher_box .select{
+      width: 16%;
+    }
+    .seacher_box .search{
+      width: 20%;
+    }
+    .fr>em{
+      font-size: 14px;
+      font-style: normal;
+      line-height: 40px;
+      margin: 0 10px;
+    }
+  }
+</style>

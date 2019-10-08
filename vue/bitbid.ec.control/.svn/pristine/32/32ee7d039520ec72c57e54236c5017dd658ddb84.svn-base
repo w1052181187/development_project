@@ -1,0 +1,13 @@
+import {titleName} from '@/assets/js/common'
+export default[
+  {
+    path: '/index/ec-trade-record',
+    name: 'ec-trade-record',
+    meta: {
+      roleIds: [999],
+      title: '交易记录管理' + titleName,
+      active: '/index/ec-trade-record'
+    },
+    component: resolve => require(['@/pages/ec-sys/index'], resolve)
+  }
+]

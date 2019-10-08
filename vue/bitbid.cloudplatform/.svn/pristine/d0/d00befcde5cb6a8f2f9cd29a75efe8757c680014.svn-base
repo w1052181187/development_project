@@ -1,0 +1,35 @@
+import request from '@/utils/axios/up-axios'
+
+export const bidSection = {
+  /**
+   * 查询标段接口
+   */
+  getList (query) {
+    return request({
+      url: '/bidSection-infos',
+      method: 'get',
+      params: query
+    })
+  },
+  /**
+   * 新增标段接口
+   * @param {*} data [主体数据]
+   */
+  save (data) {
+    return request({
+      url: '/bidSection-infos',
+      method: 'post',
+      data: data
+    })
+  },
+  /**
+   * 删除标段接口
+   * @param {[long]} id [主键]
+   */
+  delete (id) {
+    return request({
+      url: '/bidSection-infos/' + id,
+      method: 'delete'
+    })
+  }
+}

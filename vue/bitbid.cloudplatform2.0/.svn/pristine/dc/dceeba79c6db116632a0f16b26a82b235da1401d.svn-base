@@ -1,0 +1,57 @@
+<template>
+  <div class="file-collapse">
+    <fileUpload :can-edit="canEdit" :objectId="item.objectId" :file-list="item.refArchivesFileInformationList" :file-type="9" :file-name='item.archivesCatalog.name' v-if="'委托代理合同' === activeName"></fileUpload>
+    <fileUpload :can-edit="canEdit" :objectId="item.objectId" :file-list="item.refArchivesFileInformationList" :file-type="9" :file-name='item.archivesCatalog.name' v-if="'项目实施计划' === activeName"></fileUpload>
+    <fileUpload :can-edit="canEdit" :objectId="item.objectId" :file-list="item.refArchivesFileInformationList" :file-type="9" :file-name='item.archivesCatalog.name' v-if="'主管部门批复函件' === activeName"></fileUpload>
+    <fileUpload :can-edit="canEdit" :objectId="item.objectId" :file-list="item.refArchivesFileInformationList" :file-type="9" :file-name='item.archivesCatalog.name' v-if="'招标项目及标段信息' === activeName"></fileUpload>
+    <prequalification :can-edit="canEdit" :item="item" v-if="'资格预审公告（含变更）' === activeName"></prequalification>
+    <tenderer :can-edit="canEdit" :item="item" v-if="'投标单位报名表' === activeName"></tenderer>
+    <prequalificationDoc :can-edit="canEdit" :item="item" v-if="'资格预审文件' === activeName"></prequalificationDoc>
+    <prequalificationApplication :can-edit="canEdit" :item="item" v-if="'资格预审申请文件' === activeName"></prequalificationApplication>
+    <returns :can-edit="canEdit" :item="item" v-if="'资格预审结果报告' === activeName"></returns>
+    <resultNote :can-edit="canEdit" :item="item" v-if="'资格预审结果通知书' === activeName"></resultNote>
+    <bidding :can-edit="canEdit" :item="item" v-if="'招标公告（含变更）' === activeName"></bidding>
+    <fileUpload :can-edit="canEdit" :objectId="item.objectId" :file-list="item.refArchivesFileInformationList" :file-type="9" :file-name='item.archivesCatalog.name'
+                v-if="'投标邀请书（含变更）' === activeName"></fileUpload>
+    <biddingDoc :can-edit="canEdit" :item="item" v-if="'招标文件' === activeName"></biddingDoc>
+    <fileUpload :can-edit="canEdit" :objectId="item.objectId" :file-list="item.refArchivesFileInformationList" :file-type="9" :file-name='item.archivesCatalog.name'
+                v-if="'招标控制价' === activeName"></fileUpload>
+    <tenderDoc :can-edit="canEdit" :item="item" v-if="'投标文件' === activeName"></tenderDoc>
+    <bidOpening :can-edit="canEdit" :item="item" v-if="'开标' === activeName"></bidOpening>
+    <evaluation :can-edit="canEdit" :item="item" v-if="'评标结果' === activeName"></evaluation>
+    <picketage :can-edit="canEdit" :item="item" v-if="'定标' === activeName"></picketage>
+    <fileUpload :can-edit="canEdit" :objectId="item.objectId" :file-list="item.refArchivesFileInformationList" :file-type="9" :file-name='item.archivesCatalog.name' v-if="'合同' === activeName"></fileUpload>
+    <jobEvaluation :can-edit="canEdit" :item="item" v-if="'代理工作评价' === activeName"></jobEvaluation>
+    <fileUpload :can-edit="canEdit" :objectId="item.objectId" :file-list="item.refArchivesFileInformationList" :file-type="9" file-name='其他' v-if="'其他附件' === activeName"></fileUpload>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'fileItem',
+  props: ['item', 'canEdit', 'activeName'],
+  components: {
+    prequalification: resolve => require(['./prequalification'], resolve),
+    tenderer: resolve => require(['./tenderer'], resolve),
+    prequalificationDoc: resolve => require(['./prequalificationDoc'], resolve),
+    prequalificationApplication: resolve => require(['./prequalificationApplication'], resolve),
+    returns: resolve => require(['./returns'], resolve),
+    resultNote: resolve => require(['./resultNote'], resolve),
+    bidding: resolve => require(['./bidding'], resolve),
+    biddingDoc: resolve => require(['./biddingDoc'], resolve),
+    tenderDoc: resolve => require(['./tenderDoc'], resolve),
+    bidOpening: resolve => require(['./bidOpening'], resolve),
+    evaluation: resolve => require(['./evaluation'], resolve),
+    picketage: resolve => require(['./picketage'], resolve),
+    jobEvaluation: resolve => require(['./jobEvaluation'], resolve),
+    fileUpload: resolve => require(['./fileUpload'], resolve)
+  }
+}
+</script>
+
+<style scoped>
+  .file-collapse {
+    padding: 24px 24px;
+    box-sizing: border-box;
+  }
+</style>

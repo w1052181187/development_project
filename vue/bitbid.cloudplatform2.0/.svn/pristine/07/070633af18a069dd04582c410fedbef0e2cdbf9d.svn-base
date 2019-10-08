@@ -1,0 +1,32 @@
+export default[
+  {
+    path: '/login',
+    name: 'cloud-login',
+    meta: {
+      noRequireAuth: true,
+      layout: 'isLogin',
+      title: '登录'
+    },
+    component: resolve => require(['@/pages/userProfile/login'], resolve)
+  },
+  {
+    path: '/register',
+    name: 'cloud-register',
+    meta: {
+      noRequireAuth: true,
+      layout: 'isLogin',
+      title: '注册'
+    },
+    component: resolve => require(['@/pages/userProfile/register'], resolve)
+  },
+  {
+    path: '/forgetPwd',
+    name: 'cloud-forgetPwd',
+    meta: {
+      noRequireAuth: true,
+      layout: 'isLogin',
+      title: '忘记密码'
+    },
+    component: resolve => require(['@/pages/userProfile/forgetPwd'], resolve)
+  }
+]

@@ -1,0 +1,104 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="info">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段编号：">
+              <span>{{info.bidSectionCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="招标项目编号：">
+              <span>{{info.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段名称：">
+              <span>{{info.bidSectionName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="招标项目名称：">
+              <span>{{info.bidSectionName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标方式：">
+              <!--<span>{{info.tenderProject.tenderMode}}</span>-->
+              <span>11</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="资审方式：">
+              <!--<span>{{// info.tenderProject.isPreBid}}</span>-->
+              <span>122</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="招标人：">
+              <span>{{info.tendererName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目经理：">
+              <span>{{info.projectLeader}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="所属部门：">
+              <span>{{info.projectLeader}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="标段内容：">
+              <editor ref="sectionEditor" class="ueditor" :editread="editread"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+export default {
+  props: ['info'],
+  components: {
+    editor
+  },
+  watch: {
+    // info (value) {
+    //   this.updateForm = value
+    // }
+  },
+  name: 'basicInfo',
+  data () {
+    return {
+      editread: true
+    }
+  },
+  methods: {
+    detail () {
+    }
+  },
+  mounted () {
+    this.detail()
+  }
+}
+</script>
+
+<style lang="less">
+
+</style>

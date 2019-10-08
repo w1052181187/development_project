@@ -1,0 +1,111 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm">
+        <el-row>
+          <el-form-item label="资质来源：">
+            <span v-if="updateForm.source === 1">自有</span>
+            <span v-if="updateForm.source === 2">借入</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="资质类别：">
+            <span>{{updateForm.type}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="资质等级：">
+            <span>{{updateForm.grade}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="资质编号：">
+            <span>{{updateForm.code}}</span>
+          </el-form-item>
+        </el-row>
+        <template v-if="updateForm.source === 1">
+          <el-row>
+            <el-form-item label="资质主体：">
+              <span>{{updateForm.body}}</span>
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-form-item label="资质有效期：">
+              <span>{{updateForm.time}}</span>
+            </el-form-item>
+          </el-row>
+        </template>
+        <template v-if="updateForm.source === 2">
+          <el-row>
+            <el-form-item label="合作类型：">
+              <span v-if="updateForm.cooperatitonType === 1">机构合作</span>
+              <span v-if="updateForm.cooperatitonType === 2">项目合作</span>
+              <span v-if="updateForm.cooperatitonType === 3">个人合作</span>
+            </el-form-item>
+          </el-row>
+          <el-form-item label="合作方："  prop="person">
+            <span>{{updateForm.person}}</span>
+          </el-form-item>
+          <el-row>
+            <el-form-item label="合作期间：" prop="cooperateTime">
+              <span>{{updateForm.cooperateTime}}</span>
+            </el-form-item>
+          </el-row>
+          <el-form-item label="费用(元)：">
+            <span>{{updateForm.cost}}</span>
+          </el-form-item>
+        </template>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="发证机关：">
+              <span>{{updateForm.cost}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="备注：">
+          <editor ref="ueditor" class="ueditor" :editread="editread"></editor>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+export default {
+  name: '',
+  components: {
+    editor
+  },
+  data () {
+    return {
+      updateForm: {
+        source: 2
+      },
+      cooperationOptions: [
+        {
+          label: '机构合作',
+          value: 1
+        },
+        {
+          label: '项目合作',
+          value: 2
+        },
+        {
+          label: '个人合作',
+          value: 3
+        }
+      ],
+      // 富文本
+      editread: true
+    }
+  },
+  methods: {
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style scoped>
+</style>

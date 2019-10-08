@@ -1,0 +1,286 @@
+<template>
+  <div id="bidwinupdate" class="smaincontent">
+    <div class="headertitle">
+      <!--面包屑-->
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/main' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item>公告管理</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/annomanage/bidwin' }">中标公示</el-breadcrumb-item>
+        <el-breadcrumb-item>修改中标公示</el-breadcrumb-item>
+      </el-breadcrumb>
+      <!--面包屑-->
+      <div class="returnboxbig">
+        <template>
+          <el-button @click="close">返回</el-button>
+        </template>
+      </div>
+    </div>
+    <div class="contentbigbox">
+      <template>
+        <el-form :model="winBidForm" :rules="rules" ref="winBidForm">
+          <table class="detailtable">
+            <tr>
+              <td><i class="red">*</i>公示名称：</td>
+              <td  colspan="2">
+                <template>
+                  <el-form-item prop="publicityName">
+                    <el-input v-model="winBidForm.publicityName" placeholder="请输入公示名称"></el-input>
+                  </el-form-item>
+                </template>
+              </td>
+              <td><i class="red">*</i>招标项目编号：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderProjectCode">
+                  <el-input  v-model="winBidForm.tenderProjectCode" placeholder="请输入招标项目编号" ></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>招标项目名称：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderExpandsInfo.tenderProjectName">
+                  <el-input  v-model="winBidForm.tenderExpandsInfo.tenderProjectName" placeholder="请输入招标项目名称"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>标段（包）编号：</td>
+              <td  colspan="2">
+                <el-form-item prop="bidSectionCodes">
+                  <el-input  v-model="winBidForm.bidSectionCodes" placeholder="请输入招标项目编号"></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>项目行业：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderExpandsInfo.industryTypeFirst">
+                  <el-select v-model="winBidForm.tenderExpandsInfo.industryTypeFirst" class="select">
+                    <el-option
+                      v-for="item in options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>行政区域：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderExpandsInfo.provinceId">
+                  <el-cascader
+                    :options="addressOptions"
+                    expand-trigger="hover"
+                    v-model="provinceIdArray"
+                    @change="handlerCityChange">
+                  </el-cascader>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>公示开始时间：</td>
+              <td colspan="2">
+                <el-form-item prop="publicityStartTime">
+                  <el-date-picker
+                    v-model="winBidForm.publicityStartTime"
+                    type="datetime"
+                    placeholder="请输入公示开始时间"
+                    value-format="yyyy-MM-dd HH:mm:ss">
+                  </el-date-picker>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>公示结束时间：</td>
+              <td colspan="2">
+                <el-form-item prop="publicityEndTime">
+                  <el-date-picker
+                    v-model="winBidForm.publicityEndTime"
+                    type="datetime"
+                    placeholder="请输入公示结束时间"
+                    value-format="yyyy-MM-dd HH:mm:ss">
+                  </el-date-picker>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>公示内容：</td>
+              <td  colspan="5">
+                <template >
+                  <editor ref="ueditor" class="ueditor"></editor>
+                </template>
+              </td>
+            </tr>
+            <tr>
+              <td>公示附件：</td>
+              <td  colspan="5">
+                <upLoad-file @upLoadFile="upLoadFile" :fileType="fileType" :oldFileName="oldFileName"></upLoad-file>
+              </td>
+            </tr>
+          </table>
+          <el-form-item class="submit-radio">
+            <el-button type="primary" @click="submitForm('winBidForm', 1)">提交</el-button>
+            <el-button type="primary" class="save" @click="submitForm('winBidForm', 0)">保存</el-button>
+            <el-button class="cancel" @click="close">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </template>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import upLoadFile from '@/components/upload/publicFileUpload'
+import {bidwin} from '@/api'
+import * as industry from '../../../assets/js/industry'
+import * as region from '../../../assets/js/region'
+export default {
+  components: {
+    editor,
+    upLoadFile
+  },
+  data () {
+    return {
+      // 项目行业
+      options: industry.industry,
+      // 行政区域
+      addressOptions: region.CityInfo,
+      // 行政区域绑定数组
+      provinceIdArray: [],
+      value: 1,
+      fileType: '',
+      oldFileName: '',
+      winBidForm: {
+        publicityName: '',
+        publicityType: '',
+        tenderProjectCode: '',
+        bidSectionCodes: '',
+        publicityStartTime: '',
+        publicityEndTime: '',
+        tenderExpandsInfo: {
+          tenderProjectName: '',
+          provinceId: '',
+          industryTypeFirst: ''
+        }
+      },
+      rules: {
+        publicityName: [
+          {required: true, message: '请输入公示名称', trigger: 'blur'},
+          {min: 1, max: 600, message: '长度在 1~600个字符', trigger: ['blur', 'change']}
+        ],
+        publicityType: [
+          {required: true, message: '请选择公示性质', trigger: 'change'}
+        ],
+        tenderProjectCode: [
+          {required: true, message: '请输入招标项目编号', trigger: 'blur'},
+          {min: 1, max: 20, message: '长度在 1~20字符', trigger: ['blur', 'change']}
+        ],
+        bidSectionCodes: [
+          {required: true, message: '请输入标段编号', trigger: 'blur'},
+          {min: 1, max: 20, message: '长度在 1~20字符', trigger: ['blur', 'change']}
+        ],
+        'tenderExpandsInfo.tenderProjectName': [
+          {required: true, message: '请输入招标项目名称', trigger: 'blur'},
+          {min: 1, max: 256, message: '长度在 1~256个字符', trigger: ['blur', 'change']}
+        ],
+        publicityStartTime: [
+          {required: true, message: '请选择日期', trigger: 'change'}
+        ],
+        publicityEndTime: [
+          {required: true, message: '请选择日期', trigger: 'change'}
+        ],
+        'tenderExpandsInfo.industryTypeFirst': [
+          {required: true, message: '请选择项目行业', trigger: 'change'}
+        ],
+        'tenderExpandsInfo.provinceId': [
+          {required: true, message: '请选择行政区域', trigger: 'change'}
+        ]
+      },
+      status: null
+    }
+  },
+  methods: {
+    // 省市两级联动
+    handlerCityChange (value) {
+      this.winBidForm.tenderExpandsInfo.provinceId = value[0]
+      this.winBidForm.tenderExpandsInfo.cityId = value[1]
+    },
+    detail () {
+      bidwin.detail(this.$route.query.objectId).then((res) => {
+        this.provinceIdArray.push(res.data.record.tenderExpandsInfo.provinceId)
+        this.provinceIdArray.push(res.data.record.tenderExpandsInfo.cityId)
+        this.winBidForm = res.data.record
+        if (res.data.record.fileInformations.length !== 0) {
+          this.oldFileName = res.data.record.fileInformations[0].fileName
+          this.relativePath = res.data.record.fileInformations[0].relativePath
+        }
+        return this.winBidForm
+      }).then((result) => {
+        this.$refs.ueditor.setContent(result.publicityContent)
+      })
+    },
+    upLoadFile (file) {
+      if (file.length === 0) {
+        this.winBidForm.fileInformations = []
+      } else {
+        this.winBidForm.fileInformations = file
+        this.winBidForm.fileInformations[0].businessType = 6
+      }
+    },
+    submitForm (name, status) {
+      this.$refs[name].validate((valid) => {
+        if (valid) {
+          if (!this.$refs.ueditor.getContent()) {
+            this.$message({
+              type: 'warning',
+              message: '请输入公示内容'
+            })
+            return false
+          }
+          this.winBidForm.publicityContent = this.$refs.ueditor.getContent()
+          this.winBidForm.status = status
+          bidwin.update(this.winBidForm).then((res) => {
+            if (res.data.resCode === '0000') {
+              this.$router.push({path: '/annomanage/bidwin', query: {status: this.status}})
+            }
+          })
+        } else {
+          this.$message({
+            type: 'warning',
+            message: '请检查必填项是否填写完毕'
+          })
+          return false
+        }
+      })
+    },
+    close () {
+      this.$router.push({path: '/annomanage/bidwin', query: {status: this.status}})
+    }
+  },
+  mounted () {
+    this.status = this.$route.query.status ? this.$route.query.status : this.$route.query.status === 0 ? this.$route.query.status : null
+    this.detail()
+  }
+}
+</script>
+<style lang="less">
+  #bidwinupdate{
+    .select {
+      float: left;
+      width: 100%;
+    }
+    .el-cascader{
+      float: left;
+      width: 100%;
+    }
+    .el-date-editor{
+      float: left;
+      width: 100%;
+    }
+    .el-date-editor.el-input, .el-date-editor.el-input__inner{
+      width: 100%;
+    }
+    .el-form-item{
+      margin-bottom: 0px;
+    }
+    .el-form-item__error{
+      display: none;
+    }
+  }
+</style>

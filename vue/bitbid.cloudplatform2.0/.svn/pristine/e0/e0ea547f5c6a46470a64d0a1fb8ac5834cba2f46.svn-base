@@ -1,0 +1,623 @@
+<template>
+    <div class="customer-analysis">
+      <div class="statistics-box clearfix">
+        <div>
+          <span>统计期间：</span>
+          <el-select v-model="statisticsActive" placeholder="请选择" @change="statisticsChange">
+            <el-option v-for="item in statisticsList" :key="item.value"
+              :label="item.text" :value="item.value">
+            </el-option>
+          </el-select>
+          <el-date-picker v-if="customTime" v-model="customTimeVal" type="daterange" range-separator="-"
+            start-placeholder="开始日期" end-placeholder="结束日期">
+          </el-date-picker>
+        </div>
+      </div>
+      <div class="forecast-box">
+        <el-row>
+          <el-col :span="12"><div class="grid-content bg-purple">成交</div></el-col>
+          <el-col :span="12"><div class="grid-content bg-purple-light">预测</div></el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <div class="grid-content bg-purple">
+              <ul class="clearfix forecast-ul">
+                <li v-for="(item,index) in tradedList" :key="index" class="fl forecast-li">
+                  <h4 class="forecast-text">{{item.text}}</h4>
+                  <span class="forecast-span">{{item.change}}</span>
+                </li>
+              </ul>
+            </div>
+            </el-col>
+          <el-col :span="12">
+            <div class="grid-content bg-purple-light">
+              <ul class="clearfix">
+                <li v-for="(item,index) in predictedList" :key="index" class="fl forecast-li">
+                  <h4 class="forecast-text">{{item.text}}</h4>
+                  <span class="forecast-span">{{item.change}}</span>
+                </li>
+              </ul>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="forecast-box">
+        <el-row>
+          <el-col :span="12"><div class="grid-content bg-purple">新增</div></el-col>
+          <el-col :span="12"><div class="grid-content bg-purple-light">总量</div></el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <div class="grid-content bg-purple">
+              <ul class="clearfix forecast-ul">
+                <li v-for="(item,index) in additionalList" :key="index" class="fl forecast-li forecast-add-li">
+                  <h4 class="forecast-text">{{item.text}}</h4>
+                  <span class="forecast-span">{{item.change}}</span>
+                </li>
+              </ul>
+            </div>
+            </el-col>
+          <el-col :span="12">
+            <div class="grid-content bg-purple-light">
+              <ul class="clearfix">
+                <li v-for="(item,index) in totalList" :key="index" class="fl forecast-li">
+                  <h4 class="forecast-text">{{item.text}}</h4>
+                  <span class="forecast-span">{{item.change}}</span>
+                  <span class="forecast-span">{{item.unit}}</span>
+                </li>
+              </ul>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+      <div id="custorActive" class="active-box" style="width:100%; height:400px;"></div>
+      <div class="distribution-box">
+        <el-row :gutter="20">
+          <el-col :span="13" class="distribution-first-col fl">
+            <div class="customer-distribution">
+              <span class="customer-span">客户分布</span>
+              <el-tabs v-model="activeName" @tab-click="handleClick" class="distribution-tab">
+                <el-tab-pane label="价值分布" name="valueTab">
+                  <div id="valueDistribution"  style="width:100%; height:400px;"></div>
+                </el-tab-pane>
+                <el-tab-pane label="地区分布" name="regionalTab">
+                  <div id="regionalDistribution"  style="width:100%; height:400px;"></div>
+                </el-tab-pane>
+                <el-tab-pane label="行业分布" name="industryTab">
+                  <div id="industryDistribution"  style="width:100%; height:400px;"></div>
+                </el-tab-pane>
+              </el-tabs>
+            </div>
+          </el-col>
+          <el-col :span="11" class="fr">
+            <div class="business-funnel">
+              <span>商机漏斗</span>
+              <div id="businessFunnel" style="width:100%; height:400px;"></div>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+    </div>
+</template>
+<script>
+import echarts from 'echarts'
+export default {
+  data () {
+    return {
+      statisticsActive: 1, // 统计分析
+      customTime: false,
+      customTimeVal: '',
+      statisticsList: [
+        {text: '本周', value: 1},
+        {text: '上周', value: 2},
+        {text: '本月', value: 3},
+        {text: '上月', value: 4},
+        {text: '本季度', value: 5},
+        {text: '上季度', value: 6},
+        {text: '本年', value: 7},
+        {text: '去年', value: 8},
+        {text: '自定义', value: 9}
+      ], // 统计分析下拉列表
+      tradedList: [
+        {text: '合同数', change: '122346'},
+        {text: '合同额', change: '￥122346'},
+        {text: '已回款金额', change: '￥122346'}
+      ], // 成交列表
+      predictedList: [
+        {text: '预测签单数', change: '100'},
+        {text: '预计签单金额', change: '￥122346'},
+        {text: '预计回款金额', change: '￥12583'}
+      ], // 预测列表
+      additionalList: [
+        {text: '客户数', change: 6},
+        {text: '商机数', change: 8},
+        {text: '项目数', change: 3},
+        {text: '跟进次数', change: 3}
+      ], // 新增列表
+      totalList: [
+        {text: '客户总量', change: '6', unit: '家'},
+        {text: '合同总量', change: '346', unit: '份'},
+        {text: '合同金额', change: '￥122346', unit: '元'}
+      ], // 总量列表
+      customerActivityCharts: '', // 客户活跃度
+      customerActivityData: [
+        ['product', '项目数量', '项目金额'],
+        ['山投集团', 3500, 2500],
+        ['比比网络', 1500, 1000],
+        ['恒大地产', 3000, 2000],
+        ['山投集团1', 3500, 2500],
+        ['比比网络2', 1500, 1000],
+        ['恒大地产3', 3000, 2000],
+        ['山投集团4', 3500, 2500],
+        ['比比网络5', 1500, 1000],
+        ['恒大地产6', 3000, 2000],
+        ['山投集团7', 3500, 2500]
+      ], // 客户活跃度数据
+      activeName: 'valueTab', // tab默认价值分布
+      valueDistributionCharts: '', // 价值分布图
+      valueDistributionUnit: ['VIP客户', '主要客户', '普通客户', '小客户', '潜在客户'],
+      valueDistributionData: [
+        {value: 60, name: 'VIP客户'},
+        {value: 40, name: '主要客户'},
+        {value: 40, name: '普通客户'},
+        {value: 70, name: '小客户'},
+        {value: 80, name: '潜在客户'}
+      ], // 各项收入占比数据
+      regionalDistributionCharts: '', // 地区分布
+      regionalDistributionUnit: ['湖北', '广东', '山西', '河北', '海南', '上海', '江苏', '北京', '天津', '重庆'],
+      regionalDistributionData: [100, 300, 700, 600, 500, 400, 200, 600, 250, 366],
+      industryDistributionCharts: '', // 行业分布
+      industryDistributionUnit: ['建筑工程', '机械设备', '仪器化工', '通信安防', '办公文教', '环保绿化', '医疗卫生', '政府采购', '线性（建筑工程）', '其他'], // 行业分布
+      industryDistributionData: [12, 21, 10, 4, 12, 5, 6, 5, 25, 23],
+      businessFunnelCharts: '', // 商机漏斗-扇形图
+      businessFunnelData: [
+        {value: 60, name: '目标客户'},
+        {value: 40, name: '潜在客户'},
+        {value: 20, name: '意向客户'},
+        {value: 80, name: '成交客户'}
+      ]
+    }
+  },
+  created () {
+  },
+  mounted () {
+    this.$nextTick(function () {
+      this.loadCustomerActivity() // 客户活跃度柱状图
+      this.loadValueDistributionCharts() // 价值分布图
+      this.loadBusinessFunnel() // 商机漏斗图
+    })
+  },
+  methods: {
+    // 统计时间切换
+    statisticsChange (val) {
+      if (val === 9) {
+        this.customTime = true
+      } else {
+        this.customTime = false
+      }
+    },
+    // 客户活跃度柱状图
+    loadCustomerActivity () {
+      this.customerActivityCharts = echarts.init(document.getElementById('custorActive'))
+      var option = {
+        title: {
+          text: '客户活跃度前十名'
+        },
+        grid: { // 图标距离
+          top: '20%', // 距离上边的距离
+          bottom: '20%', // 距离下边的距离
+          left: '4%', // 距离左边的距离
+          right: '1%' // 距离右边的距离
+        },
+        legend: { // 图标距离
+          type: 'scroll',
+          top: 30,
+          right: 10
+        },
+        color: ['#3fa5ee', '#7dc745'], // 柱状条颜色
+        // 声明一个 X 轴，类目轴（category）。默认情况下，类目轴对应到 dataset 第一列。
+        xAxis: {
+          type: 'category',
+          axisLine: {show: true}, // 是否显示坐标轴轴线
+          axisTick: {show: false} // 是否显示坐标轴刻度
+        },
+        // 声明一个 Y 轴，数值轴
+        yAxis: {
+          axisLine: {show: true}, // 是否显示坐标轴轴线
+          axisTick: {show: false} // 是否显示坐标轴刻度
+        },
+        // 声明多个 bar 系列，默认情况下，每个系列会自动对应到 dataset 的每一列。
+        series: [
+          {
+            type: 'bar',
+            barWidth: 14, // 柱图宽度
+            barGap: '80%', // 多个并排柱子设置柱子之间的间距
+            barCategoryGap: '50%', // 多个并排柱子设置柱子之间的间距
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true, // 开启显示
+                  position: 'top', // 在上方显示
+                  textStyle: { // 数值样式
+                    color: '#333',
+                    fontSize: 12
+                  }
+                }
+              }
+            }
+          },
+          {
+            type: 'bar',
+            barWidth: 14, // 柱图宽度
+            barGap: '80%', // 多个并排柱子设置柱子之间的间距
+            barCategoryGap: '50%', // 多个并排柱子设置柱子之间的间距
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true, // 开启显示
+                  position: 'top', // 在上方显示
+                  textStyle: { // 数值样式
+                    color: '#333',
+                    fontSize: 12
+                  }
+                }
+              }
+            }
+          }
+        ],
+        dataset: {
+          // 提供一份数据。
+          source: this.customerActivityData
+        }
+      }
+      this.customerActivityCharts.setOption(option)
+    },
+    // 客户分布tab
+    handleClick (tab, event) {
+      if (tab.name === 'regionalTab') {
+        console.log('地区分布')
+        setTimeout(() => {
+          this.loadRegionalDistribution() // 地区分布图
+        }, 100)
+      } else if (tab.name === 'industryTab') {
+        setTimeout(() => {
+          this.loadindustryDistribution() // 行业分布图
+        }, 100)
+      }
+    },
+    // 价值分布图
+    loadValueDistributionCharts () {
+      this.valueDistributionCharts = echarts.init(document.getElementById('valueDistribution'))
+      var option = {
+        legend: {
+          data: this.valueDistributionUnit,
+          bottom: 0
+        },
+        color: ['#4bc0c0', '#36a2eb', '#ff6384', '#ff9f40', '#ffcd56'],
+        // 声明一个 X 轴
+        xAxis: {
+          axisLine: {show: false}, // 是否显示坐标轴轴线
+          axisTick: {show: false} // 是否显示坐标轴刻度
+        },
+        // 声明一个 Y 轴，数值轴
+        yAxis: {
+          axisLine: {show: false}, // 是否显示坐标轴轴线
+          axisTick: {show: false} // 是否显示坐标轴刻度
+        },
+        series: [
+          {
+            type: 'pie',
+            data: this.valueDistributionData,
+            width: '80%',
+            startAngle: 270, // 起始角度
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true, // 开启显示
+                  formatter: '{d}%',
+                  textStyle: { // 数值样式
+                    color: '#333'
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+      this.valueDistributionCharts.setOption(option)
+    },
+    // 地区分布图
+    loadRegionalDistribution () {
+      this.regionalDistributionCharts = echarts.init(document.getElementById('regionalDistribution'))
+      var option = {
+        grid: { // 图标距离
+          top: '10%', // 距离上边的距离
+          bottom: '10%', // 距离下边的距离
+          left: '10%', // 距离左边的距离
+          right: '4%' // 距离右边的距离
+        },
+        legend: {
+          type: 'scroll',
+          data: ['客户数量'],
+          top: 20,
+          right: 10
+        },
+        color: ['#3fa5ee'], // 柱状条颜色
+        // 声明一个 X 轴，类目轴（category）。默认情况下，类目轴对应到 dataset 第一列。
+        xAxis: {
+          type: 'category',
+          data: this.regionalDistributionUnit,
+          axisLine: {show: true}, // 是否显示坐标轴轴线
+          axisTick: {show: false} // 是否显示坐标轴刻度
+        },
+        // 声明一个 Y 轴，数值轴
+        yAxis: {
+          axisLine: {show: true}, // 是否显示坐标轴轴线
+          axisTick: {show: false} // 是否显示坐标轴刻度
+        },
+        // 声明多个 bar 系列，默认情况下，每个系列会自动对应到 dataset 的每一列。
+        series: [
+          {
+            type: 'bar',
+            data: this.regionalDistributionData,
+            barWidth: 14, // 柱图宽度
+            barCateGoryGap: 20, // 多个并排柱子设置柱子之间的间距
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true, // 开启显示
+                  position: 'top', // 在上方显示
+                  textStyle: { // 数值样式
+                    color: '#333',
+                    fontSize: 12
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+      this.regionalDistributionCharts.setOption(option)
+    },
+    // 行业分布图
+    loadindustryDistribution () {
+      this.industryDistributionCharts = echarts.init(document.getElementById('industryDistribution'))
+      var option = {
+        tooltip: {
+          trigger: 'item'
+        },
+        grid: { // 图标距离
+          top: '10%', // 距离上边的距离
+          bottom: '20%', // 距离下边的距离
+          left: '10%', // 距离左边的距离
+          right: '4%' // 距离右边的距离
+        },
+        legend: {
+          type: 'scroll',
+          data: ['建筑工程', '机械设备', '仪器化工', '通信安防', '办公文教', '环保绿化', '医疗卫生', '政府采购', '线性（建筑工程）', '其他'],
+          bottom: 0
+        },
+        xAxis: [
+          {
+            type: 'category',
+            axisLine: {show: true}, // 是否显示坐标轴轴线
+            axisTick: {show: false}, // 是否显示坐标轴刻度
+            data: this.industryDistributionUnit,
+            show: true,
+            axisLabel: {
+              interval: 0,
+              rotate: 40
+            }
+            // axisLabel: {
+            //   interval: 0,
+            //   formatter: function (value) {
+            //     return value.split('').join('\n')
+            //   }
+            // },
+            // nameTextStyle: {
+            //   color: '#B5C334',
+            //   fontSize: 10
+            // }
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            axisLine: {show: true}, // 是否显示坐标轴轴线
+            axisTick: {show: false} // 是否显示坐标轴刻度
+          }
+        ],
+        series: [
+          {
+            type: 'bar',
+            barWidth: 30, // 柱图宽度
+            itemStyle: {
+              normal: {
+                color: function (params) {
+                  var colorList = [
+                    '#B5C334', '#FCCE10', '#E87C25', '#27727B',
+                    '#FE8463', '#9BCA63', '#FAD860', '#F3A43B', '#60C0DD',
+                    '#D7504B'
+                    //  '#C6E579', '#F4E001', '#F0805A', '#26C0C0'
+                  ]
+                  return colorList[params.dataIndex]
+                },
+                label: {
+                  show: true,
+                  position: 'top',
+                  textStyle: { // 数值样式
+                    color: '#333',
+                    fontSize: 12
+                  }
+                }
+              }
+            },
+            data: this.industryDistributionData
+          }
+        ]
+      }
+      this.industryDistributionCharts.setOption(option)
+    },
+    // 商机漏斗图
+    loadBusinessFunnel () {
+      this.businessFunnelCharts = echarts.init(document.getElementById('businessFunnel'))
+      var option = {
+        legend: {
+          data: ['目标客户', '潜在客户', '意向客户', '成交客户'],
+          bottom: 0
+        },
+        color: ['#37b0c9', '#1c7099', '#9fbfc8', '#99d2dd'], // 漏斗图颜色
+        // 声明一个 X 轴，类目轴（category）。默认情况下，类目轴对应到 dataset 第一列。
+        xAxis: {
+          type: 'category',
+          axisLine: {show: false}, // 是否显示坐标轴轴线
+          axisTick: {show: false} // 是否显示坐标轴刻度
+        },
+        // 声明一个 Y 轴，数值轴
+        yAxis: {
+          axisLine: {show: false}, // 是否显示坐标轴轴线
+          axisTick: {show: false} // 是否显示坐标轴刻度
+        },
+        // 声明多个 bar 系列，默认情况下，每个系列会自动对应到 dataset 的每一列。
+        series: [
+          {
+            type: 'funnel',
+            data: this.businessFunnelData,
+            width: '60%',
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true, // 开启显示
+                  formatter: '转化率' + '{d}%',
+                  textStyle: { // 数值样式
+                    color: '#333'
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+      this.businessFunnelCharts.setOption(option)
+    }
+  }
+}
+</script>
+
+<style scoped lang="less">
+.clearfix:after{
+    content:".";
+    display:block;
+    height:0;
+    clear:both;
+    visibility:hidden;
+}
+.clearfix{
+    zoom:1;
+}
+.forecast-box{
+  // height: 136px;
+  border: 1px solid #dcdfe6;
+  margin: 10px 0 20px 0;
+  .el-row:first-child{
+    height: 40px;
+    background-color: #c3d6ee;
+    line-height: 40px;
+    padding-left: 20px;
+    box-sizing: border-box;
+  }
+  .el-col{
+    color: #111111;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .forecast-ul{
+    border-right: 1px solid #dcdfe6;
+  }
+  .forecast-li{
+    width: 30%;
+    height: 100px;
+    text-align: center;
+    padding-top: 14px;
+    box-sizing: border-box;
+    .forecast-text{
+      color: #666666;
+      line-height: 40px;
+    }
+    .forecast-span{
+      color: #111111;
+    }
+  }
+  .forecast-add-li{
+    width: 25%;
+  }
+}
+.customer-distribution{
+  position: relative;
+  .customer-span{
+    position: absolute;
+    border: 0;
+  }
+}
+.business-funnel,
+.customer-distribution{
+  height: 460px;
+  border: 1px solid #dcdfe6;
+  span{
+    display: block;
+    line-height: 40px;
+    font-size: 14px;
+    font-weight: bold;
+    border-bottom: 1px solid #dcdfe6;
+    padding-left: 10px;
+    box-sizing: border-box;
+  }
+}
+.customer-analysis{
+  .el-select{
+    width: 130px;
+  }
+}
+</style>
+<style lang="less">
+.distribution-tab{
+  .el-tabs__nav-wrap{
+    padding-right: 20px;
+    box-sizing: border-box;
+  }
+  .el-tabs__nav-wrap::after{
+    height: 1px;
+  }
+  .el-tabs__nav{
+    float: right;
+    margin-top: 8px;
+  }
+  .el-tabs__header{
+    height: 40px;
+    border-bottom: 1px solid #dcdfe6;
+  }
+  .el-tabs__active-bar{
+    display: none;
+  }
+  .el-tabs__item{
+    width: 80px;
+    height: 24px;
+    line-height: 24px;
+    border-right: 1px solid #cccccc;
+    background-color: #dcdfe6;
+    color: #333333;
+    text-align: center;
+    padding: 0;
+  }
+  .el-tabs__item:last-child{
+    border-right: none;
+  }
+  .el-tabs__item.is-active{
+    background-color: #409EFF;
+    color: #fff;
+  }
+  .el-tabs__nav-wrap::after{
+    background-color: #ffffff;
+  }
+}
+</style>

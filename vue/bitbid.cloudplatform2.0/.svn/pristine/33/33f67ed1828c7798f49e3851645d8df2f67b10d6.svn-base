@@ -1,0 +1,232 @@
+<template>
+  <div class="cloudcontent"  id="cloud_initiate">
+    <div class="topmain">
+      <div class="seacher_box advancedsearch_box">
+        <el-form :model="searchForm" ref="searchForm" label-width="85px" :validate-on-rule-change="true">
+          <el-row>
+            <el-col style="width: 320px; float: left;">
+              <el-form-item label="模板名称：" prop="messageLike">
+                <el-input class="search" v-model="searchForm.messageLike" placeholder="请输入模板名称"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col style="width: 160px; float: left;">
+              <el-button  type="primary" @click="search">查询</el-button>
+              <el-button  @click="reset">重置</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+    </div>
+    <div class="main">
+      <div class="box" v-if="recentUseFlag">
+        <p>最近使用</p>
+        <ul>
+          <li v-for="(item, index) in recentList" :key="index" @click="clickBtn(item.code)">
+            <img :src="item.imgSrc">
+            <span>{{item.name}}</span>
+          </li>
+        </ul>
+      </div>
+      <div class="box" v-if="allFlag">
+        <p>全部</p>
+        <ul>
+          <li v-for="(item, index) in allList" :key="index" @click="clickBtn(item.code)">
+            <img :src="item.imgSrc">
+            <span>{{item.name}}</span>
+          </li>
+        </ul>
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="total"
+          :page-size='pageSize'
+          :current-page.sync="currentPage"
+          @current-change="handleCurrentChange"
+          @next-click="handleCurrentNext">
+        </el-pagination>
+        <!--分页-->
+      </div>
+      <div class="box" v-if="recommendFlag">
+        <p>推荐</p>
+        <ul>
+          <li v-for="(item, index) in recommendList" :key="index" @click="clickBtn(item.code)">
+            <img :src="item.imgSrc">
+            <span>{{item.name}}</span>
+          </li>
+        </ul>
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="recommend.total"
+          :page-size='recommend.pageSize'
+          :current-page.sync="recommend.currentPage"
+          @current-change="recommendHandleCurrentChange"
+          @next-click="recommendHandleCurrentNext">
+        </el-pagination>
+        <!--分页-->
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import {templateInfo} from '@/api/system'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      recentUseFlag: false,
+      allFlag: false,
+      recommendFlag: false,
+      searchForm: {},
+      recentList: [],
+      allList: [],
+      recommendList: [],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 16, // 每页展示条数
+      // 推荐当前页
+      recommend: {
+        currentPage: 1,
+        pageNo: 0,
+        total: 0, // 总条数
+        pageSize: 16 // 每页展示条数
+      }
+    }
+  },
+  created () {
+    this.getTableData()
+  },
+  methods: {
+    /** 获取列表数据 */
+    getTableData () {
+      let query = {
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        enterpriseId: this.$store.getters.authUser.enterpriseId
+      }
+      if (this.searchForm.messageLike) {
+        query.messageLike = this.searchForm.messageLike
+      }
+      templateInfo.getListInWorkApprove(query).then((res) => {
+        this.allFlag = false
+        this.recentUseFlag = false
+        this.recommendFlag = false
+        if (res.data.allTemplateInfoList.list && res.data.allTemplateInfoList.list.length > 0) {
+          this.allFlag = true
+          this.allList = res.data.allTemplateInfoList.list
+          this.total = res.data.allTemplateInfoList.total
+          if (res.data.recentUseTemplateInfoList && res.data.recentUseTemplateInfoList.length > 0) {
+            this.recentUseFlag = true
+            this.recentList = res.data.recentUseTemplateInfoList
+          }
+        }
+        if (res.data.recommendTemplateInfoList.list && res.data.recommendTemplateInfoList.list.length > 0) {
+          this.recommendFlag = true
+          this.recommendList = res.data.recommendTemplateInfoList.list
+          this.recommend.total = res.data.recommendTemplateInfoList.total
+        }
+      })
+    },
+    // 查询
+    search () {
+      this.getTableData()
+    },
+    // 重置
+    reset () {
+      this.recommend.currentPage = this.currentPage = 1
+      this.recommend.pageNo = this.pageNo = 0
+      this.$refs['searchForm'].resetFields()
+      this.getTableData()
+    },
+    // 全部列表分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getAllOrRecommandData(true)
+    },
+    handleCurrentNext (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getAllOrRecommandData(true)
+    },
+    // 推荐列表分页
+    recommendHandleCurrentChange (nowNum) {
+      this.recommend.currentPage = nowNum
+      this.recommend.pageNo = (nowNum - 1) * this.recommend.pageSize
+      this.getAllOrRecommandData(false)
+    },
+    recommendHandleCurrentNext (nowNum) {
+      this.recommend.currentPage = nowNum
+      this.recommend.pageNo = (nowNum - 1) * this.recommend.pageSize
+      this.getAllOrRecommandData(false)
+    },
+    /** 获取分页列表数据 */
+    getAllOrRecommandData (tableDataFlag) {
+      let query = {
+        pageNo: tableDataFlag ? this.pageNo : this.recommend.pageNo,
+        pageSize: tableDataFlag ? this.pageSize : this.recommend.pageSize,
+        enterpriseId: tableDataFlag ? this.$store.getters.authUser.enterpriseId : null,
+        isShare: tableDataFlag ? null : 1,
+        status: 2,
+        type: 1
+      }
+      if (this.searchForm.messageLike) {
+        query.messageLike = this.searchForm.messageLike
+      }
+      templateInfo.getList(query).then((res) => {
+        if (res.data.templateInfoList && res.data.templateInfoList.list) {
+          if (tableDataFlag) {
+            this.allList = res.data.templateInfoList.list
+            this.total = res.data.templateInfoList.total
+          } else {
+            this.recommendList = res.data.templateInfoList.list
+            this.recommend.total = res.data.templateInfoList.total
+          }
+        }
+      })
+    },
+    clickBtn (templateSystemCode) {
+      this.$router.push({path: `/office/workApproval/add`, query: {templateSystemCode: templateSystemCode, type: 3}})
+    }
+  },
+  mounted () {}
+}
+</script>
+<style lang="less">
+  #cloud_initiate{
+    .box{
+      width: 100%;
+      overflow: hidden;
+      border-bottom: 1px solid #dcdfe6;
+      margin-bottom: 10px;
+    }
+    .box > p{
+      font-weight: bold;
+      line-height: 32px;
+    }
+    .box > ul{
+      overflow: hidden;
+      margin: 0 auto;
+    }
+    .box > ul li{
+      width: 11.5%;
+      float: left;
+      margin: 20px 0.5%;
+      text-align: center;
+      cursor: pointer;
+    }
+    .box > ul li span{
+      width: 100%;
+      line-height: 32px;
+      display: block;
+    }
+    .box:last-child{
+      border-bottom: 0;
+    }
+  }
+</style>

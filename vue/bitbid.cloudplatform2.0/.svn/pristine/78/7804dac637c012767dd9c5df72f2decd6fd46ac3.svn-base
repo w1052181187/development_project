@@ -1,0 +1,81 @@
+<template>
+  <div class="cloudcontent" id="cloud_ruleset">
+    <p class="title">{{pageTitle}}规则设置</p>
+    <set-number :detailInfo="detailInfo" :numberType="numberType"></set-number>
+  </div>
+</template>
+<script>
+import SetNumber from '@/pages/system/autoNumber/setNumber'
+export default {
+  name: 'number',
+  components: {
+    SetNumber
+  },
+  data () {
+    return {
+      pageTitle: '档案编号',
+      numberType: 4,
+      detailInfo: [
+        {
+          name: '年度YYYY',
+          example: '例如：2019'
+        },
+        {
+          name: '月份MM',
+          example: '例如：01'
+        },
+        {
+          name: '日期DD',
+          example: '例如：01'
+        },
+        {
+          name: '项目编号',
+          example: '项目编号'
+        },
+        {
+          name: '标段编号',
+          example: '标段编号'
+        },
+        {
+          name: '资质主体文字',
+          example: '例如：远东'
+        },
+        {
+          name: '资质主体首字母',
+          example: '例如：“远东”的首字母 YD'
+        },
+        {
+          name: '项目类型文字',
+          example: '例如：工程'
+        },
+        {
+          name: '项目类型首字母',
+          example: '例如：“工程”的首字母 GC'
+        },
+        {
+          name: '流水号',
+          example: '例如：5位流水号  00001'
+        },
+        {
+          name: '文本',
+          example: '可输入任意文本'
+        }
+      ]
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_ruleset{
+    padding: 20px;
+    p.title{
+      padding-left: 12px;
+      border-left: 4px solid #4a8cea;
+      color: #000000;
+      margin-bottom: 20px;
+    }
+    .el-form-item__content{
+      margin-left: 0px!important;
+    }
+  }
+</style>

@@ -1,0 +1,294 @@
+<template>
+  <div>
+    <div class="topmain" style="font-weight: bold">
+      投标单位报名表附件
+      <!--按钮-->
+      <el-button  type="primary" class="addbutton" @click="handleAdd" v-if="operationFlag">
+        <span> + 添加</span>
+      </el-button>
+      <!--按钮-->
+    </div>
+    <el-table
+      :data="tableData"
+      header-cell-class-name="tableheader"
+      border>
+      <el-table-column
+        type="index"
+        label="序号"
+        :index="indexMethod"
+        width="50">
+      </el-table-column>
+      <el-table-column
+        prop="fileName"
+        label="投标单位报名表附件名称"
+        show-overflow-tooltip>
+        <template slot-scope="scope">
+          <p v-for="(item, index) in scope.row.fileInformationList" :key="index">{{item.fileName}}</p>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="auditStatus"
+        label="提交状态"
+        width="120">
+        <template slot-scope="scope">
+          <span  v-if="scope.row.auditStatus === 0">已保存</span>
+          <span  v-if="scope.row.auditStatus === 1">待审批</span>
+          <span  v-if="scope.row.auditStatus === 2">已审批</span>
+          <span  v-if="scope.row.auditStatus === 3">已驳回</span>
+          <span  v-if="scope.row.auditStatus === 4">已提交</span>
+          <span  v-if="scope.row.auditStatus === 5">已撤回</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="submitter"
+        label="提交人"
+        :formatter="simpleFormatData"
+        width="140">
+      </el-table-column>
+      <el-table-column
+        prop="submitTime"
+        label="提交时间"
+        :formatter="formatDate"
+        width="160">
+      </el-table-column>
+      <el-table-column
+        label="操作" align="center" width="260">
+        <template slot-scope="scope">
+          <el-button type="text" size="small" @click="handleLook(scope)">查看</el-button>
+          <el-button type="text" size="small" v-if="(scope.row.auditStatus === 0 || scope.row.auditStatus === 3 || scope.row.auditStatus === 5) && operationFlag" @click="handleEdit(scope)">编辑</el-button>
+          <el-button type="text" size="small" v-if="(scope.row.auditStatus === 0) && operationFlag" @click="handleDel(scope)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!--分页-->
+    <el-pagination
+      background
+      layout="prev, pager, next"
+      :total="total"
+      :page-size='pageSize'
+      :current-page.sync="currentPage"
+      @current-change="handleCurrentChange">
+    </el-pagination>
+    <!--分页-->
+    <el-dialog title="上传投标报名表" width="600px"  :visible.sync="showVisible">
+      <el-form :model="addForm"  ref="addForm" label-width="100px" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="附件：" class="bitianicon">
+              <upload-file @uploadSuccess="uploadOtherSuccess" @deleteSuccess="deleteSuccess"
+                           :fileArrays="addForm.fileInformationList"
+                           fileMaxNum="1"
+                           fileType="9"
+                           isImage="0">
+              </upload-file>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio text-center" label-width="0px" style="text-align: center; padding-right: 0px; margin-bottom: 0px;">
+          <el-button type="primary" @click="handleClickEvent('addForm','save')" :loading="loading">保存</el-button>
+          <el-button type="primary" class="submitBtn" @click="handleClickEvent('addForm','submit')" :loading="loading">提交</el-button>
+          <el-button class="cancal" @click="handleClickEvent('addForm','cancel')">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <submitApproveDialog :flowStatus="flowStatus" :tenderSystemCode="tenderSystemCode" :showVisible="approveDialogVisable" @confirmSubmit="confirmSubmit" @handleCancel="cancelApprove"></submitApproveDialog>
+  </div>
+</template>
+<script>
+import uploadFile from '@/components/upload/publicFileUpload'
+import submitApproveDialog from '@/pages/project/commonCompents/submitApproveDialog'
+// import {dateFormat, downloadFile} from '@/assets/js/common'
+import {dateFormat} from '@/assets/js/common'
+import {documentInfo} from '@/api/project'
+export default {
+  components: {
+    uploadFile,
+    submitApproveDialog
+  },
+  data () {
+    return {
+      tableData: [],
+      addForm: {
+        fileInformationList: []
+      },
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: null, // 总条数
+      pageSize: 10, // 每页展示条数
+      showVisible: false,
+      loading: false,
+      approveDialogVisable: false,
+      flowStatus: 6
+    }
+  },
+  props: ['tenderSystemCode', 'sectionSystemCode', 'operationFlag'],
+  methods: {
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 格式化时间
+    formatDate (row, col, cellValue) {
+      return cellValue ? dateFormat(cellValue, 'yyyy-MM-dd') : '---'
+    },
+    // 新增报名表
+    handleAdd () {
+      this.addForm = {
+        fileInformationList: []
+      }
+      this.showVisible = true
+    },
+    // 编辑报名表
+    handleEdit (scope) {
+      this.$nextTick(() => {
+        documentInfo.getById(scope.row.objectId).then(res => {
+          this.addForm = res.data.documentInfo
+          this.addForm.fileInformationList = res.data.documentInfo.fileInformationList
+          this.showVisible = true
+        })
+      })
+    },
+    indexMethod (index) {
+      return index + (this.currentPage - 1) * this.pageSize + 1
+    },
+    // 分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+    },
+    // 删除
+    handleDel (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        documentInfo.deleteById(scope.row.objectId).then(() => {
+          this.getTableList()
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 查看
+    handleLook (scope) {
+      // let fileInformationList = scope.row.fileInformationList
+      // if (fileInformationList.length > 0) {
+      //   downloadFile(fileInformationList[0].fileName, fileInformationList[0].relativePath)
+      // }
+      this.$router.push({path: `/project/projectProcess/applyAttachment/detail/${scope.row.objectId}`})
+    },
+    // 上传附件
+    uploadOtherSuccess (file) {
+      this.addForm.fileInformationList.push(file)
+    },
+    deleteSuccess (fileId) {
+      this.addForm.fileInformationList = this.addForm.fileInformationList.filter(item => item.relativePath !== fileId)
+    },
+    handleClickEvent (formName, type) {
+      if (Object.is(type, 'submit') || Object.is(type, 'save')) {
+        if (this.addForm.fileInformationList.length < 1) {
+          this.$message({
+            message: '请上传附件！',
+            type: 'warning'
+          })
+          return
+        }
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            if (Object.is(type, 'save')) {
+              this.approveDialogVisable = false
+              this.submitData(type)
+            } else {
+              this.approveDialogVisable = true
+            }
+          } else {
+            return false
+          }
+        })
+      } else if (Object.is(type, 'cancel')) {
+        this.showVisible = false
+      }
+    },
+    submitData (type) {
+      let msg = Object.is(type, 'submit') ? '提交后数据将锁定，不允许修改，确认要提交吗?' : '确认要保存吗?'
+      this.$confirm(msg, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          done()
+        }
+      }).then(() => {
+        this.loading = true
+        if (Object.is(type, 'save')) {
+          this.addForm.auditStatus = 0
+        } else if (Object.is(type, 'submit')) {
+          this.addForm.auditStatus = 4
+          this.addForm.submitTime = new Date().getTime()
+        }
+        this.addForm.tenderSystemCode = this.tenderSystemCode
+        this.addForm.sectionSystemCode = this.sectionSystemCode
+        this.addForm.type = 8
+        this.addForm.fileInformationList.map(item => {
+          item.objectId = null
+        })
+        documentInfo.update(this.addForm).then((res) => {
+          this.loading = false
+          if (res.data.resCode === '0000') {
+            this.getTableList()
+            this.showVisible = false
+            this.cancelApprove()
+          }
+        })
+      }).catch(() => {
+        this.loading = false
+        return false
+      })
+    },
+    // 确认提交
+    confirmSubmit (record) {
+      this.addForm.approvalFlowExecutorList = []
+      this.addForm.manualAdditionList = []
+      for (let i = 0; i < record.approveList.length; i++) {
+        let obj = {
+          usersId: record.approveList[i].objectId,
+          flowLevel: i + 1
+        }
+        this.addForm.approvalFlowExecutorList.push(obj)
+      }
+      if (record.noticeList && record.noticeList.length > 0) {
+        this.addForm.manualAdditionList = record.noticeList
+      }
+      this.submitData('submit')
+    },
+    cancelApprove () {
+      this.approveDialogVisable = false
+    },
+    getTableList () {
+      let query = {
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        tenderSystemCode: this.tenderSystemCode,
+        sectionSystemCode: this.sectionSystemCode,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        type: 8
+      }
+      documentInfo.getList(query).then(res => {
+        let data = res.data.documentInfoList
+        if (data) {
+          this.tableData = data.list
+          this.total = data.total
+        }
+        this.$emit('call')
+      })
+    }
+  },
+  mounted () {
+    this.getTableList()
+  }
+}
+</script>
+<style scoped>
+</style>

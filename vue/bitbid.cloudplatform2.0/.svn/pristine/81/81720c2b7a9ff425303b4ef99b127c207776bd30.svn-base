@@ -1,0 +1,256 @@
+<template>
+  <div class="cloudcontent">
+    <!--搜索 & 添加按钮-->
+    <div class="topmain">
+      <el-row>
+        <div class="seacher_box">
+            <span>资质类别：</span>
+            <el-select v-model="type" class="select">
+              <el-option
+                v-for="item in typeOptions"
+                :key="item.objectId"
+                :label="item.name"
+                :value="item.objectId">
+              </el-option>
+            </el-select>
+            <el-select v-model="typeName" class="select left">
+              <el-option
+                v-for="item in typeNameOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+            <el-input class="input" style="vertical-align: top"  placeholder="请输入关键字" v-model="search_input"></el-input>
+            <span class="left">资质来源：</span>
+            <el-checkbox-group v-model="sourceTypes" class="check_group">
+              <el-checkbox :label=1>自有</el-checkbox>
+              <el-checkbox :label=2>借入</el-checkbox>
+            </el-checkbox-group>
+            <el-button  class="search" icon="el-icon-search" @click="search"></el-button>
+        </div>
+      </el-row>
+    </div>
+    <!--搜索 & 添加按钮-->
+    <div class="main">
+      <el-button class="addbutton" @click="handleAdd">
+        <span>登记资质</span>
+      </el-button>
+      <el-table
+        :data="tableData"
+        border>
+        <el-table-column
+          type="index"
+          label="序号"
+          align="center"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="category.name"
+          label="资质类别"
+          width="120"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="number"
+          label="资质编号"
+          width="120"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="gradeCategory.name"
+          label="资质等级"
+          width="80"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="subject"
+          label="资质主体/合作方"
+          :formatter="formatSubject"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="effectiveDate"
+          label="资质有效期/合作时间">
+        </el-table-column>
+        <el-table-column
+          prop="sourceType"
+          label="资质来源"
+          width="80">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.sourceType === 1">自有</span>
+            <span  v-if="scope.row.sourceType === 2">借入</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetail(scope)">查看</el-button>
+            <el-button type="text" size="small" @click="handleUpdate(scope)">修改</el-button>
+            <el-button type="text" size="small" @click="handleDel(scope)">删除</el-button>
+            <el-button type="text" size="small" @click="handleRecord(scope)">合作记录</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+
+<script>
+import { qualificationSubject, category } from '@/api/resource'
+
+export default {
+  name: '',
+  data () {
+    return {
+      type: null,
+      typeOptions: [],
+      sourceTypes: [],
+      typeName: null,
+      typeNameOptions: [{
+        value: 1,
+        label: '资质主体'
+      }, {
+        value: 2,
+        label: '资质编号'
+      }],
+      search_input: '',
+      checkList: [],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10, // 每页展示条数
+      tableData: []
+    }
+  },
+  methods: {
+    search () {
+      this.currentPage = 1
+      this.pageNo = 0
+      this.getList()
+    },
+    formatSubject (row, column) {
+      if (row.sourceType === 1) {
+        return row.dictionaryDetail.name
+      } else if (row.sourceType === 2) {
+        return row.subject
+      }
+    },
+    // 分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getList()
+    },
+    handleAdd () {
+      this.$router.push({path: `/resource/aptitude/add`})
+    },
+    handleUpdate (scope) {
+      this.$router.push({path: `/resource/aptitude/update`, query: {objectId: scope.row.objectId}})
+    },
+    handleDetail (scope) {
+      this.$router.push({path: `/resource/aptitude/detail/${scope.row.objectId}`})
+    },
+    handleDel (scope) {
+      // 判断当前资质是否可以删除，是否有合作记录
+      qualificationSubject.checkedCanDel(scope.row.code).then((res) => {
+        if (res.data.resCode === '0000') {
+          if (res.data.canDel) {
+            this.$confirm('确认删除吗?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'error'
+            }).then(() => {
+              qualificationSubject.deleteQualificationSubject(scope.row.objectId).then((res) => {
+                this.getList()
+              })
+            }).catch(() => {
+              return false
+            })
+          } else {
+            this.$message({
+              message: '当前资质存在存在合作记录，不可删除',
+              type: 'warning'
+            })
+          }
+        }
+      })
+    },
+    handleRecord (scope) {
+      this.$router.push({path: `/resource/aptitude/record/${scope.row.code}`})
+    },
+    getList () {
+      let query = {
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        categoryId: this.type,
+        enterpriseId: this.$store.getters.authUser.enterpriseId
+      }
+      if (this.sourceTypes.length === 1) {
+        this.$set(query, 'sourceType', this.sourceTypes[0])
+      }
+      if (this.typeName === 1) {
+        this.$set(query, 'subjectLike', this.search_input)
+      } else if (this.typeName === 2) {
+        this.$set(query, 'numberLike', this.search_input)
+      }
+      qualificationSubject.getQualificationSubjectList(query).then((res) => {
+        this.tableData = res.data.qualificationSubjectList.list
+        this.total = res.data.qualificationSubjectList.total
+      })
+    },
+    // 获取资质类别
+    getCategory () {
+      category.getCategoryList().then((res) => {
+        this.typeOptions = res.data.categoryList
+      })
+    }
+  },
+  mounted () {
+    this.getList()
+    this.getCategory()
+  }
+}
+</script>
+
+<style scoped>
+  .seacher_box>span{
+    display: inline-block;
+    line-height: 40px;
+    font-size: 14px;
+  }
+  .select{
+    width: 150px;
+  }
+  .input{
+    width: 200px;
+  }
+  .check_group {
+    display: inline;
+    width: 80px;
+  }
+  .search{
+    height: 40px;
+    margin-left: 40px;
+  }
+  .left {
+    margin-left: 12px;
+  }
+  .addbutton{
+    margin-bottom: 12px;
+    color: #fff;
+    background-color: #409EFF;
+    border-color: #409EFF;
+  }
+</style>

@@ -1,0 +1,261 @@
+<template>
+  <div class="cloudcontent" id="cloud_processedit">
+    <approve-flow v-if="isApproved" :list="flowList" :curFlowIndex="curFlowIndex"></approve-flow>
+    <div class="project-info-line"></div>
+    <div class="main viewdetails">
+      <div class="basic-approve-title">评标专家</div>
+      <el-form :model="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <span>{{bidSection.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{bidSection.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段编号：">
+              <span>{{bidSection.bidSectionCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段名称：">
+              <span>{{bidSection.bidSectionName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="专家姓名："  prop="expertName">
+              <span>{{updateForm.expertName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="身份证号码："  prop="idCard">
+              <span>{{updateForm.idCard}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="专业类别："  prop="expertClassify">
+              <span>{{updateForm.expertClassify}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="联系方式："  prop="mobilePhone">
+              <span>{{updateForm.mobilePhone}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="电子邮箱："  prop="email">
+              <span>{{updateForm.email}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="标段信息：">
+              <el-table
+                :data="bidSectionList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader"
+              >
+                <el-table-column
+                  prop="bidSectionCode"
+                  label="标段编号"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  prop="bidSectionName"
+                  label="标段名称"
+                  show-overflow-tooltip>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+    <template v-if="isApproved">
+      <div class="project-info-line"></div>
+      <communicate-record :tableData="communicateRecordList"></communicate-record>
+      <div class="project-info-line"></div>
+      <approve-record :approvalTaskCode="taskCode" :subjectCode="updateForm.code"></approve-record>
+    </template>
+    <approve-handle :isApproved="isApproved" :approvalTaskCode="taskCode"></approve-handle>
+  </div>
+</template>
+<script>
+import approveFlow from '@/pages/todoList/commonComponents/approveFlow.vue'
+import communicateRecord from '@/pages/todoList/commonComponents/communicateRecord.vue'
+import approveRecord from '@/pages/todoList/commonComponents/approveRecord.vue'
+import approveHandle from '@/pages/todoList/commonComponents/approveHandle.vue'
+import {expert, bidSection} from '@/api/project'
+import * as expertClassify from '@/assets/js/expertClassify'
+export default {
+  components: {
+    approveFlow,
+    approveRecord,
+    communicateRecord,
+    approveHandle
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      // 是否显示审批（0:详情 1：审批 2：审批详情 3：我发起的详情）
+      isApproved: 0,
+      auditStatus: 0,
+      objectId: '',
+      taskCode: '',
+      updateForm: {},
+      form: {},
+      bidSectionList: [],
+      bidSection: {},
+      // 审批流程
+      flowList: [
+      ],
+      curFlowIndex: 0,
+      communicateRecordList: [
+      ]
+    }
+  },
+  methods: {
+    getExpert () {
+      expert.getById(this.objectId).then(res => {
+        this.updateForm = res.data.expert
+        this.bidSectionList = this.updateForm.bidSectionList
+        if (this.updateForm) {
+          let expertClassify = []
+          let expertClassifyStr = ''
+          if (this.updateForm.expertClassifyList) {
+            if (this.updateForm.expertClassifyList.length > 0) {
+              let expertArr = this.updateForm.expertClassifyList
+              if (expertArr) {
+                expertClassify = this.transLabel(expertArr)
+                for (let i = 0; i < expertClassify.length; i++) {
+                  if (i === expertClassify.length - 1) {
+                    expertClassifyStr += expertClassify[i]
+                  } else {
+                    expertClassifyStr += expertClassify[i] + ' ， '
+                  }
+                }
+              }
+              this.updateForm.expertClassify = expertClassifyStr
+            }
+          } else {
+            return false
+          }
+        } else {
+          return false
+        }
+      })
+    },
+    // 查询当前标段信息
+    getBidSection () {
+      bidSection.getOne(this.$route.query.sectionSystemCode).then(res => {
+        this.bidSection = res.data.bidSection
+      })
+    },
+    // 转成label值
+    transLabel (expertArr) {
+      let tempArr = []
+      let str = ''
+      for (let j = 0; j < expertArr.length; j++) {
+        if (expertArr[j].firstClassify) {
+          let first = this.getLabelName(expertClassify.expertClassify, expertArr[j].firstClassify)
+          str += first.node.label + '/'
+        }
+        if (expertArr[j].secondClassify) {
+          let second = this.getLabelName(expertClassify.expertClassify, expertArr[j].secondClassify)
+          str += second.node.label + '/'
+        }
+        if (expertArr[j].thirdClassify) {
+          let third = this.getLabelName(expertClassify.expertClassify, expertArr[j].thirdClassify)
+          str += third.node.label + '/'
+        }
+        if (expertArr[j].fourClassify) {
+          let fourth = this.getLabelName(expertClassify.expertClassify, expertArr[j].fourClassify)
+          str += fourth.node.label
+        }
+        tempArr.push(str)
+        str = ''
+      }
+      return tempArr
+    },
+    /*
+    * treeData [原始数据集]
+    * key 传入的key值
+    */
+    getLabelName (treeData, key) {
+      let parentNode = null
+      let node = null
+      function getTreeDeepArr (treeData, key) {
+        for (let i = 0; i < treeData.length; i++) {
+          // 1.如果没有子节点 beark
+          if (node && key) {
+            break
+          }
+          // 定义需要操作的数据
+          let obj = treeData[i]
+          // 没有节点就下一个
+          if (!obj || !obj.value) {
+            continue
+          }
+          // 2.有节点就继续找，一直递归
+          if (obj.value === key) {
+            node = obj
+            break
+          } else {
+            // 3.如果有子节点就继续找
+            if (obj.children) {
+              // 4.递归前，记录当前节点，作为parentNode
+              parentNode = obj
+              // 递归
+              getTreeDeepArr(obj.children, key)
+            } else {
+              // 跳出当前递归
+              continue
+            }
+          }
+        }
+        // 如果没有找到父节点，置为null
+        if (!node) {
+          parentNode = null
+        }
+        // 返回结果
+        return {
+          node: node,
+          parentNode: parentNode
+        }
+      }
+      return getTreeDeepArr(treeData, key)
+    },
+    init () {
+      this.isApproved = this.$route.query.isApproved
+      this.auditStatus = this.$route.query.auditStatus
+      this.objectId = this.$route.params.objectId
+      this.taskCode = this.$route.query.code
+      this.getExpert()
+      this.getBidSection()
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_processedit{
+  }
+</style>

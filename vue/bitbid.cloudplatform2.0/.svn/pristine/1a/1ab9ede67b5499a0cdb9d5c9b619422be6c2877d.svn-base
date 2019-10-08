@@ -1,0 +1,193 @@
+<template>
+  <div class="cloudcontent" id="setNum">
+    <el-row :gutter="20">
+      <el-col :span="14">
+        <el-form :model="updateForm" :rules="rules" ref="updateForm" :validate-on-rule-change="true">
+          <ul class="numberRuleList" v-if="updateForm.numberRuleList.length !== 0">
+            <li v-for="item in updateForm.numberRuleList" :key="item.index">
+              <div class="num">第{{item.index + 1}}节<span @click="handelAdd(item)"><img src="../../../../static/images/jia_b.png"/> </span><span @click="handelDel(item)" v-if="item.index !== 0"><img src="../../../../static/images/jian_b.png"/> </span></div>
+              <div class="rule">
+                <el-select v-model="item.separator" v-if="item.index !== 0" clearable placeholder="分隔符">
+                  <el-option
+                    v-for="item in separatorOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+                <el-select v-model="item.rule" clearable placeholder="请选择">
+                  <el-option
+                    v-for="item in ruleOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+                <p v-if="item.rule === 4"><el-input-number v-model="item.num" controls-position="right" :min="2" :max="5" label="描述文字"></el-input-number> 位</p>
+                <el-input v-if="item.rule === 5" v-model="item.text" placeholder="请输入文本"></el-input>
+              </div>
+            </li>
+          </ul>
+          <p class="example">
+            编号示例:<br/>
+            YD-2019-000001
+          </p>
+          <el-form-item class="submit-radio">
+            <el-button type="primary" @click="submit('updateForm')" :loading="isSubmiting">确定</el-button>
+            <el-button class="cancal" @click="close">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+      <el-col :span="10">
+        <span>变量说明：</span>
+        <el-table
+          :data="tableinfo"
+          border
+          header-cell-class-name="tableheader">
+          <el-table-column
+            prop="name"
+            label="变量">
+          </el-table-column>
+          <el-table-column
+            prop="example"
+            label="示例">
+          </el-table-column>
+        </el-table>
+      </el-col>
+    </el-row>
+  </div>
+</template>
+
+<script>
+
+export default {
+  data () {
+    return {
+      updateForm: {
+        numberRuleList: [
+          {
+            index: 0,
+            separator: null,
+            rule: '',
+            num: '',
+            text: ''
+          },
+          {
+            index: 1,
+            separator: null,
+            rule: '',
+            num: '',
+            text: ''
+          }
+        ]
+      },
+      rules: {},
+      separatorOptions: [
+        {
+          value: 1,
+          label: '横线'
+        },
+        {
+          value: 2,
+          label: '下划线'
+        },
+        {
+          value: 3,
+          label: '无'
+        }
+      ],
+      ruleOptions: [
+        {
+          value: 1,
+          label: '年度'
+        },
+        {
+          value: 2,
+          label: '月份'
+        },
+        {
+          value: 3,
+          label: '日期'
+        },
+        {
+          value: 4,
+          label: '流水号'
+        },
+        {
+          value: 5,
+          label: '文本'
+        }
+      ],
+      isSubmiting: false
+    }
+  },
+  props: ['tableinfo'],
+  methods: {
+    handelAdd (item) {
+      console.log(item)
+      let obj = {
+        separator: null,
+        rule: '',
+        num: '',
+        text: ''
+      }
+      this.updateForm.numberRuleList.splice(item.index, 0, obj)
+    },
+    handelDel (item) {
+      console.log(item)
+      this.updateForm.numberRuleList.splice(item.index, 1)
+    },
+    submit () {},
+    close () {}
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style scoped>
+  .el-col-10 {
+    float: right;
+  }
+  .el-col-10 span{
+    line-height: 32px;
+    color: #333333;font-weight: bold;
+  }
+  ul.numberRuleList{
+    width: 100%;
+    overflow: hidden;
+  }
+  ul.numberRuleList li{
+    margin-bottom: 10px;
+  }
+  ul.numberRuleList li .num{
+    margin: 5px 0;
+    line-height: 24px;
+  }
+  ul.numberRuleList li .num span{
+    margin-left: 7px;
+    cursor: pointer;
+  }
+  ul.numberRuleList li .rule{
+    width: 100%;
+  }
+  ul.numberRuleList li .rule .el-select{
+    width: 100px;
+    /*float: left;*/
+    /*margin-right: 10px;*/
+  }
+  ul.numberRuleList li .rule p{
+    display: inline-block;
+  }
+  ul.numberRuleList li .rule .el-input-number{
+    width: 120px;
+  }
+  ul.numberRuleList li .rule .el-input{
+    width: 180px;
+    /*margin-right: 10px;*/
+  }
+  p.example{
+    margin: 50px 0 30px 0;
+    line-height: 24px;
+  }
+</style>

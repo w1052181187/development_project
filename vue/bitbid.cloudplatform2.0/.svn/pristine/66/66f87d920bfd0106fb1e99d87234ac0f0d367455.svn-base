@@ -1,0 +1,2 @@
+// 工作协同
+export { workCollaboration } from './collaboration/workCollaboration'

@@ -1,0 +1,436 @@
+<template>
+  <div class="cloudcontent" id="cloud_customer_add">
+    <div class="main">
+      <el-form :model="addForm" ref="addForm" :validate-on-rule-change="true">
+        <div class="part">
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目名称：" prop="code">
+                <el-input v-model="addForm.code"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="商机来源：" prop="code">
+                <el-select v-model="addForm.code" placeholder="请选择">
+                  <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目编号：" prop="name">
+                <el-input v-model="addForm.name"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="商机阶段：" prop="code">
+                <el-select v-model="addForm.code" placeholder="请选择">
+                  <el-option
+                    v-for="item in phaseoptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="客户名称：" prop="code">
+                <el-input v-model="addForm.code" readonly>
+                  <el-button slot="append" icon="el-icon-search" @click="dialogFormVisible = true"></el-button>
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="商机状态：" prop="code">
+                <el-select v-model="addForm.code" placeholder="请选择">
+                  <el-option
+                    v-for="item in statusoptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目所在地：" prop="code">
+                <el-cascader class=""
+                             expand-trigger="hover"
+                             :options="addressOptions"
+                             v-model="addForm.selectedCityOptions"
+                             @change="handleCityChange">
+                </el-cascader>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="招标类型：" prop="code">
+                <el-checkbox-group v-model="addForm.code">
+                  <el-checkbox label="工程"></el-checkbox>
+                  <el-checkbox label="货物"></el-checkbox>
+                  <el-checkbox label="服务"></el-checkbox>
+                </el-checkbox-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目详细地址：" prop="code">
+                <el-input v-model="addForm.code"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="发布时间：" prop="code">
+                <el-date-picker
+                  v-model="value1"
+                  type="date"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目规模：" prop="code">
+                <el-input v-model="addForm.code"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="报名截止时间：" prop="code">
+                <el-date-picker
+                  v-model="value1"
+                  type="date"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目金额估计：" prop="code">
+                <el-input v-model="addForm.code"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="负责人：" prop="code">
+                <el-select v-model="addForm.code" placeholder="请选择">
+                  <el-option
+                    v-for="item in peopleOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="联系人：" prop="code">
+                <el-input v-model="addForm.code"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="所属部门：" prop="code">
+                <el-select v-model="addForm.code" placeholder="请选择">
+                  <el-option
+                    v-for="item in partmentOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label=" 联系电话：" prop="code">
+                <el-input v-model="addForm.code"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-form-item label="项目内容：">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content"></editor>
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-form-item label="附件：">
+              <upload-file @uploadSuccess="uploadOtherSuccess" @deleteSuccess="deleteSuccess"
+                           :fileArrays="addForm.fileInformationList"
+                           fileType="9"
+                           isImage="0">
+              </upload-file>
+            </el-form-item>
+          </el-row>
+        </div>
+        <el-form-item class="submit-radio">
+          <el-button type="primary">保存</el-button>
+          <el-button class="cancal">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+    <el-dialog title="选择客户" :visible.sync="dialogFormVisible">
+      <el-form :model="searchForm" ref="searchForm" label-width="100px" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="16">
+            <el-form-item label="客户名称：">
+              <el-input class="search" v-model="searchForm.tenderProjectNameLike">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="4">
+            <el-form-item label="">
+              <el-button  type="primary" @click="search">搜索</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          prop="radio"
+          width="50">
+          <template slot-scope="scope">
+            <el-radio v-model="scope.row.radio"></el-radio>
+          </template>
+        </el-table-column>
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='dataIndex'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="客户名称"
+          show-overflow-tooltip>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+      <!--分页-->
+    </el-dialog>
+  </div>
+</template>
+<script>
+import * as region from '@/assets/js/region'
+import editor from '@/components/ueditor/ueditor.vue'
+import uploadFile from '@/components/upload/publicFileUpload'
+export default {
+  components: {
+    editor,
+    uploadFile
+  },
+  data () {
+    return {
+      addForm: {
+        contactList: [],
+        fileInformationList: []
+      },
+      // 商机来源
+      options: [{
+        value: '1',
+        label: '主动咨询'
+      }, {
+        value: '2',
+        label: '网络获得'
+      }, {
+        value: '3',
+        label: '朋友介绍'
+      }, {
+        value: '4',
+        label: '其他'
+      }],
+      value: '',
+      // 商机阶段
+      phaseoptions: [{
+        value: '1',
+        label: '目标客户阶段'
+      }, {
+        value: '2',
+        label: '潜在客户阶段'
+      }, {
+        value: '3',
+        label: '意向客户阶段'
+      }, {
+        value: '4',
+        label: '立项客户阶段'
+      }],
+      // 商机状态
+      statusoptions: [{
+        value: '1',
+        label: '未评估'
+      }, {
+        value: '2',
+        label: '评估中'
+      }, {
+        value: '3',
+        label: '跟进中'
+      }, {
+        value: '4',
+        label: '赢单'
+      }, {
+        value: '5',
+        label: '输单'
+      }],
+      value1: '',
+      // 地址三级联动
+      addressOptions: region.CityInfo,
+      selectedcityOptions: [],
+      // 商机 负责人
+      peopleOptions: [{
+        value: '1',
+        label: '张三'
+      }, {
+        value: '2',
+        label: '李四'
+      }],
+      // 商机  所属部门
+      partmentOptions: [{
+        value: '1',
+        label: '研发部'
+      }, {
+        value: '2',
+        label: '销售部'
+      }],
+      // 富文本编辑器
+      editread: false,
+      content: '',
+      // 选择客户
+      dialogFormVisible: false,
+      searchForm: {},
+      tableData: [
+        {
+          name: '兰州奥体中心建设项目概念性建筑方案设计竞赛征集项目招标代理服务机构比选招标公告',
+          radio: ''
+        },
+        {
+          name: '太原市南坪头水库改造工程招标代理机构比选公告',
+          radio: ''
+        },
+        {
+          name: '山西石油分公司2018年建设项目委托造价咨询单位入围招标公告',
+          radio: ''
+        },
+        {
+          name: '鄂尔多斯市东胜区审计局采购造价咨询服务公开招标公告',
+          radio: ''
+        },
+        {
+          name: '和田县审计委托中介机构服务入围项目招标公告',
+          radio: ''
+        },
+        {
+          name: '西安财经学院政府采购代理机构比选公告',
+          radio: ''
+        }
+      ],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10, // 每页展示条数
+      dataIndex: 1
+    }
+  },
+  methods: {
+    handleCityChange () {},
+    addContact () {
+      this.addForm.contactList.push({
+        name: '',
+        contact: '',
+        job: '',
+        role: ''
+      })
+    },
+    delContactBtn () {
+    },
+    // 上传附件
+    uploadOtherSuccess (file) {
+      this.updateForm.fileInformationList.push(file)
+    },
+    deleteSuccess (fileId) {
+      this.updateForm.fileInformationList = this.updateForm.fileInformationList.filter(item => item.relativePath !== fileId)
+    },
+    search () {},
+    handleCurrentChange () {}
+  }
+}
+</script>
+<style lang="less">
+  #cloud_customer_add {
+    .el-cascader,.el-select{
+      width: 100%;
+    }
+    .el-textarea__inner{
+      height: 120px;
+    }
+    .main{
+      margin: 0px;
+    }
+    .part{
+      overflow: hidden;
+      margin: 12px auto;
+    }
+    .part h3{
+      height: 36px;
+      line-height: 36px;
+      color: #111111;
+      font-size: 16px;
+      border-bottom: 1px solid #eeeeee;
+      margin-bottom: 30px;
+    }
+    .part h3 span{
+      margin-top: 18px;
+      display: inline-block;
+      background: #ffffff;
+      padding: 0 10px;
+      float: left;
+    }
+    .addbutton{
+      width: 100%;
+      margin-top: 10px;
+      height: 52px;
+      line-height: 52px;
+      text-align: center;
+      border: 1px dashed #d2d2d2;
+      color: #d2d2d2;
+      background: #ffffff;
+      font-weight: bold;
+      cursor: pointer;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .addbutton:hover{
+      border: 1px dashed #34abff;
+      color: #34abff;
+    }
+    .addcon .el-form-item__content{
+      margin-left: 0px;
+    }
+  }
+</style>

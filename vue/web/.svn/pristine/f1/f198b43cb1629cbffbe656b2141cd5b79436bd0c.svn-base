@@ -1,0 +1,206 @@
+<template>
+  <div id="bidwindetail" class="smaincontent">
+    <div class="headertitle">
+      <!--面包屑-->
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/main' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item>公告管理</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/annoapprove/ckresultanno' }">中标公告审核</el-breadcrumb-item>
+        <el-breadcrumb-item>查看中标公告审核</el-breadcrumb-item>
+      </el-breadcrumb>
+      <!--面包屑-->
+      <div class="returnboxbig">
+        <template>
+          <el-button @click="close">返回</el-button>
+        </template>
+      </div>
+    </div>
+    <div class="contentbigbox">
+      <template>
+        <el-form :model="winBidForm" ref="winBidForm">
+          <table class="detailtable">
+            <tr>
+              <td>公示名称：</td>
+              <td  colspan="2">
+                <template>
+                  <span>{{winBidForm.noticeName}}</span>
+                </template>
+              </td>
+              <td>公示性质：</td>
+              <td  colspan="2">
+                <span v-if="winBidForm.noticeNature === '1'">正常公示</span>
+                <span v-if="winBidForm.noticeNature === '2'">更正公示</span>
+              </td>
+            </tr>
+            <tr>
+              <td>招标项目编号：</td>
+              <td  colspan="2">
+                <span>{{winBidForm.tenderProjectCode}}</span>
+              </td>
+              <td>招标项目名称：</td>
+              <td  colspan="2">
+                <span>{{winBidForm.tenderExpandsInfo.tenderProjectName}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>标段（包）编号：</td>
+              <td  colspan="2">
+                <span>{{winBidForm.tenderProjectCode}}</span>
+              </td>
+              <td>公示开始时间：</td>
+              <td  colspan="2">
+                <span>{{winBidForm.tenderExpandsInfo.tenderProjectName}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>公示结束时间：</td>
+              <td  colspan="2">
+                <span>{{winBidForm.tenderProjectCode}}</span>
+              </td>
+              <td>公示发布时间：</td>
+              <td  colspan="2">
+                <span>{{winBidForm.tenderExpandsInfo.tenderProjectName}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>公示内容：</td>
+              <td  colspan="5">
+                <template >
+                  <editor ref="ueditor" class="ueditor" :editread="true"></editor>
+                </template>
+              </td>
+            </tr>
+            <tr v-if="fileObject !== null">
+              <td>公示附件：</td>
+              <td  colspan="5">
+                <filedownload :fileObject="fileObject"></filedownload>
+              </td>
+            </tr>
+            <tr>
+              <td>变更内容：</td>
+              <td  colspan="5">
+                <template >
+                  <editor ref="change_ueditor" class="ueditor" :editread="true"></editor>
+                </template>
+              </td>
+            </tr>
+            <approverecord v-if="winBidForm.status === 2 || winBidForm.status === 3" :code="winBidForm.code"></approverecord>
+          </table>
+        </el-form>
+      </template>
+    </div>
+  </div>
+</template>
+<script>
+import * as industry from '../../../assets/js/industry'
+import * as region from '../../../assets/js/region'
+import editor from '@/components/ueditor/ueditor.vue'
+import filedownload from '@/components/file-download'
+import approverecord from '@/components/approve-record.vue'
+import {bidwin} from '@/api'
+export default {
+  components: {
+    editor,
+    filedownload,
+    approverecord
+  },
+  data () {
+    return {
+      // 行业
+      industryStr: '',
+      // 行政区域
+      regionStr: '',
+      industryList: industry.industry,
+      regionList: region.CityInfo,
+      fileObject: {},
+      winBidForm: {
+        noticeName: '',
+        noticeNature: '',
+        tenderProjectCode: '',
+        tenderExpandsInfo: {
+          tenderProjectName: '',
+          industryTypeFirst: '',
+          projectType: '',
+          provinceId: '',
+          tenderOrganizeForm: '',
+          ownerName: '',
+          tenderAgencyName: '',
+          tenderAgencyContacts: '',
+          contactInformation: ''
+        },
+        sectionExpandsInfos: []
+      },
+      status: null
+    }
+  },
+  methods: {
+    detail () {
+      bidwin.detail(this.$route.params.objectId).then((res) => {
+        this.industryList.map((item) => {
+          if (item.value === res.data.winBidBulletin.tenderExpandsInfo.industryTypeFirst) {
+            this.industryStr += item.label
+          }
+        })
+        this.regionList.map((item) => {
+          if (item.value === res.data.winBidBulletin.tenderExpandsInfo.provinceId) {
+            this.regionStr += item.label
+            item.children.map((ite) => {
+              if (ite.value === res.data.winBidBulletin.tenderExpandsInfo.cityId) {
+                this.regionStr += ite.label
+              }
+            })
+          }
+        })
+        this.winBidForm = res.data.winBidBulletin
+        this.fileObject = res.data.winBidBulletin.fileInformations.length === 0 ? null : res.data.winBidBulletin.fileInformations[0]
+        return this.winBidForm
+      }).then((result) => {
+        this.$refs.ueditor.setContent(result.noticeContent)
+        this.$refs.change_ueditor.setContent(result.noticeContent)
+      })
+    },
+    close () {
+      this.$router.push({path: '/annomanage/bidwin', query: {status: this.status}})
+    }
+  },
+  mounted () {
+    this.status = this.$route.query.status ? this.$route.query.status : this.$route.query.status === 0 ? this.$route.query.status : null
+    this.detail()
+  }
+}
+</script>
+<style lang="less">
+  #bidwindetail{
+    .select {
+      float: left;
+      width: 100%;
+    }
+    .el-cascader{
+      float: left;
+      width: 100%;
+    }
+    .el-date-editor{
+      float: left;
+      width: 100%;
+    }
+    .el-date-editor.el-input, .el-date-editor.el-input__inner{
+      width: 100%;
+    }
+    .el-form-item{
+      margin-bottom: 0px;
+    }
+    .el-form-item__error{
+      display: none;
+    }
+    .expandtable{
+      margin-bottom: 10px;
+    }
+    .expandtable  .cell{
+      height: 40px;
+      line-height: 40px;
+    }
+    .expandtable  .cell span{
+      color: #66b1ff;
+    }
+  }
+</style>

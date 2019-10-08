@@ -1,0 +1,332 @@
+<template>
+  <div id="account-page"  class="cont-view">
+    <!-- 面包屑区域start -->
+    <div class="bread-box">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/">系统管理</a></el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/">账号管理</a></el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <!-- 面包屑区域end -->
+    <!-- 搜索区域start -->
+    <div class="search-box">
+      <el-row :gutter="20">
+        <el-col :span="8">
+          <el-input placeholder="请输入用户名/姓名" v-model="queryModel.messageLike" class="input-with-select">
+            <el-button slot="append" icon="el-icon-search" @click="getTableData"></el-button>
+          </el-input>
+        </el-col>
+        <el-col :span="16" class="add-btn">
+          <el-button type="primary" size="small" @click="addAccount" style="float:right;">新增账号</el-button>
+        </el-col>
+      </el-row>
+    </div>
+    <!-- 搜索区域end -->
+    <div class="table-box">
+      <el-table
+        :data="tableData"
+        border
+        v-loading="loading"
+        style="width: 100%">
+        <el-table-column
+          label="序号"
+          type="index"
+          width="60"
+          :computedIndex="computedIndex"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="userName"
+          label="用户名"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="account"
+          label="姓名"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="isDisable"
+          label="状态"
+          :formatter="simpleFormatData"
+          align="center">
+          <template slot-scope="scope">
+            <el-switch
+              @change="forbiddenUser(scope.row)"
+              v-model="scope.row.isDisable"
+              :active-value="0"
+              :inactive-value="1"
+              active-color="#13ce66"
+              inactive-color="#ff4949">
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleTableBtn(scope.row, 'role')">
+              分配角色
+            </el-button>
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleTableBtn(scope.row, 'reset')">
+              重置密码
+            </el-button>
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleTableBtn(scope.row, 'edit')">
+              编辑
+            </el-button>
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleTableBtn(scope.row, 'del')">
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="pagination-box">
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="page.total"
+          :page-size='page.pageSize'
+          :current-page.sync="page.currentPage"
+          @current-change="handlePage"
+          @next-click="handlePage">
+        </el-pagination>
+        <!--分页-->
+      </div>
+    </div>
+    <!-- 弹窗区域start -->
+    <div class="dialog-box">
+      <!-- 新增、编辑人员弹窗start -->
+      <el-dialog
+        :title="`${titleName}账号`"
+        :visible.sync="showVisible"
+        width="30%"
+        center>
+        <el-form :model="submitForm" :rules="rules" ref="submitForm" label-width="110px" class="demo-ruleForm">
+          <el-form-item label="用户名:" prop="account">
+            <el-input v-model="submitForm.account" :clearable="!isEdit" placeholder="请输入用户名" :readonly="isEdit">
+              <i class="el-icon-edit el-input__icon" v-if="!isEdit" slot="suffix"></i>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="姓名:" prop="userName">
+            <el-input v-model="submitForm.userName" placeholder="请输入姓名">
+              <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="登录密码:" prop="password" v-if="!isEdit">
+            <el-input type="password" v-model="submitForm.password" placeholder="请输入登录密码">
+              <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="确认密码:" prop="rePassword" v-if="!isEdit">
+            <el-input type="password"  v-model="submitForm.rePassword" placeholder="请再次输入登录密码">
+              <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+            </el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="showVisible=false">取 消</el-button>
+          <el-button type="primary" @click="submit">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 新增、编辑人员弹窗end -->
+
+      <!-- 重置密码start -->
+      <el-dialog
+        title="重置密码"
+        :visible.sync="showResetVisible"
+        width="30%"
+        center>
+        <el-form :model="resetForm" :rules="resetRules" ref="submitForm" label-width="110px" class="demo-ruleForm">
+          <el-form-item label="新密码:" prop="password">
+            <el-input type="password" v-model="resetForm.password" placeholder="请输入新密码">
+              <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="确认新密码:" prop="rePassword">
+            <el-input type="password" v-model="resetForm.rePassword" placeholder="请再次输入登录密码">
+              <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+            </el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="showResetVisible=false">取 消</el-button>
+          <el-button type="primary" @click="submitRePassword">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 重置密码end -->
+
+      <!-- 分配角色start -->
+      <el-dialog
+        title="分配角色"
+        :visible.sync="showRoleVisible"
+        width="30%"
+        center>
+        <el-form :model="roleForm" :rules="roleRules" ref="submitForm" label-width="110px" class="demo-ruleForm">
+          <el-form-item label="角色:" prop="roleId">
+            <el-select v-model="roleForm.roleId" placeholder="请选择">
+              <el-option
+                v-loading="loading"
+                v-for="item in roleList"
+                :key="item.objectId"
+                :label="item.name"
+                :value="item.objectId">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="showRoleVisible=false">取 消</el-button>
+          <el-button type="primary" @click="submitRole">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 分配角色end -->
+    </div>
+    <!-- 弹窗区域end -->
+  </div>
+</template>
+<script>
+import {user} from '@/api'
+export default {
+  name: 'account',
+  data () {
+    let validateRepeatPass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请再次输入登录密码'))
+      } else if (value !== this.submitForm.password) {
+        callback(new Error('两次输入的登录密码不一致'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      queryModel: {},
+      tableData: [],
+      loading: false,
+      page: {
+        total: 0,
+        pageSize: 10,
+        currentPage: 1
+      },
+      titleName: '新增',
+      showVisible: false,
+      submitForm: {},
+      rules: {
+        account: [{required: true, message: '请填写用户名', trigger: 'blur'}],
+        userName: [
+          {required: true, message: '请填写用户名', trigger: 'blur'},
+          { min: 1, max: 20, message: '长度在1~20个字符', trigger: 'blur' }
+        ],
+        password: [{required: true, message: '请填写用户名', trigger: 'blur'}],
+        rePassword: [
+          { required: true, message: '确认密码不能为空', trigger: 'blur' },
+          { validator: validateRepeatPass, trigger: 'blur' }
+        ]
+      },
+      isEdit: false,
+      showResetVisible: false, // 重置密码
+      resetForm: {},
+      resetRules: {},
+      showRoleVisible: false, // 分配角色
+      roleForm: {},
+      roleRules: {},
+      roleList: [] // 角色列表
+    }
+  },
+  methods: {
+    /** 搜索 */
+    getTableData () {},
+    /** 新增账号 */
+    addAccount () {
+      this.showVisible = true
+      this.titleName = '新增'
+      this.isEdit = false
+    },
+    /** 状态 */
+    forbiddenUser () {},
+    /** 表格操作 */
+    handleTableBtn (row, type) {
+      if (Object.is(type, 'role')) {
+        // 角色
+        this.showRoleVisible = true
+      } else if (Object.is(type, 'reset')) {
+        // 重置密码
+        this.showResetVisible = true
+      } else if (Object.is(type, 'edit')) {
+        // 编辑
+        this.showVisible = true
+        this.isEdit = true
+        this.titleName = '编辑'
+      } else if (Object.is(type, 'del')) {
+        // 删除
+        this.deleteMethod()
+      }
+    },
+    /** 分页 */
+    handlePage () {},
+    /** 新增-编辑-确定 */
+    submit () {
+      let obj = this.submitForm
+      obj.type = 1
+      console.log(obj)
+      this.$refs['submitForm'].validate(valid => {
+        if (valid) {
+          user.saveUsers(obj).then(res => {
+            // 成功
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    /** 重置密码-确定 */
+    submitRePassword () {},
+    /** 分配角色-确定 */
+    submitRole () {},
+    /** 获得用户信息 */
+    _getUsersList () {
+      user.queryList().then(res => {
+        this.tableData = res.data.data.list
+      })
+    },
+    /** 普通格式化数据，空的时候展示"---" */
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    /** 序号计算 */
+    computedIndex (index) {
+      return index + (this.page.currentPage - 1) * this.page.pageSize + 1
+    },
+    /** 删除 */
+    deleteMethod () {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        // 执行
+      }).catch(() => {
+        return false
+      })
+    }
+  },
+  mounted () {
+    this._getUsersList()
+  }
+}
+</script>
+<style lang='less'>
+</style>

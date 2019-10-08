@@ -1,0 +1,21 @@
+/**
+ * Created by Administrator on 2019-3-7.
+ */
+export default [
+  {
+    path: '/processManage/projectProcess/invite',
+    name: 'projectProcess-invite',
+    meta: {
+      title: '流程管理-招标邀请'
+    },
+    component: resolve => require(['@/pages/processManage/projectProcess/invite/index'], resolve)
+  },
+  {
+    path: '/processManage/projectProcess/invite/add',
+    name: 'projectProcess-invite-add',
+    meta: {
+      title: '流程管理-招标邀请-添加'
+    },
+    component: resolve => require(['@/pages/processManage/projectProcess/invite/add'], resolve)
+  }
+]

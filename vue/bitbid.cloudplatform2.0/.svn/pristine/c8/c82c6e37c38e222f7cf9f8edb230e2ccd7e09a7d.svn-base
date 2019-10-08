@@ -1,0 +1,232 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" ref="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号：" v-if="updateForm.bidSection">
+              <el-input v-model="updateForm.bidSection.tenderProjectCode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称：" v-if="updateForm.bidSection">
+              <el-input v-model="updateForm.bidSection.tenderProjectName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段编号：" v-if="updateForm.bidSection">
+              <el-input v-model="updateForm.bidSection.bidSectionCode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段名称：" v-if="updateForm.bidSection">
+              <el-input v-model="updateForm.bidSection.bidSectionName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="投标人："  prop="bidderName">
+              <span>{{updateForm.bidderName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="缴费金额(元)："  prop="amount">
+              <span>{{updateForm.amount}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="缴费方式："  prop="paymentMethod">
+              <span v-if="updateForm.paymentMethod === 1">支付宝</span>
+              <span v-if="updateForm.paymentMethod === 2">微信</span>
+              <span v-if="updateForm.paymentMethod === 3">现金</span>
+              <span v-if="updateForm.paymentMethod === 4">银联</span>
+              <span v-if="updateForm.paymentMethod === 5">支票</span>
+              <span v-if="updateForm.paymentMethod === 6">保函</span>
+              <span v-if="updateForm.paymentMethod === 9">其他</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="缴费时间："  prop="paymentTime">
+              <span>{{updateForm.paymentTime}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="退还金额(元)："  prop="refundAmount">
+              <el-input v-model="updateForm.refundAmount"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="退还方式："  prop="refundMethod">
+              <el-select v-model="updateForm.refundMethod" placeholder="请选择" clearable>
+                <el-option
+                  v-for="item in costMethods"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="退还时间："  prop="refundTime">
+              <el-date-picker
+                v-model="updateForm.refundTime"
+                type="datetime"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="操作人："  prop="operatorName">
+              <el-input v-model="updateForm.operatorName"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="备注内容：">
+              <editor ref="ueditor" class="ueditor" :editread="editread"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit('updateForm', 1)" :loading="isSubmiting">提交</el-button>
+          <el-button type="primary" @click="submit('updateForm', 0)" :loading="isSaving">保存</el-button>
+          <el-button class="cancal" @click="close">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import {costInfo} from '@/api/project'
+import {validMoney} from '@/assets/js/validate'
+export default {
+  components: {
+    editor
+  },
+  data () {
+    return {
+      isSaving: false,
+      isSubmiting: false,
+      updateForm: {
+        refundMethod: null,
+        bidsection: {}
+      },
+      rules: {
+        bidderName: {required: true, message: '请填写投标人', trigger: ['blur', 'change']},
+        amount: {required: true, message: '请填写缴费金额', trigger: ['blur', 'change']},
+        paymentMethod: {required: true, message: '请选择缴费方式', trigger: 'change'},
+        refundAmount: [
+          {required: true, message: '请填写退还金额', trigger: 'blur'},
+          {validator: validMoney}
+        ],
+        refundMethod: {required: true, message: '请选择退还方式', trigger: ['blur', 'change']}
+      },
+      costMethods: [
+        {
+          value: 1,
+          label: '支付宝'
+        },
+        {
+          value: 2,
+          label: '微信'
+        },
+        {
+          value: 3,
+          label: '现金'
+        },
+        {
+          value: 4,
+          label: '银联'
+        },
+        {
+          value: 5,
+          label: '支票'
+        },
+        {
+          value: 6,
+          label: '保函'
+        },
+        {
+          value: 9,
+          label: '其他'
+        }
+      ],
+      // 富文本
+      editread: false,
+      content: ''
+    }
+  },
+  methods: {
+    // 提交/保存
+    submit (form, status) {
+      this.$refs[form].validate((vaild) => {
+        if (vaild) {
+          if (Object.is(status, 0)) {
+            // 保存
+            this.isSaving = true
+            this.updateForm.auditStatus = 0
+          } else if (Object.is(status, 1)) {
+            // 提交
+            this.isSubmiting = true
+            this.updateForm.auditStatus = 4
+          }
+          this.updateForm.remark = this.$refs.ueditor.getContent()
+          costInfo.update(this.updateForm).then((res) => {
+            this.isSaving = false
+            this.isSubmiting = false
+            if (res.data.resCode === '0000') {
+              this.close()
+            }
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    // 取消
+    close () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    },
+    getCostInfo () {
+      costInfo.getById(this.$route.query.objectId).then(res => {
+        this.updateForm = res.data.costInfo
+        if (this.updateForm.remark) {
+          this.$refs.ueditor.setContent(this.updateForm.remark)
+        }
+      })
+    }
+  },
+  watch: {
+    '$route': 'getCostInfo'
+  },
+  mounted () {
+    this.getCostInfo()
+  }
+}
+</script>
+
+<style scoped>
+  .addbtn{
+    border: 1px solid #3f63f6;
+    height: 32px;
+    padding: 7px 12px;
+    margin-bottom: 12px;
+  }
+  .btn_right{
+    float: right;
+  }
+</style>

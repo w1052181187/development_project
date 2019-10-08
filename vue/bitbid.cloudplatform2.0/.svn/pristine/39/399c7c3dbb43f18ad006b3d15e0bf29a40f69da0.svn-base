@@ -1,0 +1,305 @@
+<template>
+  <div class="cloudcontent" id="otherIncome" :loading="loading">
+    <div class="tit" style="padding: 20px 20px 0 20px;">
+      <span>{{tenderProjectName}}<i>（项目编号：{{tenderProjectCode}}）</i></span>
+      <span class="returnBtn" @click="goBack()">返回收支列表</span>
+    </div>
+    <!--搜索 & 添加按钮-->
+    <div class="topmain" style="border-bottom: 0px;">
+      <el-row>
+        <div class="seacher_box">
+          <el-select v-model="searchForm.sectionSystemCode" @change="search" placeholder="全部标段"  class="select" @focus="getBidSectionList" clearable>
+            <el-option
+              v-for="item in sourceOptions"
+              :key="item.code"
+              :label="item.bidSectionName"
+              :value="item.code">
+            </el-option>
+          </el-select>
+          <!--<el-input class="search left" placeholder="请输入缴费单位名称关键字" v-model="searchForm.bidderNameLike">-->
+          <!--<el-button  slot="append" icon="el-icon-search" type="" @click="search"></el-button>-->
+          <!--</el-input>-->
+        </div>
+      </el-row>
+    </div>
+    <!--搜索 & 添加按钮-->
+    <div class="main">
+      <!--按钮-->
+      <div class="fr" v-if="Number(isToSettle) === 0 && $store.getters.permissions.includes('1050202')">
+        <el-button type="primary" class="addbutton" @click="addBtn">
+          <span> + 新增收费</span>
+        </el-button>
+      </div>
+      <!--按钮-->
+      <el-table
+        :data="tableData"
+        border
+        tooltip-effect="dark"
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='indexMethod'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="bidderName"
+          label="收入项目"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="amount"
+          label="缴费金额/元"
+          align="right"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="paymentMethod"
+          label="收费方式"
+          align="center"
+          :formatter="filterPaymentMethod"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="paymentTime"
+          label="收费时间"
+          :formatter="filterPaymentTime"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="bidSectionList"
+          label="相关标段"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <p v-for="(item,index) in scope.row.bidSectionList" :key="index" class="dresult-span">{{item.bidSectionName}}（{{item.bidSectionCode}}）</p>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="缴费进度"
+          :formatter="filterStatus"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookBtn(scope.row)">查看</el-button>
+            <el-button type="text" size="small" @click="update(scope.row)" v-if="(Number(scope.row.status) === 0 && Number(isToSettle) === 0) && $store.getters.permissions.includes('1050202')">修改</el-button>
+            <el-button type="text" size="small" @click="update(scope.row)" v-if="(Number(scope.row.status) === 1 && Number(isToSettle) === 0) && $store.getters.permissions.includes('1050202')">更正</el-button>
+            <el-button type="text" size="small" @click="delBtn(scope.row)" v-if="(Number(scope.row.status) === 0 && Number(isToSettle) === 0) && $store.getters.permissions.includes('1050202')">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+import { tenderProject, settlementItem, bidSection } from '@/api/project'
+import {dateFormat} from '@/assets/js/common'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      loading: false,
+      pageText: this.$route.query.text,
+      sourceType: null,
+      // 全部标段
+      sourceOptions: [],
+      searchForm: {
+        sectionSystemCode: '',
+        bidderNameLike: ''
+      },
+      messageLike: '',
+      tableData: [],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      dataIndex: 1,
+      settlementGroupCode: this.$route.query.settlementGroupCode,
+      settlementGroupName: this.$route.query.settlementGroupName,
+      tenderSystemCode: this.$route.query.tenderSystemCode,
+      isToSettle: this.$route.query.isToSettle,
+      tenderProjectName: '',
+      tenderProjectCode: ''
+    }
+  },
+  watch: {
+    '$route': 'getTableData'
+  },
+  created () {
+    this.getTenderProjectName()
+    this.getTableData()
+  },
+  methods: {
+    filterStatus (row) {
+      if (row.status === 0) {
+        return '未缴费'
+      } else if (row.status === 1) {
+        return '已缴费'
+      }
+    },
+    filterPaymentMethod (row) {
+      if (row.paymentMethod === 1) {
+        return '支付宝'
+      } else if (row.paymentMethod === 2) {
+        return '微信'
+      } else if (row.paymentMethod === 3) {
+        return '现金'
+      } else if (row.paymentMethod === 4) {
+        return '银联'
+      } else if (row.paymentMethod === 5) {
+        return '支票'
+      } else if (row.paymentMethod === 6) {
+        return '保函'
+      } else if (row.paymentMethod === 9) {
+        return '其他'
+      }
+    },
+    filterPaymentTime (row, col, cellValue) {
+      return cellValue ? dateFormat(cellValue, 'yyyy-MM-dd') : ''
+    },
+    /** 查询项目名称 */
+    getTenderProjectName () {
+      this.loading = true
+      tenderProject.getOne(this.tenderSystemCode).then((res) => {
+        if (res.data.tenderProject) {
+          this.tenderProjectName = res.data.tenderProject.tenderProjectName
+          this.tenderProjectCode = res.data.tenderProject.tenderProjectCode
+        }
+      })
+    },
+    /** 获取标段数据 */
+    getBidSectionList () {
+      bidSection.getList({
+        tenderSystemCode: this.tenderSystemCode
+      }).then((res) => {
+        if (res.data.bidSectionList && res.data.bidSectionList.list) {
+          this.sourceOptions = res.data.bidSectionList.list
+        }
+      })
+    },
+    getTableData () {
+      let query = {
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        groupCode: this.settlementGroupCode,
+        messageLike: this.searchForm.bidderNameLike || null
+      }
+      if (this.searchForm.sectionSystemCode) {
+        query.sectionSystemCode = this.searchForm.sectionSystemCode
+      }
+      settlementItem.getSettlementItemList(query).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.tableData = res.data.settlementItemList.list
+          this.total = res.data.settlementItemList.total
+          if (this.tableData.length > 0) {
+            this.tableData.forEach(item => {
+              item.amount = Number(item.amount).toFixed(2)
+              return item
+            })
+          }
+        }
+        this.loading = false
+      })
+    },
+    search () {
+      this.getTableData()
+    },
+    // 新增收费
+    addBtn () {
+      if (this.pageText === '其它收入') {
+        this.$router.push({path: `/project/proSettlement/otherIncomePay/otherIncomeAdd`, query: {text: this.pageText, tenderSystemCode: this.tenderSystemCode, settlementGroupCode: this.settlementGroupCode, settlementGroupName: this.settlementGroupName}})
+      } else if (this.pageText === '收入不退还按收费项') {
+        this.$router.push({path: `/project/proSettlement/otherIncomePay/feesAdd`, query: {text: this.pageText, tenderSystemCode: this.tenderSystemCode, settlementGroupCode: this.settlementGroupCode, settlementGroupName: this.settlementGroupName}})
+      }
+    },
+    // 查看
+    lookBtn (rowData) {
+      if (this.pageText === '其它收入') {
+        this.$router.push({path: `/project/proSettlement/otherIncomePay/otherIncomeDetail/${rowData.objectId}`, query: {text: this.pageText, tenderSystemCode: this.tenderSystemCode, settlementGroupCode: this.settlementGroupCode}})
+      } else if (this.pageText === '收入不退还按收费项') {
+        this.$router.push({path: `/project/proSettlement/otherIncomePay/feesDetail/${rowData.objectId}`, query: {text: this.pageText, tenderSystemCode: this.tenderSystemCode, settlementGroupCode: this.settlementGroupCode}})
+      }
+    },
+    goBack (rowData) {
+      this.$router.push({path: `/project/proSettlement/paymentTerm`, query: {text: this.pageText, tenderSystemCode: this.tenderSystemCode, isToSettle: this.isToSettle}})
+    },
+    // 修改
+    update (rowData) {
+      if (this.pageText === '其它收入') {
+        this.$router.push({path: `/project/proSettlement/otherIncomePay/otherIncomeAdd/${rowData.objectId}`, query: {text: this.pageText, tenderSystemCode: this.tenderSystemCode, settlementGroupCode: this.settlementGroupCode}})
+      } else if (this.pageText === '收入不退还按收费项') {
+        this.$router.push({path: `/project/proSettlement/otherIncomePay/feesAdd/${rowData.objectId}`, query: {text: this.pageText, tenderSystemCode: this.tenderSystemCode, settlementGroupCode: this.settlementGroupCode}})
+      }
+    },
+    delBtn (rowData) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        settlementItem.deleteSettlementItem(rowData.objectId).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.getTableData()
+          }
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    indexMethod (index) {
+      return index + (this.currentPage - 1) * 10 + 1
+    },
+    // 表单分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData(parseInt(this.pageNo), parseInt(this.pageSize))
+    },
+    handleCurrentNext (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData(parseInt(this.pageNo), parseInt(this.pageSize))
+    }
+  }
+}
+</script>
+<style lang="less">
+  #otherIncome{
+    .seacher_box{
+      width: 700px;
+    }
+    .seacher_box .select{
+      width: 60%;
+    }
+    .fr>em{
+      font-size: 14px;
+      font-style: normal;
+      line-height: 40px;
+      margin: 0 10px;
+    }
+    .returnBtn{
+      float:right;
+      color:#3f63f6;
+      font-size: 14px;
+      line-height: 20px;
+      border-bottom: 1px solid #3f63f6;
+      cursor: pointer;
+    }
+  }
+</style>

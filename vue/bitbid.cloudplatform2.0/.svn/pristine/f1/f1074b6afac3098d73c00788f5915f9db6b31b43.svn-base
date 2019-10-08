@@ -1,0 +1,42 @@
+import request from '@/utils/axios/components-axios'
+
+export const notice = {
+  /** 查询 */
+  getNoticeList (params) {
+    return request({
+      url: `/notices`,
+      method: 'get',
+      params: params
+    })
+  },
+  /** 单个查询 */
+  detailNotice (objectId) {
+    return request({
+      url: `/notices/` + objectId,
+      method: 'get'
+    })
+  },
+  /** 保存 | 更新 */
+  saveNotice (record) {
+    return request({
+      url: `/bidders`,
+      method: 'post',
+      data: record
+    })
+  },
+  /** 删除 */
+  deleteNotice (objectId) {
+    return request({
+      url: `/notices/` + objectId,
+      method: 'delete'
+    })
+  },
+  /** 获取未读公告数量 */
+  getUnReadCount (query) {
+    return request({
+      url: `/notices/getUnReadCount`,
+      method: 'get',
+      params: query
+    })
+  }
+}

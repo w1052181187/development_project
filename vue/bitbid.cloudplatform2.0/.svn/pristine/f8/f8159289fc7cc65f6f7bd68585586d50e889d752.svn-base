@@ -1,0 +1,102 @@
+<template>
+  <div>
+    <el-table
+      :data="tableData"
+      border
+      style="width: 100%"
+      v-loading="loading"
+      header-cell-class-name="tableheader">
+      <el-table-column
+        type="index"
+        label="序号"
+        width="60"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        prop="name"
+        label="姓名"
+        :formatter="simpleFormatData"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="cellPhone"
+        label="联系方式"
+        :formatter="simpleFormatData"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="job"
+        label="职务"
+        :formatter="simpleFormatData"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="role"
+        label="角色"
+        :formatter="simpleFormatData"
+        show-overflow-tooltip>
+      </el-table-column>
+    </el-table>
+    <!--分页-->
+    <el-pagination
+      background
+      layout="prev, pager, next"
+      :total="page.total"
+      :page-size='page.pageSize'
+      :current-page.sync="page.currentPage"
+      @current-change="handlePage"
+      @next-click="handlePage">
+    </el-pagination>
+    <!--分页-->
+  </div>
+</template>
+<script>
+import {contacts} from '@/api/customer'
+export default {
+  data () {
+    return {
+      loading: false,
+      tableData: [],
+      page: {
+        pageSize: 10,
+        pageNo: 0,
+        total: 0, // 总条数
+        currentPage: 1
+      },
+      queryModel: {
+        relatedCode: this.relatedCode,
+        isDelete: 0
+      }
+    }
+  },
+  props: ['relatedCode'],
+  methods: {
+    getTableData () {
+      this.loading = true
+      this.queryModel.pageNo = this.page.pageNo
+      this.queryModel.pageSize = this.page.pageSize
+      contacts.queryList(this.queryModel).then(res => {
+        this.loading = false
+        this.tableData = res.data.data.list
+        this.page.total = res.data.data.total
+      })
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 表单分页
+    handlePage (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = (nowNum - 1) * this.page.pageSize
+      this.getTableData()
+    }
+  },
+  mounted () {
+    // 初始化
+    this.getTableData()
+  }
+}
+</script>
+<style lang="less">
+</style>

@@ -1,0 +1,152 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <div class="selectbox">
+        <el-form :model="searchForm" ref="searchForm" label-width="70px"
+                 style="width: 100%">
+          <el-row>
+            <el-col :span="10">
+              <el-form-item label="模板名称：">
+                <el-input
+                  v-model="searchForm.name">
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="2">
+              <el-button class="search" icon="el-icon-search" @click="search"></el-button>
+            </el-col>
+            <el-col :span="12">
+              <div class="topmain">
+                <el-button class="addbutton" @click="handleAdd">
+                  <span> + 新增</span>
+                </el-button>
+              </div>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+      <el-table
+        :data="projectData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="80"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="评估模板名称"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="状态"
+          align="center"
+          width="120"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="scope.row.status === 1">启用</span>
+            <span v-if="scope.row.status === 0">禁用</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetail(scope)">详情</el-button>
+            <el-button type="text" size="small" @click="handleUpdate(scope)">修改</el-button>
+            <el-button type="text" size="small" @click="handleDel(scope)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: '',
+  data () {
+    return {
+      searchForm: {
+      },
+      projectData: [
+        {
+          name: 1
+        }
+      ],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10 // 每页展示条数
+    }
+  },
+  methods: {
+    search () {
+      this.currentPage = 1
+      this.pageNo = 0
+    },
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData()
+    },
+    handleAdd () {
+      this.$router.push({path: `/customer/template/addTemplate`})
+    },
+    handleDetail (scope) {
+      this.$router.push({path: `/customer/template/detailTemplate/${scope.row.objectId}`})
+    },
+    handleUpdate (scope) {
+      this.$router.push({path: `/customer/template/updateTemplate`})
+    },
+    handleDel (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+      }).catch(() => {
+        return false
+      })
+    },
+    getTableData () {
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style scoped>
+  .selectbox{
+    padding: 6px 0;
+  }
+  .search{
+    height: 40px;
+    margin-left: 40px;
+  }
+  .topmain{
+    /*line-height: 40px;*/
+    color: #111111;
+    font-weight: bold;
+    padding: 0px;
+    /*margin: 10px auto;*/
+  }
+  .topmain .addbutton{
+    float: right;
+  }
+</style>

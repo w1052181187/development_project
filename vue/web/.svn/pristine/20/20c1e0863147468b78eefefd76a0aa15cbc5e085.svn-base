@@ -1,0 +1,117 @@
+<template>
+  <div id="rotate-add" class="smaincontent">
+    <div class="headertitle">
+      <!--面包屑-->
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/main' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item>首页管理</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/index/home-manage/rotateinfo' }">轮换信息</el-breadcrumb-item>
+        <el-breadcrumb-item>添加轮换图</el-breadcrumb-item>
+      </el-breadcrumb>
+      <div class="returnboxbig">
+        <template>
+          <el-button @click="$router.go(-1)">返回</el-button>
+        </template>
+      </div>
+      <!--面包屑-->
+    </div>
+    <div class="contentbigbox">
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="标题:" prop="title">
+          <el-input v-model="ruleForm.title" style="width:300px"></el-input>
+        </el-form-item>
+        <el-form-item label="关键字:">
+          <el-input v-model="ruleForm.keywords" style="width:300px"></el-input>
+        </el-form-item>
+        <el-form-item label="图片:" prop="fileInformations">
+          <upLoad-file @upLoadFile="upLoadFile" :fileType="fileType" :oldFileName="oldFileName" :isImage="isImage"></upLoad-file>
+        </el-form-item>
+        <el-form-item label="内容:" prop="content">
+          <editor ref="ueditor" class="ueditor"></editor>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+          <el-button @click="$router.go(-1)">取 消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import upLoadFile from '@/components/upload/publicFileUpload'
+import editor from '@/components/ueditor/ueditor.vue'
+import { homeManage } from '@/api'
+export default {
+  components: {
+    editor,
+    upLoadFile
+  },
+  data () {
+    return {
+      ruleForm: {
+        title: '',
+        keywords: '',
+        content: '',
+        fileInformations: []
+      },
+      rules: {
+        title: [
+          { required: true, message: '请填写标题', trigger: 'blur' },
+          { min: 1, max: 256, message: '长度在 1到 256 个字符', trigger: 'blur' }
+        ],
+        fileInformations: [
+          { required: true, message: '请上传图片', trigger: 'change' }
+        ]
+      },
+      fileType: '',
+      oldFileName: '',
+      isImage: '0'
+    }
+  },
+  methods: {
+    submitForm (name) {
+      this.$refs[name].validate((valid) => {
+        if (valid) {
+          if (!this.$refs.ueditor.getContent()) {
+            this.$message({
+              type: 'warning',
+              message: '请输入公告内容'
+            })
+            return false
+          }
+          this.ruleForm.type = 1
+          this.ruleForm.status = 1
+          this.ruleForm.content = this.$refs.ueditor.getContent()
+          homeManage.save(this.ruleForm).then((res) => {
+            this.$router.push({path: '/index/home-manage/rotateinfo'})
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    upLoadFile (file) {
+      if (file.length === 0) {
+        this.ruleForm.fileInformations = []
+      } else {
+        file[0].businessType = 9
+        this.ruleForm.fileInformations = file
+      }
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #rotate-add {
+    .contentbigbox .demo-ruleForm {
+      .el-form-item__content {
+        text-align: left;
+      }
+      .btns {
+        margin-top: 0;
+      }
+    }
+  }
+</style>

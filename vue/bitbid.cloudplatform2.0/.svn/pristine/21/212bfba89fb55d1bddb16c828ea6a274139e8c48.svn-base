@@ -1,0 +1,360 @@
+<template>
+  <div class="cloudcontent" id="cloud_customer">
+    <div class="main">
+      <div class="selectbox">
+        <el-form :model="queryModel" ref="searchForm" label-width="80px" :validate-on-rule-change="true">
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="商机阶段：">
+                <el-checkbox-group v-model="queryModel.dicStageCodes" v-loading="dicOpportunityStageLoading">
+                  <el-checkbox v-for="item in dicOpportunityStageList" :label="item.code" :key="item.code">{{item.name}}</el-checkbox>
+                </el-checkbox-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="商机状态：">
+                <el-checkbox-group v-model="queryModel.includeStatus">
+                  <el-checkbox v-for="item in opportunityStates" :label="item.label" :key="item.label">{{item.name}}</el-checkbox>
+                </el-checkbox-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="项目名称：">
+                <el-input class="search" v-model="queryModel.messageLike" placeholder="请输入项目名称">
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="客户名称：">
+                <el-input class="search" v-model="queryModel.customerNameLike" placeholder="请输入客户名称">
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-button type="primary" @click="getTableData">搜索</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+      <div class="topmain">
+        <!--按钮-->
+        <div class="btnbigbox">
+          <div class="addrole">
+            <el-button class="addbutton" @click="addBtn">
+              <span> + 新增客户</span>
+            </el-button>
+          </div>
+        </div>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="projectName"
+          label="项目名称"
+          width="500"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="dicStageCode"
+          label="商机阶段"
+          :formatter="formatStage"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="商机状态"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="scope.row.status === 0">未评估</span>
+            <span v-if="scope.row.status === 1">评估中</span>
+            <span v-if="scope.row.status === 2">跟进中</span>
+            <span v-if="scope.row.status === 3">赢单</span>
+            <span v-if="scope.row.status === 4">输单</span>
+            <span v-if="scope.row.status === 5">商机关闭</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="createDate"
+          label="登记时间"
+          :formatter="formatDate"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="chargePersonName"
+          label="负责人"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="600">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookBtn(scope)">查看</el-button>
+            <el-button type="text" size="small" @click="updateBtn(scope)">修改</el-button>
+            <el-button type="text" size="small" @click="logoff(scope.row.objectId)">删除</el-button>
+            <el-button type="text" size="small" @click="analysisBtn(scope)">商机分析</el-button>
+            <el-button type="text" size="small" @click="assessBtn(scope)">商机评估</el-button>
+            <el-button type="text" size="small" @click="followBtn(scope)">商机跟进</el-button>
+            <el-button type="text" size="small" @click="winbidBtn(scope)">赢单</el-button>
+            <el-button type="text" size="small" @click="losebidBtn(scope)">输单</el-button>
+            <el-button type="text" size="small" @click="closebidBtn(scope)">商机关闭</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="page.total"
+        :page-size='page.pageSize'
+        :current-page.sync="page.currentPage"
+        @current-change="handlePage"
+        @next-click="handlePage">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <el-dialog
+      title="赢单"
+      :visible.sync="dialogWinVisible"
+      width="30%"
+      :before-close="handleClose">
+      <div class="dialogmain">
+        <p class="text-center">
+          <img src="../../../../static/images/yingdan.png"/>
+        </p>
+        <strong class="text-center">恭喜您赢单！</strong>
+        <p class="checkbox">
+          <el-checkbox v-model="checked">将该商机转为项目</el-checkbox>
+          <el-checkbox v-model="checked">将该客户转为“成交状态”</el-checkbox>
+        </p>
+        <div slot="footer" class="submit-radio">
+          <el-button type="primary" @click="dialogWinVisible = false">确 定</el-button>
+          <el-button @click="dialogWinVisible = false">取 消</el-button>
+        </div>
+      </div>
+    </el-dialog>
+    <el-dialog
+      title="输单"
+      :visible.sync="dialogLoseVisible"
+      width="30%"
+      :before-close="handleClose">
+      <div class="dialogmain">
+        <p class="text-center">
+          <img src="../../../../static/images/shudan.png"/>
+        </p>
+        <strong class="text-center">再接再厉哦！</strong>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import { business } from '@/api/customer'
+import { dataDictionary } from '@/api/system'
+import {dateFormat} from '@/assets/js/common'
+
+export default {
+  data () {
+    return {
+      page: {
+        pageSize: 10,
+        pageNo: 1,
+        total: 0, // 总条数
+        currentPage: 1
+      },
+      queryModel: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        isDelete: 0,
+        messageLike: '',
+        customerNameLike: '',
+        dicStageCodes: [],
+        includeStatus: []
+      },
+      tableData: [],
+      // 商机阶段字典项Id
+      dicOpportunityStageId: 10005,
+      // 商机阶段集合
+      dicOpportunityStageList: [],
+      dicOpportunityStageLoading: true,
+      opportunityStates: [{
+        label: 0,
+        name: '未评估'
+      }, {
+        label: 1,
+        name: '评估中'
+      }, {
+        label: 2,
+        name: '跟进中'
+      }, {
+        label: 3,
+        name: '赢单'
+      }, {
+        label: 4,
+        name: '输单'
+      }, {
+        label: 5,
+        name: '商机关闭'
+      }],
+      dialogWinVisible: false,
+      dialogLoseVisible: false
+    }
+  },
+  watch: {
+    '$route': 'getTableData'
+  },
+  methods: {
+    // 获取列表数据,稍作延迟
+    getTableData () {
+      this.queryModel.pageNo = this.page.pageNo
+      this.queryModel.pageSize = this.page.pageSize
+      business.queryList(this.queryModel).then(res => {
+        setTimeout(() => {
+          this.queryModel.pageNo = this.page.pageNo
+          this.tableData = res.data.data.list
+          this.page.total = res.data.data.total
+        }, 200)
+      })
+    },
+    // 初始化字典项商机阶段
+    initOpportunityStage () {
+      let query = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        dictionaryDirectoryId: this.dicOpportunityStageId
+      }
+      dataDictionary.getDetailList(query).then(res => {
+        this.dicOpportunityStageLoading = false
+        this.dicOpportunityStageList = res.data.dictionaryDetails
+      })
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 格式化列表中的行业数据
+    formatStage (row, col, cellValue) {
+      return this.dicOpportunityStageList.find(item => item.code === cellValue).name || '---'
+    },
+    // 格式化时间
+    // 格式化时间
+    formatDate (row, col, cellValue) {
+      return dateFormat(new Date(cellValue), 'yyyy-MM-dd')
+    },
+    // 添加
+    addBtn () {
+      this.$router.push({path: `/customerMan/business/add`})
+    },
+    // 查看
+    lookBtn (scope) {
+      this.$router.push({path: `/customerMan/business/detail/${scope.row.objectId}`})
+    },
+    // 修改
+    updateBtn (scope) {
+      this.$router.push({path: `/customerMan/business/update`, query: {objectId: scope.row.objectId}})
+    },
+    // 跟进
+    followBtn (scope) {
+      this.$router.push({path: `/customerMan/business/follow`, query: {relatedCode: scope.row.code, type: 'opportunity'}})
+    },
+    // 删除
+    logoff (objectId) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        business.logoff(objectId).then(() => {
+          this.getTableData()
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 商机分析
+    analysisBtn (scope) {
+      this.$router.push({path: `/customerMan/business/analysis`, query: {code: scope.row.code}})
+    },
+    // 商机评估
+    assessBtn (scope) {
+      this.$router.push({path: `/customerMan/business/assess`, query: {objectId: scope.row.objectId}})
+    },
+    // 赢单
+    winbidBtn () {
+      this.dialogWinVisible = true
+    },
+    // 输单
+    losebidBtn () {
+      this.dialogLoseVisible = true
+    },
+    // 商机关闭
+    closebidBtn () {},
+    // 表单分页
+    handlePage (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = (nowNum - 1) * this.page.pageSize
+      this.getTableData()
+    }
+  },
+  mounted () {
+    // 客户价值初始化
+    this.initOpportunityStage()
+    // 列表初始化
+    this.getTableData()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_customer {
+    .tabletitles{
+      background:#f7f8fa!important;
+    }
+    .main{
+      margin: 0px;
+    }
+    .selectbox{
+      background: #f7f8f9;
+      padding: 20px 0;
+      margin-bottom: 20px;
+    }
+    .el-form-item__label{
+      font-weight: bold;
+      text-align: left;
+    }
+    .el-form-item{
+      margin-bottom: 5px;
+    }
+    .search{
+      width: 400px;
+    }
+    .dialogmain{
+      width: 234px;
+      overflow: hidden;
+      text-align: center;
+      margin: 20px auto;
+    }
+    .dialogmain strong{
+      font-size: 18px;
+      line-height: 36px;
+    }
+    .dialogmain p{
+      margin: 10px 0;
+    }
+    .dialogmain p.checkbox{
+      float: left;
+      margin: 30px 0;
+      line-height: 32px;
+      text-align: left;
+    }
+  }
+</style>

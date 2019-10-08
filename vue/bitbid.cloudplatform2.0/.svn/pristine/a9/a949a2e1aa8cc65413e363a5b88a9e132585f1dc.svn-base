@@ -1,0 +1,81 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-tabs v-model="activeTab">
+        <el-tab-pane label="档案目录" name="1">
+          <catalog ref="catalog"></catalog>
+        </el-tab-pane>
+        <el-tab-pane label="存放位置" name="2">
+          <position ref="position"></position>
+        </el-tab-pane>
+        <el-tab-pane label="档案编号" name="3">
+<!--          <number ref="number"></number>-->
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+  </div>
+</template>
+
+<script>
+// import {bidOpeningRoom, appointmentRecord} from '@/api/resource'
+// import {bidSection} from '@/api/project'
+
+export default {
+  components: {
+    catalog: resolve => require(['./catalog.vue'], resolve),
+    position: resolve => require(['./position.vue'], resolve)
+    // number: resolve => require(['./number.vue'], resolve)
+  },
+  data () {
+    return {
+      activeTab: '1',
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0,
+      pageSize: 10
+    }
+  },
+  methods: {
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style scoped>
+  .can_order{
+    color: #c5c5c5;
+    font-size: 12px;
+    /*padding: 6px 0;*/
+    /*box-sizing: border-box;*/
+  }
+  .can_order img{
+    margin-right: 6px;
+    width: 12px;
+    height: 12px;
+  }
+  .can_not_order{
+    color: #c5c5c5;
+    font-size: 12px;
+    /*padding: 6px 0;*/
+    /*box-sizing: border-box;*/
+  }
+  .can_not_order img{
+    margin-right: 6px;
+    width: 12px;
+    height: 12px;
+  }
+  .form_content_width{
+    width: 400px;
+  }
+  .project_search{
+    width: 50%;
+    margin-bottom: 24px;
+  }
+  .project_page{
+    margin-top: 24px;
+    width: 100%;
+    text-align: center;
+  }
+</style>

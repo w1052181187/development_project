@@ -1,0 +1,116 @@
+<template>
+  <div class="cloudcontent">
+    <div class="detail-top">
+      <p class="title">{{updateForm.title}}</p>
+      <p class="time">发布时间：{{'2019-9-10'}}<span class="space"></span>发布人：{{'2019-09-10'}}</p>
+    </div>
+    <div class="project-info-line title-line"></div>
+    <div class="detail-content" v-html="updateForm.content">
+    </div>
+    <div class="project-info-line"></div>
+    <div class="detail-bottom">
+      附件：
+      <file-download class="file" :fileArrays="updateForm.fileInformationList" fileType="9"></file-download>
+      <div class="back">
+        <el-button class="cancal" @click="handleCancle">返回</el-button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import fileDownload from '@/components/download/file-download'
+import editor from '@/components/ueditor/ueditor.vue'
+import {notice} from '@/api/notice/notice'
+export default {
+  name: 'detail',
+  components: {
+    fileDownload,
+    editor
+  },
+  data () {
+    return {
+      type: '',
+      updateForm: {
+      }
+    }
+  },
+  methods: {
+    detail () {
+      let isReaded = 0
+      if (this.$route.query.isSetReaded === '1') {
+        isReaded = 1
+        notice.detailNotice(this.$route.params.objectId, isReaded).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.updateForm = res.data.notice
+            this.$refs.ueditor.setContent(res.data.notice.content)
+          }
+        })
+      } else {
+        notice.detailNotice(this.$route.params.objectId, isReaded).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.updateForm = res.data.notice
+          }
+        })
+      }
+    },
+    init () {
+      this.type = this.$route.meta.type
+      this.detail()
+    },
+    handleCancle () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+
+<style scoped>
+  .detail-top{
+    width: 100%;
+    padding: 14px 20px;
+    box-sizing: border-box;
+    text-align: center;
+  }
+  .detail-top .title{
+    color: #333;
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .detail-top .time{
+    color: #999;
+    font-size: 12px;
+    margin-top: 16px;
+  }
+  .detail-top .time .space{
+    margin: 0 10px;
+  }
+  .title-line{
+    height: 1px;
+  }
+  .detail-content {
+    color: #333;
+    font-size: 14px;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  .detail-bottom{
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  .detail-bottom .back{
+    margin-top: 30px;
+    text-align: center;
+  }
+  .detail-bottom .file{
+    vertical-align: middle;
+    display: inline-block;
+  }
+</style>

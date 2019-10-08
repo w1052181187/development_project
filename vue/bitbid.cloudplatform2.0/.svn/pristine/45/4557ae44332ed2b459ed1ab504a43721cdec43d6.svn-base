@@ -1,0 +1,125 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm">
+        <el-row>
+          <el-form-item label="资质来源：">
+            <span v-if="updateForm.sourceType === 1">自有</span>
+            <span v-if="updateForm.sourceType  === 2">借入</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="资质类别：">
+            <span>{{updateForm.category.name}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="资质等级：">
+            <span>{{updateForm.gradeCategory.name}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="资质编号：">
+            <span>{{updateForm.number}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row v-if="updateForm.sourceType === 1">
+          <el-form-item label="资质主体：">
+            <span>{{updateForm.dictionaryDetail.name}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row v-if="updateForm.sourceType === 2">
+          <el-form-item label="合作方：">
+            <span>{{updateForm.subject}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row v-if="updateForm.sourceType === 1">
+          <el-form-item label="资质有效期：">
+            <span>{{updateForm.effectiveDate}}</span>
+          </el-form-item>
+        </el-row>
+        <template v-if="updateForm.sourceType === 2">
+          <el-row>
+            <el-form-item label="合作期间 ：">
+              <span>{{updateForm.effectiveDate}}</span>
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-form-item label="合作类型：">
+              <span v-if="updateForm.cooperationType === 1">机构合作</span>
+              <span v-if="updateForm.cooperationType === 2">项目合作</span>
+              <span v-if="updateForm.cooperationType === 3">个人合作</span>
+            </el-form-item>
+          </el-row>
+          <el-form-item label="费用(元)：">
+            <span>{{updateForm.fee}}</span>
+          </el-form-item>
+        </template>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="发证机关：">
+              <span>{{updateForm.certificationAuthority}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="备注：">
+          <editor ref="ueditor" class="ueditor" :editread="editread"></editor>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import { qualificationSubject } from '@/api/resource'
+
+export default {
+  name: '',
+  components: {
+    editor
+  },
+  data () {
+    return {
+      updateForm: {
+        category: {
+          name: ''
+        },
+        gradeCategory: {
+          name: ''
+        }
+      },
+      cooperationOptions: [
+        {
+          label: '机构合作',
+          value: 1
+        },
+        {
+          label: '项目合作',
+          value: 2
+        },
+        {
+          label: '个人合作',
+          value: 3
+        }
+      ],
+      // 富文本
+      editread: true
+    }
+  },
+  methods: {
+    getData () {
+      qualificationSubject.getQualificationSubjectDetail(this.$route.params.objectId).then((res) => {
+        this.updateForm = res.data.qualificationSubject
+        this.$refs.ueditor.setContent(res.data.qualificationSubject.remarks)
+      })
+    }
+  },
+  mounted () {
+    this.getData()
+  }
+}
+</script>
+
+<style scoped>
+</style>

@@ -1,0 +1,911 @@
+<template>
+  <div class="cloudcontent" id="cloud_business_analysis">
+    <div class="main">
+      <el-form :model="baseData" class="proinfo_box" ref="baseData" :validate-on-rule-change="true" v-loading="baseDataLoading">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{baseData.projectName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <span>{{baseData.projectCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标类型：">
+              <span>{{baseData.tenderType == 1 ? '工程' : baseData.tenderType == 2 ? '货物' : '服务'}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="所在地：">
+              <span>{{baseData.regionlongText}}/{{baseData.address}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="发布时间：">
+              <span>{{baseData.publishTime | formatDate}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="报名截止时间：">
+              <span>{{baseData.signUpEndTime | formatDate}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <el-tabs class="detail_tab" type="card" v-model="activeTable">
+        <el-tab-pane label="比选公告" name="first">
+          <div class="noticemain">
+            <div class="fl">
+              <ueditor ref="baseUeditor" class="ueditor" :editread="true"></ueditor>
+            </div>
+            <div class="fr">
+              <span>关键信息提取：</span>
+              <ueditor ref="analysisUeditor" class="ueditor"></ueditor>
+              <div class="submit-radio">
+                <el-button type="primary" @click="submitAnalysisEditor" v-loading="submitLoading">保存</el-button>
+              </div>
+            </div>
+          </div>
+        </el-tab-pane>
+
+        <el-tab-pane label="招标业主分析" name="second">
+          <el-collapse>
+            <el-collapse-item title="业主基本信息" name="1">
+              <div class="tabbox">
+                <h3>{{customerForm.name}}</h3>
+                <el-form :model="customerForm" ref="customerForm" :validate-on-rule-change="true" :rules="rules" v-loading="customerLoading">
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="统一社会信用代码：" prop="uscCode">
+                        <el-input v-model="customerForm.uscCode" clearable placeholder="请输入统一社会信用代码">
+                          <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                        </el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="公司类型：">
+                        <el-select v-model="customerForm.companyType" placeholder="请选择">
+                          <el-option
+                            v-for="item in companyType"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                          </el-option>
+                        </el-select>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="法定代表人：" prop="businessLicenseName" :rules="rules.simpleText">
+                        <el-input v-model="customerForm.businessLicenseName" clearable placeholder="请输入法定代表人">
+                          <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                        </el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="所在地：" prop="provinceId">
+                        <el-cascader class=""
+                                     expand-trigger="hover"
+                                     :options="longTextOptions"
+                                     v-model="customerForm.regionOptions"
+                                     @change="handleCityChange">
+                        </el-cascader>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="所属行业：">
+                        <el-select v-model="customerForm.dicIndustryCode" placeholder="请选择">
+                          <el-option
+                            v-for="item in dicCustomerIndustryList"
+                            :key="item.code"
+                            :label="item.name"
+                            :value="item.code">
+                          </el-option>
+                        </el-select>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="详细地址：" prop="address" :rules="rules.longText">
+                        <el-input v-model="customerForm.address" clearable placeholder="请输入详细地址">
+                          <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                        </el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="员工人数：" prop="staffNumber" :rules="rules.positiveInteger">
+                        <el-input v-model="customerForm.staffNumber" clearable placeholder="请输入员工人数">
+                          <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                        </el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="注册资本：" prop="registeredCapital" :rules="rules.money">
+                        <el-input v-model="customerForm.registeredCapital" clearable placeholder="请输入注册资本">
+                          <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                        </el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="客户网址：" prop="url">
+                        <el-input v-model="customerForm.url" clearable placeholder="请输入客户网址">
+                          <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                        </el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="公司电话：" prop="officePhone">
+                        <el-input v-model="customerForm.officePhone" clearable placeholder="请输入公司电话">
+                          <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                        </el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="24">
+                      <el-form-item label="经营范围：" clearable placeholder="请输入经营范围" prop="businessScope" :rules="rules.longText">
+                        <el-input type="textarea" v-model="customerForm.businessScope"></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <div class="submit-radio">
+                    <el-button type="primary" @click="submitCustomer" v-loading="submitLoading">保存</el-button>
+                  </div>
+                </el-form>
+              </div>
+            </el-collapse-item>
+
+            <el-collapse-item title="企业关系图谱" name="2">
+              <div class="tabbox">
+                <el-button  type="primary" class="edit" @click="showEnterShipDialog"> 编辑</el-button>
+                <div class="familyTree">
+                  <div class="mainName">
+                    <div class="list">
+                      <i class="down" @click="showEnterShipChart(0)" v-if="!showEnterShipType0"><img src="../../../../../static/images/familytree/jiahao1.png"/> </i>
+                      <i class="up" @click="showEnterShipChart(0)" v-if="showEnterShipType0"><img src="../../../../../static/images/familytree/jianhao1.png"/></i>
+                      <ul v-show="showEnterShipType0">
+                        <li v-for="item in analysisForm.enterpriseRelationshipsMap.enterShip_type0" :key="item.objectId">
+                          <span><strong :title="item.name">{{item.name}}</strong> <i>{{item.proportion}}%</i></span>
+                          <em></em>
+                        </li>
+                      </ul>
+                      <div class="right_whiteline"></div>
+                    </div>
+                    <span :title="'投资方 （' + enterShip0TotalAmount + '万元）'">投资方 （{{enterShip0TotalAmount}} 万元）</span>
+                    <em><img src="../../../../../static/images/familytree/jiantouarrow1.png"></em>
+                    <span :title="customerForm.name" class="company">{{customerForm.name}}</span>
+                    <em><img src="../../../../../static/images/familytree/jiantouarrow2.png"></em>
+                    <span title="对外投资">对外投资</span>
+                    <div class="list">
+                      <i class="down" @click="showEnterShipChart(3)" v-if="!showEnterShipType3"><img src="../../../../../static/images/familytree/jiahao1.png"/> </i>
+                      <i class="up" @click="showEnterShipChart(3)" v-if="showEnterShipType3"><img src="../../../../../static/images/familytree/jianhao1.png"/></i>
+                      <ul v-show="showEnterShipType3">
+                        <li v-for="item in analysisForm.enterpriseRelationshipsMap.enterShip_type3" :key="item.objectId">
+                          <em></em>
+                          <span :title="item.name">{{item.name}}</span>
+                        </li>
+                      </ul>
+                      <div class="left_whiteline"></div>
+                    </div>
+                  </div>
+                  <div class="mainName_bot">
+                    <span :title="'股东（' + analysisForm.enterpriseRelationshipsMap.enterShip_type1.length + '人）'">股东（{{analysisForm.enterpriseRelationshipsMap.enterShip_type1.length}}人）
+                      <i class="down" @click="showEnterShipChart(1)" v-if="!showEnterShipType1"><img src="../../../../../static/images/familytree/jiahao2.png"/> </i>
+                      <i class="up" @click="showEnterShipChart(1)" v-if="showEnterShipType1"><img src="../../../../../static/images/familytree/jianhao2.png"/></i>
+                      <em><img src="../../../../../static/images/familytree/jiantouarrow3.png"></em>
+                    </span>
+                    <div class="list" v-show="showEnterShipType1">
+                      <ul>
+                        <li v-for="item in analysisForm.enterpriseRelationshipsMap.enterShip_type1" :key="item.objectId">
+                          <em></em>
+                          <span><strong :title="item.name">{{item.name}}</strong> <i>{{item.job}}</i></span>
+                        </li>
+                      </ul>
+                      <div class="left_whiteline"></div>
+                    </div>
+                    <span title="分支机构" class="jt">分支机构
+                      <i class="down" @click="showEnterShipChart(2)" v-if="!showEnterShipType2"><img src="../../../../../static/images/familytree/jiahao2.png"/> </i>
+                      <i class="up" @click="showEnterShipChart(2)" v-if="showEnterShipType2"><img src="../../../../../static/images/familytree/jianhao2.png"/></i>
+                      <em><img src="../../../../../static/images/familytree/jiantouarrow4.png"></em>
+                    </span>
+                    <div class="list" v-show="showEnterShipType2">
+                      <ul>
+                        <li v-for="item in analysisForm.enterpriseRelationshipsMap.enterShip_type2" :key="item.objectId">
+                          <span :title="item.name">{{item.name}}</span>
+                          <em></em>
+                        </li>
+                      </ul>
+                      <div class="right_whiteline"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </el-collapse-item>
+
+            <el-collapse-item title="企业经营与财务状况" name="3">
+              <div class="tabbox">
+                <el-form :model="analysisForm" ref="operationsAndFinanceForm" :validate-on-rule-change="true">
+                  <el-input type="textarea" v-model="analysisForm.operationsAndFinance" placeholder="请输入企业经营与财务状况"></el-input>
+                  <div class="submit-radio">
+                    <el-button type="primary" @click="submitOperationsAndFinance"  v-loading="submitLoading">保存</el-button>
+                  </div>
+                </el-form>
+              </div>
+            </el-collapse-item>
+
+            <el-collapse-item title="近三年合作代理机构名单" name="4">
+              <div class="tabbox tabfour">
+                <el-form :model="analysisForm" ref="cooperators" :validate-on-rule-change="true">
+                  <el-table
+                    class="addcon"
+                    :data="analysisForm.enterpriseRelationshipsMap.enterShip_type4"
+                    border
+                    style="width: 100%" header-cell-class-name="tableheader">
+                    <el-table-column
+                      type="index"
+                      label="序号"
+                      width="60"
+                      align="center">
+                    </el-table-column>
+                    <el-table-column
+                      label="代理机构名称"
+                      show-overflow-tooltip>
+                      <template slot-scope='scope'>
+                        <el-form-item :prop="'enterpriseRelationshipsMap.enterShip_type4.'+ scope.$index + '.name'" :rules="rules.simpleRequiredText">
+                          <el-input v-model="scope.row.name" clearable placeholder="请输入代理机构名称">
+                            <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                          </el-input>
+                        </el-form-item>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="合作项目"
+                      show-overflow-tooltip>
+                      <template slot-scope='scope'>
+                        <el-form-item :prop="'enterpriseRelationshipsMap.enterShip_type4.'+ scope.$index + '.project'" :rules="rules.simpleText">
+                          <el-input v-model="scope.row.project" clearable placeholder="请输入合作项目">
+                            <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                          </el-input>
+                        </el-form-item>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="操作" align="center" width="100">
+                      <template slot-scope="scope">
+                        <el-button type="text" size="small" @click="delEnterShip(scope.$index, 4)">删除</el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <div class="addbutton"><span @click="addCooperator(4)">+ 新增</span></div>
+                  <div class="submit-radio">
+                    <el-button type="primary" @click="submitCooperators"  v-loading="submitLoading">保存</el-button>
+                  </div>
+                </el-form>
+              </div>
+            </el-collapse-item>
+
+            <el-collapse-item title="其他参考数据" name="5">
+              <div class="tabbox">
+                <el-form :model="analysisForm" ref="otherInfos" label-width="200px" :validate-on-rule-change="true">
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="公开招标项目总数量：" prop="publicBidNum" :rules="rules.positiveInteger">
+                        <el-input v-model="analysisForm.publicBidNum" placeholder="请输入公开招标项目总数量" clearable>
+                          <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                        </el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="合作服务机构数量：" prop="cooperativeAgenciesNum" :rules="rules.positiveInteger">
+                        <el-input v-model="analysisForm.cooperativeAgenciesNum" placeholder="请输入合作服务机构数量" clearable>
+                          <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                        </el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="公开招标项目可统计金额：" prop="publicBidAmount" :rules="rules.money">
+                        <el-input v-model="analysisForm.publicBidAmount" placeholder="请输入公开招标项目可统计金额" clearable>
+                          <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                        </el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="24">
+                      <el-form-item label="招标人发布比选入围类似项目：" prop="similarProjects" :rules="rules.longText">
+                        <el-input type="textarea" v-model="analysisForm.similarProjects" placeholder="请输入招标人发布比选入围类似项目"></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <div class="submit-radio">
+                    <el-button type="primary" @click="submitOtherInfos" v-loading="submitLoading">保存</el-button>
+                  </div>
+                </el-form>
+              </div>
+            </el-collapse-item>
+          </el-collapse>
+        </el-tab-pane>
+
+        <el-tab-pane label="竞争对手分析" name="third">
+          <div class="button_box">
+            <el-button type="primary" @click="showCompetitorEditDialog(true, false)"> + 添加竞争对手信息 </el-button>
+          </div>
+          <el-table
+            :data="competitorTableData"
+            style="width: 100%">
+            <el-table-column
+              type="index"
+              label="序号"
+              width="60"
+              align="center">
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="企业名称">
+            </el-table-column>
+            <el-table-column label="参与本业主项目情况">
+              <el-table-column
+                prop="ownerProjectSituationList.length"
+                label="项目数量">
+              </el-table-column>
+              <el-table-column
+                prop="ownerProjectsAmount"
+                label="项目金额">
+              </el-table-column>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="竞争力">
+              <template slot-scope="scope">
+                <el-rate v-model="scope.row.level" disabled></el-rate>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="操作" align="center" width="200">
+              <template slot-scope="scope">
+                <el-button type="text" size="small" @click="showCompetitorDetailDialog(scope.row.objectId)">查看</el-button>
+                <el-button type="text" size="small" @click="showCompetitorEditDialog(true, true, scope.row.objectId)">修改</el-button>
+                <el-button type="text" size="small" @click="delCompetitor(scope.row.objectId)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <!--分页-->
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :total="page.total"
+            :page-size='page.pageSize'
+            :current-page.sync="page.currentPage"
+            @current-change="handlePage"
+            @next-click="handlePage">
+          </el-pagination>
+          <!--分页-->
+        </el-tab-pane>
+
+        <el-tab-pane label="项目整体分析" name="fourth">
+          <div class="tabbox">
+            <el-form :model="analysisForm" class="proinfo_box" ref="overAllInfo" :validate-on-rule-change="true" :rules="rules">
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="预测成功率：" prop="successRate" :rules="rules.simpleText">
+                    <el-input v-model="analysisForm.successRate" placeholder="请输入预测成功率" clearable>
+                      <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                    </el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="成功的关键因素：" prop="successFactors" :rules="rules.longText">
+                    <el-input v-model="analysisForm.successFactors" placeholder="请输入成功的关键因素" clearable>
+                      <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                    </el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="可能的失败因素：" prop="failureFactors" :rules="rules.longText">
+                    <el-input v-model="analysisForm.failureFactors" placeholder="请输入可能的失败因素" clearable>
+                      <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                    </el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="其他：" prop="otherInfo" :rules="rules.longText">
+                    <el-input type="textarea" v-model="analysisForm.otherInfo" placeholder="请输入其他信息" clearable>
+                      <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                    </el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col>
+                  <el-form-item label="是否推进该项目：">
+                    <el-radio-group v-model="analysisForm.isAdvance">
+                      <el-radio :label="1">推进</el-radio>
+                      <el-radio :label="0">暂不推进</el-radio>
+                      <el-radio :label="2">放弃</el-radio>
+                    </el-radio-group>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+            <div class="submit-radio">
+              <el-button type="primary" @click="submitOverAllInfo" v-loading="submitLoading">保存</el-button>
+            </div>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+    <!--弹窗  编辑企业族谱-->
+    <enterprise-relationship :showVisible="showEnterShip" :enterShipMap="analysisForm.enterpriseRelationshipsMap" :relatedCode="analysisForm.code" @showDialog="showEnterShipDialog" @submit="submitEnterShip"/>
+    <!--弹窗  编辑企业族谱-->
+    <!--弹窗  竞争对手分析 start -->
+    <competitor-edit :isEdit="isEditCompetitor" :editObjectId="editCompetitorId" :showVisible="showCompetitorEdit" :relatedCode="analysisForm.code"
+                     @showDialog="showCompetitorEditDialog"
+                     @saveSuccess="queryCompetitors"/>
+    <competitor-detail :showVisible="showCompetitorDetail" :objectId="detailComperitorId" @showDialog="showCompetitorDetailDialog"/>
+    <!--弹窗  竞争对手分析 end -->
+  </div>
+</template>
+<script>
+import Ueditor from '@/components/ueditor/ueditor.vue'
+import * as region from '@/assets/js/region'
+import {business, analysis, competitor, customer, enterpriseRelationship} from '@/api/customer'
+import {dataDictionary} from '@/api/system'
+import {dateFormat, trimStr} from '@/assets/js/common'
+import { validPhoneUser, validMoney, validWhoInteger, validLinks } from '@/assets/js/validate'
+import CompetitorEdit from './competitor/edit'
+import CompetitorDetail from './competitor/detail'
+import EnterpriseRelationship from './enterpriseRelationship/edit'
+
+export default {
+  components: {
+    Ueditor,
+    CompetitorEdit,
+    CompetitorDetail,
+    EnterpriseRelationship
+  },
+  data () {
+    return {
+      baseDataLoading: false,
+      customerLoading: false,
+      competitorLoading: false,
+      submitLoading: false,
+      activeTable: 'first',
+      baseData: {
+        contactList: [],
+        regionlongText: '',
+        radio: '1'
+      },
+      analysisForm: {
+        code: '',
+        managementCode: this.$route.query.code,
+        regionOptions: '',
+        isAdvance: 1,
+        enterpriseRelationshipsMap: {
+          enterShip_type0: [],
+          enterShip_type1: [],
+          enterShip_type2: [],
+          enterShip_type3: [],
+          enterShip_type4: []
+        }
+      },
+      customerForm: {},
+      competitorTableData: [],
+      page: {
+        pageSize: 10,
+        pageNo: 1,
+        total: 0, // 总条数
+        currentPage: 1
+      },
+      // 地址三级联动
+      longTextOptions: region.CityInfo,
+      // 客户行业分类字典项Id
+      dicCustomerIndustryId: 10002,
+      // 客户行业分类集合
+      dicCustomerIndustryList: [],
+      // 公司类型
+      companyType: [{
+        value: 1,
+        label: '国企'
+      }, {
+        value: 2,
+        label: '股份'
+      }, {
+        value: 3,
+        label: '私企'
+      }, {
+        value: 4,
+        label: '外贸'
+      }, {
+        value: 5,
+        label: '港资'
+      }, {
+        value: 6,
+        label: '台资'
+      }],
+      // 表单验证验证
+      rules: {
+        simpleText: [
+          { min: 1, max: 20, message: '长度在1~20个字符', trigger: 'blur' }
+        ],
+        longText: [
+          { min: 1, max: 500, message: '长度在1~500个字符', trigger: 'blur' }
+        ],
+        simpleRequiredText: [
+          { required: true, message: '输入不能为空', trigger: 'blur' },
+          { min: 1, max: 20, message: '长度在1~20个字符', trigger: 'blur' }
+        ],
+        positiveInteger: [
+          {validator: validWhoInteger, trigger: 'blur'}
+        ],
+        money: [
+          {validator: validMoney, trigger: 'blur'}
+        ],
+        uscCode: [
+          { min: 18, max: 18, message: '请输入正确的18位统一社会信用代码', trigger: 'blur' }
+        ],
+        provinceId: [
+          { required: true, message: '所在地区不能为空', trigger: ['blur', 'change'] }
+        ],
+        officePhone: [
+          {validator: validPhoneUser, trigger: 'blur'}
+        ],
+        url: [
+          {validator: validLinks, trigger: 'blur'},
+          { min: 1, max: 100, message: '长度在1~100个字符', trigger: 'blur' }
+        ]
+      },
+      // 竞争对手分析
+      showCompetitorEdit: false,
+      isEditCompetitor: false,
+      editCompetitorId: null,
+      showCompetitorDetail: false,
+      detailComperitorId: null,
+      // 关系族谱图
+      showEnterShip: false,
+      enterShip0TotalAmount: 0,
+      // 企业族谱 显示隐藏
+      showEnterShipType0: false,
+      showEnterShipType1: false,
+      showEnterShipType2: false,
+      showEnterShipType3: false
+    }
+  },
+  watch: {
+    activeTable (value) {
+      if (value === 'third' && this.competitorTableData.length === 0) {
+        this.queryCompetitors()
+      }
+    }
+  },
+  methods: {
+    // 初始化数据
+    initData () {
+      this.baseDataLoading = true
+      business.queryOneByCode(this.$route.query.code).then(res => {
+        this.baseDataLoading = false
+        this.baseData = res.data.data
+        // 初始化省市县数据
+        this.wrapRegionlongText('baseData')
+        // 绑定富文本框数据
+        this.$refs.baseUeditor.setContent(this.baseData.content)
+        // 初始化客户信息
+        this.queryCustomer()
+      })
+      // 初始化分析数据
+      this.queryAnalysis()
+    },
+    // 初始化分析数据
+    queryAnalysis () {
+      analysis.queryByManagementCode(this.$route.query.code).then(res => {
+        this.analysisForm = res.data.data
+        this.$refs.analysisUeditor.setContent(this.analysisForm.keyInformation)
+        // 初始化投资方金额
+        this.sumEnterShip0TotalAmount()
+      })
+    },
+    // 查询客户信息
+    queryCustomer () {
+      this.customerLoading = true
+      customer.querySelfOneByCode(this.baseData.customerManagementCode).then(res => {
+        this.customerLoading = false
+        this.customerForm = res.data.data
+        // 初始化省市县数据
+        this.customerForm.regionOptions = []
+        if (this.customerForm.provinceId) {
+          this.customerForm.regionOptions.push(this.customerForm.provinceId)
+          this.customerForm.regionOptions.push(this.customerForm.cityId)
+          this.customerForm.regionOptions.push(this.customerForm.countyId)
+        }
+      })
+    },
+    // 查询竞争对手
+    queryCompetitors () {
+      let queryModel = {
+        pageNo: this.page.pageNo,
+        pageSize: this.page.pageSize,
+        analysisCode: this.analysisForm.code
+      }
+      this.competitorLoading = false
+      competitor.queryList(queryModel).then(res => {
+        this.competitorLoading = true
+        this.competitorTableData = res.data.data.list
+        this.page.total = res.data.data.total
+      })
+    },
+    // 客户行业分类集合初始化
+    initCustomerIndustry () {
+      let query = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        dictionaryDirectoryId: this.dicCustomerIndustryId
+      }
+      dataDictionary.getDetailList(query).then(res => {
+        this.dicCustomerIndustryList = res.data.dictionaryDetails
+      })
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 包装三级联动地址信息
+    wrapRegionlongText (objName) {
+      // 初始化省市县数据
+      let _this = this
+      _this[objName].regionlongText = ''
+      this.longTextOptions.map((item) => {
+        if (item.value === _this[objName].provinceId) {
+          _this[objName].regionlongText += item.label + '/'
+          item.children.map((ite) => {
+            if (ite.value === _this[objName].cityId) {
+              _this[objName].regionlongText += ite.label + '/'
+              ite.children.map((countyItem) => {
+                if (countyItem.value === _this[objName].countyId) {
+                  _this[objName].regionlongText += countyItem.label
+                }
+              })
+            }
+          })
+        }
+      })
+    },
+    // 改变客户地区选择
+    handleCityChange (value) {
+      this.customerForm.provinceId = value[0]
+      this.customerForm.cityId = value[1]
+      this.customerForm.countyId = value[2]
+    },
+    // 计算投资方金额
+    sumEnterShip0TotalAmount () {
+      this.enterShip0TotalAmount = 0
+      if (this.analysisForm.enterpriseRelationshipsMap['enterShip_type0'].length) {
+        this.analysisForm.enterpriseRelationshipsMap['enterShip_type0'].forEach(item => {
+          if (item.investmentAmount) {
+            this.enterShip0TotalAmount = Number(this.enterShip0TotalAmount) + Number(item.investmentAmount)
+          }
+        })
+      }
+    },
+    // 竞争对手分析编辑弹框
+    showCompetitorEditDialog (isShow, isEdit, objectId) {
+      this.showCompetitorEdit = isShow
+      this.isEditCompetitor = isEdit
+      this.editCompetitorId = objectId || null
+    },
+    // 竞争对手分析详情弹框
+    showCompetitorDetailDialog (objectId) {
+      this.showCompetitorDetail = !this.showCompetitorDetail
+      this.detailComperitorId = objectId || null
+    },
+    // 删除竞争对手
+    delCompetitor (objectId) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        competitor.logoff(objectId).then(() => {
+          this.queryCompetitors()
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 关系族谱图Dialog
+    showEnterShipDialog () {
+      this.showEnterShip = !this.showEnterShip
+    },
+    // 新增近三年合作单位
+    addCooperator () {
+      this.$refs['cooperators'].validate((valid) => {
+        if (valid) {
+          this.addEnterShip(4)
+        }
+      })
+    },
+    // 添加企业关系
+    addEnterShip (type) {
+      let cooperator = {
+        analysisCode: this.analysisForm.code,
+        name: '',
+        project: '',
+        type: type
+      }
+      this.analysisForm.enterpriseRelationshipsMap[`enterShip_type${type}`].push(cooperator)
+    },
+    // 删除企业关系
+    delEnterShip (index, type) {
+      this.analysisForm.enterpriseRelationshipsMap[`enterShip_type${type}`].splice(index, 1)
+    },
+    // 保存分析信息
+    updateAnalysis (submitForm) {
+      this.submitLoading = true
+      analysis.update(submitForm).then(res => {
+        if (res.data.resCode === '0000') {
+          setTimeout(() => { this.submitLoading = false }, 1000)
+        }
+      })
+    },
+    // 保存关键词提取信息
+    submitAnalysisEditor () {
+      if (!trimStr(this.$refs.analysisUeditor.getContent())) {
+        this.$message({
+          type: 'warning',
+          message: '请输入关键字提取'
+        })
+        return false
+      }
+      let submitForm = {
+        objectId: this.analysisForm.objectId,
+        keyInformation: this.$refs.analysisUeditor.getContent()
+      }
+      this.updateAnalysis(submitForm)
+    },
+    // 保存企业经营与财务状况
+    submitOperationsAndFinance () {
+      let submitForm = {
+        objectId: this.analysisForm.objectId,
+        operationsAndFinance: this.analysisForm.operationsAndFinance
+      }
+      this.updateAnalysis(submitForm)
+    },
+    // 保存其他参考数据
+    submitOtherInfos () {
+      this.$refs['otherInfos'].validate((valid) => {
+        if (valid) {
+          let submitForm = {
+            objectId: this.analysisForm.objectId,
+            publicBidNum: this.analysisForm.publicBidNum,
+            cooperativeAgenciesNum: this.analysisForm.cooperativeAgenciesNum,
+            publicBidAmount: this.analysisForm.publicBidAmount,
+            similarProjects: this.analysisForm.similarProjects
+          }
+          this.updateAnalysis(submitForm)
+        }
+      })
+    },
+    // 保存项目整体分析
+    submitOverAllInfo () {
+      this.$refs['overAllInfo'].validate((valid) => {
+        if (valid) {
+          let submitForm = {
+            objectId: this.analysisForm.objectId,
+            successRate: this.analysisForm.successRate,
+            successFactors: this.analysisForm.successFactors,
+            failureFactors: this.analysisForm.failureFactors,
+            otherInfo: this.analysisForm.otherInfo,
+            isAdvance: this.analysisForm.isAdvance
+          }
+          this.updateAnalysis(submitForm)
+        }
+      })
+    },
+    // 保存客户信息
+    submitCustomer () {
+      this.$refs['customerForm'].validate((valid) => {
+        if (valid) {
+          this.submitLoading = true
+          customer.updateSelf(this.customerForm).then(res => {
+            setTimeout(() => { this.submitLoading = false }, 1000)
+          })
+        }
+      })
+    },
+    // 保存三年合作单位信息
+    submitCooperators () {
+      this.$refs['cooperators'].validate((valid) => {
+        if (valid) {
+          this.submitEnterShip()
+        }
+      })
+    },
+    // 保存企业关系
+    submitEnterShip (currentEnterShipMap) {
+      let enterpriseRelationships = []
+      if (currentEnterShipMap) {
+        this.analysisForm.enterpriseRelationshipsMap = currentEnterShipMap
+      }
+      for (let i in this.analysisForm.enterpriseRelationshipsMap) {
+        enterpriseRelationships = enterpriseRelationships.concat(this.analysisForm.enterpriseRelationshipsMap[i])
+      }
+      // 初始化投资方金额
+      this.sumEnterShip0TotalAmount()
+      this.submitLoading = true
+      enterpriseRelationship.saveBatch(enterpriseRelationships).then(res => {
+        if (res.data.resCode === '0000') {
+          setTimeout(() => { this.submitLoading = false }, 1000)
+        }
+      })
+    },
+    showEnterShipChart (type) {
+      this[`showEnterShipType${type}`] = !this[`showEnterShipType${type}`]
+    },
+    // 表单分页
+    handlePage (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = (nowNum - 1) * this.page.pageSize
+      this.getTableData()
+    }
+  },
+  filters: {
+    // 格式化时间
+    formatDate (value) {
+      return dateFormat(new Date(value), 'yyyy-MM-dd')
+    }
+  },
+  mounted () {
+    // 客户行业分类集合初始化
+    this.initCustomerIndustry()
+    // 初始化数据
+    this.initData()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_business_analysis {
+    .el-rate{
+      height: 40px;
+      line-height: 40px;
+    }
+    .addbutton{
+      width: 100%;
+      margin-top: 10px;
+      height: 52px;
+      line-height: 52px;
+      text-align: center;
+      border: 1px dashed #d2d2d2;
+      color: #d2d2d2;
+      background: #ffffff;
+      font-weight: bold;
+      cursor: pointer;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .addbutton:hover{
+      border: 1px dashed #34abff;
+      color: #34abff;
+    }
+  }
+</style>

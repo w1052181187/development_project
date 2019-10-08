@@ -1,0 +1,183 @@
+<template>
+  <div class="cloudcontent" id="cloud_ProjectDetail">
+    <!--面包屑-->
+    <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb_box">
+      <el-breadcrumb-item :to="{ path: '/index' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/agentProject' }">代理分配项目</el-breadcrumb-item>
+      <el-breadcrumb-item class="active_bread">查看项目负责人</el-breadcrumb-item>
+    </el-breadcrumb>
+    <!--面包屑-->
+    <div class="main">
+      <el-form :model="addForm" :rules="rules" ref="addForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目名称："  prop="tenderProjectName">
+              <span>{{addForm.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目编号："  prop="tenderProjectCode">
+              <span>{{addForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目行业分类："  prop="name">
+              <span>{{addForm.industry}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目地址："  prop="name">
+              <span>{{addForm.address}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="详细地址："  prop="name">
+              <span>{{addForm.address}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标人："  prop="name">
+              <span>{{addForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="招标人单位地址："  prop="uscCode">
+              <span>{{addForm.name}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="联系人："  prop="name">
+              <span>{{addForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="联系方式："  prop="uscCode">
+              <span>{{addForm.name}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="邮箱：">
+              <span>{{addForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="代理合同：">
+              <span>{{addForm.name}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="项目说明：">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="代理机构项目负责人：">
+              <template>
+                <el-table
+                  :data="tableData"
+                  border
+                  style="width: 100%" header-cell-class-name="tableheader">
+                  <el-table-column
+                    prop="name"
+                    label="姓名"
+                    show-overflow-tooltip>
+                  </el-table-column>
+                  <el-table-column
+                    prop="job"
+                    label="职责分工"
+                    show-overflow-tooltip>
+                  </el-table-column>
+                </el-table>
+              </template>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary">返回</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import * as region from '@/assets/js/region'
+import * as industry from '@/assets/js/industry_two'
+import editor from '@/components/ueditor/ueditor.vue'
+export default {
+  components: {
+    editor
+  },
+  data () {
+    return {
+      addForm: {
+        tenderProjectName: '特殊资源特殊资源特殊资源特殊资源',
+        tenderProjectCode: 'SAYY77383',
+        industry: '特殊资源',
+        address: '山西省太原市小店区',
+        name: '项目名称'
+      },
+      rules: {
+        tenderProjectName: [
+          { required: true, message: '项目名称不能为空', trigger: 'blur' }
+        ],
+        tenderProjectCode: [
+          { required: true, message: '项目编号不能为空', trigger: 'blur' }
+        ],
+        name: [
+          { required: true, message: '项目编号不能为空', trigger: 'blur' }
+        ],
+        uscCode: [
+          { required: true, message: '项目编号不能为空', trigger: 'blur' }
+        ]
+      },
+      // 地址三级联动
+      addressOptions: region.CityInfo,
+      selectedcityOptions: [],
+      // 行业三级联动
+      industryOptions: industry.industry,
+      selectedIndustryOptions: [],
+      // 富文本
+      editread: true,
+      content: '',
+      // 代理项目负责人
+      tableData: [
+        {
+          name: '是的撒所',
+          job: '项目经理'
+        }
+      ]
+    }
+  },
+  methods: {
+    // 所属行业三级联动赋值
+    handleIndustryChange (value) {
+      this.addForm.industry = value[0]
+      this.addForm.industrySecond = value[1]
+    },
+    // 所在地区三级联动赋值
+    handlecityChange (value) {
+      this.addForm.privinceId = value[0]
+      this.addForm.cityId = value[1]
+      this.addForm.countyId = value[2]
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_ProjectDetail {
+  }
+</style>

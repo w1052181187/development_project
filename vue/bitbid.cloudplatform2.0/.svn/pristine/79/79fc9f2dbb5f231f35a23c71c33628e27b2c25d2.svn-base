@@ -1,0 +1,166 @@
+<template>
+  <div class="cloudcontent" id="file-end">
+    <div class="main">
+      <div class="basic-info-title">移交信息</div>
+      <el-form :model="form" class="admin-form" :rules="rules" ref="form" :validate-on-rule-change="true" label-width="95px">
+        <el-form-item label="档案管理员：" prop="adminId" class="admin-select">
+          <el-select v-model="form.adminId" placeholder="请选择" @click.native="getAdmin">
+            <el-option
+              v-for="item in adminList"
+              :key="item.adminId"
+              :label="item.adminName"
+              :value="item.adminId">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <div class="confirm-title bitian">请确认本次要提交的资料：</div>
+        <el-table
+          :data="info.archivesClassifyList.filter(item => Number(item.transferStatus) === 0 || Number(item.transferStatus) === 3)"
+          border
+          style="width: 50%;margin-bottom: 40px" header-cell-class-name="tableheader">
+          <el-table-column
+            width="50"
+            type="index"
+            align="center"
+            label="序号">
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="档案目录"
+            align="center"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            label="选择"
+            align="center"
+            width="100"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <el-checkbox v-model="scope.row.isChecked"></el-checkbox>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+// import {archivesInfo} from '@/api/archives'
+import admin from '@/pages/archives/setting/dialog/admin'
+import {archivesRoom, archivesInfo} from '@/api/archives'
+
+export default {
+  components: {
+    admin
+  },
+  data () {
+    return {
+      form: {
+      },
+      rules: {
+        adminId: [
+          {required: true, message: '请选择档案管理员', trigger: ['blur', 'change']}
+        ]
+      },
+      objectId: '',
+      adminList: []
+    }
+  },
+  props: ['info'],
+  methods: {
+    getAdmin () {
+      if (this.adminList.length <= 0) {
+        archivesRoom.getAdminList().then((res) => {
+          if (res.data.resCode === '0000') {
+            this.adminList = res.data.adminList
+          }
+        })
+      }
+    },
+    // 选择管理员
+    selectedAdmin (obj) {
+    },
+    getInfo () {
+    },
+    // 确认移交
+    handleTransfer () {
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          let isHasData = this.info.archivesClassifyList.some(item => item.isChecked)
+          if (!isHasData) {
+            this.$message(
+              {
+                type: 'warning',
+                message: '请选择本次要移交的资料'
+              }
+            )
+            return false
+          }
+          let data = []
+          this.info.archivesClassifyList.map((item) => {
+            if (item.isChecked) {
+              item.adminId = this.form.adminId
+              this.adminList.forEach(admin => {
+                if (item.adminId === admin.adminId) {
+                  item.adminName = admin.adminName
+                  this.info.adminName = admin.adminName
+                }
+              })
+              data.push(item)
+            }
+          })
+          this.$confirm('确认要移交吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'error'
+          }).then(() => {
+            this.info.archivesClassifyList = data
+            this.info.adminId = this.form.adminId
+            archivesInfo.transferInfo(this.info).then((res) => {
+              if (res.data.resCode === '0000') {
+                this.$router.push({path: '/archives/transfer'})
+              }
+            })
+          }).catch(() => {
+            return false
+          })
+          return true
+        }
+      })
+      return false
+    }
+  },
+  mounted () {
+    this.objectId = this.$route.params.objectId
+    this.getInfo()
+  }
+}
+</script>
+<style lang="less">
+  #file-end {
+    .file-end-hint {
+      border: #89d280 1px solid;
+      background-color: #f4ffee;
+      padding: 14px 50px;
+      box-sizing: border-box;
+      color: #333333;
+      font-size: 14px;
+    }
+    .file-end-info {
+      margin-top: 10px;
+      padding: 12px 12px;
+      box-sizing: border-box;
+      border: #dcdfe6 1px solid;
+    }
+    .confirm-title {
+      margin: 22px 0;
+    }
+    .admin-form {
+      width: 100%;
+      margin-left: 16px;
+    }
+    .admin-select {
+      width: 200px;
+    }
+  }
+</style>

@@ -1,0 +1,277 @@
+<template>
+  <div class="cloudcontent announcement-detail" id="cloud_business_analysis">
+    <h2 class="announcement-title">{{detailForm.project_name}}</h2>
+    <div class="announcement-topic clearfix">
+      <div class="fl">
+        <span>发布时间：</span>
+        <span>{{detailForm.publish_time}}</span>
+      </div>
+      <div class="fl">
+        <span>地区：</span>
+        <span>{{detailForm.region}}</span>
+      </div>
+      <div>
+        <el-button class="fl">+加入到我的商机</el-button>
+      </div>
+    </div>
+    <div class="main">
+      <el-tabs class="detail_tab" type="card" v-model="activeTab">
+        <el-tab-pane label="比选公告" name="first" class="firsr-tab">
+          <editor ref="ueditor" class="ueditor" :editread="editread"></editor>
+        </el-tab-pane>
+
+        <el-tab-pane label="招标业主分析：" name="second">
+          <el-form :model="bidderForm">
+            <el-row>
+              <el-form-item label="招标人名称：">
+                <span>{{detailForm.tender}}</span>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-form-item label="法定代表人：">
+                <span>{{bidderForm.legal_person}}</span>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-form-item label="经营范围：">
+                <span>{{bidderForm.scope_of_business}}</span>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-form-item label="成立时间：">
+                <span>{{bidderForm.registration_time}}</span>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-form-item label="营业期限：">
+                <span>{{bidderForm.business_start_time}} ~ {{bidderForm.business_end_time}}</span>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-form-item label="注册资本：">
+                <span>{{bidderForm.registration_capital}}</span>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-form-item label="企业类型：">
+                <span>{{bidderForm.enterprise_type}}</span>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-form-item label="地址：">
+                <span>{{bidderForm.registration_address}}</span>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-form-item label="联系人：">
+                <span>{{detailForm.tender_contact}}</span>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-form-item label="联系人电话：">
+                <span>{{detailForm.tender_phone}}</span>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-form-item label="近一年公开招标的项目总数：">
+                <span>{{publicProjectTotal}}</span>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-form-item label="近一年与招标人合作的代理机构：">
+                <ul>
+                  <li v-for="(item,index) in bidderForm.agencyList" :key="item.value">
+                    <span class="index-span">{{index+1}}</span>{{item.text}}
+                  </li>
+                </ul>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-form-item label="本单位工程造价咨询机构库已入库名单（近一年）：">
+                <ul>
+                  <li v-for="(item,index) in bidderForm.inventoryList" :key="item.value">
+                    <span class="index-span">{{index+1}}</span>{{item.text}}
+                  </li>
+                </ul>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-form-item label="近一年类似项目（入围、比选、入库等）：">
+                <ul>
+                  <li class="clearfix" v-for="(item,index) in bidderForm.similarProjectsList" :key="item.value">
+                    <span class="index-span fl">{{index+1}}</span>
+                    <div class="fl">
+                      <div>{{'【项目名称】' + item.name}}</div>
+                      <div>{{'【代理机构】' + item.agency}}</div>
+                    </div>
+                  </li>
+                </ul>
+              </el-form-item>
+            </el-row>
+          </el-form>
+        </el-tab-pane>
+
+        <el-tab-pane label="竞争对手分析" name="third" class="third-tab">
+          <p>与招标人合作的招标代理机构名单</p>
+          <el-table :data="tableData" border tooltip-effect="dark" style="width: 100%"
+            header-cell-class-name="tableheader">
+            <el-table-column type="index" label="序号" width="60" align="center"></el-table-column>
+            <el-table-column prop="companyName" label="企业名称" show-overflow-tooltip>
+              <template slot-scope="scope">
+                <a href="javascript:;" @click="toCompetitorDetail(scope.row)">{{scope.row.companyName}}</a>
+              </template>
+            </el-table-column>
+            <el-table-column label="参与本招标人项目情况" show-overflow-tooltip align="center">
+              <el-table-column prop="projectTotal" label="项目数量" width="200"></el-table-column>
+              <el-table-column prop="projectAmount" label="项目金额（万元）" width="200"></el-table-column>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+      </el-tabs>
+      <el-button type="primary" @click="returnAnnouncementList" icon="el-icon-arrow-left">返回</el-button>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import { comparison } from '@/api/biddingSources'
+import {dateFormat} from '@/assets/js/common'
+import * as region from '@/assets/js/region'
+export default {
+  components: {
+    editor
+  },
+  data () {
+    return {
+      editread: true, // 富文本编辑器
+      detailForm: {
+        project_name: '',
+        region: '山西省',
+        publish_time: ''
+      },
+      activeTab: 'first',
+      tableData: [
+        {detailId: 111, companyName: '山西方大建设工程管理股份有限公司', projectTotal: '3', projectAmount: '23'},
+        {detailId: 222, companyName: '山西省伟信招标管理咨询有限公司', projectTotal: '3', projectAmount: '42'},
+        {detailId: 333, companyName: '永明项目管理有限公司', projectTotal: '2', projectAmount: '23'}
+      ],
+      bidderForm: {
+        legal_person: '',
+        scope_of_business: '',
+        registration_time: '',
+        business_start_time: '',
+        business_end_time: '',
+        registration_capital: '',
+        enterprise_type: '',
+        registration_address: ''
+      },
+      addressArr: region.CityInfo,
+      publicProjectTotal: 0 // 近一年公开招标项目总数
+    }
+  },
+  watch: {
+  },
+  methods: {
+    detail () {
+      // 比选公告信息
+      comparison.annoDetail(this.$route.params.relatedCode).then((res) => {
+        if (res.data.detail.length > 0) {
+          this.detailForm = res.data.detail[0]
+          this.detailForm.publish_time = dateFormat(new Date(this.detailForm.create_time), 'yyyy-MM-dd hh:mm:ss')
+          this.detailForm.region = ''
+          this.addressArr.map((item) => {
+            if (item.value === Number(this.detailForm.province_id)) {
+              this.detailForm.region += item.label
+              item.children.map((ite) => {
+                if (ite.value === Number(this.detailForm.city_id)) {
+                  this.detailForm.region += ite.label
+                  ite.children.map((it) => {
+                    if (it.value === Number(this.detailForm.county_id)) {
+                      this.detailForm.region += it.label
+                    }
+                  })
+                }
+              })
+            }
+          })
+          this.$refs.ueditor.setContent(this.detailForm.content)
+        }
+      })
+      // 招标业主分析
+      comparison.ownerDetailByEnterpriseName(this.detailForm.tender).then((res) => {
+        if (res.data.detail.length > 0) {
+          this.bidderForm = res.data.detail[0]
+        }
+      })
+      // 招标项目总数
+      comparison.annoPublicProjectByTender(this.detailForm.tender).then((res) => {
+        if (res.data.list.length > 0) {
+          this.publicProjectTotal = res.data.list.total
+        }
+      })
+    },
+    toCompetitorDetail (rowData) {
+      this.$router.push({path: `/biddingSources/competitorDetail/${rowData.detailId}`})
+    },
+    returnAnnouncementList () {}
+  },
+  filters: {
+  },
+  mounted () {
+    this.detail()
+  }
+}
+</script>
+<style scoped lang="less">
+.clearfix:after{
+    content:".";
+    display:block;
+    height:0;
+    clear:both;
+    visibility:hidden;
+}
+.clearfix{
+    zoom:1;
+}
+.announcement-title{
+  text-align: center;
+}
+.announcement-topic{
+  line-height: 40px;
+  div{
+    margin: 0 10px;
+  }
+}
+.firsr-tab{
+  margin-bottom: 10px;
+  .detail-form{
+    line-height: 40px;
+    span:first-child{
+      margin-right: 10px;
+    }
+  }
+}
+.index-span{
+  margin-right: 6px;
+}
+.third-tab{
+  margin-bottom: 10px;
+  p{
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+}
+</style>
+<style lang="less">
+.announcement-detail{
+  .main{
+    .el-form-item__label{
+      width: 182px;
+      margin-right: 10px;
+    }
+    .el-form-item__content{
+      margin-left: 192px;
+    }
+  }
+}
+</style>

@@ -1,0 +1,40 @@
+<template>
+  <div>
+    <el-dialog title="选择管理员" width="800px" :before-close="cancel" :visible.sync="showVisible">
+        <UserRadio :initUser="checkedUserId" @changeRadio="selectedUser"></UserRadio>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import UserRadio from '@/pages/system/users/user_radio'
+export default {
+  components: {
+    UserRadio
+  },
+  data () {
+    return {
+    }
+  },
+  props: ['showVisible', 'checkedUserId'],
+  methods: {
+    // 选择
+    selectedUser (obj) {
+      this.$emit('selected', obj)
+      this.cancel()
+    },
+    // 取消
+    cancel () {
+      this.$emit('showDialog')
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style scoped>
+  .selectbox{
+    background: #f7f8f9;
+    padding: 10px 0;
+    margin-bottom: 0px;
+  }
+</style>

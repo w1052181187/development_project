@@ -1,0 +1,20 @@
+export default[
+  {
+    path: '/orderManagement/myOrder',
+    name: '我的订单',
+    meta: {
+      title: '我的订单',
+      active: '/orderManagement/myOrder'
+    },
+    component: () => import(/* webpackChunkName: 'agency' */ '@/pages/orderManagement/myOrder/myOrderList')
+  },
+  {
+    path: '/orderManagement/myOrder/myOrderDetail/:objectId',
+    name: '我的订单详情',
+    meta: {
+      title: '我的订单详情',
+      active: '/project/proSettlement'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/orderManagement/myOrder/myOrderDetail')
+  }
+]

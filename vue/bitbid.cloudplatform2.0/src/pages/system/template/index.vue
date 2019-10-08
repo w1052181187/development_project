@@ -1,0 +1,54 @@
+<template>
+  <div class="cloudcontent"  id="cloud_templateMan">
+    <el-tabs v-model="activeName" @tab-click="handleClick">
+      <el-tab-pane label="我的模板" name="first">
+        <!--<my-template></my-template>-->
+      </el-tab-pane>
+      <el-tab-pane label="模板中心" name="second">
+        <!--<template-center></template-center>-->
+      </el-tab-pane>
+    </el-tabs>
+    <div class="tab-content">
+      <component :is="currentView"></component>
+    </div>
+  </div>
+</template>
+<script>
+import myTemplate from './myTemplate'
+import templateCenter from './templateCenter'
+export default {
+  components: {
+    myTemplate,
+    templateCenter
+  },
+  data () {
+    return {
+      activeName: 'first',
+      searchForm: {},
+      currentView: 'myTemplate'
+    }
+  },
+  methods: {
+    handleClick (tab, event) {
+      if (tab.name === 'first') {
+        this.currentView = 'myTemplate'
+      } else if (tab.name === 'second') {
+        this.currentView = 'templateCenter'
+      }
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_templateMan{
+    .el-tabs__item{
+      width: 100px;
+      text-align: center;
+    }
+    .el-tabs__header{
+      margin-bottom: 0;
+    }
+  }
+</style>

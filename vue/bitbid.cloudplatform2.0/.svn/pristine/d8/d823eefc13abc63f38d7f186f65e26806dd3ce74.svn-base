@@ -1,0 +1,37 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-tabs v-model="activeTab">
+        <el-tab-pane label="评估模板" name="1">
+          <evaluationTemplate></evaluationTemplate>
+        </el-tab-pane>
+        <el-tab-pane label="评估项" name="2">
+          <evaluationItem></evaluationItem>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: '',
+  components: {
+    // 预约管理
+    evaluationTemplate: resolve => require(['./evaluationTemplate.vue'], resolve),
+    evaluationItem: resolve => require(['./evaluationItem.vue'], resolve)
+  },
+  data () {
+    return {
+      activeTab: '1'
+    }
+  },
+  methods: {
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style scoped>
+</style>

@@ -1,0 +1,20 @@
+export default[
+  {
+    path: '/biddingSources/biNotice',
+    name: '比选公告',
+    meta: {
+      title: '比选公告',
+      active: '/biddingSources/biNotice'
+    },
+    component: () => import(/* webpackChunkName: 'biddingSources' */ '@/pages/biddingSources/biNotice/index')
+  },
+  {
+    path: '/biddingSources/buildProject',
+    name: '拟在建项目',
+    meta: {
+      title: '拟在建项目',
+      active: '/biddingSources/buildProject'
+    },
+    component: () => import(/* webpackChunkName: 'biddingSources' */ '@/pages/biddingSources/buildProject/index')
+  }
+]

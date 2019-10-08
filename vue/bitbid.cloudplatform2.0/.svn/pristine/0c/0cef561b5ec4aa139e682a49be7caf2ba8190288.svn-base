@@ -1,0 +1,1188 @@
+<template>
+  <div class="cloudcontent" id="cloud_process">
+    <div class="main">
+      <div class="toptit" style="border-bottom: 0px;">
+        <el-button type="primary" class="addbutton" @click="addBtn" v-if="checkRoutePath">
+          <span> + 新增标段</span>
+        </el-button>
+        <h3 class="protitle">{{tenderProjectName}}（项目编号：{{projectCode}}）</h3>
+      </div>
+      <div class="section_listbox">
+        <div class="section_list">
+          <ul class="section_ul">
+            <li v-for="(item, index) in sectionList" :key="item.index" :class="curProject[sectionIndex].code === item.code ? 'cur': ''" @click="changeBidSection(index)">
+              <p :title="item.bidSectionName">{{item.bidSectionName}}</p>
+              <span>{{item.flowStatus | filterFlowStatus}}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="btnMore" v-if="isMore">
+          <i class="open" v-if="!isOpen" @click="handleIsOpen">展开</i>
+          <i class="close" v-if="isOpen" @click="handleIsOpen">收起</i>
+        </div>
+      </div>
+      <div class="section_info">
+        <p class="handle">
+          <span class="btn_look" @click="detailBtn">查看标段</span>
+          <span class="btn_edit" @click="updateBtn" v-if="(this.sectionForm.flowStatus === 1 || this.sectionForm.flowStatus === 4 || this.sectionForm.flowStatus === 18) && this.checkRoutePath">编辑标段</span>
+          <span class="btn_del" @click="delBtn" v-if="this.sectionForm.flowStatus === 1 && this.checkRoutePath">删除标段</span>
+          <span class="btn_waste" @click="addWasteBtn" v-if="this.sectionForm.flowStatus !== 1 && this.sectionForm.flowStatus !== 2 && this.sectionForm.flowStatus !== 4 && this.sectionForm.flowStatus !== 18 && this.sectionForm.flowStatus !== 15 && this.sectionForm.flowStatus !== 17  && !this.sectionForm.processCodes && this.checkRoutePath && Number(this.chooseBidSectionInfo.currentFlowStatus) === 0">废标</span>
+        </p>
+        <table class="bidtable">
+          <tr>
+            <td class="tit">标段编号：</td>
+            <td><span>{{sectionForm.bidSectionCode}}</span></td>
+            <td class="tit">标段状态：</td>
+            <td><span>{{sectionForm.flowStatus | filterFlowStatus}}</span></td>
+          </tr>
+          <tr v-if="this.chooseTenderProjectInfo.isPreBid !== 1">
+            <td class="tit">开标时间：</td>
+            <td><span>{{sectionForm.bidOpeningTime | filterDate}}</span></td>
+            <td class="tit">开标地点：</td>
+            <td><span>{{sectionForm.bidOpeningAddress}}</span></td>
+          </tr>
+          <tr v-if="this.chooseTenderProjectInfo.isPreBid === 1">
+            <td class="tit">资格预审会时间：</td>
+            <td><span>{{sectionForm.prequalificationTime | filterDate}}</span></td>
+            <td class="tit">资格预审会地点：</td>
+            <td><span>{{sectionForm.prequalificationAddress}}</span></td>
+          </tr>
+        </table>
+      </div>
+      <div class="process_box">
+        <p v-if="chooseBidSectionInfo.flowStatus !== 1 && chooseBidSectionInfo.flowStatus !== 2 && chooseBidSectionInfo.flowStatus !== 4 && chooseBidSectionInfo.flowStatus !== 18">
+          <span><em></em>已完成</span><span><em></em>进行中</span><span><em></em>未开始</span>
+        </p>
+        <div class="process" v-loading ="processFlag" v-if="chooseBidSectionInfo.flowStatus !== 1 && chooseBidSectionInfo.flowStatus !== 2 && chooseBidSectionInfo.flowStatus !== 4 && chooseBidSectionInfo.flowStatus !== 18">
+          <ul>
+            <li v-for="(item, index) in process" :key="item.value" :class="item.colorFlag === '1'? 'current': (item.colorFlag === '0' ?  'next': 'prev')"  v-if="Number(item.check) !== -1">
+              <el-button  @click="processBtn(item, true)">{{item.name}}</el-button>
+              <div class="per" v-if="(item.percent === 0 || (item.percent && item.percent !== 100)) && index !== process.length - 1"><el-progress type="circle" :percentage="item.percent"></el-progress></div>
+              <div class="per" v-if="item.percent === 100 && index !== process.length - 1"><el-progress type="circle" status="success" :percentage="item.percent"></el-progress></div>
+              <div class="waste" v-if="item.wasteFlag" @click="wasteBtn"><el-button>废标</el-button></div>
+            </li>
+          </ul>
+        </div>
+        <div class="process_main">
+          <div class="noinfo" v-if="chooseBidSectionInfo.flowStatus === 1 || chooseBidSectionInfo.flowStatus === 2 || chooseBidSectionInfo.flowStatus === 4 || chooseBidSectionInfo.flowStatus === 18">
+            <!--标段状态=“已保存”-->
+            <p v-if="chooseBidSectionInfo.flowStatus === 1">该标段信息还未提交，请先提交标段信息！</p>
+            <!--标段状态=“已退回”-->
+            <p v-if="chooseBidSectionInfo.flowStatus === 4">该标段信息被退回，请重新完善标段信息！</p>
+            <!--标段状态=“审核中”-->
+            <p v-if="chooseBidSectionInfo.flowStatus === 2">该标段信息正在审核中，请耐心等待！</p>
+            <!--标段状态=“已撤回”-->
+            <p v-if="chooseBidSectionInfo.flowStatus === 18">该标段信息被撤回，请重新完善标段信息！</p>
+          </div>
+          <invitation :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'invitation'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></invitation>
+          <announcement :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'announcement'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></announcement>
+          <prequalificationFile :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'prequalificationFile'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></prequalificationFile>
+          <prequalificationResponse :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'prequalificationResponse'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></prequalificationResponse>
+          <checkResult :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'checkResult'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></checkResult>
+          <bidDocument :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'bidDocument'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></bidDocument>
+          <bidResponse :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'bidResponse'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></bidResponse>
+          <bidOpening :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'bidOpening'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></bidOpening>
+          <!--<wasteBidResult :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'wasteBidResult'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></wasteBidResult>-->
+          <calibrationResult :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'calibrationResult'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></calibrationResult>
+          <waste-bid-result :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'wasteBidResult'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></waste-bid-result>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import {tenderProject, bidSection} from '@/api/project'
+import {dateFormat} from '@/assets/js/common'
+export default {
+  components: {
+    // 邀请招标
+    invitation: resolve => require(['./invite/index.vue'], resolve),
+    // 招标公告/资格预审公告
+    announcement: resolve => require(['./announcement/index.vue'], resolve),
+    // 资格预审文件
+    prequalificationFile: resolve => require(['./prequalificationFile/index.vue'], resolve),
+    // 响应资格预审
+    prequalificationResponse: resolve => require(['./prequalificationResponse/index.vue'], resolve),
+    // 资格审查结果
+    checkResult: resolve => require(['./checkResult/index.vue'], resolve),
+    // 招标文件
+    bidDocument: resolve => require(['./bidDocument/index.vue'], resolve),
+    // 响应招标
+    bidResponse: resolve => require(['./bidResponse/index.vue'], resolve),
+    // 开标评标
+    bidOpening: resolve => require(['./bidOpening/index.vue'], resolve),
+    // 废标结果
+    wasteBidResult: resolve => require(['./wasteBidResult/index.vue'], resolve),
+    // 定标结果
+    calibrationResult: resolve => require(['./calibrationResult/index.vue'], resolve)
+  },
+  data () {
+    return {
+      tenderProjectName: '',
+      projectCode: '',
+      tenderSystemCode: this.$route.params.code,
+      sectionSystemCode: (this.$route.query && this.$route.query.sectionSystemCode) ? this.$route.query.sectionSystemCode : '',
+      sectionIndex: 'currentBidSection',
+      sectionFlowStatusIndex: 'currentBidSectionFlowStatus',
+      isMore: false, // 判断标段是否需要多行显示
+      isOpen: false, // 判断标段是否展开收起
+      sectionList: [],
+      sectionForm: {},
+      processFlag: true, // 流转信息是否展示，默认不展示
+      defaultProcess: [
+        {
+          name: '', // 招标公告/资格预审公告/投标邀请书
+          enName: '',
+          type: '',
+          check: '',
+          colorFlag: '', // 颜色高亮条件（0.已完成 1.进行中 2. 未完成）
+          clickFlag: '', // 是否可点击（false.否 true.是）
+          operationFlag: '', // 该主件下的操作按钮是否展示（false.否 true.是）
+          percent: 0,
+          wasteFlag: ''
+        }, {
+          name: '资格预审文件',
+          enName: 'prequalificationFile',
+          type: '9',
+          check: '',
+          colorFlag: '',
+          clickFlag: '',
+          operationFlag: '',
+          percent: 0,
+          wasteFlag: ''
+        }, {
+          name: '响应资格预审',
+          enName: 'prequalificationResponse',
+          type: '10',
+          check: '',
+          colorFlag: '',
+          clickFlag: '',
+          operationFlag: '',
+          percent: 0,
+          wasteFlag: ''
+        }, {
+          name: '资格审查结果',
+          enName: 'checkResult',
+          type: '11',
+          check: '',
+          colorFlag: '',
+          clickFlag: '',
+          operationFlag: '',
+          percent: 0,
+          wasteFlag: ''
+        }, {
+          name: '招标文件',
+          enName: 'bidDocument',
+          type: '12',
+          check: '',
+          colorFlag: '',
+          clickFlag: '',
+          operationFlag: '',
+          percent: 0,
+          wasteFlag: ''
+        }, {
+          name: '响应招标',
+          enName: 'bidResponse',
+          type: '13',
+          check: '',
+          colorFlag: '',
+          clickFlag: '',
+          operationFlag: '',
+          percent: 0,
+          wasteFlag: ''
+        }, {
+          name: '开标评标',
+          enName: 'bidOpening',
+          type: '14',
+          check: '',
+          colorFlag: '',
+          clickFlag: '',
+          operationFlag: '',
+          percent: 0,
+          wasteFlag: ''
+        }, {
+          name: '定标结果',
+          enName: 'calibrationResult',
+          type: '16',
+          check: '',
+          colorFlag: '',
+          clickFlag: '',
+          operationFlag: '',
+          percent: 0,
+          wasteFlag: ''
+        }, {
+          name: '完结',
+          type: '17',
+          check: '',
+          colorFlag: '',
+          clickFlag: '',
+          operationFlag: '',
+          percent: 0,
+          wasteFlag: ''
+        }
+      ],
+      process: [
+        {
+          colorFlag: 0,
+          check: '0',
+          name: '资格预审公告',
+          percent: 16
+        },
+        {
+          colorFlag: 0,
+          check: '0',
+          name: '资格预审文件',
+          percent: 50
+        },
+        {
+          colorFlag: 0,
+          check: '0',
+          name: '响应资格预审',
+          percent: 66
+        },
+        {
+          colorFlag: 1,
+          check: '0',
+          name: '资格审查结果',
+          percent: 48
+        },
+        {
+          colorFlag: 2,
+          check: '0',
+          name: '招标文件',
+          percent: 56
+        },
+        {
+          colorFlag: 2,
+          check: '0',
+          name: '响应招标',
+          percent: 76
+        },
+        {
+          colorFlag: 2,
+          check: '0',
+          name: '开标评标',
+          percent: 100
+        },
+        {
+          colorFlag: 2,
+          check: '0',
+          name: '定标结果',
+          percent: 48
+        },
+        {
+          colorFlag: 2,
+          check: '0',
+          name: '完结'
+        }
+      ],
+      currentView: '', // 按钮点击选择的视图
+      selectCode: '', // 用于流程切换
+      checkRoutePath: false, // 不是项目进度中进入的，操作按钮要全部隐藏
+      curProject: {}, // 当前流程节点，用于刷新后维持原来节点不变
+      chooseTenderProjectInfo: {},
+      chooseBidSectionInfo: {}, // 当前标段信息
+      operationFlag: '' // 控制页面操作按钮展示的字段（0.不展示 1.展示）
+    }
+  },
+  filters: {
+    /** 流程状态:1.已保存；2.待审批；3.已审批；4.已驳回；5.已提交（不需要审批）；6.招标公告; 7.资格预审公告; 8.投标邀请书;  9.资格预审文件; 10.响应资格预审; 11.资格审查结果; 12.招标文件; 13.响应招标; 14.开标评标; 15.废标结果公告; 16.定标结果; 17.完结  */
+    filterFlowStatus (flowStatus) {
+      if (flowStatus === 1) {
+        return '已保存'
+      } else if (flowStatus === 2) {
+        return '待审批'
+      } else if (flowStatus === 3) {
+        return '已审批'
+      } else if (flowStatus === 4) {
+        return '已驳回'
+      } else if (flowStatus === 5) {
+        return '已提交'
+      } else if (flowStatus === 6) {
+        return '招标公告'
+      } else if (flowStatus === 7) {
+        return '资格预审公告'
+      } else if (flowStatus === 8) {
+        return '投标邀请书'
+      } else if (flowStatus === 9) {
+        return '资格预审文件'
+      } else if (flowStatus === 10) {
+        return '响应资格预审'
+      } else if (flowStatus === 11) {
+        return '资格审查结果'
+      } else if (flowStatus === 12) {
+        return '招标文件'
+      } else if (flowStatus === 13) {
+        return '响应招标'
+      } else if (flowStatus === 14) {
+        return '开标评标'
+      } else if (flowStatus === 15) {
+        return '已废标'
+      } else if (flowStatus === 16) {
+        return '定标结果'
+      } else if (flowStatus === 17) {
+        return '已完成'
+      } else if (flowStatus === 18) {
+        return '已撤销'
+      }
+    },
+    /** 格式化申请时间 */
+    filterDate (bidOpeningTime) {
+      if (bidOpeningTime) {
+        return bidOpeningTime ? dateFormat(bidOpeningTime, 'yyyy-MM-dd hh:mm') : '---'
+      }
+    }
+  },
+  watch: {
+    selectCode: function (newV, oldV) {
+      if (newV) {
+        this.getProjectFlow(this.selectCode, true)
+      }
+    }
+  },
+  mounted () {
+    this.init()
+  },
+  methods: {
+    checkFlowStatusFlag (flowStatusFlag) {
+      if (Number(flowStatusFlag) === 15) {
+        this.updateProcessNodeInfo()
+      } else if (Number(flowStatusFlag) === 17) {
+        this.currentView = this.process[0].enName
+        this.type = this.process[0].type
+        this.updateProcessNodeInfo()
+      } else {
+        if (this.process.length > 0) {
+          for (let i = 0; i < this.process.length; i++) {
+            if (Number(flowStatusFlag) === Number(this.process[i].type)) {
+              this.currentView = this.process[i].enName
+              this.type = this.process[i].type
+              this.updateProcessNodeInfo()
+              break
+            }
+          }
+        }
+      }
+      this.getBidSectionList()
+    },
+    // 新增
+    addBtn () {
+      this.$router.push({path: `/project/projectProcess/project/add`, query: {code: this.tenderSystemCode}})
+    },
+    // 修改
+    updateBtn () {
+      this.$router.push({path: `/project/projectProcess/project/update`, query: {code: this.tenderSystemCode, bidSectionSystemCode: this.sectionForm.code}})
+    },
+    // 查看
+    detailBtn () {
+      this.$router.push({path: `/project/projectProcess/project/detail/${this.sectionForm.code}`})
+    },
+    // 删除
+    delBtn () {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        bidSection.delete(this.sectionForm.objectId).then(() => {
+          this.clearCurProjectSession(this.sectionForm.tenderSystemCode)
+          this.getBidSectionList()
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 添加废标公告
+    addWasteBtn () {
+      let type = this.sectionForm.flowStatus
+      if (Number(this.sectionForm.flowStatus) < 6) {
+        type = this.process[0].type
+      }
+      this.$router.push({path: `/project/projectProcess/project/process/wasteBidResult/add`, query: {sectionSystemCode: this.sectionForm.code, type: type}})
+    },
+    /** 获取指定标段的信息 */
+    changeBidSection (index) {
+      this.sectionForm = this.sectionList[index]
+      this.selectCode = this.sectionForm.code
+      this.saveProjectBySession(this.sectionForm, null)
+    },
+    /** 查询项目名称 */
+    getTenderProjectName () {
+      tenderProject.getOne(this.tenderSystemCode).then((res) => {
+        if (res.data.tenderProject) {
+          this.chooseTenderProjectInfo = res.data.tenderProject
+          this.tenderProjectName = res.data.tenderProject.tenderProjectName
+          this.projectCode = res.data.tenderProject.projectCode
+        }
+      })
+    },
+    /** 获取该招标项目下的所有标段信息 */
+    getBidSectionList () {
+      this.checkRoutePath = sessionStorage.getItem('isOverview') === 'true'
+      bidSection.getListInProcess(this.tenderSystemCode).then((res) => {
+        this.sectionList = res.data.bidSectionList
+        if (this.sectionList && this.sectionList.length === 0) {
+          this.$router.push({path: `/project/projectProcess`})
+        } else {
+          // 判断当前session中是否存在标段信息
+          let progressTemp = sessionStorage.getItem(this.tenderSystemCode)
+          if (progressTemp !== '{}' && progressTemp !== null) {
+            this.curProject = JSON.parse(progressTemp)
+            if (this.curProject.hasOwnProperty(this.sectionIndex)) {
+              // 当前选择的标段
+              this.selectCode = this.curProject[this.sectionIndex].code
+              for (let i = 0; i < this.sectionList.length; i++) {
+                if (this.sectionList[i].code === this.selectCode) {
+                  this.sectionForm = this.sectionList[i]
+                }
+              }
+            }
+          } else {
+            if (this.sectionSystemCode !== '') { // 从项目全貌过来的标段信息
+              for (let i = 0; i < this.sectionList.length; i++) {
+                if (this.sectionList[i].code === this.sectionSystemCode) {
+                  this.sectionForm = this.sectionList[i]
+                  break
+                }
+              }
+            } else {
+              this.sectionForm = this.sectionList[0]
+            }
+            // session中存储当前标段的信息
+            this.saveProjectBySession(this.sectionForm, null)
+            this.selectCode = this.sectionForm.code
+          }
+        }
+      })
+    },
+    // 保存当前项目，当前标段及当前标段当前操作的流程
+    saveProjectBySession (bidSectionInfo, flowStatus) {
+      if (bidSectionInfo && bidSectionInfo.type === '17') { // 完结
+        return
+      }
+      if (bidSectionInfo !== null) {
+        this.curProject[this.sectionIndex] = {}
+        Object.assign(this.curProject[this.sectionIndex], bidSectionInfo)
+      }
+      if (flowStatus !== null) {
+        this.curProject[this.sectionFlowStatusIndex] = {}
+        Object.assign(this.curProject[this.sectionFlowStatusIndex], flowStatus)
+      }
+      sessionStorage.setItem(this.tenderSystemCode, JSON.stringify(this.curProject))
+    },
+    clearCurProjectSession (code) {
+      let progressTemp = sessionStorage.getItem(code)
+      if (progressTemp) {
+        let curProject = JSON.parse(progressTemp)
+        if (curProject.hasOwnProperty(this.sectionIndex)) {
+          delete curProject[this.sectionIndex]
+        }
+        if (curProject.hasOwnProperty(this.sectionFlowStatusIndex)) {
+          delete curProject[this.sectionFlowStatusIndex]
+        }
+        sessionStorage.setItem(code, JSON.stringify(curProject))
+      } else {
+        sessionStorage.setItem(code, JSON.stringify({}))
+      }
+    },
+    /** 获取当前流程节点视图 */
+    setCurrentView (flowStatusFlag) {
+      if (Number(flowStatusFlag) === 17) {
+        this.currentView = this.process[0].enName
+        this.type = this.process[0].type
+        // 在session中保存当前操作的流程节点
+        this.saveProjectBySession(null, this.process[0])
+      } else {
+        for (let i = 0; i < this.process.length; i++) {
+          if (Number(flowStatusFlag) === Number(this.process[i].type)) {
+            this.currentView = this.process[i].enName
+            this.type = this.process[i].type
+            // 在session中保存当前操作的流程节点
+            this.saveProjectBySession(null, this.process[i])
+            break
+          }
+        }
+      }
+    },
+    /** 获取项目流程以及节点高亮的状态 */
+    getProjectFlow (sectionSystemCode, flag) {
+      this.currentView = ''
+      this.processFlag = true
+      bidSection.getOne(sectionSystemCode).then((res) => {
+        // 1.判断该标段目前走到哪个节点了，该节点前只可查看,隐藏操作按钮
+        // 2.判断该节点下是否存在审批中的信息，若存在则后续节点不可点击，若不存在则后续节点可点击
+        // 3.判断该标段目前走到哪个节点了，该节点前无颜色，该节点及其后续节点是蓝色
+        // 判断该标段的流转状态
+        if (res.data.bidSection) {
+          this.chooseBidSectionInfo = res.data.bidSection
+          if (this.chooseBidSectionInfo.flowStatus === 3 || this.chooseBidSectionInfo.flowStatus >= 5) {
+            if (flag) {
+              this.process = []
+              this.process = this.process.concat(this.defaultProcess)
+              // 判断项目类型，资格预审的项目是10个节点，其他项目是7个（第一个为招标公告或者是邀请招标）
+              if (Number(this.chooseTenderProjectInfo.tenderMode) === 1) { // 1.公开招标
+                if (Number(this.chooseTenderProjectInfo.isPreBid) === 0) {
+                  // 2.资格后审
+                  this.process[0].name = '招标公告'
+                  this.process[0].enName = 'announcement'
+                  this.process[0].type = '6'
+                  this.process.splice(1, 3)
+                  if (this.chooseBidSectionInfo.flowStatus === 3 || this.chooseBidSectionInfo.flowStatus === 5) {
+                    this.currentView = 'announcement'
+                    this.type = 6
+                  }
+                } else {
+                  // 1.资格预审
+                  this.process[0].name = '资格预审公告'
+                  this.process[0].enName = 'announcement'
+                  this.process[0].type = '7'
+                  if (this.chooseBidSectionInfo.flowStatus === 3 || this.chooseBidSectionInfo.flowStatus === 5) {
+                    this.currentView = 'announcement'
+                    this.type = 7
+                  }
+                }
+              } else if (Number(this.chooseTenderProjectInfo.tenderMode) === 2) { // 2.邀请招标
+                // 3.邀请招标
+                this.process[0].name = '投标邀请书'
+                this.process[0].enName = 'invitation'
+                this.process[0].type = '8'
+                this.process.splice(1, 3)
+                if (this.chooseBidSectionInfo.flowStatus === 3 || this.chooseBidSectionInfo.flowStatus === 5) {
+                  this.currentView = 'invitation'
+                  this.type = 8
+                }
+              } else if (Number(this.chooseTenderProjectInfo.tenderMode) === 3) { // 3.竞争性谈判
+                // 5.竞争性谈判
+                this.process[0].name = '招标公告'
+                this.process[0].enName = 'announcement'
+                this.process[0].type = '6'
+                this.process.splice(1, 3)
+                if (this.chooseBidSectionInfo.flowStatus === 3 || this.chooseBidSectionInfo.flowStatus === 5) {
+                  this.currentView = 'announcement'
+                  this.type = 6
+                }
+              } else if (Number(this.chooseTenderProjectInfo.tenderMode) === 4) { // 4.单一来源采购
+                // 4.单一来源
+                this.process[0].name = '投标邀请书'
+                this.process[0].enName = 'invitation'
+                this.process[0].type = '8'
+                this.process.splice(1, 3)
+                if (this.chooseBidSectionInfo.flowStatus === 3 || this.chooseBidSectionInfo.flowStatus === 5) {
+                  this.currentView = 'invitation'
+                  this.type = 8
+                }
+              } else if (Number(this.chooseTenderProjectInfo.tenderMode) === 5) { // 5.询价采购
+                // 7.询价
+                this.process[0].name = '招标公告'
+                this.process[0].enName = 'announcement'
+                this.process[0].type = '6'
+                this.process.splice(1, 3)
+                if (this.chooseBidSectionInfo.flowStatus === 3 || this.chooseBidSectionInfo.flowStatus === 5) {
+                  this.currentView = 'announcement'
+                  this.type = 6
+                }
+              } else if (Number(this.chooseTenderProjectInfo.tenderMode) === 6) { //  6.竞争性磋商
+                // 6.竞争性磋商
+                this.process[0].name = '招标公告'
+                this.process[0].enName = 'announcement'
+                this.process[0].type = '6'
+                this.process.splice(1, 3)
+                if (this.chooseBidSectionInfo.flowStatus === 3 || this.chooseBidSectionInfo.flowStatus === 5) {
+                  this.currentView = 'announcement'
+                  this.type = 6
+                }
+              } else { // 9.其他
+              }
+            } else {
+              // 判断项目类型，资格预审的项目是10个节点，其他项目是7个（第一个为招标公告或者是邀请招标）
+              if (Number(this.chooseTenderProjectInfo.tenderMode) === 1) { // 1.公开招标
+                if (Number(this.chooseTenderProjectInfo.isPreBid) === 0) {
+                  // 2.资格后审
+                  if (this.chooseBidSectionInfo.flowStatus === 3 || this.chooseBidSectionInfo.flowStatus === 5) {
+                    this.currentView = 'announcement'
+                  }
+                } else {
+                  // 1.资格预审
+                  if (this.chooseBidSectionInfo.flowStatus === 3 || this.chooseBidSectionInfo.flowStatus === 5) {
+                    this.currentView = 'announcement'
+                  }
+                }
+              } else if (Number(this.chooseTenderProjectInfo.tenderMode) === 2) { // 2.邀请招标
+                // 3.邀请招标
+                if (this.chooseBidSectionInfo.flowStatus === 3 || this.chooseBidSectionInfo.flowStatus === 5) {
+                  this.currentView = 'invitation'
+                }
+              } else if (Number(this.chooseTenderProjectInfo.tenderMode) === 3) { // 3.竞争性谈判
+                // 5.竞争性谈判
+                if (this.chooseBidSectionInfo.flowStatus === 3 || this.chooseBidSectionInfo.flowStatus === 5) {
+                  this.currentView = 'announcement'
+                }
+              } else if (Number(this.chooseTenderProjectInfo.tenderMode) === 4) { // 4.单一来源采购
+                // 4.单一来源
+                if (this.chooseBidSectionInfo.flowStatus === 3 || this.chooseBidSectionInfo.flowStatus === 5) {
+                  this.currentView = 'invitation'
+                }
+              } else if (Number(this.chooseTenderProjectInfo.tenderMode) === 5) { // 5.询价采购
+                // 7.询价
+                if (this.chooseBidSectionInfo.flowStatus === 3 || this.chooseBidSectionInfo.flowStatus === 5) {
+                  this.currentView = 'announcement'
+                }
+              } else if (Number(this.chooseTenderProjectInfo.tenderMode) === 6) { //  6.竞争性磋商
+                // 6.竞争性磋商
+                if (this.chooseBidSectionInfo.flowStatus === 3 || this.chooseBidSectionInfo.flowStatus === 5) {
+                  this.currentView = 'announcement'
+                }
+              } else { // 9.其他
+              }
+            }
+            this.setProcessNodes(res.data.bidSection)
+          } else {
+            this.processFlag = false
+          }
+        }
+      })
+    },
+    /** 对流程节点的使用状态进行设定(启用、禁用) */
+    setProcessNodes (bidSectionInfo) {
+      let list = bidSectionInfo.infoIntegrity.split(',')
+      let flowStatus = bidSectionInfo.flowStatus
+      let currentFlowStatus = bidSectionInfo.currentFlowStatus
+      if (flowStatus === 15) { // 15.废标结果公告
+        if (list.length > 0 && list.length === this.process.length) { // 去掉后台给的“完结”状态
+          for (let i = 0; i < list.length; i++) {
+            if (Number(this.process[i].type) === Number(currentFlowStatus)) {
+              this.process[i].wasteFlag = true
+              this.process[i].percent = Number(list[i])
+            } else {
+              if (Number(list[i]) !== -2) {
+                this.process[i].percent = Number(list[i])
+              } else {
+                this.process[i].percent = 0
+              }
+              this.process[i].wasteFlag = false
+            }
+            this.process[i].check = list[i] // -1:表示禁用，-2:已废标，其它值：启用
+          }
+        }
+      } else {
+        if (list.length > 0 && list.length === this.process.length) { // 去掉后台给的“完结”状态
+          if (Number(currentFlowStatus) >= 3) {
+            for (let i = 0; i < list.length; i++) {
+              if (Number(this.process[i].type) === Number(flowStatus)) {
+                this.process[i].wasteFlag = true
+              } else {
+                this.process[i].wasteFlag = false
+              }
+              this.process[i].check = list[i] // -1:表示禁用，-2:已废标，其它值：启用
+              this.process[i].percent = Number(list[i])
+            }
+          } else {
+            for (let i = 0; i < list.length; i++) {
+              this.process[i].check = list[i] // -1:表示禁用，-2:已废标，其它值：启用
+              this.process[i].percent = Number(list[i])
+              this.process[i].wasteFlag = false
+            }
+          }
+        }
+      }
+      this.setProcessNodeInfo(bidSectionInfo)
+    },
+    /** 设定流程节点操作按钮、高亮的展示 */
+    setProcessNodeInfo (chooseBidSectionInfo) {
+      if (Number(chooseBidSectionInfo.flowStatus) < 6) {
+        this.process.forEach(item => { // 标段刚提交，未进行任何录入
+          if (Number(item.check) === 0) {
+            item.colorFlag = '0' // 未开始
+            item.clickFlag = true
+            item.operationFlag = this.checkRoutePath
+          }
+        })
+      } else if (Number(chooseBidSectionInfo.flowStatus) >= 6 && Number(chooseBidSectionInfo.flowStatus) < 17) {
+        this.process.forEach(item => {
+          if (Number(item.check) !== -1) {
+            if (Number(chooseBidSectionInfo.flowStatus) === 15) { //  已包含提交的废标公告信息
+              if (Number(item.type) < Number(chooseBidSectionInfo.currentFlowStatus)) { // 当前节点之前的信息（无颜色，可点击，可查看）
+                item.colorFlag = '2' // 已完成
+                item.clickFlag = true
+                item.operationFlag = false
+              } else if (Number(item.type) === Number(chooseBidSectionInfo.currentFlowStatus)) { // 当前节点之后的信息要根据审批进度进行判断
+                item.colorFlag = '2' // 进行中
+                item.clickFlag = true
+                item.operationFlag = false
+              } else {
+                item.colorFlag = '0'
+                item.clickFlag = true
+                item.operationFlag = false
+              }
+            } else {
+              if (Number(chooseBidSectionInfo.currentFlowStatus) > 5) { // 已包含未提交的废标公告信息
+                if (Number(item.type) < Number(chooseBidSectionInfo.flowStatus)) { // 当前节点之前的信息（无颜色，可点击，可查看）
+                  item.colorFlag = '2' // 已完成
+                  item.clickFlag = true
+                  item.operationFlag = false
+                } else if (Number(item.type) === Number(chooseBidSectionInfo.flowStatus)) { // 当前节点之后的信息要根据审批进度进行判断
+                  item.colorFlag = '1' // 进行中
+                  item.clickFlag = true
+                  item.operationFlag = false
+                } else {
+                  item.colorFlag = '0'
+                  item.clickFlag = true
+                  item.operationFlag = false
+                }
+              } else {
+                if (Number(item.type) < Number(chooseBidSectionInfo.flowStatus)) { // 当前节点之前的信息（无颜色，可点击，可查看）
+                  item.colorFlag = '2' // 已完成
+                  item.clickFlag = true
+                  item.operationFlag = false
+                } else { // 当前节点之后的信息要根据审批进度进行判断
+                  if (chooseBidSectionInfo.processCodes) { // 存在未提交/待审批的信息，则该节点（高亮，可点击，可操作）；后续节点（高亮，不可点击，不可操作）
+                    if (Number(item.type) === Number(chooseBidSectionInfo.flowStatus)) {
+                      item.colorFlag = '1' // 进行中
+                      item.clickFlag = true
+                      item.operationFlag = this.checkRoutePath
+                    } else {
+                      item.colorFlag = '0'
+                      item.clickFlag = false
+                      item.operationFlag = false
+                    }
+                  } else { // 不存在未提交/待审批的信息，则该节点（高亮，可点击，可操作）；后续节点（高亮，可点击，可操作）
+                    if (Number(item.type) === Number(chooseBidSectionInfo.flowStatus)) {
+                      item.colorFlag = '1'
+                      item.clickFlag = true
+                      item.operationFlag = this.checkRoutePath
+                    } else {
+                      item.colorFlag = '0'
+                      item.clickFlag = true
+                      item.operationFlag = this.checkRoutePath
+                    }
+                  }
+                }
+              }
+            }
+          }
+        })
+      } else {
+        this.process.forEach(item => { // 该标段的流程已结束
+          if (Number(item.check) !== -1) {
+            item.colorFlag = '2'
+            item.clickFlag = true
+            item.operationFlag = false
+          }
+        })
+      }
+      // 存储当前节点的所有信息
+      if (this.chooseBidSectionInfo.flowStatus === 15) { // 已废标
+        this.setCurrentView(this.chooseBidSectionInfo.currentFlowStatus)
+      } else if (this.chooseBidSectionInfo.flowStatus !== 3 && this.chooseBidSectionInfo.flowStatus !== 5) {
+        this.setCurrentView(this.chooseBidSectionInfo.flowStatus)
+      } else {
+        this.setCurrentView(this.type)
+      }
+      // 从session中获取当前节点的信息
+      let curProcess
+      if (this.curProject.hasOwnProperty(this.sectionFlowStatusIndex)) {
+        curProcess = this.curProject[this.sectionFlowStatusIndex]
+      }
+      if (curProcess) {
+        this.process.map((item, index) => {
+          if (curProcess.type === item.type && Number(curProcess.type) !== 17) {
+            this.saveProjectBySession(null, this.process[index])
+            this.operationFlag = this.process[index].operationFlag
+            this.processBtn(item, false)
+          } else if (curProcess.type === item.type && Number(curProcess.type) === 17) {
+            this.$store.commit('delete_tabs', this.$route.fullPath)
+          }
+        })
+      } /* else {
+        // 将第一个节点的操作状态进行传递
+        this.operationFlag = this.process[0].operationFlag
+        // 在session中保存当前操作的流程节点
+        this.saveProjectBySession(null, this.process[0])
+      } */
+      this.processFlag = false
+    },
+    /** 更新流程节点操作按钮、高亮的展示 */
+    updateProcessNodeInfo () {
+      bidSection.getOne(this.selectCode).then((res) => {
+        if (res.data.bidSection) {
+          this.chooseBidSectionInfo = res.data.bidSection
+          this.setProcessNodes(res.data.bidSection)
+          this.setProcessNodeInfo(res.data.bidSection)
+        }
+      })
+    },
+    /** 废标功能 */
+    wasteBtn () {
+      this.currentView = 'wasteBidResult'
+      this.operationFlag = true
+      // this.chooseBidSectionInfo.flowStatus
+      this.type = this.curProject[this.sectionFlowStatusIndex].type
+    },
+    /**
+     * 流程切换
+     * @param type
+     */
+    processBtn (item, flag) {
+      if (flag) {
+        this.updateProcessNodeInfo()
+      }
+      if (item.clickFlag === true) {
+        this.saveProjectBySession(null, item)
+        this.operationFlag = item.operationFlag
+        this.type = item.type
+        switch (item.type) {
+          case '6':
+            this.currentView = 'announcement'
+            break
+          case '7':
+            this.currentView = 'announcement'
+            break
+          case '8':
+            this.currentView = 'invitation'
+            break
+          case '9':
+            this.currentView = 'prequalificationFile'
+            break
+          case '10':
+            this.currentView = 'prequalificationResponse'
+            break
+          case '11':
+            this.currentView = 'checkResult'
+            break
+          case '12':
+            this.currentView = 'bidDocument'
+            break
+          case '13':
+            this.currentView = 'bidResponse'
+            break
+          case '14':
+            this.currentView = 'bidOpening'
+            break
+          case '15':
+            this.currentView = 'wasteBidResult'
+            break
+          case '16':
+            this.currentView = 'calibrationResult'
+            break
+          case '17':
+            if (Number(this.chooseBidSectionInfo.flowStatus) !== 15 && Number(this.chooseBidSectionInfo.flowStatus) < 17) {
+              if (Number(this.chooseBidSectionInfo.currentFlowStatus) > 0) {
+                this.$message.warning('该标段存在废标信息，不可进行完结操作！')
+                return false
+              }
+              this.isEnd(item)
+            } else {
+              this.$message.warning('该标段所属流程已完结，不可重复进行完结操作！')
+              return false
+            }
+            break
+          default:
+        }
+      } else {
+        this.$message.closeAll()
+        this.$message.warning('请先完成上一个信息的提交或审批！')
+        return false
+      }
+    },
+    /** 是否完结的操作 */
+    isEnd (item) {
+      this.$confirm('确认完结吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        bidSection.updateFlowStatusByCode(this.selectCode, Number(item.type), this.tenderSystemCode).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.getProjectFlow(this.selectCode, false)
+          }
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    init () {
+      let sectionUlWrap = document.getElementsByClassName('section_ul')
+      let height = sectionUlWrap[0].clientHeight
+      if (height > 40) {
+        this.isMore = true
+      }
+      this.getTenderProjectName()
+      this.getBidSectionList()
+    },
+    handleIsOpen () {
+      this.isOpen = !this.isOpen
+      let sectionListWrap = document.getElementsByClassName('section_list')
+      if (this.isOpen) {
+        sectionListWrap[0].style.height = 'auto'
+      } else {
+        sectionListWrap[0].style.height = 48 + 'px'
+      }
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_process{
+    h3.protitle{
+      color: #000000;
+      font-size: 18px;
+      line-height: 40px;
+    }
+    .section_listbox{
+      width: 100%;
+      overflow: hidden;
+    }
+    .section_listbox .btnMore i {
+      float: right;
+      font-style: normal;
+      font-size: 12px;
+      padding-left: 18px;
+      margin-top: 5px;
+      cursor: pointer;
+    }
+    .section_listbox i.open {
+      background: url("../../../../static/images/ico_isopen.png") left center no-repeat;
+    }
+    .section_listbox i.close {
+      background: url("../../../../static/images/ico_isclose.png") left center no-repeat;
+    }
+    .section_list{
+      height: 48px;
+      overflow: hidden;
+    }
+    .section_list ul{
+      height: auto;
+      overflow: hidden;
+    }
+    .section_list ul li{
+      height: 44px;
+      padding: 0 12px;
+      border: 1px solid #d9d9d9;
+      max-width: 210px;
+      min-width: 100px;
+      text-align: center;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      float: left;
+      margin: 4px;
+      font-size: 12px;
+      line-height: 18px;
+      cursor: pointer;
+    }
+    .section_list ul li.cur{
+      background: #40a3f1;
+      border: 1px solid #498ce9;
+      color: #ffffff;
+    }
+    .section_list ul li.cur p{
+      color: #ffffff;
+    }
+    .section_list ul li.cur p i{
+      color: #ffffff;
+    }
+    .section_list ul li.cur span{
+      color: #ffffff;
+    }
+    .section_list ul li p{
+      color: #666666;
+      max-width: 100%;
+      overflow: hidden;
+      -ms-text-overflow: ellipsis;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: bold;
+    }
+    .section_list ul li p i{
+      color: #fe903f;
+      font-style: normal;
+    }
+    .section_list ul li span{
+      color: #40a3f1;
+    }
+    .section_info{
+      width: 100%;
+      height: 100px;
+      border: 1px solid #d9d9d9;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      margin-top: 8px;
+    }
+    .section_info p.handle{
+      text-align: right;
+      line-height: 28px;
+    }
+    .section_info p.handle span{
+      margin: 0 12px;
+      color: #498ce9;
+      padding-left: 20px;
+      cursor: pointer;
+    }
+    .section_info p.handle span.btn_look{
+      background: url("../../../../static/images/icon_look.png") left center no-repeat;
+    }
+    .section_info p.handle span.btn_edit{
+      background: url("../../../../static/images/icon_edit.png") left center no-repeat;
+    }
+    .section_info p.handle span.btn_del{
+      background: url("../../../../static/images/icon_del.png") left center no-repeat;
+    }
+    .section_info p.handle span.btn_waste{
+      background: url("../../../../static/images/icon_waste.png") left center no-repeat;
+    }
+    .section_info table{
+      padding: 0 3%;
+      width: 94%;
+      overflow: hidden;
+      line-height: 26px;
+      color: #111111;
+    }
+    .section_info table tr{
+      margin: 20px 0 30px 0 ;
+    }
+    .section_info table tr td:nth-child(odd){
+      width: 123px;
+      color: #666666;
+      text-align: right;
+    }
+    .process_box{
+      width: 100%;
+      padding-bottom: 30px;
+      border: 1px solid #d9d9d9;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      margin-top: 8px;
+    }
+    .process_box > p{
+      line-height: 33px;
+      text-align: right;
+    }
+    .process_box > p span{
+      display: inline-block;
+      margin: 0 12px;
+    }
+    .process_box > p span em{
+      width: 20px;
+      height: 6px;
+      background: #498ce9;
+      border: 1px solid #498ce9;
+      margin-right: 5px;
+      display: inline-block;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .process_box > p span:nth-child(1) em{
+      background: #c8dcf8;
+      border: 1px solid #c8dcf8;
+    }
+    .process_box > p span:nth-child(3) em{
+      background: #ffffff;
+      border: 1px solid #498ce9;
+    }
+    .process{
+      padding: 0 3%;
+      min-height: 125px;
+      overflow-x: auto;
+    }
+    .process ul{
+      min-width: 1076px;
+    }
+    .process ul:after {
+      display: block;
+      content: "";
+      clear: both;
+    }
+    .process ul li{
+      float: left;
+      padding-right: 29px;
+      margin: 0;
+      background: url("../../../../static/images/icon_grayjt.png") right 5px top 16px no-repeat;
+      position: relative;
+    }
+    .process ul li .el-button{
+      height: 48px;
+      background: #ffffff;
+      border-color: #3f63f7;
+      color: #3f63f7;
+      padding: 0 13px;
+    }
+    .process ul li.prev{
+      background: url("../../../../static/images/icon_bluejt.png") right 5px top 16px no-repeat;
+    }
+    .process ul li.prev .el-button{
+      background: #c8dcf8;
+      border-color: #c8dcf8;
+      color: #333333;
+    }
+    .process ul li.current .el-button{
+      background: #498ce9;
+      border-color: #498ce9;
+      color: #ffffff;
+    }
+    .process ul li.next .el-button{
+      background: #ffffff;
+      border-color: #498ce9;
+      color: #333333;
+    }
+    .process ul li:last-child{
+      background: none;
+      padding-right: 0px;
+    }
+    .process ul li .per{
+      width: 30px;
+      height: 30px;
+      position: absolute;
+      right: 16px;
+      top: 35px;
+    }
+    .process ul li .per .el-progress-circle{
+      width: 30px!important;
+      height: 30px!important;
+      background: #ffffff;
+      -webkit-border-radius: 13px;
+      -moz-border-radius: 13px;
+      border-radius: 13px;
+    }
+    .process ul li .per .el-progress__text{
+      font-size: 10px!important;
+    }
+    .process ul li .per path:nth-child(1) {
+      stroke-width: 7;
+      stroke: #c0c0c0;
+    }
+    .process ul li .per path:nth-child(2) {
+      stroke-width: 7;
+      stroke: #14a614;
+    }
+    .process ul li .waste{
+      width: 100%;
+      padding-top: 30px;
+      background: url("../../../../static/images/icon_xjt.png") top 8px center no-repeat;
+    }
+    .process ul li .waste button{
+      width: 100%;
+    }
+    .is-success{
+      width: 30px;
+      height: 30px;
+      background: url("../../../../static/images/icon_complete.png") no-repeat;
+      background-size: cover;
+    }
+    .is-success .el-progress-circle,.is-success .el-progress__text{
+      display: none;
+    }
+    .noinfo{
+      text-align: center;
+      padding: 100px 0 30px 0;
+    }
+    .noinfo p{
+      padding-left: 30px;
+      line-height: 32px;
+      display: inline-block;
+      background: url("../../../../static/images/icon_warn.png") left center no-repeat;
+    }
+  }
+</style>

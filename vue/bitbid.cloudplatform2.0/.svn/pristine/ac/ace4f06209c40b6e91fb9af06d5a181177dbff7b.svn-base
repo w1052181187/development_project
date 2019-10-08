@@ -1,0 +1,398 @@
+<template>
+  <div class="header" id="header">
+    <!--<router-link :to="{path : '/main'}" class="returnHome" v-if="$store.getters.modules.includes(200)">-->
+      <!--首页-->
+    <!--</router-link>-->
+    <div class="head_right">
+      <ul>
+        <li title="新功能" @click="newFuncDialogVisible = true"><img src="../../static/images/head/newfunc.png" style="vertical-align: top!important;"/> </li>
+        <li title="消息" v-if="$store.getters.permissions.includes('business')">
+          <el-dropdown trigger="click">
+            <img src="../../static/images/head/icon_message.png" class="el-icon-arrow-down"/>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item><div @click="handelJump(1)">待我审批</div></el-dropdown-item>
+              <el-dropdown-item><div @click="handelJump(2)">通知公告</div></el-dropdown-item>
+              <el-dropdown-item><div @click="handelJump(3)">知会与我</div></el-dropdown-item>
+              <el-dropdown-item><div @click="handelJump(4)">公司动态</div></el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </li>
+        <li title="帮助">
+          <el-dropdown trigger="click">
+            <img src="../../static/images/head/icon_help.png" class="el-icon-arrow-down"/>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item><div @click="helpDialogVisible = true">帮助中心</div></el-dropdown-item>
+              <el-dropdown-item><div @click="handeHistory">版本历程</div></el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </li>
+        <li title="企业邀请码" @click="codeDialogVisible = true"><img src="../../static/images/head/icon_code.png"/></li>
+        <li title="我的订单" @click="handeOrder" v-if="$store.getters.permissions.includes('admin')"><img src="../../static/images/head/icon_order.png"/></li>
+        <li title="我的钱包" @click="goEnterPurse" v-if="$store.getters.permissions.includes('admin')"><img src="../../static/images/head/icon_wallet.png"/></li>
+      </ul>
+      <p>欢迎您，<span :title="$store.getters.authUser.departmentListNames + '-' + $store.getters.authUser.userName">{{$store.getters.authUser.departmentListNames}} {{$store.getters.authUser.userName}}</span></p>
+      <img src="../../static/images/touxiang.png"/>
+      <el-dropdown trigger="click" class="setbigbox">
+        <span class="el-dropdown-link">
+          <i class="el-icon-arrow-down el-icon--right" style="cursor: pointer;"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item>
+            <div @click="pwdClick">修改密码</div>
+          </el-dropdown-item>
+          <el-dropdown-item>
+            <span  class="logoutBtn"  @click="logout">退出账号</span>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+    </div>
+    <el-dialog title="修改密码" :visible.sync="dialogFormVisible" width="30%" center @close="handleClose">
+      <el-form :model="pwdForm" label-width="100px" :rules="rules" ref="pwdForm">
+        <el-form-item label="旧密码" prop="oldPass">
+          <el-input type="password" v-model="pwdForm.oldPass" clearable placeholder="请输入旧密码">
+            <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="新密码" prop="pass">
+          <el-input type="password" v-model="pwdForm.pass" clearable placeholder="请输入新密码">
+            <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="确认新密码" prop="checkPass">
+          <el-input type="password" v-model="pwdForm.checkPass" clearable placeholder="请再次输入新密码">
+            <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+          </el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="pwdOkClick">确 定</el-button>
+        <el-button @click="handleClose">取 消</el-button>
+      </div>
+    </el-dialog>
+    <!-- 帮助中心 -->
+    <el-dialog
+      :visible.sync="helpDialogVisible"
+      width="360px"
+      :show-close = false>
+      <div class="help">
+        <img src="../../static/images/head/tel_bg.png"/>
+        <p>客服电话</p>
+        <span>400-000-0388</span>
+        <el-button type="primary" @click="helpDialogVisible = false">我知道了</el-button>
+      </div>
+    </el-dialog>
+    <!-- 新功能 -->
+    <el-dialog
+      :visible.sync="newFuncDialogVisible"
+      width="450px"
+      :show-close = false>
+      <div class="newfunction">
+        <div class="tit">新功能</div>
+        <div><label>更新日期：</label><span>2019-08-13</span><label>版本号：</label><span>v3.0.0</span></div>
+        <div>
+          <label>更新内容：</label>
+          <p>1、新增“待开标”提醒、开标日程安排以及开标日历</p>
+          <p>2、新增知会功能</p>
+          <p>3、新增日常管理功能</p>
+          <p>4、新增项目资料完整度统计</p>
+          <p>5、新增历史项目维护功能</p>
+          <p>6、新增档案移交功能</p>
+          <p>7、新增拟在建项目模块</p>
+          <p>8、新增编号规则自定义功能</p>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+          <el-button type="primary" @click="newFuncDialogVisible = false">我知道了</el-button>
+        </div>
+      </div>
+    </el-dialog>
+    <!-- 二维码 -->
+    <el-dialog
+      :visible.sync="codeDialogVisible"
+      width="462px"
+      v-if="showCode"
+      :show-close = false>
+      <div class="code">
+        <img src="../../static/images/head/code_bg.png"/>
+        <div><label>您的企业邀请码是:</label><span>{{$store.getters.authUser.invitationCode || '---'}}</span></div>
+        <div>
+          <label>邀请码使用规则说明：</label>
+          <p>企业注册后会形成一个企业邀请码，其他企业注册并通过邀请码完成交费后：</p>
+          <p>• 可给予推荐企业所交费金额10%的返利，此返利可用于抵扣次年的所有产品的使用费；</p>
+          <p>• 受邀企业此次消费按照90%计算。</p>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+          <el-button type="primary" @click="codeDialogVisible = false">我知道了</el-button>
+        </div>
+      </div>
+    </el-dialog>
+    <el-dialog
+      :visible.sync="codeDialogVisible"
+      width="340px"
+      class="code_dialog"
+      :show-close = false
+      v-if="!showCode">
+      <div class="code_center">
+        <img src="../../static/images/head/nocode_bg.png"/>
+        <p>您的企业信息审核通过后才会有邀请码哦！</p>
+        <el-button type="primary" @click="codeDialogVisible = false">我知道了</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import { Message } from 'element-ui'
+import {bibenetWalletPath} from '@/assets/js/common'
+export default {
+  name: 'headTop',
+  data () {
+    let validateOldPass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入旧密码'))
+      } else {
+        callback()
+      }
+    }
+    let validatePass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入新密码'))
+      } else {
+        if (this.pwdForm.oldPass === value) {
+          callback(new Error('新密码不能与旧密码一致'))
+        }
+        if (this.pwdForm.checkPass !== '') {
+          this.$refs.pwdForm.validateField('checkPass')
+        }
+        callback()
+      }
+    }
+    let validateRepeatPass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请再次输入新密码'))
+      } else if (value !== this.pwdForm.pass) {
+        callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      dialogFormVisible: false,
+      pwdForm: {},
+      rules: {
+        oldPass: [
+          { required: true, message: '请输旧新密码', trigger: 'blur' },
+          {validator: validateOldPass, trigger: 'blur', required: true},
+          { min: 6, max: 20, message: '长度在 6到 20 个字符', trigger: ['blur', 'change'] }
+        ],
+        pass: [
+          { required: true, message: '请输入新密码', trigger: 'blur' },
+          {validator: validatePass, trigger: 'blur', required: true},
+          { min: 6, max: 20, message: '长度在 6到 20 个字符', trigger: ['blur', 'change'] }
+        ],
+        checkPass: [
+          { required: true, message: '请重新输入密码', trigger: 'blur' },
+          {validator: validateRepeatPass, trigger: 'blur', required: true},
+          { min: 6, max: 20, message: '长度在 6到 20 个字符', trigger: ['blur', 'change'] }
+        ]
+      },
+      // 帮助中心
+      helpDialogVisible: false,
+      newFuncDialogVisible: false,
+      showCode: true,
+      codeDialogVisible: false
+    }
+  },
+  methods: {
+    handleClose () {
+      this.pwdForm = {}
+      this.$refs['pwdForm'].resetFields()
+      this.dialogFormVisible = false
+    },
+    logout () {
+      this.$store.dispatch('Logout').then(() => {
+        this.$router.push({path: '/login'})
+      })
+    },
+    pwdClick () {
+      this.dialogFormVisible = true
+    },
+    pwdOkClick () {
+      this.$refs['pwdForm'].validate((valid) => {
+        if (valid) {
+          this.$store.dispatch('UpdatePwd', this.pwdForm).then((res) => {
+            if (res.data.resCode === '0000') {
+              this.dialogFormVisible = false
+              // 重新登录
+              Message({
+                showClose: true,
+                message: '密码修改成功，请重新登录',
+                type: 'success',
+                duration: 3 * 1000
+              })
+              let _this = this
+              setTimeout(() => {
+                _this.logout()
+              }, 3000)
+            } else {
+              return false
+            }
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    handelJump (type) {
+      switch (type) {
+        case 1 :
+          this.$router.push({path: '/todoList/need'})
+          break
+        case 2 :
+          this.$router.push({path: '/dailyManagement/homeNoticeAnnouncement'})
+          break
+        case 3 :
+          this.$router.push({path: '/notify'})
+          break
+        case 4 :
+          this.$router.push({path: '/dailyManagement/homeCompanyNews'})
+          break
+      }
+    },
+    handeOrder () {
+      this.$router.push({path: '/orderManagement/myOrder'})
+    },
+    // 跳转钱包
+    goEnterPurse () {
+      window.open(encodeURI(`${bibenetWalletPath}?expandsInfo=${this.$store.getters.authUser.userId};${this.$store.getters.authUser.account}`))
+    },
+    handeHistory () {
+      this.$router.push({path: '/history'})
+    }
+  }
+}
+</script>
+
+<style lang='less'>
+  #header{
+    height: 48px;
+    line-height: 48px;
+    width: 100%;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    background: #ffffff;
+    .returnHome{
+      padding-left: 20px;
+      margin-left: 20px;
+      text-decoration: none;
+      font-size: 14px;
+      color: #333333!important;
+      cursor: pointer;
+      background: url("../../static/images/ico_home.png") left center no-repeat;
+    }
+    .head_right{
+      float: right;
+      overflow: hidden;
+      line-height:48px;
+      margin-right: 20px;
+    }
+    .head_right ul{
+      overflow: hidden;
+      float: left;
+    }
+    .head_right ul li{
+      float: left;
+      margin: 0 6px;
+      cursor: pointer;
+    }
+    .head_right p{
+      float: left;
+      margin: 0 20px;
+      line-height: 48px;
+      font-size: 12px;
+    }
+    .head_right img{ vertical-align: middle;}
+    .logoutBtn{
+      color: #108cee;
+      font-size: 12px;
+      cursor: pointer;
+      margin-left: 5px;
+    }
+    // 帮助中心
+    .help{
+      text-align: center;
+    }
+    .help p{
+      width: 100%;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 32px;
+    }
+    .help>span{
+      display: block;
+      color: #498ce9;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 24px;
+      margin-bottom: 30px;
+    }
+    // 新功能
+    .newfunction{
+      margin-top: -30px;
+      line-height: 32px;
+    }
+    .newfunction .tit{
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .newfunction div label{
+      color: #333333;
+      font-weight: bold;
+    }
+    .newfunction div>span{
+      color: #666666;
+      margin-right: 20px;
+    }
+    .newfunction p{
+      color: #666666;
+      line-height: 24px;
+    }
+    .code_center{
+      text-align: center;
+      margin-top: -30px;
+    }
+    .code_center p{
+      margin: 20px 0 10px 0;
+      color: #333333;
+    }
+    .code_dialog .el-dialog__header{
+      display: none;
+    }
+    .code_dialog .el-dialog__body{
+      padding: 0px!important;
+    }
+    .code{
+      margin-top: -30px;
+      line-height: 32px;
+    }
+    .code img{
+      margin: -29px 0 0 -19px;
+    }
+    .code div label{
+      color: #333333;
+      font-weight: bold;
+    }
+    .code div>span{
+      color: #498ce9;
+      font-size: 18px;
+      font-weight: bold;
+      margin: 0 3px;
+      display: inline-block;
+    }
+    .code p{
+      color: #666666;
+      line-height: 24px;
+      text-indent: 2em;
+    }
+  }
+</style>

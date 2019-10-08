@@ -1,0 +1,11 @@
+export default [
+  {
+    path: '/resource/aptitude',
+    name: '资质管理',
+    meta: {
+      title: '资质管理',
+      active: '/resource/aptitude'
+    },
+    component: resolve => require(['@/pages/resource/aptitude/index'], resolve)
+  }
+]

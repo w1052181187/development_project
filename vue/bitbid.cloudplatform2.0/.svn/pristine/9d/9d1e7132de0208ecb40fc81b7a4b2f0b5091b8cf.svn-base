@@ -1,0 +1,257 @@
+<template>
+  <div class="cloudcontent" id="otherIncomeAdd">
+    <div class="main">
+      <el-form :model="addForm" :rules="rules" ref="addForm" :validate-on-rule-change="true">
+        <el-row :span="12">
+          <el-col>
+            <el-form-item prop="otherIncometext" label="支出项目：">
+              <span>其他支出</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="支付金额（元）："  prop="amount">
+              <el-input v-model="addForm.amount"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="支付方式："  prop="chargeModeType">
+              <el-select v-model="addForm.chargeModeType" class="select">
+                <el-option
+                  v-for="item in addForm.chargeModeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="支付时间：" prop="publishTime">
+              <el-date-picker
+                v-model="addForm.publishTime"
+                type="datetime"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                placeholder="选择日期">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="相关标段："  prop="bidSectionList">
+              <el-button class="choiceBtn" @click="choiceBtn">选择</el-button>
+              <el-table
+                :data="bidSectionList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  type="selection"
+                  width="50">
+                </el-table-column>
+                <el-table-column
+                  prop="bidSectionCode"
+                  label="标段编号"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  prop="bidSectionName"
+                  label="标段名称"
+                  show-overflow-tooltip>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="备注：">
+          <el-input type="textarea" v-model="addForm.desc"></el-input>
+        </el-form-item>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="handleClickEvent('addForm','submit')">提交</el-button>
+          <el-button type="primary" @click="handleClickEvent('addForm','save')">保存</el-button>
+          <el-button class="cancal" @click="handleClickEvent('addForm','cancel')">取消</el-button>
+        </el-form-item>
+      </el-form>
+      <el-dialog title="选择缴费标段" :visible.sync="dialogTableVisible">
+        <div class="topmain">
+          <div class="seacher_box">
+            <el-select v-model="bidSectionNameNumber" class="select bidSectionNameNumberSelect">
+              <el-option
+                v-for="item in bidSectionNameNumberOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+            <el-input class="search" placeholder="" style="vertical-align: top"  v-model="agencyContractNameLike">
+              <el-button  slot="append" icon="el-icon-search" type="" @click="search"></el-button>
+            </el-input>
+          </div>
+        </div>
+        <el-table
+          :data="dialogTableData"
+          border
+          style="width: 100%" header-cell-class-name="tableheader">
+          <el-table-column
+            type="index"
+            label="序号"
+            width="60"
+            :index="indexMethod"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="dialogTableDataCode"
+            label="标段编号"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="dialogTableDataName"
+            label="标段名称"
+            show-overflow-tooltip>
+          </el-table-column>
+        </el-table>
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="total"
+          :page-size='pageSize'
+          :current-page.sync="currentPage"
+          @current-change="handleCurrentChange"
+          @next-click="handleCurrentNext">
+        </el-pagination>
+        <!--分页-->
+        <div  style="text-align: center">
+          <el-button type="primary" @click="dilogConfirm()">确认</el-button>
+          <el-button class="cancal" @click="dilogCancel()">取消</el-button>
+        </div>
+      </el-dialog>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+      addForm: {
+        otherIncometext: '',
+        amount: '',
+        chargeModeType: null,
+        // 收费方式
+        chargeModeOptions: [{
+          value: null,
+          label: '--请选择--'
+        }, {
+          value: 1,
+          label: '支付宝'
+        }, {
+          value: 2,
+          label: '微信'
+        }, {
+          value: 3,
+          label: '银联'
+        }, {
+          value: 4,
+          label: '现金'
+        }, {
+          value: 5,
+          label: '汇款'
+        }, {
+          value: 6,
+          label: '支票'
+        }, {
+          value: 7,
+          label: '保函'
+        }, {
+          value: 8,
+          label: '其他'
+        }],
+        desc: ''
+      },
+      agencyContractNameLike: '',
+      dialogTableVisible: false,
+      bidSectionList: [{
+        bidSectionCode: 'bd_01',
+        bidSectionName: 'wanghaiming_bd_01'
+      }], // 页面上展示出来的可选择的标段信息
+      bidSectionNameNumber: '',
+      bidSectionNameNumberOptions: [{
+        value: 1,
+        label: '标段名称'
+      }, {
+        value: 2,
+        label: '标段编号'
+      }],
+      dialogTableData: [{
+        dialogTableDataCode: '1',
+        dialogTableDataName: '标段1'
+      }],
+      rules: {
+        otherIncometext: [
+          { required: true, message: '项目名称不能为空', trigger: ['blur', 'change'] }
+        ],
+        amount: [
+          { required: true, message: '金额不能为空', trigger: ['blur', 'change'] }
+        ],
+        chargeModeType: [
+          { required: true, message: '收费方式不能为空', trigger: ['change'] }
+        ],
+        publishTime: [
+          { required: true, message: '收费时间不能为空', trigger: ['change'] }
+        ],
+        bidSectionList: [
+          { required: true, message: '请选择标段', trigger: ['blur', 'change'] }
+        ]
+      },
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      dataIndex: 1
+    }
+  },
+  methods: {
+    handleClickEvent () {},
+    choiceBtn () {
+      this.dialogTableVisible = true
+    },
+    dilogConfirm () {},
+    dilogCancel () {
+      this.dialogTableVisible = false
+    },
+    search () {},
+    indexMethod (index) {
+      return index + (this.currentPage - 1) * 10 + 1
+    },
+    handleCurrentChange () {},
+    handleCurrentNext () {}
+  }
+}
+</script>
+<style lang="less">
+  #otherIncomeAdd {
+    .el-cascader, .el-select{
+      width: 100%;
+    }
+    .el-radio__label{
+      display: none;
+    }
+    .choiceBtn{
+      border: 1px solid #3f63f6;
+      height: 32px;
+      padding: 7px 12px;
+      margin-bottom: 12px;
+    }
+    .bidSectionNameNumberSelect{
+      width: 109px;
+    }
+  }
+</style>

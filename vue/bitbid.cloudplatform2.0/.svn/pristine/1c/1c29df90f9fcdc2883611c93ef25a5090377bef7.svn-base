@@ -1,0 +1,162 @@
+<template>
+  <div class="cloudcontent" id="archives_add">
+    <div class="main">
+      <ul class="step">
+        <li :class="active === 1 ? 'active' : 'prev'">
+          <i>1</i>
+          <span>基本信息</span>
+          <em></em>
+        </li>
+        <li :class="active === 2 ? 'active' : (active === 3) ? 'prev' : ''">
+          <i>2</i>
+          <span>归档文件</span>
+          <em></em>
+        </li>
+        <li :class="active === 3 ? 'active' : ''">
+          <i>3</i>
+          <span>归档完成</span>
+        </li>
+      </ul>
+      <sectionInfo v-show="active === 1" :info="info"></sectionInfo>
+      <file v-show="active === 2" :info="info"></file>
+      <fileEnd v-if="active === 3" :info="info"></fileEnd>
+      <div class="submit-radio">
+        <el-button class="cancal" @click="lastStep()" v-if="active !== 1">{{lastText}}</el-button>
+        <el-button type="primary" @click="nextStep()" v-if="active !== 3">{{stepText}}</el-button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import {archivesInfo} from '@/api/archives'
+
+export default {
+  name: 'add',
+  components: {
+    // 基本信息
+    sectionInfo: resolve => require(['./sectionInfo.vue'], resolve),
+    // 归档文件
+    file: resolve => require(['./file.vue'], resolve),
+    // 归档完成
+    fileEnd: resolve => require(['./fileEnd.vue'], resolve)
+  },
+  data () {
+    return {
+      stepText: '下一步',
+      lastText: '上一步',
+      // 步骤条
+      active: 1,
+      updateForm: {
+      },
+      rules: {
+      },
+      info: {},
+      fileInfo: {}
+    }
+  },
+  methods: {
+    getData () {
+      archivesInfo.detailArchivesInfo(this.$route.params.objectId).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.info = res.data.archivesInfo
+        }
+      })
+    },
+    // 下一步
+    nextStep () {
+      switch (this.active) {
+        case 1:
+          this.active++
+          this.stepText = '归档'
+          this.fileInfo = this.info
+          break
+        case 2:
+          this.active++
+          this.lastText = '关闭'
+          break
+      }
+    },
+    lastStep () {
+      switch (this.active) {
+        case 2:
+          this.active--
+          this.stepText = '下一步'
+          break
+        case 3:
+          // 关闭
+          break
+      }
+    }
+  },
+  mounted () {
+    this.getData()
+  }
+}
+</script>
+
+<style lang="less">
+  #archives_add {
+    ul.step{
+      list-style: none;
+      width: 616px;
+      height: 38px;
+      /*cursor: pointer;*/
+      overflow: hidden;
+      margin: 0 auto;
+      text-align: center;
+    }
+    ul.step li{
+      float: left;
+      height: 38px;
+      margin-right: 150px;
+      position: relative;
+    }
+    ul.step li i{
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      -webkit-border-radius: 50%;
+      -moz-border-radius: 50%;
+      border-radius: 50%;
+      background: #bbbbbb;
+      color: #ffffff;
+      font-style: normal;
+    }
+    ul.step li span{
+      display: inline-block;
+      line-height: 38px;
+      margin-left: 10px;
+      font-size: 14px;
+      color: #999;
+    }
+    ul.step li:last-child{
+      margin-right: 0px;
+    }
+    ul.step li em{
+      position: absolute;
+      width: 104px;
+      height: 2px;
+      display: block;
+      left: 120px;
+      top: 18px;
+      background: #eeeeee;
+    }
+    ul.step li.active i{
+      /*width: 36px;*/
+      /*height: 36px;*/
+      /*line-height: 36px;*/
+      background: #3f63f6;
+    }
+    ul.step li.active span{
+      color: #333333;
+    }
+    ul.step li.prev i{
+      background: #92baf2;
+    }
+    ul.step li.prev span{
+      color: #666;
+    }
+  }
+</style>

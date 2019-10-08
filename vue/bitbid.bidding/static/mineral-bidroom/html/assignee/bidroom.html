@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>竞价室</title>
+    <link rel="stylesheet" type="text/css" href="../../css/bidroom.css">
+    <script src="../../js/jquery-1.11.1.min.js"></script>
+    <script src="../../js/commons/countdown.js"></script>
+    <script src="../../js/jquery.SuperSlide.2.1.1.js"></script>
+    <script src="../../js/professional/commons.js"></script>
+    <script src="../../js/professional/project.js"></script>
+    <script src="../../js/professional/bidder.js"></script>
+    <script src="../../js/professional/record.js"></script>
+    <script src="../../js/professional/systemHint.js"></script>
+    <script src="../../js/commons/sockjs.js"></script>
+    <script src="../../js/professional/wesocket.js"></script>
+    <script src="../../js/professional/assigneeReady.js"></script>
+</head>
+<body style="background: #f5f5f5">
+<div class="bidroom">
+  <div class="title">
+    <p id="name"></p>
+    <a href="javascript:void(0)" id="returnButton" class="return">返回</a>
+  </div>
+  <div class="bidmain">
+    <div class="left">
+      <div class="top">
+        <div class="box">
+          <p class="small">当前标段预计
+          <img class="ico" src="../../images/time.svg"/>
+          <div class="time"></div>
+          <i>后结束</i>
+        </div>
+        <div class="box money" id="highRecord">
+          <p class="small">当前最高报价</p>
+          <img class="ico" src="../../images/money.svg"/>
+          <div class="money">
+          </div>
+          <i></i>
+        </div>
+      </div>
+      <div class="bottom">
+        <p class="sm_title">出价记录<span>当前价格（万元）</span></p>
+        <div class="record_main" id="recordList">
+          <ul>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="top">
+        <p class="sm_title">详细信息</p>
+        <div class="main">
+          <p id="startTime"><span>拍卖开始时间 </span><em></em></p>
+          <p id="planEndTime"><span>拍卖结束时间 </span><em></em></p>
+          <p id="autoExtendTime"><span>自动延长时间 </span><em></em></p>
+          <p id="bidIncreame"><span>加价幅度 </span><em></em></p>
+          <div class="maininfo">
+            <p><span>竞买人 </span><em id="bidderName"></em></p>
+            <p><span>竞买号 </span><em id="bidderNumber"></em></p>
+          </div>
+        </div>
+      </div>
+      <div class="bottom">
+        <p class="sm_title">系统提示</p>
+        <div class="main" id="systemHint" style="margin-top: 5px;">
+          <ul>
+            <li id="offerPrice"></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="promain">
+    <div class="hd">
+      <ul>
+        <li class=""><a href="javascript:void(0);"> 报价</a></li>
+        <li class=""><a href="javascript:void(0);"> 我的出价记录</a></li>
+        <li class=""><a href="javascript:void(0);"> 项目信息</a></li>
+      </ul>
+    </div>
+    <div class="bd">
+      <div class="offer">
+        <div class="fl">
+          <p>快速报价（万元）</p>
+          <p class="aoffer" id="quickBidderPrice">
+              <a href="javascript:void(0);"></a>
+              <a href="javascript:void(0);"></a>
+              <a href="javascript:void(0);"></a>
+              <a href="javascript:void(0);"></a>
+          </p>
+        </div>
+        <div class="fl">
+          <p>手动报价（万元）</p>
+          <p id="manualBidderPrice"><input type="text" placeholder="请输入报价"><input type="button" value="提交"> </p>
+          <p class="redtip" id="redTipFormat" hidden>请输入正确的报价</p>
+          <p class="redtip" id="redTipValue" hidden>出价不能小于当前最高价</p>
+          <p class="redtip" id="redTipMul" hidden></p>
+        </div>
+      </div>
+      <div class="offer_record">
+        <table>
+          <thead>
+          <tr>
+            <th>报价金额（万元）</th>
+            <th>报价时间</th>
+          </tr>
+          </thead>
+          <tbody id="myRecordList">
+
+          </tbody>
+        </table>
+      </div>
+      <div class="project">
+        <div class="row">
+          <div class="list">
+            <label>项目名称：</label>
+            <span id="relatedP_name"></span>
+          </div>
+          <div class="list">
+            <label>项目编号：</label>
+            <span id="relatedP_code"></span>
+          </div>
+          <div class="list">
+            <label>出让类型：</label>
+            <span id="relatedP_type"></span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="list">
+            <label>矿种：</label>
+            <span id="relatedP_minerals"></span>
+          </div>
+          <div class="list">
+            <label>面积(km2)：</label>
+            <span id="relatedP_area"></span>
+          </div>
+          <div class="list">
+            <label>出让年限（年）：</label>
+            <span id="relatedP_year"></span>
+          </div>
+        </div>
+        <div class="row">
+            <label>矿区位置：</label>
+            <span id="relatedP_location"></span>
+        </div>
+        <div class="row">
+            <label style="margin-top: 10px;">区域坐标：</label>
+            <div class="area" id="relatedP_coordinate"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+</style>
+</body>
+</html>

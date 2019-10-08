@@ -1,0 +1,182 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <div class="box">
+      <div class="topmain">
+        招标文件
+        <!--按钮-->
+        <el-button  type="primary" class="addbutton" @click="handleAdd" v-if="operationFlag">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="tableData"
+        header-cell-class-name="tableheader"
+        border>
+        <el-table-column
+          type="index"
+          label="序号"
+          :index="indexMethod"
+          width="50">
+        </el-table-column>
+        <el-table-column
+          prop="fileName"
+          label="招标文件"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <p v-for="(item, index) in scope.row.fileInformationList" :key="index">{{item.fileName}}</p>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="documentReleaseTime"
+          label="发布时间"
+          :formatter="formatDate"
+          width="160">
+        </el-table-column>
+        <el-table-column
+          prop="auditStatus"
+          label="提交状态"
+          width="120">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.auditStatus === 0">已保存</span>
+            <span  v-if="scope.row.auditStatus === 1">待审批</span>
+            <span  v-if="scope.row.auditStatus === 2">已审批</span>
+            <span  v-if="scope.row.auditStatus === 3">已驳回</span>
+            <span  v-if="scope.row.auditStatus === 4">已提交</span>
+            <span  v-if="scope.row.auditStatus === 5">已撤回</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="submitter"
+          label="提交人"
+          :formatter="simpleFormatData"
+          width="140">
+        </el-table-column>
+        <el-table-column
+          prop="submitTime"
+          label="提交时间"
+          :formatter="formatDate"
+          width="160">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetail(scope)">查看</el-button>
+            <el-button type="text" size="small" v-if="(scope.row.auditStatus === 0 || scope.row.auditStatus === 3 || scope.row.auditStatus === 5) && operationFlag" @click="handleEdit(scope)">编辑</el-button>
+            <el-button type="text" size="small" v-if="(scope.row.auditStatus === 0) && operationFlag" @click="handleDel(scope, 'file')">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+import {documentInfo} from '@/api/project'
+import {dateFormat} from '@/assets/js/common'
+export default {
+  components: {
+  },
+  props: ['tenderSystemCode', 'sectionSystemCode', 'operationFlag', 'type'],
+  data () {
+    return {
+      tableData: [],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: null, // 总条数
+      pageSize: 10 // 每页展示条数
+    }
+  },
+  watch: {
+    $route: 'resetView'
+  },
+  methods: {
+    resetView () {
+      this.getTableList()
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 格式化时间
+    formatDate (row, col, cellValue) {
+      return cellValue ? dateFormat(cellValue, 'yyyy-MM-dd') : '---'
+    },
+    // 编辑
+    handleEdit (scope) {
+      this.$router.push({path: `/project/projectProcess/biddocument/update`,
+        query: {objectId: scope.row.objectId,
+          sectionSystemCode: this.sectionSystemCode,
+          tenderSystemCode: this.tenderSystemCode}})
+    },
+    handleAdd () {
+      this.$router.push({path: `/project/projectProcess/biddocument/add`,
+        query: {sectionSystemCode: this.sectionSystemCode,
+          tenderSystemCode: this.tenderSystemCode}})
+    },
+    handleDetail (scope) {
+      this.$router.push({path: `/project/projectProcess/biddocument/detail/${scope.row.objectId}`,
+        query: {sectionSystemCode: this.sectionSystemCode}})
+    },
+    handleDel (scope, type) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        if (Object.is(type, 'file')) {
+          documentInfo.deleteByIdAndSectionSystemCode(scope.row.objectId, this.sectionSystemCode).then(() => {
+            this.getTableList()
+          })
+        }
+      }).catch(() => {
+        return false
+      })
+    },
+    indexMethod (index) {
+      return index + (this.currentPage - 1) * this.pageSize + 1
+    },
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableList()
+    },
+    // 招标文件
+    getTableList () {
+      let query = {
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        tenderSystemCode: this.tenderSystemCode,
+        sectionSystemCode: this.sectionSystemCode,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        type: 3
+      }
+      documentInfo.getByRelaSection(query).then(res => {
+        let data = res.data.documentInfoList
+        if (data) {
+          this.tableData = data.list
+          this.total = data.total
+        }
+        this.$emit('checkFlowStatusFlag', this.type)
+      })
+    }
+  },
+  mounted () {
+    this.resetView()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_processtype{
+  }
+</style>

@@ -1,0 +1,87 @@
+/**
+ * Created by Administrator on 2019-3-7.
+ * 资格审查结果
+ */
+export default [
+  {
+    path: '/project/projectProcess/checkresult/add',
+    name: '流程管理-资格审查结果-添加评标专家',
+    meta: {
+      title: '流程管理-资格审查结果-添加评标专家',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/checkResult/add'], resolve)
+  },
+  {
+    path: '/project/projectProcess/checkresult/update',
+    name: '流程管理-资格审查结果-编辑评标专家',
+    meta: {
+      title: '流程管理-资格审查结果-编辑评标专家',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/checkResult/update'], resolve)
+  },
+  {
+    path: '/project/projectProcess/checkresult/detail/:objectId',
+    name: '流程管理-资格审查结果-查看评标专家',
+    meta: {
+      title: '流程管理-资格审查结果-查看评标专家',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/checkResult/detail'], resolve)
+  },
+  {
+    path: '/project/projectProcess/checkresult/add_report',
+    name: '流程管理-资格审查结果-添加报告',
+    meta: {
+      title: '流程管理-资格审查结果-添加报告',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/checkResult/addReport'], resolve)
+  },
+  {
+    path: '/project/projectProcess/checkresult/update_report',
+    name: '流程管理-资格审查结果-修改报告',
+    meta: {
+      title: '流程管理-资格审查结果-修改报告',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/checkResult/updateReport'], resolve)
+  },
+  {
+    path: '/project/projectProcess/checkresult/report_detail/:objectId',
+    name: '流程管理-资格审查结果-查看报告',
+    meta: {
+      title: '流程管理-资格审查结果-查看报告',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/checkResult/reportDetail'], resolve)
+  },
+  {
+    path: '/project/projectProcess/checkresult/add_result',
+    name: '流程管理-资格审查结果-添加结果通知书',
+    meta: {
+      title: '流程管理-资格审查结果-添加结果通知书',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/checkResult/addResult'], resolve)
+  },
+  {
+    path: '/project/projectProcess/checkresult/update_result',
+    name: '流程管理-资格审查结果-修改结果通知书',
+    meta: {
+      title: '流程管理-资格审查结果-修改结果通知书',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/checkResult/updateResult'], resolve)
+  },
+  {
+    path: '/project/projectProcess/checkresult/result_detail/:objectId',
+    name: '流程管理-资格审查结果-查看结果通知书',
+    meta: {
+      title: '流程管理-资格审查结果-查看结果通知书',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/checkResult/resultDetail'], resolve)
+  }
+]

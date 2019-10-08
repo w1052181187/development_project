@@ -1,0 +1,172 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" ref="updateForm" :validate-on-rule-change="true">
+        <el-form-item label="标题：" prop="title">
+          <el-input v-model="updateForm.title"></el-input>
+        </el-form-item>
+        <el-form-item label="接收者：" prop="receiver">
+          <el-popover
+            trigger="manual"
+            placement="bottom"
+            v-model="receiverVisible">
+            <treeCheckbox :isShow="true" @changeChecked="handleChangeChecked"></treeCheckbox>
+            <el-radio-group v-model="updateForm.receiveType" @change="changeReceiver" slot="reference">
+              <el-radio :label="1">本公司</el-radio>
+              <div @click="receiverVisible = true" class="receiver-multiDepartment">
+                <el-radio v-if="type === 'notice'" :label="2">多个公司/部门</el-radio>
+              </div>
+              <el-radio :label="3">整个企业</el-radio>
+            </el-radio-group>
+          </el-popover>
+        </el-form-item>
+        <el-form-item :label="type === 'notice' ? '通知内容：' : '内容：'" class="bitianicon">
+          <editor ref="ueditor" class="ueditor" :editread="editread" @handleFocus="receiverVisible = false"></editor>
+        </el-form-item>
+        <el-form-item label="附件：">
+          <upload-file @uploadSuccess="uploadOtherSuccess"
+                       @deleteSuccess="deleteSuccess"
+                       :fileArrays="updateForm.fileInformationList"
+                       fileType="9"></upload-file>
+        </el-form-item>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit('updateForm', 0)" :loading="isSubmiting">保存</el-button>
+          <el-button type="success" class="submitBtn" @click="submit('updateForm', 1)" :loading="isSubmiting">提交</el-button>
+          <el-button class="cancal" @click="close">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+import uploadFile from '@/components/upload/publicFileUpload'
+import editor from '@/components/ueditor/ueditor.vue'
+import treeCheckbox from '@/pages/system/department/tree/tree_checkbox.vue'
+import {notice} from '@/api/notice/notice'
+const validLength = (rule, value, callback) => {
+  if (value.length > 100) {
+    callback(new Error('标题长度不能超过100'))
+  } else {
+    callback()
+  }
+}
+export default {
+  name: 'add',
+  components: {
+    uploadFile,
+    editor,
+    treeCheckbox
+  },
+  data () {
+    return {
+      type: '',
+      isSubmiting: false,
+      updateForm: {
+        fileInformationList: [],
+        content: ''
+      },
+      rules: {
+        title: [
+          { required: true, message: '标题不能为空', trigger: ['blur', 'change'] },
+          {validator: validLength, trigger: 'change'}
+        ],
+        content: [
+          { required: true, message: '内容不能为空', trigger: ['blur', 'change'] }
+        ],
+        receiveType: [
+          { required: true, message: '接受者不能为空', trigger: ['blur', 'change'] }
+        ]
+      },
+      // 富文本
+      editread: false,
+      receiverVisible: false
+    }
+  },
+  methods: {
+    changeReceiver () {
+      this.receiverVisible = this.updateForm.receiveType === 2
+    },
+    handleChangeChecked (list) {
+      this.updateForm.receiveDepartmentIds = list
+    },
+    // 上传附件
+    uploadOtherSuccess (file) {
+      this.updateForm.fileInformationList.push(file)
+    },
+    deleteSuccess (fileId) {
+      this.updateForm.fileInformationList = this.updateForm.fileInformationList.filter(item => item.relativePath !== fileId)
+    },
+    // 提交/保存
+    submit (form, status) {
+      this.$refs[form].validate((valid) => {
+        if (valid) {
+          if (!this.$refs.ueditor.getContent()) {
+            this.$message.warning('请输入内容！')
+            return false
+          }
+          let message = ''
+          if (status === 0) {
+            message = '确认要保存吗?'
+          } else {
+            message = '提交后数据将锁定，不允许修改，确认要提交吗?'
+            this.updateForm.submitTime = new Date()
+          }
+          this.$confirm(message, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            beforeClose: (action, instance, done) => {
+              done()
+            }
+          }).then(() => {
+            if (this.type === 'notice') {
+              this.updateForm.type = 1
+            } else {
+              this.updateForm.type = 2
+            }
+            this.updateForm.content = this.$refs.ueditor.getContent()
+            this.updateForm.status = status
+            notice.saveNotice(this.updateForm).then((res) => {
+              if (res.data.resCode === '0000') {
+                this.close()
+              }
+            })
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    // 取消
+    close () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    },
+    init () {
+      this.type = this.$route.meta.type
+      if (this.$route.params.objectId) {
+        notice.detailNotice(this.$route.params.objectId, 0).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.updateForm = res.data.notice
+            this.updateForm.content = this.$refs.ueditor.setContent(this.updateForm.content)
+          }
+        })
+      }
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+
+<style scoped>
+  .receiver-multiDepartment{
+    display: inline-block;
+    margin-right: 30px
+  }
+</style>

@@ -1,0 +1,648 @@
+<template>
+  <div class="cloudcontent" id="cloud_customer_detail">
+    <div class="main">
+      <div class="tit">
+        <span>山西省国新能源发展集团有限公司</span>
+        <em>项目经理：张亮</em>
+      </div>
+      <el-tabs v-model="activeName2" type="card" @tab-click="handleClick">
+        <el-tab-pane label="概况" name="first">
+          <el-form :model="addForm" ref="addForm" :validate-on-rule-change="true">
+            <div class="part">
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="项目编号：">
+                    {{addForm.code}}
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="项目类型：">
+                    {{addForm.code}}
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="项目名称：">
+                    {{addForm.code}}
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="招标方式：">
+                    {{addForm.code}}
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="所在地：">
+                    {{addForm.code}}
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="项目预算(元)：">
+                    {{addForm.code}}
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="详细地址：" prop="code">
+                    {{addForm.code}}
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="批准文号：" prop="code">
+                    {{addForm.code}}
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="招标人：">
+                    {{addForm.code}}
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="是否资格预审：">
+                    {{addForm.code}}
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="联系人：">
+                    {{addForm.code}}
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="是否允许联合体投标：">
+                    {{addForm.code}}
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="联系电话：" prop="code">
+                    {{addForm.code}}
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="监督部门名称：" prop="code">
+                    {{addForm.code}}
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="项目经理：" prop="code">
+                    {{addForm.code}}
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="邮箱：" prop="code">
+                    {{addForm.code}}
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="所属部门：" prop="code">
+                    {{addForm.code}}
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-form-item label="招标内容与范围及招标方案说明：" prop="code">
+                  <el-input type="textarea"  v-model="addForm.code" readonly></el-input>
+                </el-form-item>
+              </el-row>
+            </div>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane label="标段" name="second">
+          <el-table
+            :data="sectionTableData"
+            border
+            style="width: 100%"
+            header-cell-class-name="tableheader">
+            <el-table-column
+              type="index"
+              label="序号"
+              width="60"
+              :index='dataIndex'
+              align="center">
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="标段编号"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="标段名称"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="标段状态"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="操作"
+              width="80">
+              <template slot-scope="scope">
+                <el-button type="text" size="small" @click="lookBtn(scope)">查看流程</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :total="total"
+            :page-size='pageSize'
+            :current-page.sync="currentPage"
+            @current-change="handleCurrentChange">
+          </el-pagination>
+          <!--分页-->
+        </el-tab-pane>
+        <el-tab-pane label="代理合同" name="third">
+          <el-table
+            :data="contractTableData"
+            border
+            style="width: 100%"
+            header-cell-class-name="tableheader">
+            <el-table-column
+              type="index"
+              label="序号"
+              width="60"
+              :index='dataIndex'
+              align="center">
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="合同编号"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="合同名称"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="签订日期"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="联系人"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="联系电话"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="合同文件"
+              width="80">
+              <template slot-scope="scope">
+                <el-button type="text" size="small" @click="downloadBtn(scope)">下载</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <!--分页-->
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :total="total"
+            :page-size='pageSize'
+            :current-page.sync="currentPage"
+            @current-change="handleCurrentChange">
+          </el-pagination>
+          <!--分页-->
+        </el-tab-pane>
+        <el-tab-pane label="费用" name="fourth">
+          <el-table
+            :data="feeTableData"
+            border
+            style="width: 100%"
+            row-key="id"
+            header-cell-class-name="tableheader">
+            <el-table-column
+              prop="name"
+              label=""
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="income"
+              label="收入"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="spending"
+              label="支出"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="netIncome"
+              label="净收入"
+              show-overflow-tooltip>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane label="总结" name="fifth">
+          <el-form :model="updateForm">
+            <el-tabs  v-model="activeTab" @tab-click="handleClickTabs">
+              <el-tab-pane label="项目整体总结" name="1">
+                <el-form-item label="内容：">
+                  <el-input
+                    type="textarea"
+                    :autosize="{ minRows: 4}"
+                    v-model="updateForm.projectBackgroundRequirements"
+                    disabled>
+                  </el-input>
+                </el-form-item>
+              </el-tab-pane>
+              <el-tab-pane label="专家评价" name="2">
+                <el-table
+                  :data="updateForm.expertEvaluateList"
+                  border
+                  style="width: 100%" header-cell-class-name="tableheader">
+                  <el-table-column
+                    label="专家姓名"
+                    show-overflow-tooltip>
+                    <template slot-scope='scope'>
+                      <span>{{scope.row.expertName}}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="content"
+                    label="评价内容"
+                    show-overflow-tooltip>
+                    <template slot-scope='scope'>
+                      <el-input
+                        type="textarea"
+                        autosize
+                        v-model="scope.row.evaluationContent"
+                        disabled>
+                      </el-input>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-tab-pane>
+              <el-tab-pane label="招标人评价" name="3">
+                <el-form-item label="评价内容：">
+                  <el-input
+                    type="textarea"
+                    :autosize="{ minRows: 4}"
+                    v-model="updateForm.tendererEvaluateInfo.evaluationContent"
+                    disabled>
+                  </el-input>
+                </el-form-item>
+              </el-tab-pane>
+            </el-tabs>
+          </el-form>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  data () {
+    return {
+      activeName2: 'first',
+      // 企业信息
+      addForm: {
+        code: '内容内容内容内容内容内容内容'
+      },
+      // 标段
+      sectionTableData: [
+        {
+          name: '一标段'
+        }
+      ],
+      // 合同
+      contractTableData: [
+        {
+          name: '国新能源新址设计规划项目委托代理合同'
+        }
+      ],
+      // 费用
+      value1: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)],
+      feeTableData: [
+        {
+          id: 1,
+          name: '项目合计',
+          income: 2000,
+          spending: 500,
+          netIncome: 1500,
+          children: [{
+            id: 11,
+            name: '标书费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 12,
+            name: '保证金',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 13,
+            name: '服务费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 14,
+            name: '*****费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 15,
+            name: '其他',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }]
+        },
+        {
+          id: 2,
+          name: '标段一',
+          income: 2000,
+          spending: 500,
+          netIncome: 1500,
+          children: [{
+            id: 21,
+            name: '标书费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 22,
+            name: '保证金',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 23,
+            name: '服务费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 24,
+            name: '*****费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 25,
+            name: '其他',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }]
+        },
+        {
+          id: 3,
+          name: '标段二',
+          income: 2000,
+          spending: 500,
+          netIncome: 1500,
+          children: [{
+            id: 31,
+            name: '标书费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 32,
+            name: '保证金',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 33,
+            name: '服务费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 34,
+            name: '*****费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 35,
+            name: '其他',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }]
+        }
+      ],
+      // 总结
+      activeTab: '1',
+      updateForm: {
+        tenderProjectCode: '',
+        projectDescription: '',
+        tendererEvaluateInfo: {}, // 招标人评价
+        expertEvaluateList: [] // 专家评价
+      },
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: null, // 总条数
+      pageSize: 10 // 每页展示条数
+    }
+  },
+  methods: {
+    handleClick (tab, event) {
+      console.log(tab, event)
+    },
+    dataIndex (index) {
+      return 1
+    },
+    lookBtn (scope) {
+    },
+    downloadBtn (scope) {
+    },
+    handleCurrentChange () {},
+    handleClickTabs () {}
+  }
+}
+</script>
+<style lang="less">
+  #cloud_customer_detail {
+    .tit{
+      overflow: hidden;
+    }
+    .tit span{
+      font-size: 20px;
+      font-weight: bold;
+      float: left;
+    }
+    .tit em{
+      float: left;
+      height: 30px;
+      line-height: 30px;
+      margin-left: 20px;
+      background: #fff2de;
+      padding: 0 15px;
+      display: inline-block;
+      font-style: normal;
+      color: #f5a623;
+      font-weight: bold;
+    }
+    .el-tabs{
+      margin-top: 20px;
+    }
+    .el-tabs--card>.el-tabs__header{
+      border: 0px;
+    }
+    .el-tabs__item{
+      width: 138px;
+      padding: 0px;
+      text-align: center;
+    }
+    .el-tabs--card>.el-tabs__header .el-tabs__nav{
+      border: 1px solid #4a8cea;
+      border-left: 0px;
+    }
+    .el-tabs__item.is-active{
+      background: #4a8cea;
+      color: #ffffff;
+    }
+    .el-tabs--card>.el-tabs__header .el-tabs__item{
+      border-bottom: 0px;
+      border-left: 1px solid #4a8cea;
+    }
+    .follow_top{
+      width: 98%;
+      height: 50px;
+      line-height: 50px;
+      margin:16px auto;
+      border-bottom: 1px solid #eeeeee;
+    }
+    .follow_top span{
+      float: left;
+      font-weight: bold;
+    }
+    .follow_mian{
+      width: 98%;
+      margin:0px auto;
+    }
+    .follow_mian ul{
+      margin-left: 12px;
+      border-left: 1px solid #dddddd;
+    }
+    .follow_mian ul:after {
+      display: block;
+      content: "";
+      clear: both;
+    }
+    .follow_mian ul li{
+      width: 99%;
+      float: left;
+      margin: 15px 0 5px 0;
+      margin-left: -5px;
+      padding-left: 1%;
+      background-image: url("../../../../static/images/dian.png");
+      background-position: 0px 22px;
+      background-repeat: no-repeat;
+    }
+    .follow_mian ul li .record{
+      width: 100%;
+      height: 24px;
+      line-height: 24px;
+      margin-top: 15px;
+      color: #ffffff;
+    }
+    .follow_mian ul li .record span.time{
+      width: 100px;
+      height: 24px;
+      padding-left: 15px;
+      font-size: 12px;
+      display: inline-block;
+      float: left;
+      background: url("../../../../static/images/timebg.png") left center no-repeat;
+      color: #ffffff;
+    }
+    .follow_mian ul li .record span.method{
+      display: inline-block;
+      float: left;
+      margin-left: 16px;
+      background: #eeeeee;
+      color: #666666;
+      padding: 0 10px;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+    }
+    .follow_mian ul li .record span.peo{
+      display: inline-block;
+      float: left;
+      margin-left: 20px;
+      background: #beeebe;
+      color: #14a614;
+      padding: 0 10px;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+    }
+    .follow_mian ul li .record span.jt{
+      width: 24px;
+      height: 24px;
+      display: inline-block;
+      float: left;
+      margin-left: 10px;
+      background: url("../../../../static/images/record_jt.png") left center no-repeat;
+    }
+    .follow_mian ul li .record span.unawares{
+      display: inline-block;
+      float: left;
+      margin-left: 10px;
+      background: #c9e0ff;
+      color: #1465d6;
+      padding: 0 10px;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+    }
+    .follow_mian ul li .sum{
+      overflow: hidden;
+      margin-top: 20px;
+    }
+    .follow_mian ul li .sum textarea{
+      width: 100%;
+      height: 121px;
+      padding: 8px;
+      background: #f4f4f4;
+      border: 1px solid #eeeeee;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .part{
+      margin-top: 20px;
+    }
+    .part .el-textarea__inner{
+      height: 120px;
+    }
+    .time_search{
+      margin-bottom: 20px;
+    }
+    .el-textarea__inner{
+      margin-left: 10px;
+    }
+  }
+</style>

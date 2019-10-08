@@ -1,0 +1,5 @@
+// 我的预约
+export { appointmentRecord } from './biddingRoom/appointmentRecord'
+
+// 开评标室
+export { bidOpeningRoom } from './biddingRoom/bidOpeningRoom'

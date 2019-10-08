@@ -1,0 +1,330 @@
+<template>
+  <div id="commonuseradd" class="smaincontent">
+    <div class="headertitle">
+      <!--面包屑-->
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/main' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/index/commonuser' }">会员管理</el-breadcrumb-item>
+        <el-breadcrumb-item>编辑会员</el-breadcrumb-item>
+      </el-breadcrumb>
+      <!--面包屑-->
+      <div class="returnboxbig">
+        <template>
+          <el-button @click="close">返回</el-button>
+        </template>
+      </div>
+    </div>
+    <div class="contentbigbox">
+      <template>
+        <el-form :model="editForm" :rules="rules" ref="editForm" :validate-on-rule-change="true">
+          <table class="detailtable" style="border:none;">
+            <tr>
+              <td><i class="red">*</i>用户名：</td>
+              <td  colspan="2">
+                <el-form-item label=""  prop="account">
+                  <el-input v-model="editForm.account" disabled></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>公司类型：</td>
+              <td  colspan="2">
+                <el-form-item prop=".enterprise.enterType">
+                  <el-select v-model="editForm.enterprise.enterType" class="select">
+                    <el-option
+                      v-for="item in companyTypeoptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>企业名称：</td>
+              <td  colspan="2">
+                <el-form-item prop="enterprise.name">
+                  <el-input v-model="editForm.enterprise.name"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>所属地区：</td>
+              <td  colspan="2">
+                <el-form-item prop="enterprise.provinceId">
+                  <el-cascader
+                    :options="addressOptions"
+                    expand-trigger="hover"
+                    v-model="provinceIdArray"
+                    @change="handlerCityChange">
+                  </el-cascader>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>公司地址：</td>
+              <td  colspan="2">
+                <el-form-item prop="enterprise.address">
+                  <el-input v-model="editForm.enterprise.address" ></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>邮政编码：</td>
+              <td colspan="2">
+                <el-form-item prop="enterprise.zipCode">
+                  <el-input v-model="editForm.enterprise.zipCode" ></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>行业：</td>
+              <td  colspan="2">
+                <el-form-item prop="enterprise.industryTypeFirst">
+                  <el-select v-model="editForm.enterprise.industryTypeFirst" class="select">
+                    <el-option
+                      v-for="item in options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr style="height: 100px;">
+              <td><i class="red">*</i>营业执照：</td>
+              <td colspan="2">
+                <upload-file @uploadSuccess="uploadSuccess" @deleteSuccess="deleteSuccess" :fileArrays="this.editForm.enterprise.fileInformations" fileType="1" isImage="1"></upload-file>
+              </td>
+              <td><i class="red">*</i>银行开户证明：</td>
+              <td colspan="2">
+                <upload-file @uploadSuccess="uploadSuccess" @deleteSuccess="deleteSuccess" :fileArrays="this.editForm.enterprise.fileInformations" fileType="2" isImage="1"></upload-file>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>联系人姓名：</td>
+              <td  colspan="2">
+                <el-form-item prop="name">
+                  <el-input v-model="editForm.name"></el-input>
+                </el-form-item>
+              </td>
+              <td>固定电话：</td>
+              <td  colspan="2">
+                <el-form-item prop="fixedTelephone">
+                  <el-input v-model="editForm.fixedTelephone"></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>手机号：</td>
+              <td  colspan="2">
+                <el-form-item prop="registeredCellPhone">
+                  <el-input v-model="editForm.registeredCellPhone"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>邮箱：</td>
+              <td  colspan="2">
+                <el-form-item prop="email">
+                  <el-input v-model="editForm.email"></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+          </table>
+          <el-form-item class="submit-radio">
+            <el-button type="primary" @click="submit('editForm')">提 交</el-button>
+            <el-button @click="close">取 消</el-button>
+          </el-form-item>
+        </el-form>
+      </template>
+    </div>
+  </div>
+</template>
+
+<script>
+import {isvalidFixedPhone, isvalidAccount} from '@/assets/js/validate'
+import * as region from '@/assets/js/region'
+import * as industry from '@/assets/js/industry'
+import {commonUser} from '@/api'
+import uploadFile from '@/components/upload/publicFileUpload'
+export default{
+  components: {
+    uploadFile
+  },
+  data () {
+    // 电话号码
+    let validPhoneUser = (rule, value, callback) => {
+      if (!value) {
+        callback()
+      } else if (!isvalidFixedPhone(value)) {
+        callback(new Error('请输入正确的11位手机号码或带区号的固话'))
+      } else {
+        callback()
+      }
+    }
+    // 用户名
+    let validateAccount = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('请输入用户名'))
+      } else if (!isvalidAccount(value)) {
+        callback(new Error('请输入4-16位字母或数字'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      editForm: {
+        account: '',
+        name: '',
+        fixedTelephone: '',
+        email: '',
+        url: '',
+        registeredCellPhone: '',
+        enterprise: {
+          enterType: '',
+          name: '',
+          useCode: '',
+          provinceId: '',
+          cityId: '',
+          address: '',
+          zipCode: '',
+          industryTypeFirst: '',
+          fileInformations: []
+        }
+      },
+      // 行业
+      options: industry.industry,
+      // 公司类型
+      companyTypeoptions: [
+        {
+          value: '1',
+          label: '招标人'
+        },
+        {
+          value: '2',
+          label: '投标人'
+        },
+        {
+          value: '3',
+          label: '代理机构'
+        },
+        {
+          value: '4',
+          label: '其他'
+        }
+      ],
+      // 行政区域
+      addressOptions: region.CityInfo,
+      // 行政区域绑定数组
+      provinceIdArray: [],
+      rules: {
+        account: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 4, max: 16, message: '长度在 4到 16 个字符', trigger: 'blur' },
+          {validator: validateAccount, trigger: ['blur', 'change']}
+        ],
+        'enterprise.name': [
+          { required: true, message: '请输入企业名称', trigger: 'blur' },
+          { min: 1, max: 100, message: '长度在 1到 100 个字符', trigger: 'blur' }
+        ],
+        'enterprise.address': [
+          { required: true, message: '请输入企业地址', trigger: 'blur' }
+        ],
+        'enterprise.zipCode': [
+          { required: true, message: '请输入邮编', trigger: 'blur' }
+        ],
+        name: [
+          { required: true, message: '请输入联系人姓名', trigger: 'blur' },
+          { min: 1, max: 100, message: '长度在 1到 100 个字符', trigger: 'blur' }
+        ],
+        registeredCellPhone: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          {validator: validPhoneUser, trigger: 'blur'}
+        ],
+        fixedTelephone: [
+          {validator: validPhoneUser, message: '请输入正确固话', trigger: 'blur'}
+        ],
+        email: [
+          { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+          { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+        ],
+        'enterprise.provinceId': [
+          { required: true, message: '请选择所属地区', trigger: 'blur' }
+        ],
+        'enterprise.enterType': [
+          { required: true, message: '请选择公司类型', trigger: 'blur' }
+        ],
+        'enterprise.industryTypeFirst': [
+          { required: true, message: '请选择行业', trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  methods: {
+    // 省市两级联动
+    handlerCityChange (value) {
+      this.editForm.enterprise.provinceId = value[0]
+      this.editForm.enterprise.cityId = value[1]
+    },
+    // 确认按钮
+    submit (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if (this.editForm.enterprise.fileInformations.length < 2) {
+            this.$message({
+              type: 'warning',
+              message: '请检查文件是否上传完毕'
+            })
+            return false
+          }
+          // 默认未审核
+          this.editForm.status = 0
+          // 业务用户
+          this.editForm.type = 3
+          commonUser.update(this.editForm).then((res) => {
+            this.$router.push({path: '/index/commonuser'})
+          })
+        } else {
+          this.$message({
+            type: 'warning',
+            message: '请检查必填项是否填写正确'
+          })
+          return false
+        }
+      })
+    },
+    close () {
+      this.$router.go(-1)
+    },
+    // 上传文件
+    uploadSuccess (file, fileType) {
+      this.editForm.enterprise.fileInformations = this.editForm.enterprise.fileInformations.filter(item => item.businessType !== fileType)
+      this.editForm.enterprise.fileInformations.push(file)
+    },
+    deleteSuccess (fileId) {
+      this.editForm.enterprise.fileInformations = this.editForm.enterprise.fileInformations.filter(item => item.relativePath !== fileId)
+    },
+    detail () {
+      commonUser.detail(this.$route.params.objectId).then((res) => {
+        this.editForm = res.data.user
+        this.provinceIdArray.push(this.editForm.enterprise.provinceId)
+        this.provinceIdArray.push(this.editForm.enterprise.cityId)
+        this.editForm.enterprise.fileInformations.map((item) => {
+          if (item.businessType === '1') {
+            this.oldBusinessFileName = item.fileName
+            this.businessRelativePath = item.relativePath
+          } else if (item.businessType === '2') {
+            this.oldBankOpenFileName = item.fileName
+            this.bankOpenRelativePath = item.relativePath
+          }
+        })
+      })
+    }
+  },
+  mounted () {
+    this.detail()
+  }
+}
+</script>
+<style lang="less">
+  #commonuseradd{
+    .el-form-item{
+      margin-bottom: 0px;
+    }
+  }
+</style>

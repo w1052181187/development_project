@@ -1,0 +1,211 @@
+<template>
+  <div id="order-statis-sys-page" class="cont-view">
+    <!-- 面包屑区域start -->
+    <div class="bread-box">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/">采购管理系统  </a></el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/">采购投诉</a></el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <!-- 面包屑区域end -->
+    <!-- 搜索区域start -->
+    <div class="search-box">
+      <el-row :gutter="20">
+        <el-form :model="searchForm" label-width="110px" class="demo-ruleForm">
+          <el-col :span="6">
+            <el-form-item label="电商平台名称:">
+              <el-select v-model="searchForm.name" clearable placeholder="请选择">
+                <el-option
+                  v-for="item in ecPlatform"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="创建时间:">
+              <el-date-picker
+                v-model="searchForm.time"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="2">
+            <el-button type="primary" @click="onSearch">查询</el-button>
+          </el-col>
+        </el-form>
+      </el-row>
+    </div>
+    <!-- 搜索区域end -->
+    <div class="table-box">
+      <div class="handle-btn">
+        <el-button type="primary" size="small" @click="addComplain">新增投诉</el-button>
+      </div>
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%">
+        <el-table-column
+          label="序号"
+          type="index"
+          width="60"
+          :computedIndex="computedIndex"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="电商平台名称"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="投诉理由"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="创建时间"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="回复状态"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="account"
+          label="回复内容"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="回复时间"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleTableBtn(scope.row, 'look')">
+              查看
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="pagination-box">
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="page.total"
+          :page-size='page.pageSize'
+          :current-page.sync="page.currentPage"
+          @current-change="handlePage"
+          @next-click="handlePage">
+        </el-pagination>
+        <!--分页-->
+      </div>
+    </div>
+    <div class="dialog-box">
+      <el-dialog
+        :title="dialogTitle"
+        :visible.sync="dialogVisible"
+        width="40%"
+        center>
+        <el-form :model="complainForm" ref="ruleForm" label-width="140px" class="demo-ruleForm">
+          <el-form-item label="电商平台名称：" prop="region">
+            <el-select v-model="complainForm.name" clearable placeholder="请选择" v-if="!isHide">
+              <el-option
+                v-for="item in ecPlatform"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+            <span v-if="isHide">{{'京东'}}</span>
+          </el-form-item>
+          <el-form-item label="投诉理由：" prop="desc">
+            <el-input type="textarea" v-model="complainForm.desc" :disabled="isHide" :rows="3"></el-input>
+          </el-form-item>
+          <el-form-item label="回复内容：" prop="region" v-if="isHide">
+            <el-input type="textarea" v-model="complainForm.desc" :disabled="isHide" :rows="3"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="submitComplain" v-if="!isHide">确 定</el-button>
+        </span>
+      </el-dialog>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  name: '',
+  data () {
+    return {
+      searchForm: {},
+      ecPlatform: [], // 电商平台lsit
+      tableData: [{account: 'qwe'}],
+      page: {
+        total: 0,
+        pageSize: 10,
+        currentPage: 1
+      },
+      dialogTitle: '新增投诉',
+      isHide: false,
+      dialogVisible: false,
+      complainForm: {}
+    }
+  },
+  methods: {
+    /** 搜索 */
+    onSearch () {},
+    /** 表格操作 */
+    handleTableBtn (row, type) {
+      this.dialogTitle = '投诉查看'
+      this.dialogVisible = true
+      this.isHide = true
+    },
+    /** 提交投诉 */
+    submitComplain () {},
+    /** 新增投诉 */
+    addComplain () {
+      this.dialogVisible = true
+      this.dialogTitle = '新增投诉'
+      this.isHide = false
+    },
+    /** 普通格式化数据，空的时候展示"---" */
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '-----'
+    },
+    /** 序号计算 */
+    computedIndex (index) {
+      return index + (this.page.currentPage - 1) * this.page.pageSize + 1
+    },
+    /** 分页 */
+    handlePage () {}
+  },
+  mounted () {}
+}
+</script>
+<style lang="less">
+#order-statis-sys-page {
+  .handle-btn {
+    text-align: right;
+    padding-bottom: 15px;
+  }
+}
+</style>

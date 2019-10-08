@@ -1,0 +1,42 @@
+export default[
+  {
+    path: '/system/template',
+    name: '模板管理',
+    meta: {
+      title: '模板管理',
+      active: '/system/template',
+      permission: 'admin'
+    },
+    component: () => import(/* webpackChunkName: 'system' */ '@/pages/system/template/index')
+  },
+  {
+    path: '/system/template/add',
+    name: '新增模板',
+    meta: {
+      title: '新增模板',
+      active: '/system/template',
+      permission: 'admin'
+    },
+    component: () => import(/* webpackChunkName: 'system' */ '@/pages/system/template/add')
+  },
+  {
+    path: '/system/template/update',
+    name: '修改模板',
+    meta: {
+      title: '修改模板',
+      active: '/system/template',
+      permission: 'admin'
+    },
+    component: () => import(/* webpackChunkName: 'system' */ '@/pages/system/template/add')
+  },
+  {
+    path: '/system/template/detail/:objectId',
+    name: '预览模板',
+    meta: {
+      title: '预览模板',
+      active: '/system/template',
+      permission: 'admin'
+    },
+    component: () => import(/* webpackChunkName: 'system' */ '@/pages/system/template/detail')
+  }
+]

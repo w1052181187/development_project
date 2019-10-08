@@ -1,0 +1,13 @@
+import classify from './classify'
+import management from './management'
+import query from './query'
+import setting from './setting'
+import transfer from './transfer'
+
+export default[
+  ...classify,
+  ...management,
+  ...query,
+  ...setting,
+  ...transfer
+]

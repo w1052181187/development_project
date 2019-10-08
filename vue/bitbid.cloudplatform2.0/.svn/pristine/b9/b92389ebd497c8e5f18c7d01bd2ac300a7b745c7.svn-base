@@ -1,0 +1,183 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <div class="box">
+      <div class="topmain">
+        废标结果公告
+        <div class="fr">
+          <!--按钮-->
+          <el-button type="primary" @click="editBtn" v-if="updateForm.auditStatus === 0 || updateForm.auditStatus === 5"><span>编辑</span></el-button>
+          <el-button @click="delBtn" v-if="updateForm.auditStatus === 0"><span>删除</span></el-button>
+          <!--按钮-->
+        </div>
+      </div>
+      <div class="main viewdetails">
+        <el-form :model="updateForm" ref= "updateForm" :validate-on-rule-change="true">
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="废标结果公告名称：">
+                <span>{{updateForm.title}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="是否重新招标：">
+                <span>{{updateForm.isRetender | filterRetender}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="公告链接：">
+                <span>{{updateForm.bulletinUrl}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="发布网站：">
+                <span>{{updateForm.publishUrl}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="废标原因：">
+                 <span>{{updateForm.abolitionReason}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="公告内容：">
+                <editor ref="notice_ueditor" class="ueditor" :editread="editread"></editor>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="附件：">
+                <el-table
+                  :data="updateForm.fileInformationList"
+                  border
+                  style="width: 100%" header-cell-class-name="tableheader">
+                  <el-table-column
+                    type="index"
+                    label="序号"
+                    width="60"
+                    align="center">
+                  </el-table-column>
+                  <el-table-column
+                    prop="fileName"
+                    label="文件名称"
+                    show-overflow-tooltip>
+                  </el-table-column>
+                  <el-table-column
+                    label="操作" align="center" width="200">
+                    <template slot-scope="scope">
+                      <el-button type="text" size="small" @click="lookFile(scope.row)">查看</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="提交人：">
+                <span>{{updateForm.submitterName}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="提交时间：">
+                <span>{{updateForm.submitTime | filterDate}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import {downloadFile, dateFormat} from '@/assets/js/common'
+import {bulletinInfo} from '@/api/project/index'
+export default {
+  components: {
+    editor
+  },
+  data () {
+    return {
+      updateForm: {
+        fileInformationList: []
+      },
+      // 富文本
+      editread: true
+    }
+  },
+  props: ['tenderSystemCode', 'sectionSystemCode', 'operationFlag', 'type'],
+  filters: {
+    // 格式化时间
+    filterDate (submitTime) {
+      return submitTime ? dateFormat(submitTime, 'yyyy-MM-dd') : ''
+    },
+    filterRetender (isRetender) {
+      if (isRetender === 0) {
+        return '否'
+      } else if (isRetender === 1) {
+        return '是'
+      }
+    }
+  },
+  created () {
+    this.getTableData()
+  },
+  methods: {
+    lookFile (file) {
+      downloadFile(file.fileName, file.relativePath)
+    },
+    /** 获取列表数据 */
+    getTableData () {
+      bulletinInfo.getList({
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        tenderSystemCode: this.tenderSystemCode,
+        sectionSystemCode: this.sectionSystemCode,
+        type: 5
+      }).then((res) => {
+        if (res.data.bulletinInfoList && res.data.bulletinInfoList.list) {
+          this.updateForm = res.data.bulletinInfoList.list[0]
+          // 获取文本编辑器的内容
+          this.$refs.notice_ueditor.setContent(this.content = this.updateForm.content)
+        }
+      })
+    },
+    /** 编辑操作 */
+    editBtn () {
+      this.$router.push({path: `/project/projectProcess/project/process/wasteBidResult/update`, query: {code: this.updateForm.code, sectionSystemCode: this.sectionSystemCode}})
+    },
+    /** 删除操作 */
+    delBtn () {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        bulletinInfo.delete(this.updateForm.objectId).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.$emit('checkFlowStatusFlag', this.type)
+          }
+        })
+      }).catch(() => {
+        return false
+      })
+    }
+  },
+  mounted () {}
+}
+</script>
+<style lang="less">
+  #cloud_processtype{
+    .areaBox textarea{
+      min-height: 100px !important;
+    }
+  }
+</style>

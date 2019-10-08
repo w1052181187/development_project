@@ -1,0 +1,117 @@
+<template>
+  <div id="credit-eval-page" class="cont-view">
+    <!-- 面包屑区域start -->
+    <div class="bread-box">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/">门户信息管理</a></el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/">信用评价</a></el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <!-- 面包屑区域end -->
+    <div class="list">
+      <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+          <div class="item" v-for="(item, index) in ruleForm.list" :key="index">
+            <el-form-item :label="item.userName + '：'" :prop="'list[' + index + '].creditOrder'"
+                          :rules="rules.creditOrder">
+              <el-select v-model="item.creditOrder" placeholder="请选择">
+                <el-option
+                  v-for="orderItem in orderOptions"
+                  :key="orderItem.creditOrder"
+                  :label="orderItem.name"
+                  :value="orderItem.creditOrder">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="评语：" :prop="'list.' + index + '.evaluation'" :rules="rules.evaluation">
+              <el-input type="textarea" v-model="item.evaluation" :rows="3"></el-input>
+            </el-form-item>
+          </div>
+<!--        <div v-for="(item, index) in ruleForm.list" :key="index">-->
+<!--          <el-form-item :label="item.userName + '：'">-->
+<!--            <el-select v-model="item.creditOrder" placeholder="请选择">-->
+<!--              <el-option-->
+<!--                v-for="orderItem in orderOptions"-->
+<!--                :key="orderItem.creditOrder"-->
+<!--                :label="orderItem.name"-->
+<!--                :value="orderItem.creditOrder">-->
+<!--              </el-option>-->
+<!--            </el-select>-->
+<!--          </el-form-item>-->
+<!--          <el-form-item label="评语：">-->
+<!--            <el-input type="textarea" v-model="item.evaluation" :rows="3"></el-input>-->
+<!--          </el-form-item>-->
+<!--        </div>-->
+        <el-form-item class="btn">
+          <el-button type="primary" @click="submitForm('ruleForm')">保 存</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import {credit} from '@/api'
+export default {
+  name: 'credit-eval',
+  data () {
+    return {
+      page: {
+        total: 0,
+        pageSize: 10,
+        pageNo: 10,
+        currentPage: 1
+      },
+      ruleForm: {
+        list: []
+      },
+      rules: {
+        creditOrder: [
+          {required: true, message: '请选择排名', trigger: ['blur', 'change']}
+        ],
+        evaluation: [
+          {required: true, message: '请填写评语', trigger: ['blur', 'change']}
+        ]
+      },
+      orderOptions: []
+    }
+  },
+  methods: {
+    submitForm () {},
+    getList () {
+      let queryModel = {
+        pageNo: this.page.pageNo,
+        pageSize: this.page.pageSize
+      }
+      credit.queryList(queryModel).then(res => {
+        this.ruleForm.list = res.data.creditEvaluationPageInfo.list
+        this.page.total = res.data.creditEvaluationPageInfo.total
+        this.generateOrderOption(this.ruleForm.list)
+      })
+    },
+    generateOrderOption (list) {
+      list.forEach((item, index) => {
+        let obj = {}
+        obj.creditOrder = Number(index) + 1
+        obj.name = '第' + obj.creditOrder + '名'
+        this.orderOptions.push(obj)
+      })
+      console.log(this.orderOptions)
+    }
+  },
+  mounted () {
+    this.getList()
+  }
+}
+</script>
+<style>
+  .list {
+    text-align: left;
+  }
+  .list .btn {
+    text-align: center;
+  }
+  .item {
+    display: inline-block;
+    margin: 0 24px;
+  }
+</style>

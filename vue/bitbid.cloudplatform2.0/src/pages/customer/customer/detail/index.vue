@@ -1,0 +1,131 @@
+<template>
+  <div class="cloudcontent" id="cloud_customer_detail">
+    <div class="main">
+      <div class="tit">
+        <span>{{baseInfo.name | formatText}}</span>
+        <em>负责人：{{baseInfo.chargePersonName | formatText}}</em>
+      </div>
+      <el-tabs class="detail_tab" v-model="activeName" type="card">
+        <el-tab-pane label="跟进记录" name="first">
+          <followup-detail :relatedCode="$route.params.code" type="customer"></followup-detail>
+        </el-tab-pane>
+
+        <el-tab-pane label="企业信息" name="second">
+          <base-info :baseInfo="baseInfo"></base-info>
+        </el-tab-pane>
+
+        <el-tab-pane label="联系人" name="third">
+          <contacts-list :relatedCode="$route.params.code"></contacts-list>
+        </el-tab-pane>
+
+        <el-tab-pane label="商机" name="fourth">
+          <business-list :related-code="$route.params.code"></business-list>
+        </el-tab-pane>
+
+        <el-tab-pane label="项目" name="fifth">
+          <project-list :related-code="$route.params.code"></project-list>
+        </el-tab-pane>
+
+        <el-tab-pane label="合同" name="sixth">
+          <contract-list :related-code="$route.params.code"></contract-list>
+        </el-tab-pane>
+
+        <!--<el-tab-pane label="费用" name="seventh">-->
+          <!--<fee-list :related-code="$route.params.code"></fee-list>-->
+        <!--</el-tab-pane>-->
+      </el-tabs>
+    </div>
+  </div>
+</template>
+<script>
+import * as region from '@/assets/js/region'
+import { customer } from '@/api/customer'
+import {dateFormat} from '@/assets/js/common'
+import FollowupDetail from '../../followup/detail'
+import BaseInfo from './baseInfo'
+import ContactsList from './contactsList'
+import BusinessList from './businessList'
+import ProjectList from './projectList'
+import ContractList from './contractList'
+import FeeList from './feeList'
+
+export default {
+  components: {
+    FollowupDetail,
+    BaseInfo,
+    ContactsList,
+    BusinessList,
+    ProjectList,
+    ContractList,
+    FeeList
+  },
+  data () {
+    return {
+      activeName: 'first',
+      loading: false,
+      baseInfo: {},
+      // 地址三级联动
+      longTextOptions: region.CityInfo
+    }
+  },
+  methods: {
+    // 初始化数据
+    initData () {
+      customer.querySelfOneByCode(this.$route.params.code).then(res => {
+        this.baseInfo = res.data.data
+        if (this.baseInfo.provinceId) {
+          // 包装三级联动地址信息
+          this.wrapRegionText()
+        }
+      })
+    },
+    // 包装三级联动地址信息
+    wrapRegionText () {
+      // 初始化省市县数据
+      this.baseInfo.regionText = ''
+      this.longTextOptions.map((item) => {
+        if (item.value === this.baseInfo.provinceId) {
+          this.baseInfo.regionText += item.label + '/'
+          item.children.map((ite) => {
+            if (ite.value === this.baseInfo.cityId) {
+              this.baseInfo.regionText += ite.label + '/'
+              ite.children.map((countyItem) => {
+                if (countyItem.value === this.baseInfo.countyId) {
+                  this.baseInfo.regionText += countyItem.label
+                }
+              })
+            }
+          })
+        }
+      })
+    }
+  },
+  filters: {
+    // 格式化时间
+    formatDate (value) {
+      return value ? dateFormat(value, 'yyyy-MM-dd') : '---'
+    },
+    // 格式化字符串
+    formatText (value) {
+      return value || '---'
+    }
+  },
+  mounted () {
+    // 初始化数据
+    this.initData()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_customer_detail {
+    .part{
+      margin-top: 20px;
+    }
+    .part .el-textarea__inner{
+      height: 120px;
+    }
+    .time_search{
+      margin-bottom: 20px;
+    }
+  }
+</style>

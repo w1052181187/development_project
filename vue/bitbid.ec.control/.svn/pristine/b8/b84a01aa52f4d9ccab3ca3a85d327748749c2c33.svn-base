@@ -1,0 +1,214 @@
+<template>
+  <div id="policy-law-page" class="cont-view">
+    <!-- 面包屑区域start -->
+    <div class="bread-box">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/">门户信息管理</a></el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/">政策法规管理</a></el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <!-- 面包屑区域end -->
+    <!-- 搜索区域start -->
+    <div class="search-box">
+      <el-row :gutter="20">
+        <el-col :span="8">
+          <el-input placeholder="请输入标题" v-model="searchForm.messageLike" class="input-with-select">
+            <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
+          </el-input>
+        </el-col>
+        <el-col :span="16" class="add-btn">
+          <el-button type="primary" size="small" @click="addLaws" style="float:right;">新 增</el-button>
+        </el-col>
+      </el-row>
+    </div>
+    <!-- 搜索区域end -->
+    <div class="table-box">
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%">
+        <el-table-column
+          label="序号"
+          type="index"
+          width="60"
+          :computedIndex="computedIndex"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="title"
+          label="标题"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="发布时间"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleTableBtn(scope.row, 'look')">
+              查看
+            </el-button>
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleTableBtn(scope.row, 'edit')">
+              修改
+            </el-button>
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleTableBtn(scope.row, 'del')">
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="pagination-box">
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="page.total"
+          :page-size='page.pageSize'
+          :current-page.sync="page.currentPage"
+          @current-change="handlePage"
+          @next-click="handlePage">
+        </el-pagination>
+        <!--分页-->
+      </div>
+    </div>
+    <!-- 弹窗区域start -->
+    <div class="dialog-box">
+      <el-dialog
+        :title="dialogTitle"
+        :visible.sync="showVisible"
+        width="40%"
+        center>
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+          <el-form-item label="标题:" prop="title">
+            <el-input v-model="ruleForm.title" v-if="!isLook"></el-input>
+            <span v-if="isLook">{{ruleForm.title}}</span>
+          </el-form-item>
+          <el-form-item label="内容:" prop="content">
+            <ueditor></ueditor>
+          </el-form-item>
+          <el-form-item label="附件:" prop="content">
+            <el-upload
+              class="upload-demo"
+              :action="uploadUrl"
+              :on-success="onSuccess"
+              :before-upload="beforeUpload"
+              :file-list="fileList">
+              <el-button size="small" type="primary">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="showVisible = false">取 消</el-button>
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+        </span>
+      </el-dialog>
+    </div>
+    <!-- 弹窗区域end -->
+  </div>
+</template>
+<script>
+import ueditor from '@/components/ueditor/ueditor'
+export default {
+  name: 'policy-law',
+  data () {
+    return {
+      searchForm: {},
+      tableData: [{title: '白体'}],
+      page: {
+        total: 0,
+        pageSize: 10,
+        currentPage: 1
+      },
+      showVisible: false,
+      ruleForm: {},
+      rules: {},
+      uploadUrl: '', // 上传地址
+      fileList: [], // 上传列表
+      dialogTitle: '新增',
+      isLook: false
+    }
+  },
+  components: {
+    ueditor
+  },
+  methods: {
+    /** 搜索 */
+    search () {},
+    /** 新增 */
+    addLaws () {
+      this.showVisible = true
+    },
+    /** 表格操作 */
+    handleTableBtn (row, type) {
+      if (Object.is(type, 'look')) {
+        // 查看
+        this.showVisible = true
+        this.dialogTitle = '查看'
+        this.isLook = true
+      } else if (Object.is(type, 'edit')) {
+        // 修改
+        this.showVisible = true
+        this.isEdit = true
+        this.dialogTitle = '修改'
+      } else if (Object.is(type, 'del')) {
+        // 删除
+        this.deleteMethod()
+      }
+    },
+    /** 分页 */
+    handlePage () {},
+    /** 提交 */
+    submitForm () {},
+    /** 上传成功 */
+    onSuccess (response, file, fileList) {},
+    /** 上传之前 */
+    beforeUpload (file) {},
+    /** 普通格式化数据，空的时候展示"---" */
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '-----'
+    },
+    /** 序号计算 */
+    computedIndex (index) {
+      return index + (this.page.currentPage - 1) * this.page.pageSize + 1
+    },
+    /** 删除 */
+    deleteMethod () {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        // 执行
+      }).catch(() => {
+        return false
+      })
+    }
+  },
+  mounted () {}
+}
+</script>
+<style lang="less">
+#policy-law-page {
+  .dialog-box {
+    .el-form-item__content {
+      line-height: 0;
+    }
+    .ueditor-wrap {
+      padding: 0;
+    }
+  }
+}
+</style>

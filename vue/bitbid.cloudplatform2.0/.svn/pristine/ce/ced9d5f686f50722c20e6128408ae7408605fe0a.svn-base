@@ -1,0 +1,168 @@
+/**
+ * Created by Administrator on 2019-3-7.
+ * 定标结果
+ */
+export default [
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/winbidpublic/add',
+    name: '定标结果-中标候选人公示-添加',
+    meta: {
+      title: '定标结果-中标候选人公示-添加',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/addWinbidpublic.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/winbidpublic/update',
+    name: '定标结果-中标候选人公示-修改',
+    meta: {
+      title: '定标结果-中标候选人公示-修改',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/updateWinbidpublic.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/winbidpublic/detail/:code',
+    name: '定标结果-中标候选人公示-查看',
+    meta: {
+      title: '定标结果-中标候选人公示-查看',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/detailWinbidpublic.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/winbidclear/add',
+    name: '定标结果-中标候选人疑义及澄清-添加',
+    meta: {
+      title: '定标结果-中标候选人疑义及澄清-添加',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/addWinbidclear.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/winbidclear/update',
+    name: '定标结果-中标候选人疑义及澄清-修改',
+    meta: {
+      title: '定标结果-中标候选人疑义及澄清-修改',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/updateWinbidclear.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/winbidclear/detail/:objectId',
+    name: '定标结果-中标候选人疑义及澄清-查看',
+    meta: {
+      title: '定标结果-中标候选人疑义及澄清-查看',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/detailWinbidclear.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/winbidnotice/add',
+    name: '定标结果-中标结果公告-添加',
+    meta: {
+      title: '定标结果-中标结果公告-添加',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/addWinbidnotice.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/winbidnotice/update',
+    name: '定标结果-中标结果公告-修改',
+    meta: {
+      title: '定标结果-中标结果公告-修改',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/updateWinbidnotice.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/winbidnotice/detail/:code',
+    name: '定标结果-中标结果公告-查看',
+    meta: {
+      title: '定标结果-中标结果公告-查看',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/detailWinbidnotice.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/winbidinform/add',
+    name: '定标结果-中标通知书-添加',
+    meta: {
+      title: '定标结果-中标通知书-添加',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/addWinbidinform.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/winbidinform/update',
+    name: '定标结果-中标通知书-修改',
+    meta: {
+      title: '定标结果-中标通知书-修改',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/updateWinbidinform.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/winbidinform/detail/:objectId',
+    name: '定标结果-中标通知书-查看',
+    meta: {
+      title: '定标结果-中标通知书-查看',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/detailWinbidinform.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/tenderinform/add',
+    name: '定标结果-招标结果通知书-添加',
+    meta: {
+      title: '定标结果-招标结果通知书-添加',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/addTenderinform.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/tenderinform/update',
+    name: '定标结果-招标结果通知书-修改',
+    meta: {
+      title: '定标结果-招标结果通知书-修改',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/updateTenderinform.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/tenderinform/detail/:objectId',
+    name: '定标结果-招标结果通知书-查看',
+    meta: {
+      title: '定标结果-招标结果通知书-查看',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/detailTenderinform.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/returnbond/add',
+    name: '定标结果-退还保证金-添加',
+    meta: {
+      title: '定标结果-退还保证金-添加',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/addReturnBond.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/returnbond/update',
+    name: '定标结果-退还保证金-修改',
+    meta: {
+      title: '定标结果-退还保证金-修改',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/updateReturnBond.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/calibrationResult/returnbond/detail/:objectId',
+    name: '定标结果-退还保证金-查看',
+    meta: {
+      title: '定标结果-退还保证金-查看',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/calibrationResult/detailReturnBond.vue')
+  }
+]

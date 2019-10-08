@@ -1,0 +1,212 @@
+<template>
+  <div id="bidwindetail" class="smaincontent">
+    <div class="headertitle">
+      <!--面包屑-->
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/main' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item>公告管理</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/annoapprove/ckresultanno' }">中标公告审核</el-breadcrumb-item>
+        <el-breadcrumb-item>查看中标公告审核</el-breadcrumb-item>
+      </el-breadcrumb>
+      <!--面包屑-->
+      <div class="returnboxbig">
+        <template>
+          <el-button @click="close">返回</el-button>
+        </template>
+      </div>
+    </div>
+    <div class="contentbigbox">
+      <template>
+        <el-form :model="winBidForm" ref="winBidForm">
+          <table class="detailtable">
+            <tr>
+              <td>公告名称：</td>
+              <td  colspan="2">
+                <template>
+                  <span>{{winBidForm.noticeName}}</span>
+                </template>
+              </td>
+              <td>公告性质：</td>
+              <td  colspan="2">
+                <span v-if="winBidForm.noticeNature === '1'">正常公示</span>
+                <span v-if="winBidForm.noticeNature === '2'">更正公示</span>
+                <span v-if="winBidForm.noticeNature === '9'">其他</span>
+              </td>
+            </tr>
+            <tr>
+              <td>招标项目编号：</td>
+              <td  colspan="2">
+                <span>{{winBidForm.tenderProjectCode}}</span>
+              </td>
+              <td>招标项目名称：</td>
+              <td  colspan="2">
+                <span>{{winBidForm.tenderExpandsInfo.tenderProjectName}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>项目行业：</td>
+              <td  colspan="2">
+                <span>{{industryStr}}</span>
+              </td>
+              <td>行政区域：</td>
+              <td  colspan="2">
+                <span>{{regionStr}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>标段（包）编号：</td>
+              <td colspan="2">
+                <span>{{winBidForm.bidSectionCode}}</span>
+              </td>
+              <td>中标人名称：</td>
+              <td  colspan="2">
+                <span>{{winBidForm.winBidderName}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>中标价格：</td>
+              <td colspan="2">
+                <span>{{winBidForm.bidAmount}}</span>
+              </td>
+              <td>其他类型中标价：</td>
+              <td  colspan="2">
+                <span>{{winBidForm.otherBidPrice}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>中标公告编号：</td>
+              <td colspan="5">
+                <span>{{winBidForm.tenderExpandsInfo.bulletinCode}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>公告发布时间：</td>
+              <td colspan="2">
+                <span>{{winBidForm.noticeSendTime}}</span>
+              </td>
+              <td>是否接受联合体：</td>
+              <td  colspan="2">
+                <span v-if="winBidForm.syndicatedFlag === 1">是</span>
+                <span v-if="winBidForm.syndicatedFlag === 0">否</span>
+              </td>
+            </tr>
+            <tr v-if="fileObject !== null">
+              <td>公示附件：</td>
+              <td  colspan="5">
+                <filedownload :fileObject="fileObject"></filedownload>
+              </td>
+            </tr>
+            <tr v-if="showNotice">
+              <td>公告内容：</td>
+              <td  colspan="5">
+                <editor ref="ueditor" class="ueditor" :editread="true"></editor>
+              </td>
+            </tr>
+            <tr v-if="winBidForm.noticeNature === '2'">
+              <td>变更公告内容：</td>
+              <td  colspan="5">
+                <editor ref="change_ueditor" class="ueditor" :editread="true"></editor>
+              </td>
+            </tr>
+            <approverecord v-if="winBidForm.status === 2 || winBidForm.status === 3" :code="winBidForm.code"></approverecord>
+          </table>
+        </el-form>
+      </template>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import filedownload from '@/components/file-download'
+import approverecord from '@/components/approve-record.vue'
+import {resultAnno} from '@/api'
+import * as industry from '../../../assets/js/industry'
+import * as region from '../../../assets/js/region'
+export default {
+  components: {
+    editor,
+    filedownload,
+    approverecord
+  },
+  data () {
+    return {
+      showNotice: false,
+      industryList: industry.industry,
+      addressOptions: region.CityInfo,
+      regionStr: '',
+      industryStr: '',
+      fileObject: {},
+      winBidForm: {
+        tenderExpandsInfo: {}
+      },
+      status: null
+    }
+  },
+  methods: {
+    detail () {
+      resultAnno.detail(this.$route.params.objectId).then((res) => {
+        // 行业
+        this.industryList.map((item) => {
+          if (item.value === res.data.winBidBulletin.tenderExpandsInfo.industryTypeFirst) {
+            this.industryStr = item.label
+          }
+        })
+        // 行政区域
+        this.addressOptions.map((item) => {
+          if (item.value === res.data.winBidBulletin.tenderExpandsInfo.provinceId) {
+            this.regionStr += item.label
+            item.children.map((ite) => {
+              if (ite.value === res.data.winBidBulletin.tenderExpandsInfo.cityId) {
+                this.regionStr += ite.label
+              }
+            })
+          }
+        })
+        this.winBidForm = res.data.winBidBulletin
+        this.fileObject = res.data.winBidBulletin.fileInformations.length === 0 ? null : res.data.winBidBulletin.fileInformations[0]
+        this.showNotice = true
+        return this.winBidForm
+      }).then((result) => {
+        if (result.noticeNature === '2') {
+          this.$refs.ueditor.setContent(result.originalBulletinContent)
+          this.$refs.change_ueditor.setContent(result.noticeContent)
+        } else {
+          this.$refs.ueditor.setContent(result.noticeContent)
+        }
+      })
+    },
+    close () {
+      this.$router.push({path: '/annoapprove/ckresultanno', query: {status: this.status}})
+    }
+  },
+  mounted () {
+    this.status = this.$route.query.status ? this.$route.query.status : this.$route.query.status === 0 ? this.$route.query.status : null
+    this.detail()
+  }
+}
+</script>
+<style lang="less">
+  #bidwindetail{
+    .select {
+      float: left;
+      width: 100%;
+    }
+    .el-cascader{
+      float: left;
+      width: 100%;
+    }
+    .el-date-editor{
+      float: left;
+      width: 100%;
+    }
+    .el-date-editor.el-input, .el-date-editor.el-input__inner{
+      width: 100%;
+    }
+    .el-form-item{
+      margin-bottom: 0px;
+    }
+    .el-form-item__error{
+      display: none;
+    }
+  }
+</style>

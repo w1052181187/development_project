@@ -1,0 +1,200 @@
+<template>
+  <div class="cloudcontent" id="notify-box">
+    <!--搜索 & 添加按钮-->
+    <div class="topmain">
+      <el-row>
+        <div class="seacher_box">
+          <span>标题：</span>
+          <el-input class="input" style="vertical-align: top"  placeholder="请输入关键字" v-model="searchForm.title"></el-input>
+          <span>知会时间：</span>
+          <el-date-picker
+            v-model="searchForm.publishTime"
+            type="daterange"
+            range-separator="--"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            value-format="yyyy-MM-dd">
+          </el-date-picker>
+          <el-button  class="search-btn" @click="search">查询</el-button>
+          <el-button  class="cancal" @click="reset">重置</el-button>
+        </div>
+      </el-row>
+    </div>
+    <!--搜索 & 添加按钮-->
+    <div class="main">
+      <el-button class="addbutton" @click="handleMultiDel">
+        <span>批量删除</span>
+      </el-button>
+      <el-button class="addbutton" @click="handleReaded">
+        <span>标记为已读</span>
+      </el-button>
+      <el-table
+        :data="tableData"
+        border
+        header-cell-class-name="tableheader"
+        @selection-change="handleSelectionChange">
+        <el-table-column
+          type="index"
+          label="序号"
+          align="center"
+          :index="indexMethod"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          type="selection"
+          align="center"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="content"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span :class="handleTitleStyle(scope.row)">{{scope.row.content}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="notifyDate"
+          label="知会时间"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetail(scope)">去看看</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: '',
+  data () {
+    return {
+      searchForm: {}, // 搜索
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      tableData: [
+        {
+          isReaded: true,
+          content: '辅导费付付付多地方的纷纷的芙蓉芙蓉',
+          notifyDate: '2019-06-15'
+        },
+        {
+          isReaded: false,
+          content: '辅导费付付付多地方的纷纷的芙蓉芙蓉',
+          notifyDate: '2019-06-15'
+        }
+      ]
+    }
+  },
+  methods: {
+    indexMethod (index) {
+      return index + (this.currentPage - 1) * 10 + 1
+    },
+    // 重置
+    reset () {},
+    // 搜索
+    search () {},
+    // 多选
+    handleSelectionChange (val) {},
+    // 批量删除
+    handleMultiDel () {},
+    // 标记已读
+    handleReaded () {},
+    // 处理标题样式
+    handleTitleStyle (row) {
+      return row.isReaded ? 'readed' : 'unReaded'
+    },
+    getData () {
+    },
+    // 表单分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getData(parseInt(this.pageNo), parseInt(this.pageSize))
+    },
+    handleDel (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+      }).catch(() => {
+        return false
+      })
+    }
+  },
+  mounted () {
+    this.getData()
+  }
+}
+</script>
+
+<style lang="less">
+  #notify-box{
+    .addbutton{
+      margin-bottom: 12px;
+      color: #fff;
+      background-color: #409EFF;
+      border-color: #409EFF;
+      float: right;
+      margin-left: 12px;
+    }
+    .search-btn{
+      margin-bottom: 12px;
+      color: #fff;
+      background-color: #409EFF;
+      border-color: #409EFF;
+      margin-left: 20px;
+      margin-right: 10px;
+    }
+    .input{
+      width: 200px;
+      margin-right: 24px;
+    }
+    .readed::before{
+      display: inline-block;
+      content: '';
+      width: 6px;
+      height: 6px;
+      margin-right: 6px;
+      border-radius: 50%;
+      background-color: #ff0001;
+      text-align: center;
+    }
+    .readed{
+      color: #333;
+    }
+    .unReaded{
+      color: #999;
+    }
+    .unReaded::before{
+      display: inline-block;
+      content: '';
+      width: 6px;
+      height: 6px;
+      margin-right: 6px;
+      border-radius: 50%;
+      background-color: #bbb;
+    }
+    .title{
+      vertical-align: middle;
+    }
+  }
+</style>

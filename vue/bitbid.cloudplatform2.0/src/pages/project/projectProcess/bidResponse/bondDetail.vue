@@ -1,0 +1,142 @@
+<template>
+  <div class="cloudcontent">
+    <approve-flow :approvalTaskCode="taskCode" :subjectCode="updateForm.code" v-if="tableFlag"></approve-flow>
+    <div class="project-info-line" v-if="tableFlag"></div>
+    <div class="main viewdetails">
+      <div class="basic-approve-title">保证金缴纳记录</div>
+      <el-form :model="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <span>{{bidSection.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{bidSection.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段编号：">
+              <span>{{bidSection.bidSectionCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段名称：">
+              <span>{{bidSection.bidSectionName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="投标人：">
+              <span>{{updateForm.bidderName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="缴费金额(元)：">
+              <span>{{updateForm.amount}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="缴费方式："  prop="tenderProjectCode">
+              <span v-if="updateForm.paymentMethod === 1">支付宝</span>
+              <span v-if="updateForm.paymentMethod === 2">微信</span>
+              <span v-if="updateForm.paymentMethod === 3">现金</span>
+              <span v-if="updateForm.paymentMethod === 4">银联</span>
+              <span v-if="updateForm.paymentMethod === 5">支票</span>
+              <span v-if="updateForm.paymentMethod === 6">保函</span>
+              <span v-if="updateForm.paymentMethod === 9">其他</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="缴费时间：">
+              <span>{{updateForm.paymentTime | formatDate}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+    <template>
+      <div class="project-info-line" v-if="tableFlag"></div>
+      <communicate-record v-if="tableFlag" :relatedCode="updateForm.code" :flowType='flowType'
+                          :creator="updateForm.submitterId" :createName="updateForm.submitter"
+                          :routingPath="routingPath" :nodeContent="nodeContent"></communicate-record>
+      <div class="project-info-line"></div>
+      <approve-record :tableFlag="tableFlag" :approvalTaskCode="taskCode" :subjectCode="updateForm.code"></approve-record>
+    </template>
+    <approve-handle :isApproved="isApproved" :approvalTaskCode="taskCode" :relatedCode="updateForm.code"></approve-handle>
+  </div>
+</template>
+<script>
+import {costInfo} from '@/api/project'
+import approveHandle from '@/pages/todoList/commonComponents/approveHandle.vue'
+import {dateFormat} from '@/assets/js/common'
+import approveFlow from '@/pages/todoList/commonComponents/approveFlow.vue'
+import communicateRecord from '@/pages/todoList/commonComponents/communicateRecord.vue'
+import approveRecord from '@/pages/todoList/commonComponents/approveRecord.vue'
+export default {
+  components: {
+    approveFlow,
+    approveRecord,
+    communicateRecord,
+    approveHandle
+  },
+  name: '',
+  data () {
+    return {
+      isSubmiting: false,
+      auditStatus: 0,
+      objectId: '',
+      updateForm: {},
+      bidSection: {},
+      // 是否显示审批（0:详情 1：审批 2：审批详情 3：我发起的详情）
+      isApproved: 0,
+      taskCode: '',
+      tableFlag: false,
+      flowType: 'tenderProject', // 审批类型
+      routingPath: '', // 路由地址
+      nodeContent: ''
+    }
+  },
+  filters: {
+    // 格式化时间
+    formatDate (value) {
+      return value ? dateFormat(value, 'yyyy-MM-dd') : '---'
+    }
+  },
+  methods: {
+    getCostInfo () {
+      costInfo.getById(this.objectId).then(res => {
+        this.updateForm = res.data.costInfo
+        this.routingPath = this.updateForm.routingPath
+        if (this.updateForm.bidSection) {
+          this.bidSection = this.updateForm.bidSection
+          this.nodeContent = this.bidSection.tenderProjectName + this.bidSection.bidSectionName + '保证金缴纳记录'
+        }
+      })
+    },
+    init () {
+      this.isApproved = this.$route.query.isApproved
+      this.auditStatus = this.$route.query.auditStatus
+      this.objectId = this.$route.params.objectId
+      this.taskCode = this.$route.query.code
+      this.tableFlag = false
+      this.getCostInfo()
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+
+<style scoped>
+</style>

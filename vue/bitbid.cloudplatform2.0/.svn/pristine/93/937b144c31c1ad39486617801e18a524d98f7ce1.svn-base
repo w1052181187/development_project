@@ -1,0 +1,35 @@
+import request from '@/utils/axios/components-axios'
+
+export const archivesFile = {
+  /** 查询 */
+  getArchivesFileList (params) {
+    return request({
+      url: `/archives-infos`,
+      method: 'get',
+      params: params
+    })
+  },
+  /** 修改 */
+  updateArchivesFile (data) {
+    return request({
+      url: '/archives-infos',
+      method: 'put',
+      data: data
+    })
+  },
+  /** 删除文件目录 */
+  deleteArchivesFile (objectId) {
+    return request({
+      url: '/archives-catalogs/' + objectId,
+      method: 'delete'
+    })
+  },
+  /** 增加 */
+  addArchivesFile (data) {
+    return request({
+      url: '/archives-infos/archivesFile',
+      method: 'put',
+      data: data
+    })
+  }
+}

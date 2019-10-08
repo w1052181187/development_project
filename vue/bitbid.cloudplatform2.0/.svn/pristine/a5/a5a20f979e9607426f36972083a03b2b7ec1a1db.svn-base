@@ -1,0 +1,398 @@
+<template>
+  <div class="cloudcontent" id="cloud_registProjectDetail">
+    <div class="main viewdetails">
+      <el-form :model="addForm" ref="addForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{addForm.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <span>{{addForm.projectCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标项目编号：">
+              <span>{{addForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目预计收入(元)：">
+             <span>{{addForm.projectIncome}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目行业分类：">
+              <span>{{addForm.industryTypeStr}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="代理合同：">
+              <span>{{addForm.agencyContractName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目地址：">
+              <span>{{addForm.tenderProjectAddressStr}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="详细地址：" >
+              <span>{{addForm.address}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标人：">
+              <span>{{addForm.tendererName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="招标人单位地址：">
+              <span>{{addForm.tendererUnitAddress}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="联系人：">
+              <span>{{addForm.contactName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="联系方式：">
+              <span>{{addForm.contactNumber}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="邮箱：">
+              <span>{{addForm.contactEmail}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="资质主体：">
+              <span>{{addForm.companyMainBodyName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目所属部门：">
+              <span>{{addForm.departmentName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="项目说明：">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <approve @approveForm="approveForm" ref="approveForm" v-if="Number(isApproved) === 1"></approve>
+        <el-row v-if="Number(isApproved) === 3" v-show="taskExecutor">
+          <el-col :span="24">
+            <el-form-item label="当前审批人：">
+              <span>{{taskExecutor}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row v-if="isApproved">
+          <el-col :span="24">
+            <el-form-item label="审核记录：">
+              <el-table
+                :data="recordList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  type="index"
+                  width="60"
+                  label="序号">
+                </el-table-column>
+                <el-table-column
+                  prop="auditStatus"
+                  label="审核结果"
+                  show-overflow-tooltip>
+                  <template slot-scope="scope">
+                    <span  v-if="scope.row.auditStatus === 1">通过</span>
+                    <span  v-if="scope.row.auditStatus === 2">不通过</span>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="auditorName"
+                  label="审核人"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  prop="createDate"
+                  label="审核时间"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  prop="opinion"
+                  label="审核意见"
+                  show-overflow-tooltip>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="cancleApprove" v-if="Number(isApproved) === 3 && recordList.length === 0 && Number(auditStatus) !== 3" :loading="isSubmiting">撤回</el-button>
+          <template v-else>
+            <el-button type="primary" @click="submitApprove" v-if="Number(isApproved) === 1" :loading="isSubmiting">提交</el-button>
+            <el-button class="cancal" @click="$router.go(-1)">返回</el-button>
+          </template>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import * as region from '@/assets/js/region'
+import * as industry from '@/assets/js/industry_two'
+import editor from '@/components/ueditor/ueditor.vue'
+import approve from '@/components/approve.vue'
+import {approvalRecord, approvalTask} from '@/api/todoList'
+import {tenderProject} from '@/api/project'
+export default {
+  components: {
+    editor,
+    approve
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      // 是否显示审批（0:详情 1：审批 2：审批详情 3：我发起的详情）
+      isApproved: this.$route.query.isApproved || 0,
+      auditStatus: 0,
+      recordList: [],
+      objectId: '',
+      addForm: {},
+      updateForm: {},
+      rules: {
+        tenderProjectName: [
+          { required: true, message: '项目名称不能为空', trigger: 'blur' }
+        ],
+        tenderProjectCode: [
+          { required: true, message: '项目编号不能为空', trigger: 'blur' }
+        ],
+        name: [
+          { required: true, message: '项目编号不能为空', trigger: 'blur' }
+        ],
+        uscCode: [
+          { required: true, message: '项目编号不能为空', trigger: 'blur' }
+        ]
+      },
+      // 地址三级联动
+      addressOptions: region.CityInfo,
+      selectedcityOptions: [],
+      // 行业三级联动
+      industryOptions: industry.industry,
+      selectedIndustryOptions: [],
+      // 富文本
+      editread: true,
+      content: '',
+      approvalTaskCode: '', // 对应的审批任务code
+      taskExecutor: ''
+    }
+  },
+  select () {
+    this.dialogTableVisible = false
+  },
+  filters: {
+    filterCompany (value) {
+      if (value === 1) {
+        return '比比'
+      } else {
+        return '远东'
+      }
+    }
+  },
+  created () {
+    this.init()
+  },
+  methods: {
+    /** 获取当前招标项目信息 */
+    getChooseTenderProjectInfo () {
+      tenderProject.getOne(this.$route.params.code).then((res) => {
+        if (res.data.tenderProject) {
+          this.addForm = res.data.tenderProject
+          this.objectId = this.updateForm.objectId
+          // 获取项目扩展信息
+          this.addForm.contactName = this.addForm.tenderExpandsInfo.contactName
+          this.addForm.contactNumber = this.addForm.tenderExpandsInfo.contactNumber
+          this.addForm.address = this.addForm.tenderExpandsInfo.address
+          this.addForm.contactEmail = this.addForm.tenderExpandsInfo.contactEmail
+          this.addForm.contactAddress = this.addForm.tenderExpandsInfo.contactAddress
+          this.addForm.tenderProjectAddressStr = this.getTenderExpandsInfo(this.addForm.tenderExpandsInfo, 'address')
+          this.addForm.industryTypeStr = this.getTenderExpandsInfo(this.addForm.tenderExpandsInfo, 'industry')
+          // 获取文本编辑器的内容
+          if (this.addForm.projectContent) {
+            this.$refs.ueditor.setContent(this.content = this.addForm.projectContent)
+          }
+          if (this.addForm.projectCode === null || this.addForm.projectCode === '') {
+            this.addForm.projectCode = '---'
+          }
+        }
+      })
+    },
+    /** 获取招标项目扩展信息 */
+    getTenderExpandsInfo (tenderExpandsInfo, type) {
+      let str = ''
+      if (Object.is(type, 'address')) {
+        let provinceId = this.getLabelName(region.CityInfo, tenderExpandsInfo.provinceId)
+        let cityId = this.getLabelName(region.CityInfo, tenderExpandsInfo.cityId)
+        let countyId = this.getLabelName(region.CityInfo, tenderExpandsInfo.countyId)
+        if (provinceId.node) {
+          str += `${provinceId.node.label}`
+          str += '/'
+        }
+        if (cityId.node) {
+          str += `${cityId.node.label}`
+          str += '/'
+        }
+        if (countyId.node) {
+          str += `${countyId.node.label}`
+        }
+      } else if (Object.is(type, 'industry')) {
+        let industryTypeFirst = this.getLabelName(industry.industry, tenderExpandsInfo.industryTypeFirst)
+        let industryTypeSecond = this.getLabelName(industry.industry, tenderExpandsInfo.industryTypeSecond)
+        if (industryTypeFirst.node) {
+          str += `${industryTypeFirst.node.label}`
+          str += '/'
+        }
+        if (industryTypeSecond.node) {
+          str += `${industryTypeSecond.node.label}`
+        }
+      }
+      return str
+    },
+    /** treeData [原始数据集]， key 传入的key值 */
+    getLabelName (treeData, key) {
+      let parentNode = null
+      let node = null
+      function getTreeDeepArr (treeData, key) {
+        for (let i = 0; i < treeData.length; i++) {
+          // 1.如果没有子节点 beark
+          if (node) {
+            break
+          }
+          // 定义需要操作的数据
+          let obj = treeData[i]
+          // 没有节点就下一个
+          if (!obj || !obj.value) {
+            continue
+          }
+          // 2.有节点就继续找，一直递归
+          if (obj.value === key) {
+            node = obj
+            break
+          } else {
+            // 3.如果有子节点就继续找
+            if (obj.children) {
+              // 4.递归前，记录当前节点，作为parentNode
+              parentNode = obj
+              // 递归
+              getTreeDeepArr(obj.children, key)
+            } else {
+              // 跳出当前递归
+              continue
+            }
+          }
+        }
+        // 如果没有找到父节点，置为null
+        if (!node) {
+          parentNode = null
+        }
+        // 返回结果
+        return {
+          node: node,
+          parentNode: parentNode
+        }
+      }
+      return getTreeDeepArr(treeData, key)
+    },
+    approveForm (formV) {
+      this.updateForm = formV
+    },
+    submitApprove () {
+      // 必填验证
+      this.$refs.approveForm.handleValidate()
+      if (this.updateForm.auditStatus === 2 && !this.updateForm.opinion.trim()) {
+        this.$message({
+          message: '请填写审批意见',
+          type: 'warning'
+        })
+        return false
+      }
+      // 提交数据
+      this.isSubmiting = true
+      this.updateForm.relatedCode = this.approvalTaskCode
+      this.updateForm.subjectCode = this.$route.params.code
+      approvalRecord.approvalRecordSave(this.updateForm).then((res) => {
+        this.isSubmiting = false
+        if (res.data.resCode === '0000') {
+          this.close()
+        }
+      })
+    },
+    // 撤回审批
+    cancleApprove () {
+      this.isSubmiting = true
+      approvalTask.recallMyTask(this.approvalTaskCode).then((res) => {
+        this.isSubmiting = false
+        if (res.data.resCode === '0000') {
+          this.close()
+        }
+      })
+    },
+    approveRecord () {
+      if (this.isApproved) {
+        let query = {
+          subjectCode: this.$route.params.code,
+          relatedCode: this.approvalTaskCode
+        }
+        approvalRecord.approvalRecordList(query).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.recordList = res.data.recordOfApprovalList
+            this.taskExecutor = res.data.taskExecutor
+          }
+        })
+      }
+    },
+    init () {
+      this.isApproved = this.$route.query.isApproved
+      this.auditStatus = this.$route.query.auditStatus
+      this.approvalTaskCode = this.$route.query.code
+      this.getChooseTenderProjectInfo()
+      this.approveRecord()
+    },
+    close () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    }
+  },
+  watch: {
+    '$route': 'init'
+  }
+}
+</script>
+<style lang="less">
+  #cloud_registProjectDetail {
+    .el-cascader{
+      width: 100%;
+    }
+  }
+</style>

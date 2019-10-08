@@ -1,0 +1,180 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <div class="basic-info-title">档案基本信息</div>
+      <el-form :model="form">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="档案名称：">
+              <span>{{form.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="档案编码：">
+              <span>{{form.archivesCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="移交人：">
+              <span>{{form.filesCount}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="档案管理员：">
+              <span>{{form.archivingDepartmentName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="归档时间：">
+              <span>{{form.filingTime}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="档案状态：">
+              <span>正常</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div class="basic-info-title">实物档案位置</div>
+      <el-form :model="positionForm" :rules="rules" ref="positionForm" :validate-on-rule-change="true">
+        <el-form-item class="bitianicon" label="实物位置：">
+          <el-select class="position-select" v-model="positionForm.room" placeholder="请选择">
+            <el-option
+              v-for="item in roomOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <el-select class="position-select" v-model="positionForm.room" placeholder="请选择">
+            <el-option
+              v-for="item in roomOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <el-select class="position-select" v-model="positionForm.room" placeholder="请选择">
+            <el-option
+              v-for="item in roomOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <el-input class="position-input" v-model="positionForm.detail"></el-input>
+        </el-form-item>
+        <el-form-item label="实物档案编号：">
+          <el-input class="position-input" v-model="positionForm.code"></el-input>
+        </el-form-item>
+        <el-table
+          :data="positionForm.tableData"
+          border
+          style="width: 60%" header-cell-class-name="tableheader">
+          <el-table-column
+            width="50"
+            type="index"
+            align="center"
+            label="序号">
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="档案目录"
+            align="center"
+            width="200"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            label="详细位置描述"
+            align="center"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.position"></el-input>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import {archivesInfo} from '@/api/archives'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      form: {
+      },
+      objectId: '',
+      positionForm: {
+        tableData: [
+          {}
+        ]
+      },
+      rules: {
+        // position: [
+        //   { required: true, message: '请选择实物位置', trigger: ['blur', 'change'] }
+        // ]
+      },
+      roomOptions: [
+        {
+          value: '选项1',
+          label: '黄金糕'
+        },
+        {
+          value: '选项2',
+          label: '双皮奶'
+        },
+        {
+          value: '选项3',
+          label: '蚵仔煎'
+        },
+        {
+          value: '选项4',
+          label: '龙须面'
+        },
+        {
+          value: '选项5',
+          label: '北京烤鸭'
+        }
+      ]
+    }
+  },
+  methods: {
+    getInfo () {
+      archivesInfo.detailArchivesInfo(this.objectId).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.form = res.data.archivesInfo
+        }
+      })
+    },
+    save () {
+      if (!this.positionForm.room) {
+        this.$message({
+          message: '请选择实物位置',
+          type: 'warning'
+        })
+        return false
+      }
+    }
+  },
+  mounted () {
+    this.objectId = this.$route.params.objectId
+    this.getInfo()
+  }
+}
+</script>
+<style lang="less">
+  .position-select {
+    width: 200px;
+  }
+  .position-input {
+    width: 30%;
+  }
+</style>

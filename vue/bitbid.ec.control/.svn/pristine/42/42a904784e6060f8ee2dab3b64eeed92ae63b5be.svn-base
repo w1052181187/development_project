@@ -1,0 +1,417 @@
+<template>
+  <div id="home" class="home">
+    <HomeHeader></HomeHeader>
+    <div class="banner">
+      <img src="../../../static/images/home/banner.png" alt="">
+    </div>
+    <!-- 成交公示区域start -->
+    <div class="deal-warp">
+      <div>
+        <div class="title-box">
+          <span class="img-name">成交公示</span>
+          <img src="../../../static/images/home/title.png" alt="成交提示">
+          <span class="more-btn" @click="handleMoreBtn('deal')">更多>></span>
+        </div>
+        <el-divider></el-divider>
+        <el-table
+          :data="dealTableData"
+          border
+          @row-click="dealRowClick"
+          height="434"
+          style="width: 100%">
+          <el-table-column
+            type="index"
+            label="序号"
+            align="center"
+            width="60">
+          </el-table-column>
+          <el-table-column
+            prop="orderNum"
+            align="center"
+            label="订单编号"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="ecPlatform"
+            align="center"
+            label="电商平台名称"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="buyName"
+            align="center"
+            label="采购人"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="articleName"
+            align="center"
+            label="商品名称"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <span v-for="(item, index) in scope.row.articleNameList" :key="index">
+                {{(scope.row.articleNameList.length>(index+1))? item + ', ': item}}
+              </span>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </div>
+    <!-- 成交公示区域end -->
+    <!-- 政策法规区域start -->
+    <div class="policy-warp">
+      <div>
+        <div class="title-box">
+          <span class="img-name">政策法规</span>
+          <img src="../../../static/images/home/title.png" alt="政策法规">
+          <span class="more-btn" @click="handleMoreBtn('law')">更多>></span>
+        </div>
+        <el-divider></el-divider>
+        <el-table
+          :data="policyLawTableData"
+          border
+          @row-click="policyLawRowClick"
+          height="434"
+          style="width: 100%">
+          <el-table-column
+            type="index"
+            label="序号"
+            align="center"
+            width="60">
+          </el-table-column>
+          <el-table-column
+            prop="title"
+            align="center"
+            label="标题"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="publishTime"
+            align="center"
+            label="发布时间"
+            width="200"
+            show-overflow-tooltip>
+          </el-table-column>
+        </el-table>
+      </div>
+    </div>
+    <!-- 政策法规区域end -->
+    <!-- 广告位start -->
+    <div class="ad-warp">
+      <el-row :gutter="20">
+        <el-col :span="6">
+          <img src="../../../static/images/home/ad1.png" alt="">
+        </el-col>
+        <el-col :span="6">
+          <img src="../../../static/images/home/ad2.png" alt="">
+        </el-col>
+        <el-col :span="6">
+          <img src="../../../static/images/home/ad3.png" alt="">
+        </el-col>
+        <el-col :span="6">
+          <img src="../../../static/images/home/ad4.png" alt="">
+        </el-col>
+      </el-row>
+    </div>
+    <!-- 广告位end -->
+    <!-- 异常公示和信用评价start -->
+    <div class="expert-credit-warp">
+      <el-row :gutter="15">
+        <el-col :span="12">
+          <div>
+            <div class="title-box">
+              <span class="img-name">异常公示</span>
+              <img src="../../../static/images/home/title.png" alt="异常公示">
+              <span class="more-btn" @click="handleMoreBtn('expert')">更多>></span>
+            </div>
+            <el-divider></el-divider>
+            <el-table
+              :data="expertTableData"
+              class="expert-table"
+              border
+              @row-click="expertRowClick"
+              height="302"
+              style="width: 100%">
+              <el-table-column
+                prop="orderNum"
+                align="center"
+                label="订单编号"
+                show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column
+                prop="ecPlatform"
+                align="center"
+                label="电商平台名称"
+                show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column
+                prop="buyName"
+                align="center"
+                label="采购人"
+                show-overflow-tooltip>
+              </el-table-column>
+            </el-table>
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div>
+            <div class="title-box">
+              <span class="img-name">信用评价</span>
+              <img src="../../../static/images/home/title.png" alt="信用评价">
+              <!-- <span class="more-btn">更多>></span> -->
+            </div>
+            <el-divider></el-divider>
+            <el-table
+              :data="creditTableData"
+              border
+              class="credit-table"
+              :show-header="false"
+              height="302"
+              style="width: 100%">
+              <el-table-column
+                prop="creditOrder"
+                align="left"
+                label="Top"
+                show-overflow-tooltip>
+                <template slot-scope="scope">
+                  <div v-if="scope.row.creditOrder==1">
+                    <img src="../../../static/images/home/01.png" alt="" style="vertical-align:middle;">
+                    <span style="margin-left: 10px">{{ '排名' + scope.row.creditOrder }}</span>
+                  </div>
+                  <div v-else-if="scope.row.creditOrder==2">
+                    <img src="../../../static/images/home/02.png" alt="" style="vertical-align:middle;">
+                    <span style="margin-left: 10px">{{ '排名' + scope.row.creditOrder }}</span>
+                  </div>
+                  <div v-else-if="scope.row.creditOrder==3">
+                    <img src="../../../static/images/home/03.png" alt="" style="vertical-align:middle;">
+                    <span style="margin-left: 10px">{{ '排名' + scope.row.creditOrder }}</span>
+                  </div>
+                  <div v-else>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <span style="margin-left: 10px">{{ '排名' + scope.row.creditOrder }}</span>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="userName"
+                align="center"
+                label="电商平台名称"
+                show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column
+                prop="evaluation"
+                align="center"
+                label="评价"
+                show-overflow-tooltip>
+              </el-table-column>
+            </el-table>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+    <!-- 异常公示和信用评价end -->
+    <!-- 友情链接start -->
+    <div class="link-warp">
+      <div class="link-cont">
+        <el-divider>友情链接</el-divider>
+        <a :href="item.url" v-for="(item, index) in linkList" :key="index" class="link-url" target="_blank">
+          <span >{{item.name}}</span>
+        </a>
+      </div>
+    </div>
+    <!-- 友情链接end -->
+    <HomeFooter></HomeFooter>
+  </div>
+</template>
+<script>
+import HomeHeader from './header/header'
+import HomeFooter from './footer/footer'
+import {home} from '@/api'
+export default {
+  name: 'home',
+  data () {
+    return {
+      dealTableData: [],
+      policyLawTableData: [], // 政策法规
+      expertTableData: [], // 异常公示
+      creditTableData: [],
+      linkList: [
+        {url: 'http://www.sdcqjy.com/', name: '山东产权交易中心'},
+        {url: 'http://www.ccgp-shandong.gov.cn/sdgp2017/site/index.jsp', name: '山东省政府采购信息公开平台'},
+        {url: 'http://www.hzsggzyjy.gov.cn/', name: '菏泽市公共资源交易电子公共服务平台'},
+        {url: 'http://www.cspea.org.cn/', name: '中国产权网'},
+        {url: 'http://www.hzsgyzc.com/', name: '山东菏泽市国有资产经营管理中心'},
+        {url: 'http://www.hzcz.gov.cn/', name: '菏泽市财政局'},
+        {url: 'http://hzsgzw.heze.gov.cn/', name: '菏泽市人名政府国有资产监督管理委员会'}
+      ]
+    }
+  },
+  components: {
+    HomeHeader,
+    HomeFooter
+  },
+  methods: {
+    /** 点击更多 */
+    handleMoreBtn (type) {
+      if (Object.is(type, 'deal')) {
+        this.$router.push({path: '/home-deal-notice'})
+      } else if (Object.is(type, 'law')) {
+        this.$router.push({path: '/home-policy-law'})
+      } else if (Object.is(type, 'expert')) {
+        this.$router.push({path: '/home-expert-notice'})
+      }
+    },
+    /** 成交公示-行点击 */
+    dealRowClick (row, column, event) {
+      this.$router.push({path: `/deal-notice-details/${row.id}`})
+    },
+    /** 政策法规-行点击啊 */
+    policyLawRowClick (row, column, event) {
+      this.$router.push({path: `/policy-law-details/${row.id}`})
+    },
+    /** 异常公示-行点击 */
+    expertRowClick (row, column, event) {
+      this.$router.push({path: `/expert-notice-details/${row.id}`})
+    },
+    /** 获取成交公示表格数据 */
+    getDealTableData () {
+      let query = {
+        pageNo: 0,
+        pageSize: 8,
+        errorState: 0,
+        publishStatus: 1,
+        statuses: '4,5'
+      }
+      home.getList(query).then(res => {
+        this.dealTableData = res.data.transactionRecordList.list
+      })
+    },
+    /** 获取成交公示表格数据 */
+    getExpertTableData () {
+      let query = {
+        pageNo: 0,
+        pageSize: 5,
+        errorState: 1,
+        publishStatus: 1,
+        statuses: '4,5'
+      }
+      home.getList(query).then(res => {
+        this.expertTableData = res.data.abnormalRecordList.list
+      })
+    },
+    /** 获取政策法规表格数据 */
+    getLawsTableData () {
+      let query = {
+        pageNo: 0,
+        pageSize: 8,
+        publishStatus: 1
+      }
+      home.getListLaws(query).then(res => {
+        this.policyLawTableData = res.data.newsPageInfo.list
+      })
+    },
+    /** 获取信用评价表格数据 */
+    getEvalTableData () {
+      let query = {
+        pageNo: 0,
+        pageSize: 6
+      }
+      home.getListEval(query).then(res => {
+        this.creditTableData = res.data.creditEvaluationList.list
+      })
+    }
+  },
+  mounted () {
+    this.getDealTableData()
+    this.getExpertTableData()
+    this.getLawsTableData()
+    this.getEvalTableData()
+  }
+}
+</script>
+<style lang="less">
+#home {
+  background: #F2F6F9;
+  .deal-warp,
+  .policy-warp,
+  .ad-warp,
+  .expert-credit-warp {
+    width: 1200px;
+    margin: 0 auto;
+    background: #fff;
+    margin-top: 10px;
+  }
+  .ad-warp {
+    background: #F2F6F9;
+  }
+  .expert-credit-warp {
+    background: #F2F6F9;
+    .title-box {
+      background: #fff;
+    }
+    .expert-table, .credit-table {
+      tr {
+        height: 49.5px;
+      }
+    }
+  }
+  .link-warp {
+    margin-top: 30px;
+    padding-top: 30px;
+    background: #fff;
+    .link-cont {
+      width: 1200px;
+      margin: 0 auto;
+      text-align: left;
+      padding-bottom: 40px;
+      .el-divider {
+        background-color: #d8d8d8;
+      }
+      .el-divider--horizontal {
+        height: 1px;
+        margin: 0;
+      }
+    }
+    .link-url {
+      padding: 0px 40px 0 32px;
+      margin-top: 20px;
+      display: inline-block;
+      text-decoration: none;
+      color: #999;
+    }
+  }
+  .title-box {
+    position: relative;
+    text-align: left;
+    .img-name {
+      position: absolute;
+      color: #fff;
+      top: 6px;
+      left: 23px;
+      font-size: 16px;
+    }
+    .more-btn {
+      float: right;
+      display: block;
+      line-height: 40px;
+      height: 40px;
+      color: #D42C32;
+      padding-right: 20px;
+      font-weight: 800;
+    }
+    .more-btn:hover {
+      cursor: pointer;
+    }
+  }
+  .el-table--enable-row-hover .el-table__body tr:hover>td{
+    background-color: #F7E7E7 !important;
+  }
+  .el-divider {
+    background-color: #D42C32;
+  }
+  .el-divider--horizontal {
+    height: 3px;
+    margin: 0;
+  }
+}
+</style>

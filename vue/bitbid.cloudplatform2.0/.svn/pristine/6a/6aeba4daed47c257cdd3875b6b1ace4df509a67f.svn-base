@@ -1,0 +1,62 @@
+export default[
+  {
+    path: '/office/collaboration',
+    name: '工作协同',
+    meta: {
+      title: '工作协同',
+      active: '/office/collaboration'
+      // permission: 'admin'
+    },
+    component: () => import(/* webpackChunkName: 'office' */ '@/pages/office/collaboration/index')
+  },
+  {
+    path: '/office/collaboration/add',
+    name: '新建工作协同',
+    meta: {
+      title: '新建工作协同',
+      active: '/office/collaboration'
+      // permission: 'admin'
+    },
+    component: () => import(/* webpackChunkName: 'office' */ '@/pages/office/collaboration/add')
+  },
+  {
+    path: '/office/collaboration/update',
+    name: '修改工作协同',
+    meta: {
+      title: '修改工作协同',
+      active: '/office/collaboration'
+      // permission: 'admin'
+    },
+    component: () => import(/* webpackChunkName: 'office' */ '@/pages/office/collaboration/add')
+  },
+  {
+    path: '/office/collaboration/reply',
+    name: '回复工作协同',
+    meta: {
+      title: '回复工作协同',
+      active: '/office/collaboration'
+      // permission: 'admin'
+    },
+    component: () => import(/* webpackChunkName: 'office' */ '@/pages/office/collaboration/add')
+  },
+  {
+    path: '/office/collaboration/forward',
+    name: '转发工作协同',
+    meta: {
+      title: '转发工作协同',
+      active: '/office/collaboration'
+      // permission: 'admin'
+    },
+    component: () => import(/* webpackChunkName: 'office' */ '@/pages/office/collaboration/add')
+  },
+  {
+    path: '/office/collaboration/detail/:objectId',
+    name: '查看工作协同',
+    meta: {
+      title: '查看工作协同',
+      active: '/office/collaboration'
+      // permission: 'admin'
+    },
+    component: () => import(/* webpackChunkName: 'office' */ '@/pages/office/collaboration/detail')
+  }
+]

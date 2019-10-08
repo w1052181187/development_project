@@ -1,0 +1,441 @@
+<template>
+  <div id="bidannoupdate" class="smaincontent">
+    <div class="headertitle">
+      <!--面包屑-->
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/main' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item>公告管理</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/annomanage/bidanno' }">招标公告</el-breadcrumb-item>
+        <el-breadcrumb-item>变更招标公告</el-breadcrumb-item>
+      </el-breadcrumb>
+      <!--面包屑-->
+      <div class="returnboxbig">
+        <template>
+          <el-button @click="close">返回</el-button>
+        </template>
+      </div>
+    </div>
+    <div class="contentbigbox">
+      <template>
+        <el-form :model="tenderBulletin" :rules="rules" ref="tenderBulletins">
+          <table class="detailtable">
+            <tr>
+              <td><i class="red">*</i>项目规模：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderBulletinExpandsInfo.projectScale">
+                  <el-input v-model="tenderBulletin.tenderBulletinExpandsInfo.projectScale" placeholder="请输入项目规模"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>公告类型：</td>
+              <td  colspan="2">
+                <el-form-item prop="bulletinType">
+                  <el-select  v-model="tenderBulletin.bulletinType" class="select">
+                    <el-option
+                      v-for="item in bulletinTypeoptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>是否接受联合体：</td>
+              <td  colspan="5">
+                <el-form-item prop="syndicatedFlag">
+                  <el-radio v-model="tenderBulletin.syndicatedFlag" label="1">是</el-radio>
+                  <el-radio v-model="tenderBulletin.syndicatedFlag" label="0">否</el-radio>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>招标组织形式：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderExpandsInfo.tenderOrganizeForm">
+                  <el-select  v-model="tenderBulletin.tenderExpandsInfo.tenderOrganizeForm" class="select">
+                    <el-option
+                      v-for="item in bidxsoptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>代理机构联系人：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderExpandsInfo.tenderAgencyContacts">
+                  <el-input v-model="tenderBulletin.tenderExpandsInfo.tenderAgencyContacts" placeholder="请输入代理机构联系人"></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>联系方式：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderExpandsInfo.contactInformation">
+                  <el-input v-model="tenderBulletin.tenderExpandsInfo.contactInformation" placeholder="请输入联系方式"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>业主名称：</td>
+              <td colspan="2">
+                <el-form-item prop="tenderExpandsInfo.ownerName">
+                  <el-input v-model="tenderBulletin.tenderExpandsInfo.ownerName" placeholder="请输入业主名称"></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.tenderExpandsInfo.tenderOrganizeForm !== 1" style="height: 60px;">
+              <td><i class="red">*</i>招标代理机构名称：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderExpandsInfo.tenderAgencyName">
+                  <el-input v-model="tenderBulletin.tenderExpandsInfo.tenderAgencyName" placeholder="请输入招标代理机构名称"></el-input>
+                </el-form-item>
+              </td>
+              <td>委托代理协议附件：</td>
+              <td colspan="2">
+                <el-form-item prop="agentFileInfo">
+                  <commonUpLoadFile @upLoadFile="upLoadAgentFile" :fileType="fileType"
+                                    :oldFileName="oldAgentFileName"
+                                    :relativePath="relativeAgentPath"></commonUpLoadFile>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>招标文件获取开始时间：</td>
+              <td colspan="2">
+                <el-form-item prop="docGetStartTime">
+                  <el-date-picker
+                    v-model="tenderBulletin.docGetStartTime"
+                    type="datetime"
+                    value-format="yyyy-MM-dd HH:mm:ss">
+                  </el-date-picker>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>招标文件获取截止时间：</td>
+              <td colspan="2">
+                <el-form-item prop="docGetEndTime">
+                  <el-date-picker
+                    v-model="tenderBulletin.docGetEndTime"
+                    type="datetime"
+                    value-format="yyyy-MM-dd HH:mm:ss">
+                  </el-date-picker>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>招标文件获取方法：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderDocGetMethod">
+                  <el-input v-model="tenderBulletin.tenderDocGetMethod" placeholder="请输入招标文件获取方法"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>投标文件递交方法：</td>
+              <td  colspan="2">
+                <el-form-item prop="bidDocReferMethod">
+                  <el-input v-model="tenderBulletin.bidDocReferMethod" placeholder="请输入投标文件递交方法"></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>公告结束日期：</td>
+              <td colspan="2">
+                <el-form-item prop="tenderBulletinExpandsInfo.bulletinEndDate">
+                  <el-date-picker
+                    v-model="tenderBulletin.tenderBulletinExpandsInfo.bulletinEndDate"
+                    type="datetime"
+                    value-format="yyyy-MM-dd HH:mm:ss">
+                  </el-date-picker>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>开标时间：</td>
+              <td colspan="2">
+                <el-form-item prop="bidOpenTime">
+                  <el-date-picker
+                    v-model="tenderBulletin.bidOpenTime"
+                    type="datetime"
+                    value-format="yyyy-MM-dd HH:mm:ss">
+                  </el-date-picker>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr style="height: 60px;">
+              <td>公告附件：</td>
+              <td colspan="5">
+                <el-form-item prop="otherFileInfo">
+                  <commonUpLoadFile @upLoadFile="upLoadOtherFile" :fileType="fileType"
+                                    :oldFileName="oldFileName"
+                                    :relativePath="relativePath"></commonUpLoadFile>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>公告内容：</td>
+              <td  colspan="5">
+                <el-form-item prop="noticeContent">
+                  <editor ref="ueditor" class="ueditor" :editread="true"></editor>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>变更公告内容：</td>
+              <td  colspan="5">
+                <el-form-item prop="changeNoticeContent">
+                  <editor ref="change_ueditor" class="ueditor"></editor>
+                </el-form-item>
+              </td>
+            </tr>
+          </table>
+          <el-form-item class="submit-radio">
+            <el-button type="primary" @click="submitForm('tenderBulletins')" :loading="isSubmiting">提交</el-button>
+            <el-button class="cancel" @click="close">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </template>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import commonUpLoadFile from '@/components/upload/publicFileUpload'
+import {isvalidFixedPhone} from '@/assets/js/validate'
+import {bidanno} from '@/api'
+export default {
+  components: {
+    editor,
+    commonUpLoadFile
+  },
+  data () {
+    // 电话号码
+    var validPhoneUser = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('请输入联系电话'))
+      } else if (!isvalidFixedPhone(value)) {
+        callback(new Error('请输入正确的11位手机号码'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      // 公告类型
+      bulletinTypeoptions: [
+        {
+          value: '1',
+          label: '招标公告'
+        },
+        {
+          value: '2',
+          label: '资格预审公告'
+        }
+      ],
+      // 招标组织形式
+      bidxsoptions: [
+        {
+          value: 1,
+          label: '自行招标'
+        },
+        {
+          value: 2,
+          label: '委托招标'
+        },
+        {
+          value: 9,
+          label: '其他'
+        }
+      ],
+      value: 1,
+      datetime: '',
+      fileType: '',
+      oldFile: null,
+      oldAgentFile: null,
+      oldFileName: '',
+      oldAgentFileName: '',
+      relativePath: '',
+      relativeAgentPath: '',
+      tenderBulletin: {
+        syndicatedFlag: '',
+        docGetStartTime: '',
+        docGetEndTime: '',
+        bidOpenTime: '',
+        bulletinType: '',
+        bidDocReferMethod: '',
+        tenderDocGetMethod: '',
+        tenderExpandsInfo: {
+          ownerName: '',
+          tenderOrganizeForm: '',
+          tenderAgencyName: '',
+          tenderAgencyContacts: '',
+          contactInformation: ''
+        },
+        tenderBulletinExpandsInfo: {
+          projectScale: '',
+          bulletinEndDate: ''
+        },
+        fileInformations: []
+      },
+      rules: {
+        'tenderBulletinExpandsInfo.projectScale': [
+          {required: true, message: '请输入项目规模', trigger: 'blur'},
+          {min: 1, max: 20, message: '长度在 1~20个字符', trigger: ['blur', 'change']}
+        ],
+        'tenderExpandsInfo.ownerName': [
+          {required: true, message: '请输入业主名称', trigger: 'blur'},
+          {min: 1, max: 200, message: '长度在 1~200个字符', trigger: ['blur', 'change']}
+        ],
+        'tenderExpandsInfo.tenderOrganizeForm': [
+          {required: true, message: '请选择招标组织形式', trigger: 'change'}
+        ],
+        'tenderExpandsInfo.tenderAgencyName': [
+          {required: true, message: '请输入招标代理机构名称', trigger: 'blur'},
+          {min: 1, max: 200, message: '长度在 1~200个字符', trigger: ['blur', 'change']}
+        ],
+        'tenderExpandsInfo.tenderAgencyContacts': [
+          {required: true, message: '请输入代理机构联系人', trigger: 'blur'},
+          {min: 1, max: 200, message: '长度在 1~200个字符', trigger: ['blur', 'change']}
+        ],
+        'tenderExpandsInfo.contactInformation': [
+          {required: true, message: '请输入联系方式', trigger: 'blur'},
+          {validator: validPhoneUser, trigger: ['blur', 'change']}
+        ],
+        docGetStartTime: [
+          {required: true, message: '请选择日期', trigger: 'change'}
+        ],
+        docGetEndTime: [
+          {required: true, message: '请选择日期', trigger: 'change'}
+        ],
+        'tenderBulletinExpandsInfo.bulletinEndDate': [
+          {required: true, message: '请选择日期', trigger: 'change'}
+        ],
+        bidOpenTime: [
+          {required: true, message: '请选择日期', trigger: 'change'}
+        ],
+        'tenderBulletinExpandsInfo.fundSource': [
+          {required: true, message: '请选择资金来源', trigger: 'change'}
+        ],
+        tenderDocGetMethod: [
+          {required: true, message: '请输入招标文件获取方法', trigger: 'blur'},
+          {min: 1, max: 20, message: '长度在 1~20个字符', trigger: ['blur', 'change']}
+        ],
+        bidDocReferMethod: [
+          {required: true, message: '请输入投标文件递交方法', trigger: 'blur'},
+          {min: 1, max: 20, message: '长度在 1~20个字符', trigger: ['blur', 'change']}
+        ],
+        syndicatedFlag: [
+          { required: true, message: '请选择是否接受联合体', trigger: 'change' }
+        ]
+      },
+      status: null,
+      fileInfo: {},
+      isSubmiting: false
+    }
+  },
+
+  methods: {
+    detail () {
+      bidanno.detail(this.$route.query.objectId).then((res) => {
+        this.tenderBulletin = res.data.tenderBulletin
+        this.tenderBulletin.fileInformations.map((item) => {
+          if (item.businessType === '2') {
+            this.oldAgentFileName = item.fileName
+            this.relativeAgentPath = item.relativePath
+            this.oldAgentFile = item
+          } else if (item.businessType === '9') {
+            this.oldFileName = item.fileName
+            this.relativePath = item.relativePath
+            this.oldFile = item
+          }
+        })
+        this.tenderBulletin.tenderExpandsInfo.originalInfoCode = this.tenderBulletin.code
+        return this.tenderBulletin
+      }).then((result) => {
+        this.$refs.ueditor.setContent(result.noticeContent)
+      })
+    },
+    upLoadOtherFile (file) {
+      if (this.oldFile) {
+        let index = this.tenderBulletin.fileInformations.indexOf(this.oldFile)
+        this.tenderBulletin.fileInformations.splice(index, 1)
+      }
+      if (file.length !== 0) {
+        file[0].businessType = 9
+        this.tenderBulletin.fileInformations.push(file[0])
+        this.oldFile = file[0]
+      } else {
+        this.oldFile = null
+      }
+    },
+    upLoadAgentFile (file) {
+      if (this.oldAgentFile) {
+        let index = this.tenderBulletin.fileInformations.indexOf(this.oldAgentFile)
+        this.tenderBulletin.fileInformations.splice(index, 1)
+      }
+      if (file.length !== 0) {
+        file[0].businessType = 2
+        this.tenderBulletin.fileInformations.push(file[0])
+        this.oldAgentFile = file[0]
+      } else {
+        this.oldAgentFile = null
+      }
+    },
+    submitForm (name) {
+      this.$refs[name].validate((valid) => {
+        if (valid) {
+          if (!this.$refs.change_ueditor.getContent()) {
+            this.$message({
+              type: 'warning',
+              message: '请输入变更公告内容'
+            })
+            return
+          }
+          this.tenderBulletin.noticeContent = this.$refs.change_ueditor.getContent()
+          this.isSubmiting = true
+          bidanno.change(this.tenderBulletin).then((res) => {
+            if (res.data.resCode === '0000') {
+              this.$router.push({path: '/annomanage/bidanno', query: {status: this.status}})
+            } else {
+              this.isSubmiting = false
+            }
+          })
+        } else {
+          this.$message({
+            type: 'warning',
+            message: '请检查必填项是否填写完毕'
+          })
+          return false
+        }
+      })
+    },
+    close () {
+      this.$router.push({path: '/annomanage/bidanno', query: {status: this.status}})
+    }
+  },
+  mounted () {
+    this.status = this.$route.query.status ? this.$route.query.status : this.$route.query.status === 0 ? this.$route.query.status : null
+    this.detail()
+  }
+}
+</script>
+<style lang="less">
+  #bidannoupdate{
+    .select {
+      float: left;
+      width: 100%;
+    }
+    .el-cascader{
+      float: left;
+      width: 100%;
+    }
+    .el-date-editor{
+      float: left;
+      width: 100%;
+    }
+    .el-date-editor.el-input, .el-date-editor.el-input__inner{
+      width: 100%;
+    }
+    .el-form-item{
+      margin-bottom: 0px;
+    }
+    .el-radio{
+      float: left;
+    }
+  }
+</style>

@@ -1,0 +1,306 @@
+<template>
+  <div class="cloudcontent" id="add_template">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" ref="updateForm"
+               label-width="120px" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="评估模板名称："  prop="name">
+              <el-input v-model="updateForm.name">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-radio-group v-model="updateForm.status" class="status">
+              <el-radio :label="1">启用</el-radio>
+              <el-radio :label="0">禁用</el-radio>
+            </el-radio-group>
+          </el-col>
+        </el-row>
+        <el-form-item label="评估项维护：">
+          <span class="addItem" @click="addItem">添加评估项</span>
+        </el-form-item>
+      </el-form>
+      <el-table
+        :data="projectData"
+        border
+        :cell-style="handleCellStyle"
+        :span-method="handleMerge"
+        header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          :index="handleIndex"
+          label="序号"
+          width="80"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="评估项分组"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="item"
+          label="评估项"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="120">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDel(scope)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+      <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="50%"
+                 :before-close="close">
+        <el-form>
+          <el-table
+            ref="itemTable"
+            :data="itemTableData"
+            border
+            style="width: 100%"
+            @selection-change="handleSelectionChange">
+            <el-table-column
+              align="center"
+              type="selection"
+              width="60">
+            </el-table-column>
+            <el-table-column
+              align="center"
+              type="index"
+              label="序号"
+              width="60">
+            </el-table-column>
+            <el-table-column
+              align="center"
+              prop="item"
+              label="评估项">
+            </el-table-column>
+            <el-table-column
+              align="center"
+              prop="name"
+              label="评估项分组">
+            </el-table-column>
+          </el-table>
+          <el-row class="bottom_sel">
+            <el-col :span="12">
+              <div>
+                <span @click="toggleSelection(itemTableData)">全选</span>
+                <span @click="toggleSelection()">取消</span>
+              </div>
+            </el-col>
+            <el-col :span="12">
+              <el-pagination
+                class="page"
+                background
+                layout="prev, pager, next"
+                :total="totalDialog"
+                :page-size='pageSizeDialog'
+                :current-page.sync="currentPageDialog"
+                @current-change="handleDialogCurrentChange">
+              </el-pagination>
+            </el-col>
+          </el-row>
+          <el-form-item class="submit-radio">
+            <el-button type="primary" @click="submit" :loading="isSubmiting">确认</el-button>
+            <el-button class="cancal" @click="close">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: '',
+  data () {
+    return {
+      updateForm: {
+        status: 1
+      },
+      rules: {
+        name: {required: true, message: '请输入评估模板名称', trigger: ['blur', 'change']}
+      },
+      projectData: [
+        {
+          name: '组1',
+          item: '项1'
+        },
+        {
+          name: '组1',
+          item: '项2'
+        },
+        {
+          name: '组1',
+          item: '项3'
+        },
+        {
+          name: '组2',
+          item: '项1'
+        },
+        {
+          name: '组2',
+          item: '项2'
+        },
+        {
+          name: '组2',
+          item: '项3'
+        },
+        {
+          name: '组2',
+          item: '项4'
+        }
+      ],
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      mergeArr: [], // 每行需要合并的行数
+      indexArr: [], // 序号索引数组
+      isSubmiting: false,
+      dialogVisible: false,
+      dialogTitle: '选择评估项',
+      currentPageDialog: 1,
+      pageNoDialog: 0,
+      totalDialog: 0,
+      pageSizeDialog: 10,
+      // 选择的评估项
+      selectItemList: [],
+      itemTableData: [
+        {
+          name: '组2',
+          item: '项3'
+        },
+        {
+          name: '组2',
+          item: '项4'
+        }
+      ]
+    }
+  },
+  methods: {
+    handleCellStyle ({row, column, rowIndex, columnIndex}) {
+      if (columnIndex === 0 || columnIndex === 1) {
+        return 'background-color: #f8faf7;color:#333'
+      }
+    },
+    handleIndex (index) {
+      return this.indexArr[index]
+    },
+    handleMerge ({ row, column, rowIndex, columnIndex }) {
+      if (columnIndex === 0 || columnIndex === 1) {
+        let rowCount = this.mergeArr[rowIndex]
+        let colCount = rowCount > 0 ? 1 : 0
+        return {
+          rowspan: rowCount,
+          colspan: colCount
+        }
+      }
+    },
+    handleMergeData () {
+      this.mergeArr = []
+      this.indexArr = []
+      this.mergeArr.push(1)
+      this.indexArr.push(1)
+      let pos = 0
+      let indexTmp = 1
+      for (let i = 1; i < this.projectData.length; i++) {
+        if (this.projectData[i].name === this.projectData[i - 1].name) {
+          this.mergeArr[pos] += 1
+          this.mergeArr.push(0)
+        } else {
+          this.mergeArr.push(1)
+          pos = i
+          indexTmp++
+        }
+        this.indexArr.push(indexTmp)
+      }
+    },
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData()
+    },
+    handleDialogCurrentChange (nowNum) {
+      this.currentPageDialog = nowNum
+      this.pageNoDialog = (nowNum - 1) * this.pageSizeDialog
+      this.getItemTableData()
+    },
+    handleDel (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+      }).catch(() => {
+        return false
+      })
+    },
+    addItem () {
+      this.dialogVisible = true
+    },
+    close () {
+      this.dialogVisible = false
+    },
+    toggleSelection (rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.$refs.itemTable.toggleRowSelection(row)
+        })
+      } else {
+        this.$refs.itemTable.clearSelection()
+      }
+    },
+    handleSelectionChange (val) {
+      this.selectItemList = val
+    },
+    submit () {
+      this.isSubmiting = true
+    },
+    getTableData () {
+      this.handleMergeData()
+    },
+    // 获取评估项
+    getItemTableData () {
+    }
+  },
+  mounted () {
+    this.getTableData()
+  }
+}
+</script>
+
+<style lang="less">
+  .addItem{
+    font-size: 12px;
+    color: #108cee;
+    cursor: pointer;
+  }
+  .status{
+    line-height: 50px;
+  }
+  .bottom_sel{
+    height: 88px;
+    line-height: 88px;
+  }
+  .bottom_sel span{
+    margin-right: 12px;
+    cursor: pointer;
+  }
+  .bottom_sel .page{
+    float: right;
+  }
+</style>

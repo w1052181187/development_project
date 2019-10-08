@@ -1,0 +1,437 @@
+<template>
+  <div class="cloudcontent" id="cloud_projectProcess">
+    <div class="main">
+      <el-form :model="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{updateForm.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <span>{{updateForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目类型：">
+              <span>{{updateForm.tenderProjectType | filterTenderProjectType}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目预算（元）：">
+              <span>{{updateForm.tenderProjectBudget}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="资金来源：">
+              <span><p v-for="(item,index) in updateForm.fundSourceList" :key="index" class="dresult-span">
+                <span v-if="Number(item.sourceOfFunds) === 1">
+                  {{item.sourceOfFunds | filterSourceOfFunds}}:{{item.value}}%
+                  (国有资金控股：{{item.stateOwnedCapitalHolding | filterState}}；
+                  国有资金占主导地位：{{item.stateOwnedFundsPredominate| filterState}})
+                </span>
+                <span v-if="Number(item.sourceOfFunds) !== 0 &&Number(item.sourceOfFunds) !== 1">
+                  {{item.sourceOfFunds | filterSourceOfFunds}}:{{item.value}}%
+                </span>
+              </p></span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="批准文号：">
+              <span>{{updateForm.approvalNumber}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <!--<el-form-item label="是否允许联合体投标：">
+              <span>{{updateForm.syndicatedFlag | filterSyndicatedFlag}}</span>
+            </el-form-item>-->
+            <el-form-item label="监督部门名称：">
+              <span>{{updateForm.supervisionDepName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="招标人：">
+              <span>{{updateForm.tendererName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <!--<el-form-item label="监督部门名称：">
+              <span>{{updateForm.supervisionDepName}}</span>
+            </el-form-item>-->
+            <el-form-item label="是否组织踏勘：">
+            <span>{{updateForm.isToExplore | filterSyndicatedFlag}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标方式：">
+              <span>{{updateForm.tenderMode | filterTenderMode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="是否资格预审：" v-if="Number(updateForm.tenderMode) === 1">
+              <span>{{updateForm.isPreBid | filterIsPreBid}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="招标内容与范围及招标方案说明：">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="附件：">
+              <el-table
+                :data="updateForm.fileInformationList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  type="index"
+                  label="序号"
+                  width="60"
+                  align="center">
+                </el-table-column>
+                <el-table-column
+                  prop="fileName"
+                  label="文件名称"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  label="操作" align="center" width="200">
+                  <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="lookFile(scope.row)">查看</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <approve @approveForm="approveForm" ref="approveForm" v-if="Number(isApproved) === 1"></approve>
+        <el-row v-if="Number(isApproved) === 3">
+          <el-col :span="24">
+            <el-form-item label="当前审批人：">
+              <span>{{taskExecutor}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row v-if="isApproved">
+          <el-col :span="24">
+            <el-form-item label="审核记录：">
+              <el-table
+                :data="recordList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  type="index"
+                  width="60"
+                  label="序号">
+                </el-table-column>
+                <el-table-column
+                  prop="auditStatus"
+                  label="审核结果"
+                  show-overflow-tooltip>
+                  <template slot-scope="scope">
+                    <span  v-if="scope.row.auditStatus === 1">通过</span>
+                    <span  v-if="scope.row.auditStatus === 2">不通过</span>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="auditorName"
+                  label="审核人"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  prop="createDate"
+                  label="审核时间"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  prop="opinion"
+                  label="审核意见"
+                  show-overflow-tooltip>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="cancleApprove" v-if="Number(isApproved) === 3 && recordList.length === 0 && Number(auditStatus) !== 3" :loading="isSubmiting">撤回</el-button>
+          <template v-else>
+            <el-button type="primary" @click="submitApprove" v-if="Number(isApproved) === 1" :loading="isSubmiting">提交</el-button>
+            <el-button class="cancal" @click="$router.go(-1)">返回</el-button>
+          </template>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import {tenderProject} from '@/api/project'
+import {downloadFile} from '@/assets/js/common'
+import approve from '@/components/approve.vue'
+import {approvalRecord, approvalTask} from '@/api/todoList'
+export default {
+  components: {
+    editor,
+    approve
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      // 是否显示审批（0:详情 1：审批 2：审批详情 3：我发起的详情）
+      isApproved: 0,
+      auditStatus: 0,
+      recordList: [],
+      objectId: '',
+      updateForm: {
+        fileInformations: [
+          {
+            fileName: 'a',
+            relativePath: 'path'
+          },
+          {
+            fileName: 'b',
+            relativePath: 'path'
+          }
+        ]
+      },
+      // 项目类型
+      options: [{
+        value: '1',
+        label: '工程'
+      }, {
+        value: '2',
+        label: '货物'
+      }, {
+        value: '3',
+        label: '服务'
+      }],
+      value: '',
+      // 招标方式
+      typeOptions: [{
+        value: '1',
+        label: '公开招标'
+      }, {
+        value: '2',
+        label: '邀请招标'
+      }, {
+        value: '3',
+        label: '竞争性谈判'
+      }, {
+        value: '4',
+        label: '单一来源采购'
+      }, {
+        value: '5',
+        label: '询价采购'
+      }, {
+        value: '6',
+        label: '竞争性磋商'
+      }],
+      typeValue: '',
+      // 是否资格预审
+      isCheckOptions: [{
+        value: '1',
+        label: '是'
+      }, {
+        value: '2',
+        label: '否'
+      }],
+      isCheckValue: '',
+      // 是否允许联合体投标
+      isAllowOptions: [{
+        value: '1',
+        label: '是'
+      }, {
+        value: '2',
+        label: '否'
+      }],
+      isAllowValue: '',
+      // 富文本
+      editread: true,
+      content: '',
+      approvalTaskCode: '',
+      taskExecutor: '',
+      form: {}
+    }
+  },
+  filters: {
+    /** 项目类型 */
+    filterTenderProjectType (value) {
+      if (value === '1') {
+        return '工程'
+      } else if (value === '2') {
+        return '货物'
+      } else if (value === '3') {
+        return '服务'
+      } else if (value === '4') {
+        return '其他'
+      }
+    },
+    /** 招标方式 */
+    filterTenderMode (value) {
+      if (Number(value) === 1) {
+        return '公开招标'
+      } else if (Number(value) === 2) {
+        return '邀请招标'
+      } else if (Number(value) === 3) {
+        return '竞争性谈判'
+      } else if (Number(value) === 4) {
+        return '单一来源采购'
+      } else if (Number(value) === 5) {
+        return '竞争性磋商'
+      } else if (Number(value) === 9) {
+        return '其他'
+      }
+    },
+    /** 是否资格预审 */
+    filterIsPreBid (value) {
+      if (value === 0) {
+        return '否'
+      } else if (value === 1) {
+        return '是'
+      }
+    },
+    /** 是否允许联合体投标 */
+    filterSyndicatedFlag (value) {
+      if (value === 0) {
+        return '否'
+      } else if (value === 1) {
+        return '是'
+      }
+    },
+    /** 资金来源 */
+    filterSourceOfFunds (value) {
+      if (value === 1) {
+        return '自有资金'
+      } else if (value === 2) {
+        return '专项资金'
+      } else if (value === 3) {
+        return '吸收资金'
+      } else if (value === 4) {
+        return '其他资金'
+      }
+    },
+    /** 国有资金控股/国有资金占主导地位 */
+    filterState (value) {
+      if (value === 0) {
+        return '否'
+      } else if (value === 1) {
+        return '是'
+      }
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  created () {
+    this.init()
+  },
+  methods: {
+    close () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    },
+    init () {
+      this.isApproved = this.$route.query.isApproved
+      this.auditStatus = this.$route.query.auditStatus
+      this.approvalTaskCode = this.$route.query.code
+      this.getChooseTenderProjectInfo()
+      this.approveRecord()
+    },
+    /** 获取当前招标项目信息 */
+    getChooseTenderProjectInfo () {
+      tenderProject.getBaseByCode(this.$route.params.code).then((res) => {
+        if (res.data.tenderProject && res.data.fundSourceList) {
+          this.updateForm = res.data.tenderProject
+          if (res.data.fundSourceList) {
+            this.updateForm.fundSourceList = res.data.fundSourceList
+            this.updateForm.fundSourceList.forEach(item => {
+              if (item.sourceOfFunds === 1) {
+                this.stateOwnedCapitalHolding = item.stateOwnedCapitalHolding
+                this.stateOwnedFundsPredominate = item.stateOwnedFundsPredominate
+              }
+            })
+          }
+          // 获取文本编辑器的内容
+          this.$refs.ueditor.setContent(this.content = this.updateForm.tenderContent)
+        }
+      })
+    },
+    handleClickEvent () {
+      this.$router.push({path: '/project/projectProcess'})
+    },
+    lookFile (file) {
+      downloadFile(file.fileName, file.relativePath)
+    },
+    approveForm (formV) {
+      this.form = formV
+    },
+    submitApprove () {
+      // 必填验证
+      this.$refs.approveForm.handleValidate()
+      if (this.form.auditStatus === 2 && !this.form.opinion.trim()) {
+        this.$message({
+          message: '请填写审批意见',
+          type: 'warning'
+        })
+        return false
+      }
+      // 提交数据
+      this.isSubmiting = true
+      this.form.relatedCode = this.approvalTaskCode
+      this.form.subjectCode = this.$route.params.code
+      approvalRecord.approvalRecordSave(this.form).then((res) => {
+        this.isSubmiting = false
+        if (res.data.resCode === '0000') {
+          this.close()
+        }
+      })
+    },
+    // 撤回审批
+    cancleApprove () {
+      this.isSubmiting = true
+      approvalTask.recallMyTask(this.approvalTaskCode).then((res) => {
+        this.isSubmiting = false
+        if (res.data.resCode === '0000') {
+          this.close()
+        }
+      })
+    },
+    approveRecord () {
+      if (this.isApproved) {
+        let query = {
+          subjectCode: this.$route.params.code,
+          relatedCode: this.approvalTaskCode
+        }
+        approvalRecord.approvalRecordList(query).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.recordList = res.data.recordOfApprovalList
+            this.taskExecutor = res.data.taskExecutor
+          }
+        })
+      }
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_projectProcess {
+    .el-select{
+      width: 100%;
+    }
+  }
+</style>

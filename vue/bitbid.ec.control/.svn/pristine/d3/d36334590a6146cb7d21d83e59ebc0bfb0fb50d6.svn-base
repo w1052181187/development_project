@@ -1,0 +1,76 @@
+<template>
+ <div id="assign-power" class="cont-view">
+  <!-- 面包屑区域start -->
+  <div class="bread-box">
+    <el-breadcrumb separator="/">
+      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item><a href="/">系统管理</a></el-breadcrumb-item>
+      <el-breadcrumb-item><a href="/">角色管理</a></el-breadcrumb-item>
+      <el-breadcrumb-item><a href="/">分配权限</a></el-breadcrumb-item>
+    </el-breadcrumb>
+    <el-button type="info" size="small" class="go-back" @click="$router.go(-1)">返 回</el-button>
+  </div>
+  <!-- 面包屑区域end -->
+  <div clsaa="table-box">
+    <el-tree
+      ref="roleTree"
+      :data="treeData"
+      show-checkbox
+      node-key="id"
+      :default-expanded-keys="selectMenus"
+      :default-checked-keys="selectMenus"
+      :props="defaultProps">
+    </el-tree>
+    <div class="handle-box">
+      <el-button size="small" type="primary" @click="saveData">保 存</el-button>
+    </div>
+  </div>
+ </div>
+</template>
+<script>
+import {role} from '@/api'
+export default {
+  name: 'assign-power',
+  data () {
+    return {
+      treeData: [],
+      selectMenus: [],
+      defaultProps: {
+        children: 'childMenuResources',
+        label: 'menuName'
+      },
+      menuParams: {}
+    }
+  },
+  methods: {
+    /** 保存 */
+    saveData () {
+      let parentsKeys = this.$refs.roleTree.getHalfCheckedKeys()
+      // console.log(parentsKeys)
+      let childKeys = this.$refs.roleTree.getCheckedKeys()
+      // console.log(childKeys)
+      this.menuParams.menus = childKeys.concat(parentsKeys)
+      this.menuParams.roleId = this.$route.params.roleId
+      role.saveMenuRoleAssociation(this.menuParams).then(res => {
+        if (res.data.resCode === '0000') {
+          this.$router.go(-1)
+        }
+      })
+    },
+    getTableData () {
+      let queryModel = {
+        roleId: this.$route.params.roleId
+      }
+      role.menuList(queryModel).then(res => {
+        this.treeData = res.data.menuResources
+        this.selectMenus = res.data.selectMenus
+      })
+    }
+  },
+  mounted () {
+    this.getTableData()
+  }
+}
+</script>
+<style lang="less">
+</style>

@@ -1,0 +1,265 @@
+<template>
+  <div class="cloudcontent" id="bid-file">
+    <div class="main">
+      <div class="bid-info">
+        <el-form :model="info">
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="标段编号：">
+                <span>{{info.tenderProjectCode}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="标段名称：">
+                <span>{{info.tenderProjectName}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+      <ul class="file-box">
+        <li class="file-item-border" v-for="(item, index) in info.archivesFileList" :key="index" v-if="index >= (pageSize * currentPage) - pageSize && index < currentPage * pageSize">
+          <div :class="index === 0 ? 'file-item' : 'file-item-gap'">
+            <span class="file-name">{{index + 1 + ' ' + item.archivesCatalog.name}}</span>
+            <span class="file-action" @click="delBtn(item)">删除</span>
+            <span class="file-action" @click="updateBtn(item)">{{item.archivesCatalog.name === activeName ? '收起' : '编辑'}}</span>
+          </div>
+          <div class="file-collapse" v-if="item.archivesCatalog.name === activeName">
+            <fileUpload :can-edit="canEdit" :objectId="item.objectId" :file-list="item.refArchivesFileInformationList" :file-type="9" :file-name='item.archivesCatalog.name' v-if="'委托代理合同' === activeName"></fileUpload>
+            <fileUpload :can-edit="canEdit" :objectId="item.objectId" :file-list="item.refArchivesFileInformationList" :file-type="9" :file-name='item.archivesCatalog.name' v-if="'项目实施计划' === activeName"></fileUpload>
+            <fileUpload :can-edit="canEdit" :objectId="item.objectId" :file-list="item.refArchivesFileInformationList" :file-type="9" :file-name='item.archivesCatalog.name' v-if="'主管部门批复函件' === activeName"></fileUpload>
+            <fileUpload :can-edit="canEdit" :objectId="item.objectId" :file-list="item.refArchivesFileInformationList" :file-type="9" :file-name='item.archivesCatalog.name' v-if="'招标项目及标段信息' === activeName"></fileUpload>
+            <prequalification :can-edit="canEdit" :item="item" v-if="'资格预审公告（含变更）' === activeName"></prequalification>
+            <tenderer :can-edit="canEdit" :item="item" v-if="'投标单位报名表' === activeName"></tenderer>
+            <prequalificationDoc :can-edit="canEdit" :item="item" v-if="'资格预审文件' === activeName"></prequalificationDoc>
+            <prequalificationApplication :can-edit="canEdit" :item="item" v-if="'资格预审申请文件' === activeName"></prequalificationApplication>
+            <returns :can-edit="canEdit" :item="item" v-if="'资格预审结果报告' === activeName"></returns>
+            <resultNote :can-edit="canEdit" :item="item" v-if="'资格预审结果通知书' === activeName"></resultNote>
+            <bidding :can-edit="canEdit" :item="item" v-if="'招标公告（含变更）' === activeName"></bidding>
+            <fileUpload :can-edit="canEdit" :objectId="item.objectId" :file-list="item.refArchivesFileInformationList" :file-type="9" :file-name='item.archivesCatalog.name'
+                        v-if="'投标邀请书（含变更）' === activeName"></fileUpload>
+            <biddingDoc :can-edit="canEdit" :item="item" v-if="'招标文件' === activeName"></biddingDoc>
+            <fileUpload :can-edit="canEdit" :objectId="item.objectId" :file-list="item.refArchivesFileInformationList" :file-type="9" :file-name='item.archivesCatalog.name'
+                        v-if="'招标控制价' === activeName"></fileUpload>
+            <tenderDoc :can-edit="canEdit" :item="item" v-if="'投标文件' === activeName"></tenderDoc>
+            <bidOpening :can-edit="canEdit" :item="item" v-if="'开标' === activeName"></bidOpening>
+            <evaluation :can-edit="canEdit" :item="item" v-if="'评标结果' === activeName"></evaluation>
+            <picketage :can-edit="canEdit" :item="item" v-if="'定标' === activeName"></picketage>
+            <fileUpload :can-edit="canEdit" :objectId="item.objectId" :file-list="item.refArchivesFileInformationList" :file-type="9" :file-name='item.archivesCatalog.name' v-if="'合同' === activeName"></fileUpload>
+            <jobEvaluation :can-edit="canEdit" :item="item" v-if="'代理工作评价' === activeName"></jobEvaluation>
+            <fileUpload :can-edit="canEdit" :objectId="item.objectId" :file-list="item.refArchivesFileInformationList" :file-type="9" file-name='其他' v-if="'其他附件' === activeName"></fileUpload>
+          </div>
+        </li>
+      </ul>
+      <!--按钮-->
+      <el-button class="add-file" @click="handleAddFileDir">
+        <span> + 增加文件目录</span>
+      </el-button>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="info.archivesFileList.length"
+        :current-page.sync="currentPage"
+        :page-size='pageSize'
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+
+      <el-dialog :before-close='close' title="新增文件类型" :visible.sync="dialogVisible">
+        <el-form :model="dialogForm" :rules="rules" ref="dialogForm" :label-width="formLabelWidth">
+          <el-form-item label="文件类型：" prop="fileType">
+            <el-select v-model="dialogForm.fileType" placeholder="请选择">
+              <el-option
+                v-for="item in fileTypeOptions"
+                :key="item.archivesCatalog.objectId"
+                :label="item.archivesCatalog.name"
+                :value="item.archivesCatalog.objectId">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button class="cancal" @click="close">取 消</el-button>
+          <el-button type="primary" @click="submitForm('dialogForm')">确认</el-button>
+        </div>
+      </el-dialog>
+    </div>
+  </div>
+</template>
+
+<script>
+import {archivesFile, archivesInfo} from '@/api/archives'
+
+export default {
+  watch: {
+  },
+  components: {
+    // () => import(/* webpackChunkName: 'customer' */ '@/pages/customer/business/index')
+    prequalification: resolve => require(['./public/prequalification'], resolve),
+    tenderer: resolve => require(['./public/tenderer'], resolve),
+    prequalificationDoc: resolve => require(['./public/prequalificationDoc'], resolve),
+    prequalificationApplication: resolve => require(['./public/prequalificationApplication'], resolve),
+    returns: resolve => require(['./public/returns'], resolve),
+    resultNote: resolve => require(['./public/resultNote'], resolve),
+    bidding: resolve => require(['./public/bidding'], resolve),
+    biddingDoc: resolve => require(['./public/biddingDoc'], resolve),
+    tenderDoc: resolve => require(['./public/tenderDoc'], resolve),
+    bidOpening: resolve => require(['./public/bidOpening'], resolve),
+    evaluation: resolve => require(['./public/evaluation'], resolve),
+    picketage: resolve => require(['./public/picketage'], resolve),
+    jobEvaluation: resolve => require(['./public/jobEvaluation'], resolve),
+    fileUpload: resolve => require(['./public/fileUpload'], resolve)
+  },
+  name: 'file',
+  props: ['info'],
+  data () {
+    return {
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: null, // 总条数
+      pageSize: 10, // 每页展示条数
+      activeName: '',
+      canEdit: true,
+      dialogVisible: false,
+      formLabelWidth: '120px',
+      dialogForm: {
+      },
+      rules: {
+        fileType: [
+          {required: true, message: '请选择文件类型', trigger: ['blur', 'change']}
+        ]
+      },
+      fileTypeOptions: []
+    }
+  },
+  methods: {
+    // 分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+    },
+    dataIndex (index) {
+      return index + (this.currentPage - 1) * this.pageSize + 1
+    },
+    updateBtn (item) {
+      if (this.activeName === item.archivesCatalog.name) {
+        this.activeName = ''
+      } else {
+        this.activeName = item.archivesCatalog.name
+      }
+    },
+    // 删除
+    delBtn (item, index) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        archivesFile.deleteArchivesFile(item.objectId).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.info.archivesFileList.splice(index, 1)
+          }
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    handleAddFileDir () {
+      this.dialogVisible = true
+      // 获取目录
+      archivesInfo.getUnaddedCatalog(this.info).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.fileTypeOptions = res.data.archivesFileList
+        }
+      })
+    },
+    close () {
+      this.dialogVisible = false
+      this.$refs.dialogForm.resetFields()
+    },
+    // 增加文件目录
+    submitForm (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.fileTypeOptions.forEach(item => {
+            if (this.dialogForm.fileType === item.archivesCatalog.objectId) {
+              archivesFile.addArchivesFile(item).then((res) => {
+                this.info.archivesFileList.push(res.data.archivesFile)
+                this.dialogVisible = false
+                this.dialogForm.fileType = ''
+              })
+            }
+          })
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style lang="less">
+  #bid-file{
+    .el-icon-arrow-right:before {
+      content: "";
+    }
+    .bid-code {
+      font-weight: 800;
+    }
+    .bid-info {
+      border: #dcdfe6 1px solid;
+      /*height: 60px;*/
+      /*line-height: 60px;*/
+      padding-top: 12px;
+      box-sizing: border-box;
+      /*font-size: 14px;*/
+      /*margin-bottom: 24px;*/
+    }
+    .file-item {
+      width: 100%;
+      background-color: #e4eefc;
+      font-size: 14px;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      padding-left: 32px;
+      box-sizing: border-box;
+    }
+    .file-item-gap {
+      /*border-top: #dcdfe6 1px solid;*/
+      width: 100%;
+      background-color: #e4eefc;
+      font-size: 14px;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      padding-left: 32px;
+      box-sizing: border-box;
+    }
+    .file-name {
+      color: #111;
+    }
+    .file-action {
+      float: right;
+      margin-right: 24px;
+      cursor: pointer;
+    }
+    .file-collapse {
+      padding: 24px 24px;
+      box-sizing: border-box;
+    }
+    .file-box .file-item-border{
+      border: #dcdfe6 1px solid;
+      margin-top: 8px;
+    }
+    .add-file {
+      margin-top: 24px;
+      background: #108cee;
+      border-color: #108cee;
+      color: white;
+    }
+  }
+</style>

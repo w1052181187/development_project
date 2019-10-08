@@ -1,0 +1,15 @@
+import rindex from '@/pages/dailyManage/roles/index'
+import assignPermission from '@/pages/dailyManage/roles/assignper'
+
+export default[
+  {
+    path: '/dailyManage/roles',
+    name: 'cloud-roles',
+    component: rindex
+  },
+  {
+    path: '/dailyManage/roles/assignPermission',
+    name: 'cloud-roles-assignPermission',
+    component: assignPermission
+  }
+]

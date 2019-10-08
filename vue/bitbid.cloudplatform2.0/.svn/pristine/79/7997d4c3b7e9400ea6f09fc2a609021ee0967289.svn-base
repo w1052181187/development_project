@@ -1,0 +1,298 @@
+<template>
+  <div class="communicate-box">
+    <div class="basic-approve-title communicate-title">
+      <span>沟通记录</span>
+      <el-button type="primary" class="addbutton" @click="showCommunicateDialog" v-if="creator !== $store.getters.authUser.userId">
+        <span >发起沟通</span>
+      </el-button>
+    </div>
+    <el-table
+      :data="communicateRecordList"
+      border
+      style="width: 100%" header-cell-class-name="tableheader">
+      <el-table-column
+        type="index"
+        label="序号"
+        width="60"
+        :index="indexMethod"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        prop="createDate"
+        label="沟通时间"
+        width="160"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="tenderProjectName"
+        label="沟通双方"
+        width="180"
+        show-overflow-tooltip>
+        <template slot-scope="scope">
+          <span>{{scope.row.createName}}-->{{scope.row.communicateName}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="content"
+        label="沟通内容"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        label="操作" align="center" width="100">
+        <template slot-scope="scope" v-if="scope.row.communicatId === $store.getters.authUser.userId">
+          <el-button type="text" size="small" @click="showReplyDialog(scope.row)">回复</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!--  沟通记录弹框 -->
+    <el-dialog
+      title="与发起人沟通"
+      :visible.sync="communicateVisable"
+      @closed="closeCommunicate"
+      width="30%">
+      <el-form :model="communicateForm" :rules="communicateFormRules" ref="communicateForm" label-width="82px">
+        <el-form-item label="沟通内容:">
+          <el-input type="textarea" v-model="communicateForm.content" :autosize="{ minRows: 4 }"></el-input>
+        </el-form-item>
+      </el-form>
+      <div class="footer-box">
+        <el-button type="primary" @click="submitComminucate('communicateForm')" :loading="isSubmiting">确 定</el-button>
+        <el-button @click="communicateVisable = false">取 消</el-button>
+      </div>
+    </el-dialog>
+    <!--  沟通记录弹框 -->
+    <el-dialog
+      title="回复"
+      :visible.sync="replyVisable"
+      @closed="closeReply"
+      width="30%">
+      <el-form :model="replyForm" :rules="replyRules" ref="replyForm" label-width="82px">
+        <el-form-item label="回复内容:" prop="content">
+          <el-input type="textarea" v-model="replyForm.content" :autosize="{ minRows: 4 }"></el-input>
+        </el-form-item>
+        <el-form-item v-if="isShowUpload" label-width="0px">
+          <span>如需补充资料，请在此处上传:</span>
+          <upload-file @uploadSuccess="uploadOtherSuccess" @deleteSuccess="deleteSuccess"
+                       :fileArrays="replyForm.fileInformationList"
+                       :fileType="9"
+                       isImage="0">
+          </upload-file>
+        </el-form-item>
+      </el-form>
+      <div class="footer-box">
+        <el-button type="primary" @click="submitReply('replyForm')" :loading="isSubmiting">确 定</el-button>
+        <el-button @click="replyVisable = false">取 消</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import uploadFile from '@/components/upload/publicFileUpload'
+import {recordOfCommunicate} from '@/api/todoList/flow/recordOfCommunicate/recordOfCommunicate'
+
+export default {
+  name: 'communicateRecord',
+  components: {
+    uploadFile
+  },
+  props: {
+    isShowUpload: {
+      type: Boolean,
+      default: false
+    },
+    relatedCode: String,
+    createName: String,
+    creator: Number,
+    routingPath: String,
+    nodeContent: String,
+    flowType: String,
+    flowStatus: {}
+  },
+  watch: {
+    '$route': 'init',
+    relatedCode: {
+      handler () {
+        this.init()
+      },
+      immediate: true,
+      deep: true
+    }
+  },
+  data () {
+    return {
+      communicateVisable: false,
+      communicateForm: {},
+      replyVisable: false,
+      replyForm: {
+        fileInformationList: []
+      },
+      isSubmiting: false,
+      communicateRecordList: [],
+      replyRules: {
+        content: [
+          { required: true, message: '回复内容不能为空', trigger: ['blur', 'change'] }
+        ]
+      },
+      communicateFormRules: {
+        content: [
+          { required: true, message: '回复内容不能为空', trigger: ['blur', 'change'] }
+        ]
+      }
+    }
+  },
+  methods: {
+    init () {
+      this.getRecordOfCommunicateList()
+    },
+    indexMethod (index) {
+      return index + 1
+    },
+    showCommunicateDialog () {
+      this.communicateVisable = true
+    },
+    closeCommunicate () {
+      this.communicateForm = {}
+    },
+    submitComminucate (formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.communicateForm.relatedCode = this.relatedCode
+          this.communicateForm.communicateName = this.createName
+          this.communicateForm.communicatId = this.creator
+          this.$confirm('确定要提交吗？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            beforeClose: (action, instance, done) => {
+              done()
+            }
+          }).then(() => {
+            this.isSubmiting = true
+            this.communicateForm.routingPath = this.routingPath
+            if (this.flowType === 'agencyContract') {
+              this.communicateForm.noticeContent = '[委托协议]' + this.$store.getters.authUser.userName + '与您沟通' + this.nodeContent + ',去查看'
+            } else if (this.flowType === 'tenderProject') {
+              this.communicateForm.noticeContent = '[项目管理]' + this.$store.getters.authUser.userName + '与您沟通' + this.nodeContent + ',去查看'
+            }
+            if (this.flowStatus) {
+              this.communicateForm.flowStatus = this.flowStatus
+            }
+            recordOfCommunicate.saveRecordOfCommunicate(this.communicateForm).then((res) => {
+              if (res.data.resCode === '0000') {
+                this.communicateRecordList.push(res.data.recordOfCommunicate)
+                this.communicateVisable = false
+                this.isSubmiting = false
+              }
+            })
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    showReplyDialog (row) {
+      this.replyVisable = true
+      this.communicateName = row.createName
+      this.communicatId = row.creator
+    },
+    closeReply () {
+      this.replyForm = {fileInformationList: []}
+      this.$refs['replyForm'].resetFields()
+    },
+    // 上传附件
+    uploadOtherSuccess (file) {
+      this.replyForm.fileInformationList = [file]
+    },
+    deleteSuccess (fileId) {
+      this.replyForm.fileInformationList = this.replyForm.fileInformationList.filter(item => item.relativePath !== fileId)
+    },
+    // 获取沟通记录
+    getRecordOfCommunicateList () {
+      if (!this.relatedCode) {
+        return
+      }
+      let query = {
+        relatedCode: this.relatedCode
+      }
+      if (this.flowStatus) {
+        query.flowStatus = this.flowStatus
+      }
+      recordOfCommunicate.getRecordOfCommunicateList(query).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.communicateRecordList = res.data.recordOfCommunicateList
+          // 获取补充文件
+          let fileList = this.communicateRecordList.filter(item => item.fileinformationId)
+          if (fileList.length > 0) {
+            this.$emit('confirmSubmit', fileList)
+          }
+        }
+      })
+    },
+    submitReply (formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.replyForm.relatedCode = this.relatedCode
+          this.replyForm.communicateName = this.communicateName
+          this.replyForm.communicatId = this.communicatId
+          this.$confirm('确定要提交吗？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            beforeClose: (action, instance, done) => {
+              done()
+            }
+          }).then(() => {
+            this.replyForm.routingPath = this.routingPath
+            if (this.flowType === 'tenderProject') {
+              this.replyForm.noticeContent = '[项目管理]' + this.createName + '回复了您，去查看'
+            }
+            if (this.flowStatus) {
+              this.replyForm.flowStatus = this.flowStatus
+            }
+            this.isSubmiting = true
+            if (this.replyForm.fileInformationList) {
+              this.replyForm.fileInformation = this.replyForm.fileInformationList[0]
+            }
+            recordOfCommunicate.saveRecordOfCommunicate(this.replyForm).then((res) => {
+              if (res.data.resCode === '0000') {
+                this.communicateRecordList.push(res.data.recordOfCommunicate)
+                this.replyVisable = false
+                this.isSubmiting = false
+                // 更新补充文件
+                let fileList = this.communicateRecordList.filter(item => item.fileinformationId)
+                if (fileList.length > 0) {
+                  this.$emit('confirmSubmit', fileList)
+                }
+              }
+            })
+          })
+        } else {
+          return false
+        }
+      })
+    }
+  }
+}
+</script>
+
+<style scoped>
+  .communicate-box {
+    padding: 16px 20px;
+    box-sizing: border-box;
+  }
+  .communicate-title {
+    margin: 0;
+    height: 32px;
+    line-height: 32px;
+  }
+  .footer-box{
+    text-align: center;
+    margin-top: 30px;
+  }
+  .addbutton{
+    color: #fff;
+    background-color: #409EFF;
+    border-color: #409EFF;
+    float: right;
+  }
+</style>

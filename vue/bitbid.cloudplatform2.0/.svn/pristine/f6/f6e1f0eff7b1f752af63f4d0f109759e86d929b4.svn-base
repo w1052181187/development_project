@@ -1,0 +1,72 @@
+<template>
+  <div class="cloudcontent" id="archives-detail">
+    <div class="main">
+      <div class="detail-title">{{(info.tenderProjectName ? info.tenderProjectName : '') + (info.bidSectionName ? '(' + info.bidSectionName + ')' : '')}}档案</div>
+      <el-tabs class="detail_tab" v-model="activeTab" type="card">
+        <el-tab-pane label="档案信息" name="1">
+          <archives-info :info="info" :isShowTransferRecord="$route.meta.type !== 'query'"></archives-info>
+        </el-tab-pane>
+        <el-tab-pane v-if="$route.meta.type === 'query'" label="标段信息" name="2">
+          <section-info :info="info"></section-info>
+        </el-tab-pane>
+        <el-tab-pane label="归档文件" :name="$route.meta.type === 'query' ? '3' : '2'">
+          <file-pack-download :info="info"></file-pack-download>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+  </div>
+</template>
+<script>
+import {archivesInfo} from '@/api/archives'
+export default {
+  components: {
+    archivesInfo: resolve => require(['./archivesInfo.vue'], resolve),
+    sectionInfo: resolve => require(['./sectionInfo.vue'], resolve),
+    filePackDownload: resolve => require(['./filePackDownload.vue'], resolve)
+  },
+  data () {
+    return {
+      title: '',
+      activeTab: '1',
+      info: {}
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  methods: {
+    init () {
+      if (this.activeTab === '3') {
+        this.activeTab = '2'
+      }
+      this.getData()
+    },
+    getData () {
+      let isSetRecord = 0
+      if (this.$route.query.status === 1) {
+        isSetRecord = 1
+      }
+      archivesInfo.detailArchivesInfo(this.$route.params.objectId, isSetRecord).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.info = res.data.archivesInfo
+          this.isShow = this.isShow && Number(this.info.status) === 1
+        }
+      })
+    }
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+
+<style lang="less">
+  #archives-detail{
+    .detail-title{
+      padding: 12px 0;
+      box-sizing: border-box;
+      color: #333;
+      font-weight: 800;
+    }
+  }
+</style>

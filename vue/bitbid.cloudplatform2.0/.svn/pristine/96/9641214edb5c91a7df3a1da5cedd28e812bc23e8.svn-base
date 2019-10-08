@@ -1,0 +1,1097 @@
+<template>
+  <div class="cloudcontent" id="cloud_historyProjectAdd">
+    <div class="main">
+      <div class="basic-info-title">项目基本信息</div>
+      <el-form :model="addForm" :rules="rulesList" ref="addForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标项目编号：" prop="tenderProjectCode">
+              <el-input v-model="addForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目编号：" prop="projectCode">
+              <el-input v-model="addForm.projectCode"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目名称：" prop="tenderProjectName">
+              <el-input v-model="addForm.tenderProjectName"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目时间：" prop="projectDate">
+              <el-date-picker
+                v-model="addForm.projectDate"
+                type="date"
+                placeholder="请选择"
+                value-format="yyyy-MM-dd HH:mm:ss">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标人：" prop="tendererName">
+              <el-input v-model="addForm.tendererName" readonly placeholder="请选择">
+                <el-button slot="append" icon="el-icon-search" @click="showCustomerDialog"></el-button>
+              </el-input>
+            </el-form-item>
+            <customer-radio-dialog :showVisible="showCustomerVisible" @selected="selectedCustomer" @showDialog="showCustomerDialog"></customer-radio-dialog>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="代理合同：">
+              <el-input v-model="addForm.agencyContractName" readonly placeholder="请选择">
+                <el-button slot="append" icon="el-icon-search" @click="getAgencyContractData"></el-button>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目类型：" prop="tenderProjectType">
+              <el-select v-model="addForm.tenderProjectType" placeholder="请选择">
+                <el-option
+                  v-for="item in typeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目地址：" prop="selectedCityOptions">
+              <el-cascader class=""
+                           :props="{ expandTrigger: 'hover' }"
+                           :options="addressOptions"
+                           v-model="addForm.selectedCityOptions"
+                           @change="handleCityChange">
+              </el-cascader>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="详细地址：" prop="address">
+            <el-input v-model="addForm.address"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目预计收入(元)：" prop="projectIncome">
+              <el-input v-model="addForm.projectIncome"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目行业分类：">
+              <el-cascader class=""
+                           :props="{ expandTrigger: 'hover' }"
+                           :options="industryOptions"
+                           v-model="addForm.selectedIndustryOptions"
+                           @change="handleIndustryChange">
+              </el-cascader>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="资质主体：" prop="companyMainBody">
+              <el-select v-model="addForm.companyMainBody" placeholder="请选择" readonly clearable @click.native="initOpportunityStage">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目所属部门：" prop="departmentName">
+              <el-input class="deptInput" v-model="addForm.departmentName" auto-complete="off" placeholder="请选择" readonly="readonly" clearable @click.native="showDepartmentTree">
+                <i slot="suffix" class="el-input__icon el-icon-arrow-down"></i>
+              </el-input>
+              <tree-options :initData="addForm.departmentId" @selectSuccess="selectedDepatment" :isShowOptions="isShowDptTree"></tree-options>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="招标方式：" prop="tenderMode">
+              <el-select v-model="addForm.tenderMode" placeholder="请选择">
+                <el-option
+                  v-for="item in methodOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="是否资格预审：" prop="isPreBid" v-if="addForm.tenderMode === 1">
+            <el-select v-model="addForm.isPreBid" placeholder="请选择" @change="changePreBid">
+              <el-option
+                v-for="item in preOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      </el-form>
+      <el-dialog title="选择代理合同" :visible.sync="dialogTableVisible">
+        <div class="topmain">
+          <div class="seacher_box">
+            <span>合同名称：</span>
+            <el-input class="search" placeholder="请输入合同名称关键字" style="vertical-align: top"  v-model="searchForm.agencyContractNameLike">
+              <el-button  slot="append" icon="el-icon-search" type="" @click="search"></el-button>
+            </el-input>
+          </div>
+        </div>
+        <el-table
+          :data="contractData"
+          border
+          style="width: 100%" header-cell-class-name="tableheader">
+          <el-table-column
+            width="50"
+            align="center"
+            prop="name">
+            <template slot-scope="scope">
+              <el-radio v-model="radio" :label="scope.row.objectId" @change="select(scope)">&nbsp;</el-radio>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="agencyContractCode"
+            label="代理合同编号"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="agencyContractName"
+            label="代理合同名称"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="entrustEnterpriseName"
+            label="委托单位"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="createDate"
+            label="创建时间"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            label="操作" align="center" width="100">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" @click="lookBtn(scope)">查看</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="total"
+          :page-size='pageSize'
+          :current-page.sync="currentPage"
+          @current-change="handleCurrentChange">
+        </el-pagination>
+        <!--分页-->
+      </el-dialog>
+    </div>
+    <div class="project-info-line"></div>
+    <div class="main">
+      <div class="basic-info-title">项目组成员<el-button class="addbutton" @click="addMember">+&nbsp;&nbsp;新增</el-button></div>
+      <el-form class="member-form" :model="memberForm" ref="memberForm">
+        <el-table
+          :data="memberForm.memberData"
+          border
+          style="width: 100%" header-cell-class-name="tableheader">
+          <el-table-column
+            width="50"
+            type="index"
+            align="center"
+            label="序号">
+          </el-table-column>
+          <el-table-column
+            prop="userName"
+            label="姓名"
+            align="center"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <el-form-item :prop="'memberData.' + scope.$index + '.userId'" :rules='memberRules.userId'>
+                <el-select v-model="scope.row.userId" placeholder="请选择"  readonly clearable @click.native="queryUserList" @change="changeUserName(scope.$index, scope.row)">
+                  <el-option
+                    v-for="item in selectData"
+                    :key="item.objectId"
+                    :label="item.name"
+                    :value="item.objectId">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="positionType"
+            label="职责分工"
+            align="center"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <el-form-item :prop="'memberData.' + scope.$index + '.positionType'" :rules='memberRules.positionType'>
+                <el-select v-model="scope.row.positionType" placeholder="请选择"  readonly clearable @change="changePositionType(scope.$index, scope.row.positionType)">
+                  <el-option
+                    v-for="item in positionTypeOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="操作" align="center" width="60">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" @click="delMember(scope)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-form>
+    </div>
+    <div class="project-info-line"></div>
+    <div class="main">
+      <div class="basic-info-title">标段信息<el-button class="addbutton" @click="addSection">+&nbsp;&nbsp;新增</el-button></div>
+      <el-form class="member-form" :model="sectionForm" ref="sectionForm">
+        <el-table
+          :data="sectionForm.sectionData"
+          border
+          style="width: 100%" header-cell-class-name="tableheader">
+          <el-table-column
+            width="50"
+            type="index"
+            align="center"
+            label="序号">
+          </el-table-column>
+          <el-table-column
+            prop="bidSectionCode"
+            label="标段编号"
+            align="center"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <el-form-item :prop="'sectionData.' + scope.$index + '.bidSectionCode'" :rules='sectionRules.bidSectionCode'>
+                <el-input v-model="scope.row.bidSectionCode"></el-input>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="bidSectionName"
+            label="标段名称"
+            align="center"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <el-form-item :prop="'sectionData.' + scope.$index + '.bidSectionName'" :rules='sectionRules.bidSectionName'>
+                <el-input v-model="scope.row.bidSectionName"></el-input>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="selectBidsTypeOptions"
+            label="标段类型"
+            align="center"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <el-form-item :prop="'sectionData.' + scope.$index + '.selectBidsTypeOptions'" :rules='sectionRules.selectBidsTypeOptions'>
+                <el-cascader class=""
+                             :props="{ expandTrigger: 'hover' }"
+                             :options="bidsTypeOptions"
+                             v-model="scope.row.selectBidsTypeOptions"
+                             @change="handleSectionChange(scope.$index)">
+                </el-cascader>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="docGetFee"
+            label="标段文件售价（元）"
+            align="center"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <el-form-item :prop="'sectionData.' + scope.$index + '.docGetFee'" :rules='sectionRules.docGetFee'>
+                <el-input v-model="scope.row.docGetFee"></el-input>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column
+            key="bidOpeningTime"
+            prop="bidOpeningTime"
+            label="开标时间"
+            align="center"
+            v-if="!timeFlag"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <el-form-item :prop="'sectionData.' + scope.$index + '.bidOpeningTime'" :rules='sectionRules.bidOpeningTime'>
+                <el-date-picker
+                  v-model="scope.row.bidOpeningTime"
+                  type="datetime"
+                  placeholder="请选择"
+                  value-format="yyyy-MM-dd HH:mm:ss">
+                </el-date-picker>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column
+            key="prequalificationTime"
+            prop="prequalificationTime"
+            label="资格预审会时间"
+            align="center"
+            v-if="timeFlag"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <el-form-item :prop="'sectionData.' + scope.$index + '.prequalificationTime'" :rules='sectionRules.prequalificationTime'>
+                <el-date-picker
+                  v-model="scope.row.prequalificationTime"
+                  type="datetime"
+                  placeholder="请选择"
+                  value-format="yyyy-MM-dd HH:mm:ss">
+                </el-date-picker>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="操作" align="center" width="60">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" @click="delSection(scope)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="handleClickEvent('addForm','save')" :loading="loading">保存</el-button>
+          <el-button type="success" class="submitBtn" @click="handleClickEvent('addForm','submit')" :loading="loading">提交</el-button>
+          <el-button class="cancal" @click="handleClickEvent('addForm','cancel')">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import * as region from '@/assets/js/region'
+import * as industry from '@/assets/js/industry_two'
+import {validateWhoInteger} from '@/assets/js/validate'
+import {tenderProject} from '@/api/project'
+import {agencyContract} from '@/api/knowledge'
+import {dataDictionary, user} from '@/api/system'
+import CustomerRadioDialog from '@/pages/customer/customer/dialog/radio_dialog.vue'
+import TreeOptions from '@/pages/system/department/tree/tree_options'
+import * as bidsType from '@/assets/js/constants'
+export default {
+  components: {
+    CustomerRadioDialog,
+    TreeOptions
+  },
+  data () {
+    let validWhoInteger = (rule, value, callback) => {
+      if (value === '0' || !value) {
+        callback()
+      } else if (!validateWhoInteger(value)) {
+        callback(new Error('输入有误，请重新录入！'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      timeFlag: false,
+      tenderSystemCode: this.$route.params.code,
+      // 标段类型
+      bidsTypeOptions: bidsType.bidsType,
+      loading: false,
+      isSave: false,
+      addForm: {
+        tendererName: null,
+        agencyContractName: null,
+        departmentName: '',
+        tenderExpandsInfo: {
+          provinceId: '',
+          cityId: '',
+          countyId: ''
+        }
+      },
+      selectData: [], // 项目负责人信息
+      clickRowIndex: 0, // 为哪一行信息选择项目负责人
+      rules: {
+        tenderProjectName: [
+          { required: true, message: '招标项目名称不能为空', trigger: ['blur', 'change'] }
+        ],
+        projectCode: [
+          { required: true, message: '项目编号不能为空', trigger: ['blur', 'change'] }
+        ],
+        projectIncome: [
+          {required: true, message: '项目预计收入不能为空', trigger: 'blur'},
+          {validator: validWhoInteger, trigger: 'blur'}
+        ],
+        selectedIndustryOptions: [
+          { required: true, message: '请选择项目行业分类', trigger: 'blur' }
+        ],
+        selectedCityOptions: [
+          { required: true, message: '请选择项目地址', trigger: 'blur' }
+        ],
+        tendererName: [
+          {required: true, message: '招标人名称不能为空', trigger: ['blur', 'change']}
+        ],
+        projectDate: [
+          { required: true, message: '项目时间不能为空', trigger: 'blur' }
+        ],
+        tenderProjectType: [
+          { required: true, message: '请选择项目类型', trigger: 'blur' }
+        ],
+        isPreBid: [
+          { required: true, message: '请选择是否资格预审', trigger: 'blur' }
+        ],
+        tenderMode: [
+          { required: true, message: '请选择招标方式', trigger: 'blur' }
+        ],
+        companyMainBody: [
+          { required: true, message: '请选择项目主体', trigger: 'blur' }
+        ],
+        departmentName: [
+          { required: true, message: '请选择项目所属部门', trigger: 'change' }
+        ]
+      },
+      saveRules: {
+        tenderProjectName: [
+          { required: true, message: '招标项目名称不能为空', trigger: ['blur', 'change'] }
+        ],
+        projectCode: [
+          { required: true, message: '项目编号不能为空', trigger: ['blur', 'change'] }
+        ],
+        projectIncome: [
+          { required: false, message: '项目预计收入不能为空', trigger: ['blur', 'change'] },
+          {validator: validWhoInteger, trigger: ['blur', 'change']}
+        ],
+        selectedIndustryOptions: [
+          { required: false, message: '请选择项目行业分类', trigger: ['blur', 'change'] }
+        ],
+        selectedCityOptions: [
+          { required: false, message: '请选择项目地址', trigger: ['blur', 'change'] }
+        ],
+        tendererName: [
+          { required: false, message: '招标人名称不能为空', trigger: ['blur', 'change'] }
+        ],
+        projectDate: [
+          { required: false, message: '项目时间不能为空', trigger: ['blur', 'change'] }
+        ],
+        tenderProjectType: [
+          { required: false, message: '请选择项目类型', trigger: ['blur', 'change'] }
+        ],
+        isPreBid: [
+          { required: false, message: '请选择是否资格预审', trigger: ['blur', 'change'] }
+        ],
+        tenderMode: [
+          { required: false, message: '请选择招标方式', trigger: ['blur', 'change'] }
+        ],
+        companyMainBody: [
+          { required: false, message: '请选择项目主体', trigger: ['blur', 'change'] }
+        ],
+        departmentName: [
+          { required: false, message: '请选择项目所属部门', trigger: 'change' }
+        ]
+      },
+      // 地址三级联动
+      addressOptions: region.CityInfo,
+      selectedcityOptions: [],
+      // 行业三级联动
+      industryOptions: industry.industry,
+      selectedIndustryOptions: [],
+      content: '',
+      dialogTableVisible: false,
+      contractData: [],
+      radio: '',
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10, // 每页展示条数
+      searchForm: {
+        agencyContractNameLike: ''
+      }, // 代理合同对象
+      options: [],
+      positionTypeOptions: [{
+        value: 1,
+        label: '项目经理'
+      }, {
+        value: 2,
+        label: '项目助理'
+      }],
+      value: '',
+      partvalue: '',
+      // 是否展示客户
+      showCustomerVisible: false,
+      typeOptions: [
+        {
+          value: '1',
+          label: '工程'
+        }, {
+          value: '2',
+          label: '货物'
+        },
+        {
+          value: '3',
+          label: '服务'
+        }
+      ],
+      methodOptions: [
+        {
+          value: 1,
+          label: '公开招标'
+        }, {
+          value: 2,
+          label: '邀请招标'
+        },
+        {
+          value: 3,
+          label: '竞争性谈判'
+        },
+        {
+          value: 4,
+          label: '单一来源采购  '
+        }, {
+          value: 5,
+          label: '询价采购'
+        },
+        {
+          value: 6,
+          label: '竞争性磋商'
+        }
+      ],
+      preOptions: [
+        {
+          value: 1,
+          label: '是'
+        },
+        {
+          value: 0,
+          label: '否'
+        }
+      ],
+      memberForm: {
+        memberData: []
+      },
+      sectionForm: {
+        sectionData: []
+      },
+      memberRules: {
+        userId: [
+          {required: true, message: '请选择姓名', trigger: ['blur', 'change']}
+        ],
+        positionType: [
+          {required: true, message: '请选择职责', trigger: ['blur', 'change']}
+        ]
+      },
+      sectionRules: {
+        bidSectionCode: [
+          {required: true, message: '标段编号不能为空', trigger: ['blur', 'change']}
+        ],
+        bidSectionName: [
+          {required: true, message: '标段名称不能为空', trigger: ['blur', 'change']}
+        ],
+        selectBidsTypeOptions: [
+          {required: true, message: '请选择标段类型', trigger: ['blur', 'change']}
+        ],
+        docGetFee: [
+          {required: true, message: '请输入招标文件售价', trigger: ['blur', 'change']},
+          {validator: validWhoInteger}
+        ],
+        bidOpeningTime: [
+          {required: true, message: '开标时间不能为空', trigger: ['blur', 'change']}
+        ],
+        prequalificationTime: [
+          {required: true, message: '资格预审会时间不能为空', trigger: ['blur', 'change']}
+        ]
+      },
+      // 是否展示部门树
+      isShowDptTree: false,
+      dicOpportunityStageId: 10007,
+      localDataForm: {}
+    }
+  },
+  computed: {
+    rulesList: function () {
+      if (this.isSave) {
+        return this.saveRules
+      } else {
+        return this.rules
+      }
+    }
+  },
+  methods: {
+    changePreBid (value) {
+      if (Number(value) === 1) { // 是
+        this.timeFlag = true
+      } else {
+        this.timeFlag = false
+      }
+    },
+    // 右侧用户表格数据
+    queryUserList () {
+      let queryModel = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        isDelete: 0,
+        pageNum: 0,
+        pageSize: 0,
+        type: 2,
+        treeMode: 1
+      }
+      user.queryList(queryModel).then((res) => {
+        this.selectData = res.data.data
+      })
+    },
+    /** 修改负责人名称 */
+    changeUserName (index, row) {
+      if (!this.checkUserIsChoosed(index, row.userId)) {
+        this.$message.warning('该用户已被选择，不能重复添加！')
+        this.memberForm.memberData[index].userId = ''
+        return false
+      }
+      this.memberForm.memberData[index].userName = this.getUserName(row.userId)
+    },
+    /** 修改职责分工 */
+    changePositionType (index, value) {
+      this.memberForm.memberData[index].positionType = value
+    },
+    /** 查询指定用户的名称 */
+    getUserName (userId) {
+      let name = ''
+      for (let i = 0; i < this.selectData.length; i++) {
+        if (this.selectData[i].objectId === userId) {
+          name = this.selectData[i].name
+          break
+        }
+      }
+      return name
+    },
+    /** 判断该用户是否已经被选择 */
+    checkUserIsChoosed (index, userId) {
+      for (let i = 0; i < this.memberForm.memberData.length; i++) {
+        if (i !== index && this.memberForm.memberData[i].userId === userId) {
+          return false
+        }
+      }
+      return true
+    },
+    /** 验证标段名是否有重复 */
+    checkPhaseName () {
+      let flag = false
+      if (this.sectionForm.sectionData && this.sectionForm.sectionData.length > 0) {
+        let bankset = new Set()
+        this.sectionForm.sectionData.forEach(item => {
+          bankset.add(item.bidSectionName)
+        })
+        if (this.sectionForm.sectionData.length !== bankset.size) {
+          flag = true
+        }
+      }
+      return flag
+    },
+    // 选择部门
+    selectedDepatment (deptTreeNode) {
+      this.addForm.departmentName = deptTreeNode.departmentListNames
+      this.addForm.departmentId = deptTreeNode.id
+      this.addForm.departmentListIds = deptTreeNode.departmentListIds
+      this.isShowDptTree = false
+    },
+    // 部门树展开/关闭
+    showDepartmentTree () {
+      this.isShowDptTree = !this.isShowDptTree
+    },
+    // 客户弹框打开
+    showCustomerDialog () {
+      this.showCustomerVisible = !this.showCustomerVisible
+    },
+    // 资质主体信息
+    initOpportunityStage () {
+      this.options = []
+      let query = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        dictionaryDirectoryId: this.dicOpportunityStageId
+      }
+      dataDictionary.getDetailList(query).then(res => {
+        if (res && res.data.dictionaryDetails.length > 0) {
+          res.data.dictionaryDetails.forEach(item => {
+            let obj = {
+              value: item.objectId,
+              label: item.name
+            }
+            this.options.push(obj)
+          })
+        }
+      })
+    },
+    // 选择客户
+    selectedCustomer (obj) {
+      this.addForm.tendererCode = obj.code
+      this.addForm.tendererName = obj.name
+      this.addForm.customerManagementCode = obj.code
+    },
+    // 所属行业三级联动赋值
+    handleIndustryChange (value) {
+      this.addForm.tenderExpandsInfo.industryTypeFirst = value[0]
+      this.addForm.tenderExpandsInfo.industryTypeSecond = value[1]
+    },
+    // 所在地区三级联动赋值
+    handleCityChange (value) {
+      this.addForm.tenderExpandsInfo.provinceId = value[0]
+      this.addForm.tenderExpandsInfo.cityId = value[1]
+      this.addForm.tenderExpandsInfo.countyId = value[2]
+    },
+    /** 标段类型的选择 */
+    handleSectionChange (index) {
+      if (this.sectionForm.sectionData[index].selectBidsTypeOptions) {
+        let str = ''
+        for (let i = 0; i < this.sectionForm.sectionData[index].selectBidsTypeOptions.length; i++) {
+          if (i === this.sectionForm.sectionData[index].selectBidsTypeOptions.length - 1) {
+            str += this.sectionForm.sectionData[index].selectBidsTypeOptions[i]
+          } else {
+            str += this.sectionForm.sectionData[index].selectBidsTypeOptions[i]
+            str += '-'
+          }
+        }
+        this.sectionForm.sectionData[index].tenderProjectClassifyCode = str
+      }
+    },
+    // 表单分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getAgencyContractData(parseInt(this.pageNo), parseInt(this.pageSize))
+    },
+    getAgencyContractData () {
+      agencyContract.getList({
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        statusList: '2,4',
+        messageLike: this.searchForm.agencyContractNameLike || null
+      }).then((res) => {
+        if (res.data.agencyContractList && res.data.agencyContractList.list) {
+          this.contractData = res.data.agencyContractList.list
+          this.total = res.data.agencyContractList.total
+          this.dialogTableVisible = true
+        }
+      })
+    },
+    select (scope) {
+      this.addForm.agencyContractCode = scope.row.code
+      this.addForm.agencyContractName = scope.row.agencyContractName
+      this.dialogTableVisible = false
+    },
+    /** 查看代理合同信息 */
+    lookBtn (scope) {
+      this.$router.push({path: `/knowledge/agencyContract/detail/${scope.row.code}`})
+    },
+    /* 按钮点击事件：提交、保存、取消 */
+    handleClickEvent (formName, type) {
+      if (Object.is(type, 'submit') || Object.is(type, 'save')) {
+        if (Object.is(type, 'save')) {
+          this.isSave = true
+        } else {
+          this.isSave = false
+        }
+        this.$nextTick(() => {
+          // 校验项目信息必填
+          let proInfo = this.validateProInfo()
+          // 校验成员必填
+          let member = this.validateMember()
+          // 校验标段必填
+          let section = this.validateSection()
+          // 如果校验通过
+          if (proInfo && member && section) {
+            if (Object.is(type, 'submit')) {
+              if (this.memberForm.memberData.length === 0) {
+                this.$message.warning('项目组成员不能为空！')
+                return false
+              } else {
+                if (!this.checkManager()) {
+                  this.$message.warning('至少选择一个项目经理！')
+                  return false
+                }
+              }
+              if (this.sectionForm.sectionData.length === 0) {
+                this.$message.warning('标段信息不能为空！')
+                return false
+              }
+            }
+            let msg = Object.is(type, 'submit') ? '提交后数据将锁定，不允许修改，确认要提交吗?' : '确认要保存吗?'
+            this.$confirm(msg, '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+              beforeClose: (action, instance, done) => {
+                done()
+              }
+            }).then(() => {
+              this.loading = true
+              // 根据type设置当前招标项目的状态
+              if (Object.is(type, 'submit')) {
+                this.addForm.status = 12
+              } else {
+                this.addForm.status = 0 // 概况未提交
+              }
+              // 设置项目所属信息
+              if (this.options.length > 0 && this.addForm.companyMainBody) {
+                let arr = this.options
+                this.addForm.companyMainBodyName = arr.filter(item => item.value === this.addForm.companyMainBody)[0].label
+              }
+              // 设置招标项目扩展信息
+              if (this.addForm.address) {
+                this.addForm.tenderExpandsInfo.address = this.addForm.address
+              }
+              this.addForm.enterpriseId = this.$store.getters.authUser.enterpriseId
+              this.addForm.dataSource = 1
+              if (this.memberForm.memberData && this.memberForm.memberData.length > 0) {
+                this.memberForm.memberData.forEach(item => {
+                  item.tenderProject = this.addForm
+                })
+              }
+              if (this.sectionForm.sectionData && this.sectionForm.sectionData.length > 0) {
+                this.sectionForm.sectionData.forEach(item => {
+                  item.tenderProject = this.addForm
+                })
+              }
+              this.addForm.tenderExpandsInfo.objectId = null
+              let obj = {
+                tenderProject: this.addForm, // 项目信息
+                projectLeaderList: this.memberForm.memberData, // 代理机构负责人信息
+                bidSectionList: this.sectionForm.sectionData // 标段信息
+              }
+              tenderProject.saveInArchives(obj).then((res) => {
+                this.loading = false
+                if (res.data.resCode === '0000') {
+                  localStorage.clear()
+                  this.$store.commit('delete_tabs', this.$route.fullPath)
+                  if (Object.is(type, 'submit')) {
+                    this.$router.push({path: '/archives/transfer'})
+                  } else {
+                    this.$router.push({path: '/archives/transfer/historyList'})
+                  }
+                }
+              })
+            }).catch(() => {
+              this.loading = false
+              return false
+            })
+          } else {
+            return false
+          }
+        })
+      } else if (Object.is(type, 'cancel')) {
+        localStorage.clear()
+        this.$store.commit('delete_tabs', this.$route.fullPath)
+        this.$router.go(-1)
+      }
+    },
+    /** 判断是否存在项目经理 */
+    checkManager () {
+      for (let i = 0; i < this.memberForm.memberData.length; i++) {
+        if (Number(this.memberForm.memberData[i].positionType) === 1) {
+          return true
+        }
+      }
+      return false
+    },
+    /** 代理合同名称模糊查询方法 */
+    search () {
+      this.getAgencyContractData()
+    },
+    // 增加成员
+    addMember () {
+      this.memberForm.memberData.push({
+        userName: '',
+        userId: '',
+        positionType: ''
+      })
+    },
+    // 增加标段
+    addSection () {
+      this.sectionForm.sectionData.push({})
+    },
+    // 删除成员
+    delMember (scope) {
+      this.memberForm.memberData.splice(scope.$index, 1)
+    },
+    // 删除标段
+    delSection (scope) {
+      this.sectionForm.sectionData.splice(scope.$index, 1)
+    },
+    // 校验项目信息
+    validateProInfo () {
+      let result = false
+      this.$refs['addForm'].validate((valid) => {
+        if (valid) {
+          result = true
+        }
+      })
+      return result
+    },
+    // 校验成员
+    validateMember () {
+      let result = false
+      this.$refs['memberForm'].validate((valid) => {
+        if (valid) {
+          result = true
+        }
+      })
+      return result
+    },
+    // 校验标段
+    validateSection () {
+      let result = false
+      this.$refs['sectionForm'].validate((valid) => {
+        if (valid) {
+          if (this.checkPhaseName()) {
+            this.$message.warning('标段名称重复！')
+            return false
+          }
+          result = true
+        }
+      })
+      return result
+    },
+    init () {
+      this.getChooseTenderProjectInfo()
+      this.initOpportunityStage()
+      this.queryUserList()
+    },
+    /** 获取当前招标项目信息 */
+    getChooseTenderProjectInfo () {
+      tenderProject.getOne(this.$route.params.code).then((res) => {
+        if (res.data.tenderProject) {
+          this.addForm = res.data.tenderProject
+          // 获取项目扩展信息
+          if (this.addForm.tenderExpandsInfo && this.addForm.tenderExpandsInfo.provinceId) {
+            this.addForm.selectedCityOptions = [this.addForm.tenderExpandsInfo.provinceId, this.addForm.tenderExpandsInfo.cityId, this.addForm.tenderExpandsInfo.countyId]
+          }
+          if (this.addForm.tenderExpandsInfo && this.addForm.tenderExpandsInfo.industryTypeFirst) {
+            this.addForm.selectedIndustryOptions = [this.addForm.tenderExpandsInfo.industryTypeFirst, this.addForm.tenderExpandsInfo.industryTypeSecond]
+          }
+          if (this.addForm.tenderExpandsInfo && this.addForm.tenderExpandsInfo.address) {
+            this.addForm.address = this.addForm.tenderExpandsInfo.address
+          }
+          if (!this.addForm.departmentName) {
+            this.addForm.departmentName = ''
+          }
+          if (!this.addForm.tenderExpandsInfo) {
+            this.addForm.tenderExpandsInfo = {
+              provinceId: '',
+              cityId: '',
+              countyId: ''
+            }
+          }
+        }
+        if (res.data.projectLeaderList) {
+          this.memberForm.memberData = res.data.projectLeaderList
+        }
+        if (res.data.sectionList) {
+          this.sectionForm.sectionData = res.data.sectionList
+          this.sectionForm.sectionData.forEach(item => {
+            // 获取标段（包）分类代码
+            let list = this.getClassifyList(item.tenderProjectClassifyCode)
+            if (list.length > 0) {
+              item.selectBidsTypeOptions = [list[0], list[1], list[2], list[3]]
+            }
+          })
+        }
+        if (localStorage.getItem(this.$route.fullPath)) {
+          let obj = JSON.parse(localStorage.getItem(this.$route.fullPath))
+          this.addForm = obj.addForm
+          this.memberForm = obj.memberForm
+          this.sectionForm = obj.sectionForm
+        }
+      })
+    },
+    /** 获取标段分类代码的集合 */
+    getClassifyList (tenderProjectClassifyCode) {
+      let list = tenderProjectClassifyCode.split('-')
+      return list
+    },
+    // 保存数据值localStorage
+    saveLocalStorage () {
+      this.localDataForm.addForm = this.addForm
+      this.localDataForm.memberForm = this.memberForm
+      this.localDataForm.sectionForm = this.sectionForm
+      localStorage.setItem(this.$route.fullPath, JSON.stringify(this.localDataForm))
+    }
+  },
+  watch: {
+    '$route': {
+      handler () {
+        if (this.tenderSystemCode) {
+          this.init()
+        }
+      }
+    },
+    'addForm.isPreBid': {
+      handler (val) {
+        this.changePreBid(val)
+      }
+    },
+    'addForm': {
+      handler () {
+        this.saveLocalStorage()
+      },
+      deep: true
+    },
+    'memberForm': {
+      handler () {
+        this.saveLocalStorage()
+      },
+      deep: true
+    },
+    'sectionForm': {
+      handler (val) {
+        this.saveLocalStorage()
+      },
+      deep: true
+    }
+  },
+  created () {
+    if (this.tenderSystemCode) {
+      this.init()
+    } else {
+      if (localStorage.getItem(this.$route.fullPath)) {
+        let obj = JSON.parse(localStorage.getItem(this.$route.fullPath))
+        this.addForm = obj.addForm
+        this.memberForm = obj.memberForm
+        this.sectionForm = obj.sectionForm
+      }
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_historyProjectAdd {
+    .main{
+      overflow: inherit;
+    }
+    .el-cascader, .el-select{
+      width: 100%;
+    }
+    .el-radio__label{
+      display: none;
+    }
+    .member-form {
+      width: 100%;
+    }
+    .addbutton{
+      color: #fff;
+      background-color: #409EFF;
+      border-color: #409EFF;
+      float: right;
+    }
+  }
+</style>

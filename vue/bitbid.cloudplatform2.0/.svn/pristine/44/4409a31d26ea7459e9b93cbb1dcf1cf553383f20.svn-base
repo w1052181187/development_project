@@ -1,0 +1,11 @@
+export default [
+  {
+    path: '/system/dataDict',
+    name: '数据字典',
+    meta: {
+      title: '数据字典',
+      active: '/system/dataDict'
+    },
+    component: () => import(/* webpackChunkName: 'statem' */ '@/pages/system/dataDict/index')
+  }
+]

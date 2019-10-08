@@ -1,0 +1,95 @@
+import axios from 'axios'
+import { Message } from 'element-ui'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+import store from '@/store'
+import router from '@/router'
+import {TokenKey} from '@/utils/auth'
+const qs = require('qs')
+
+// response处理
+const _RESPONSE_SUCCESS_CODE = '0000'
+
+const service = axios.create({
+  // baseURL: process.env.COMPONENTS_BASE_API, // api的base_url
+  timeout: 30000, // request timeout
+  withCredentials: true
+})
+service.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
+
+// request interceptor
+service.interceptors.request.use(config => {
+  // Do something before request is sent
+  // 判断token
+  if (store.getters.token) {
+    // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
+    config.headers[TokenKey] = store.getters.token
+  }
+  // 如果参数是数组，处理
+  if (config.method === 'get') {
+    // 如果是get请求，且params是数组类型如arr=[1,2]，则转换成arr=1&arr=2
+    config.paramsSerializer = function (params) {
+      return qs.stringify(params, {arrayFormat: 'repeat'})
+    }
+  }
+  // 解决Ie不刷新问题
+  config.url = config.url.indexOf('?') === -1 ? config.url + '?_date=' + new Date().getTime() : config.url + '&_date=' + new Date().getTime()
+  // 请求开始前打开进度条
+  NProgress.start()
+  return config
+}, error => {
+  Promise.reject(error)
+})
+
+// resposne interceptor
+service.interceptors.response.use(
+  response => {
+    // 请求结束时关闭进度条
+    NProgress.done()
+    const res = response.data
+    if (res.resCode === _RESPONSE_SUCCESS_CODE && response.config.method !== 'get') {
+      Message({
+        message: res.resMessage,
+        type: 'success',
+        duration: 5 * 1000
+      })
+    } else if (res.resCode !== _RESPONSE_SUCCESS_CODE) {
+      Message({
+        message: res.resMessage,
+        type: 'error',
+        duration: 5 * 1000
+      })
+    }
+    return response
+  }, error => {
+    if (error.response) {
+      switch (error.response.status) {
+        // 401 认证失败
+        case 401:
+          Message({
+            showClose: true,
+            message: '登录信息已过期，请重新登录',
+            type: 'warning',
+            duration: 3 * 1000
+          })
+          // 清除数据
+          store.dispatch('ClearLoginInfo').then(() => {
+            // 为了重新实例化vue-router对象 避免bug
+            // location.reload()
+            // 跳转到登录页面
+            router.push('/login')
+          })
+          break
+        default:
+          Message({
+            message: error.message,
+            type: 'error',
+            duration: 3 * 1000
+          })
+      }
+    }
+    return Promise.reject(error)
+  }
+)
+
+export default service

@@ -1,0 +1,12 @@
+// 部门管理
+export { department } from './department/index'
+// 用户管理
+export { useradmin } from './users/index'
+// 角色管理
+export { roles } from './roles/index'
+// 项目流程配置管理
+export { projectFlow } from './projectProcessSet/projectFlow'
+// 项目流程配置管理 - 流程信息
+export { projectFlowInfo } from './projectProcessSet/projectFlowInfo'
+// 数据字典
+export { dataDictionary } from './dataDict/dataDictionary'

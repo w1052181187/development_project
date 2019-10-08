@@ -1,0 +1,128 @@
+<template>
+  <div class="tender-fee cloudcontent" id="tenderFee">
+    <div class="main">
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
+        <el-form-item label="缴费单位：" prop="company">
+          <el-input v-model="ruleForm.company" readonly></el-input>
+        </el-form-item>
+        <!--<el-form-item v-if="pageText === '保证金'" label="应缴金额（元）：" prop="amountPayable">-->
+          <!--<el-input v-model="ruleForm.amountPayable" readonly></el-input>-->
+        <!--</el-form-item>-->
+        <el-form-item label="缴纳金额（元）：" prop="premiumReceived">
+          <el-input v-model="ruleForm.premiumReceived" readonly></el-input>
+        </el-form-item>
+        <el-form-item label="缴费方式：" prop="paymentType">
+          <el-input v-model="ruleForm.paymentType" readonly></el-input>
+        </el-form-item>
+        <el-form-item label="缴费时间：" prop="paymentTime">
+          <el-date-picker v-model="ruleForm.paymentTime" type="date" placeholder="选择时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="缴费标段：">
+          <el-table :data="paymentTendersTable" border tooltip-effect="dark" class="" header-cell-class-name="tableheader">
+              <el-table-column fixed type="index" width="60" label="序号"></el-table-column>
+              <el-table-column prop="unitNumber" label="标段编号"></el-table-column>
+              <el-table-column prop="unitName" label="标段名称"></el-table-column>
+          </el-table>
+        </el-form-item>
+        <el-form-item label="退还金额：" prop="returnAmount">
+          <el-input v-model="ruleForm.returnAmount"></el-input>
+        </el-form-item>
+        <el-form-item label="退还方式：" prop="returnType">
+          <el-select v-model="ruleForm.returnType" placeholder="请选择">
+            <el-option v-for="item in paymentList" :key="item.value" :label="item.text" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="退还时间：" prop="returnTime">
+          <el-date-picker v-model="ruleForm.returnTime" type="date" placeholder="选择时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="备注：" prop="remarks">
+          <el-input v-model="ruleForm.remarks"></el-input>
+        </el-form-item>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submitReturnMtd">提交</el-button>
+          <el-button class="cancal">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+      pageText: '', // 哪种收支项目退还
+      ruleForm: {
+        company: '',
+        amountPayable: '',
+        premiumReceived: '',
+        paymentType: '',
+        paymentTime: '',
+        returnAmount: '',
+        returnType: '',
+        returnTime: '',
+        remarks: ''
+      },
+      rules: {
+        returnAmount: [{ required: true, message: '请输入退还金额', trigger: 'change' }],
+        returnType: [{ required: true, message: '请选择退还方式', trigger: 'change' }],
+        returnTime: [{ required: true, message: '请选择退还时间', trigger: 'change' }]
+      },
+      paymentList: [
+        {value: 'value1', text: '支付宝'},
+        {value: 'value2', text: '微信'},
+        {value: 'value3', text: '银联'},
+        {value: 'value4', text: '现金'},
+        {value: 'value5', text: '汇款'},
+        {value: 'value6', text: '支票'},
+        {value: 'value7', text: '保函'},
+        {value: 'value8', text: '其他'}
+      ], // 缴费方式
+      paymentTendersTable: []
+    }
+  },
+  watch: {
+  },
+  created () {
+    this.pageText = this.$route.query.text
+    this.loadRuleFormData()
+  },
+  methods: {
+    // 获取初始数据
+    loadRuleFormData () {
+      console.log('获取初始数据')
+      this.ruleForm = {
+        company: '比比网络',
+        amountPayable: 200,
+        premiumReceived: 500,
+        paymentType: '现金',
+        paymentTime: '2019-06-04',
+        remarks: '备注备注备注备注'
+      }
+      this.paymentTendersTable = [
+        {unitNumber: 'SG101', unitName: '标段一', value: 1},
+        {unitNumber: 'SG102', unitName: '标段二', value: 2}
+      ]
+    },
+    // 提交
+    submitReturnMtd () {
+      this.$refs.ruleForm.validate((valid) => {
+        if (valid) {
+          alert('submit!')
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    }
+  }
+}
+</script>
+<style scoped lang="less">
+</style>
+<style lang="less">
+</style>

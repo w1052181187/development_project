@@ -1,0 +1,237 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="资质名称：">
+              <span>{{updateForm.title}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="资质类别：">
+              <span>{{updateForm.title}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="资质编号：">
+              <span>{{updateForm.title}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="资质等级：">
+              <span>{{updateForm.title}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="资质有效期：">
+              <span>{{updateForm.title}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="资质主体：">
+              <span>{{updateForm.title}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="历史合作记录：">
+              <el-button type="text" size="small" @click="handleAddRecord">增加合作记录</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-table
+          :data="tableData"
+          border>
+          <el-table-column
+            type="index"
+            label="序号"
+            align="center"
+            width="80">
+          </el-table-column>
+          <el-table-column
+            prop="type"
+            label="合作类型"
+            width="80">
+            <template slot-scope="scope">
+              <span  v-if="scope.row.type === 1">机构合作</span>
+              <span  v-if="scope.row.type === 2">项目合作</span>
+              <span  v-if="scope.row.type === 3">个人合作</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="flowStatus"
+            label="合作方">
+            <template slot-scope="scope">
+              <span  v-if="scope.row.flowStatus === 1">招标文件</span>
+              <span  v-if="scope.row.flowStatus === 2">招标公告</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="type"
+            label="合作时间"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="type"
+            label="费用"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="auditStatus"
+            label="经手人">
+          </el-table-column>
+          <el-table-column
+            prop="createDate"
+            label="备注"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            label="操作" align="center" width="200">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" @click="handleUpdateRecord(scope)">修改</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-form>
+    </div>
+    <el-dialog title="新增合作记录" :visible.sync="dialogVisible" width="50%" :before-close="close">
+      <el-form :model="form" :rules="rules" ref="form">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="合作方："  prop="person" :label-width="formLabelWidth">
+              <el-input v-model="form.person"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="合作类型：" :label-width="formLabelWidth">
+              <el-select v-model="form.cooperation">
+                <el-option
+                  v-for="item in cooperationOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="合作期间：" :label-width="formLabelWidth" class="bitianicon">
+              <el-date-picker
+                v-model="updateForm.cooperateTime"
+                type="daterange"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                class="cooperateTime">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="费用(元)：" :label-width="formLabelWidth">
+              <el-input v-model="updateForm.cost"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="备注：" :label-width="formLabelWidth">
+          <editor ref="ueditor" class="ueditor" :editread="editread"></editor>
+        </el-form-item>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit('form')" :loading="isSubmiting">保存</el-button>
+          <el-button class="cancal" @click="close">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+export default {
+  name: '',
+  components: {
+    editor
+  },
+  data () {
+    return {
+      updateForm: {},
+      tableData: [
+        {
+          type: 1
+        }
+      ],
+      isSubmiting: false,
+      dialogVisible: false,
+      form: {},
+      formLabelWidth: '120px',
+      cooperationOptions: [
+        {
+          label: '机构合作',
+          value: 1
+        },
+        {
+          label: '项目合作',
+          value: 2
+        },
+        {
+          label: '个人合作',
+          value: 3
+        }
+      ],
+      rules: {
+        name: [
+          { required: true, message: '请输入名称', trigger: ['blur', 'change'] }
+        ],
+        person: [
+          { required: true, message: '合作方不能为空', trigger: ['change'] }
+        ]
+      },
+      // 富文本
+      editread: false
+    }
+  },
+  methods: {
+    handleAddRecord () {
+      this.dialogVisible = true
+    },
+    handleUpdateRecord (scope) {
+      this.dialogVisible = true
+      this.form = scope.row
+    },
+    close () {
+      this.dialogVisible = false
+      this.$refs['form'].resetFields()
+    },
+    // 保存
+    submit (form) {
+      this.$refs[form].validate((valid) => {
+        if (valid) {
+          let content = this.$refs.ueditor.getContent()
+          this.isSubmiting = true
+          this.form.content = content
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style scoped>
+  .submit-radio{
+    text-align: center;
+  }
+  .cooperateTime{
+    width: auto;
+  }
+</style>

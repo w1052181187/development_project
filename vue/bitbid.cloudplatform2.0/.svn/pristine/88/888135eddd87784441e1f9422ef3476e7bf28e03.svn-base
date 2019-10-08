@@ -1,0 +1,195 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" ref="updateForm"
+               label-width="120px" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="评估模板名称："  prop="name">
+              <el-input v-model="updateForm.name">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-radio-group v-model="updateForm.status" class="status">
+              <el-radio :label="1">启用</el-radio>
+              <el-radio :label="0">禁用</el-radio>
+            </el-radio-group>
+          </el-col>
+        </el-row>
+        <el-form-item label="评估想维护：">
+          <span class="addItem">添加评估项</span>
+        </el-form-item>
+      </el-form>
+      <el-table
+        :data="projectData"
+        border
+        :cell-style="handleCellStyle"
+        :span-method="handleMerge"
+        header-cell-class-name="tableheader">
+<!--        <el-table-column-->
+<!--          type="index"-->
+<!--          :index="handleIndex"-->
+<!--          label="序号"-->
+<!--          width="80"-->
+<!--          align="center">-->
+<!--        </el-table-column>-->
+        <el-table-column
+          type="index"
+          label="序号"
+          width="80"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="评估项分组"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="item"
+          label="评估项"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="120">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDel(scope)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: '',
+  data () {
+    return {
+      updateForm: {
+        status: 1
+      },
+      rules: {
+        name: {required: true, message: '请输入评估模板名称', trigger: ['blur', 'change']}
+      },
+      projectData: [
+        {
+          name: '组1',
+          item: '项1'
+        },
+        {
+          name: '组1',
+          item: '项2'
+        },
+        {
+          name: '组1',
+          item: '项3'
+        },
+        {
+          name: '组2',
+          item: '项1'
+        },
+        {
+          name: '组2',
+          item: '项2'
+        },
+        {
+          name: '组2',
+          item: '项3'
+        },
+        {
+          name: '组2',
+          item: '项4'
+        }
+      ],
+      // 当前页
+      startIndex: 1,
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      mergeArr: [],
+      pos: 0 // mergeArr的索引
+    }
+  },
+  methods: {
+    handleCellStyle ({row, column, rowIndex, columnIndex}) {
+      if (columnIndex === 0 || columnIndex === 1) {
+        return 'background-color: #f8faf7'
+      }
+    },
+    handleIndex () {
+      return this.startIndex
+    },
+    handleMerge ({ row, column, rowIndex, columnIndex }) {
+      if (columnIndex === 0 || columnIndex === 1) {
+        let rowCount = this.mergeArr[rowIndex]
+        let colCount = rowCount > 0 ? 1 : 0
+        return {
+          rowspan: rowCount,
+          colspan: colCount
+        }
+      }
+    },
+    handleMergeData () {
+      this.mergeArr = []
+      this.mergeArr.push(1)
+      this.pos = 0
+      for (let i = 1; i < this.projectData.length; i++) {
+        if (this.projectData[i].name === this.projectData[i - 1].name) {
+          this.mergeArr[this.pos] += 1
+          this.mergeArr.push(0)
+        } else {
+          this.mergeArr.push(1)
+          this.pos = i
+          // this.startIndex++
+        }
+      }
+      console.log(this.mergeArr)
+    },
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData()
+    },
+    handleDel (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+      }).catch(() => {
+        return false
+      })
+    },
+    getTableData () {
+      this.handleMergeData()
+    }
+  },
+  mounted () {
+    this.getTableData()
+  }
+}
+</script>
+
+<style scoped>
+  .addItem{
+    font-size: 12px;
+    color: #5d97e8;
+  }
+  .status{
+    line-height: 50px;
+  }
+</style>

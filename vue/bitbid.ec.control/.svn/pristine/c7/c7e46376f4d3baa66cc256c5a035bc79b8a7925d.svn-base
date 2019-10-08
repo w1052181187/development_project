@@ -1,0 +1,217 @@
+<template>
+  <el-col :span="3" style="height: 100%;background-color: rgb(25, 35, 60);">
+    <!-- <div class="logobigbox logo">
+      <img src="../../static/images/logo.png" alt="logo">
+    </div> -->
+    <el-scrollbar style="height: 100%;">
+      <el-menu
+        :default-active="activeNav"
+        class="el-menu-vertical-demo sidebox"
+        background-color="#19233c"
+        text-color="#cccccc"
+        :router="true"
+        :unique-opened="true"
+        @close="handleClose"
+        @open="handleOpen">
+        <el-menu-item index="/main" class="indexs">
+          <span class="iconimg">
+            <img src="../../static/images/public/shouye.png" alt="">
+          </span>
+          <span slot="title" class="titlesbox" :title="'首页'">首页</span>
+        </el-menu-item>
+        <el-submenu index="1">
+          <template slot="title">
+            <span class="iconimg">
+              <img src="../../static/images/public/system.png" alt="">
+            </span>
+            <span class="titlesbox" title="系统管理">系统管理</span>
+          </template>
+          <el-menu-item index="/index/account">账号管理</el-menu-item>
+          <el-menu-item index="/index/role">角色管理</el-menu-item>
+        </el-submenu>
+        <el-submenu index="2">
+          <template slot="title">
+            <span class="iconimg">
+              <img src="../../static/images/public/purchaser.png" alt="">
+            </span>
+            <span class="titlesbox" title="采购人管理">采购人管理</span>
+          </template>
+          <el-menu-item index="/index/purchaser">账号管理</el-menu-item>
+        </el-submenu>
+        <el-submenu index="3">
+          <template slot="title">
+            <span class="iconimg">
+              <img src="../../static/images/public/ec-admin.png" alt="">
+            </span>
+            <span class="titlesbox" title="电商管理员管理">电商管理员管理</span>
+          </template>
+          <el-menu-item index="/index/ecadmin">账号管理</el-menu-item>
+        </el-submenu>
+        <el-submenu index="4">
+          <template slot="title">
+            <span class="iconimg">
+              <img src="../../static/images/public/deal.png" alt="">
+            </span>
+            <span class="titlesbox" title="成交管理">成交管理</span>
+          </template>
+          <el-menu-item index="/index/trade-record">交易记录管理</el-menu-item>
+          <el-menu-item index="/index/order-cert">订单核销凭证打印</el-menu-item>
+          <el-menu-item index="/index/order-statis">平台订单统计</el-menu-item>
+          <el-menu-item index="/index/consume-statis">采购人消费统计</el-menu-item>
+          <el-menu-item index="/index/complaint">投诉管理</el-menu-item>
+        </el-submenu>
+        <el-submenu index="5">
+          <template slot="title">
+            <span class="iconimg">
+              <img src="../../static/images/public/web-portal.png" alt="">
+            </span>
+            <span class="titlesbox" title="门户信息管理">门户信息管理</span>
+          </template>
+          <el-menu-item index="/index/deal-notice">成交公示管理</el-menu-item>
+          <el-menu-item index="/index/except-notice">异常公示管理</el-menu-item>
+          <el-menu-item index="/index/policy-law">政策法规管理</el-menu-item>
+          <el-menu-item index="/index/advert">广告管理</el-menu-item>
+          <el-menu-item index="/index/credit-eval">信用评价</el-menu-item>
+        </el-submenu>
+        <el-submenu index="6">
+          <template slot="title">
+            <span class="iconimg">
+              <img src="../../static/images/public/ec-manage.png" alt="">
+            </span>
+            <span class="titlesbox" title="电商管理系统">电商管理系统</span>
+          </template>
+          <el-menu-item index="/index/ec-trade-record">交易记录管理</el-menu-item>
+          <el-menu-item index="/index/purch-statis">采购人消费统计</el-menu-item>
+        </el-submenu>
+        <el-submenu index="7">
+          <template slot="title">
+            <span class="iconimg">
+              <img src="../../static/images/public/purch-manage.png" alt="">
+            </span>
+            <span class="titlesbox" title="采购管理系统"> 采购管理系统</span>
+          </template>
+          <el-menu-item index="7-2">交易记录管理</el-menu-item>
+          <el-menu-item index="7-3">平台订单统计</el-menu-item>
+          <el-menu-item index="7-4">采购投诉</el-menu-item>
+        </el-submenu>
+      </el-menu>
+    </el-scrollbar>
+  </el-col>
+</template>
+<script>
+export default {
+  data () {
+    return {
+      activeNav: ''
+      // activesubNav: ''
+    }
+  },
+  name: 'left',
+  methods: {
+    handleClose (key, keyPath) {
+    },
+    handleOpen (key, keyPath) {
+    },
+    setLeftMenu () {
+      // 获得屏幕的高度
+      let screenH = document.body.clientHeight
+      // 获得左侧ul
+      let leftUl = document.getElementsByClassName('el-menu-vertical-demo')
+      // 设置左侧ul的高度
+      leftUl[0].style.minHeight = (screenH - 50) + 'px'
+    },
+    setActiveNav () {
+      if (this.$route.meta) {
+        this.activeNav = this.$route.meta.active
+      }
+    }
+  },
+  watch: {
+    '$route': 'setActiveNav'
+  },
+  mounted () {
+    // this.setLeftMenu()
+    this.setActiveNav()
+  }
+}
+</script>
+<style lang="less">
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  /*公共侧边导航和头部开始*/
+  .el-col-3{
+    position: fixed;
+  }
+  .logo>img{
+    width: 80% !important;
+  }
+  .el-submenu__title{
+    text-align: left;
+    height: 50px;
+    line-height: 50px;
+  }
+  .iconimg{
+    display: inline-block;
+    width: 20px;
+    height: 100%;
+    /*background: red;*/
+    position: relative;
+    vertical-align: middle;
+  }
+  .iconimg>img{
+    width: 90%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top:0;
+    bottom: 0;
+    margin: auto;
+  }
+  .titlesbox{
+    display: inline-block;
+    width: 115px;
+    height: 100%;
+    padding: 0 5px;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+    box-sizing: border-box;
+    vertical-align: middle;
+    height: 40px;
+    line-height: 40px;
+  }
+  .el-aside{
+    background:#19233c;
+  }
+  .el-menu-item.is-active{
+    background: rgb(25, 35, 60)!important;
+  }
+  .el-menu-item{
+    text-align: left;
+  }
+  /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+  ::-webkit-scrollbar
+  {
+    width: 8px;
+    height: 8px;
+    background-color: #F5F5F5;
+  }
+
+  /*定义滚动条轨道 内阴影+圆角*/
+  ::-webkit-scrollbar-track
+  {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    border-radius: 10px;
+    background-color: #F5F5F5;
+  }
+
+  /*定义滑块 内阴影+圆角*/
+  ::-webkit-scrollbar-thumb
+  {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: #cccccc
+  }
+</style>

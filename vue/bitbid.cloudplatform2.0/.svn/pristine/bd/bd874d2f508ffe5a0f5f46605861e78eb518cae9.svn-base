@@ -1,0 +1,130 @@
+<template>
+  <div class="cloudcontent" id="cloud_registProject">
+    <div class="main">
+      <div class="topmain">
+        <div class="seacher_box">
+          <span>项目名称：</span>
+          <el-input class="search" placeholder="请输入项目名称关键字" style="vertical-align: top"  v-model="searchForm.tenderProjectNameLike">
+            <el-button  slot="append" icon="el-icon-search" type="" @click="search"></el-button>
+          </el-input>
+        </div>
+      </div>
+      <el-table
+        :data="projectData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='dataIndex'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="tenderProjectCode"
+          label="项目编号"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="tenderProjectName"
+          label="项目名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="tenderProjectAddress"
+          label="项目地址"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="tendererName"
+          label="招标人"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="提交状态"
+          width="100"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="createDate"
+          label="创建时间"
+          width="160"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="120">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookBtn(scope)">查看</el-button>
+            <el-button type="text" size="small" @click="addBtn(scope)">项目总结</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+      searchForm: {},
+      projectData: [
+        {}
+      ],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10, // 每页展示条数
+      dataIndex: 1
+    }
+  },
+  watch: {
+    '$route': 'getTableData'
+  },
+  created () {
+    this.getTableData()
+  },
+  methods: {
+    /** 模糊查询方法 */
+    search () {
+      this.getTableData()
+    },
+    // 查看
+    lookBtn (scope) {
+      this.$router.push({path: `/project/projectSum/detail/${scope.row.objectId}`})
+    },
+    // 查看
+    addBtn (scope) {
+      this.$router.push({path: `/project/projectSum/add`, query: {objectId: scope.row.objectId}})
+    },
+    // 表单分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData()
+    },
+    getTableData () {
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_registProject {
+    .tabletitles{
+      background:#f7f8fa!important;
+    }
+  }
+</style>

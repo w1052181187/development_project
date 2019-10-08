@@ -1,0 +1,47 @@
+export default [
+  {
+    path: '/customerMan/business',
+    name: '商机管理',
+    meta: {
+      title: '商机管理',
+      active: '/customerMan/business'
+    },
+    component: resolve => require(['@/pages/customer/business/index'], resolve)
+  },
+  {
+    path: '/customerMan/business/add',
+    name: '新增商机管理',
+    meta: {
+      title: '新增商机管理',
+      active: '/customerMan/business'
+    },
+    component: resolve => require(['@/pages/customer/business/add'], resolve)
+  },
+  {
+    path: '/customerMan/business/update',
+    name: '修改商机管理',
+    meta: {
+      title: '修改商机管理',
+      active: '/customerMan/business'
+    },
+    component: resolve => require(['@/pages/customer/business/update'], resolve)
+  },
+  {
+    path: '/customerMan/business/follow',
+    name: '跟进',
+    meta: {
+      title: '跟进',
+      active: '/customerMan/business'
+    },
+    component: resolve => require(['@/pages/customer/business/follow'], resolve)
+  },
+  {
+    path: '/customerMan/business/analysis',
+    name: '商机分析',
+    meta: {
+      title: '商机分析',
+      active: '/customerMan/business'
+    },
+    component: resolve => require(['@/pages/customer/business/analysis'], resolve)
+  }
+]

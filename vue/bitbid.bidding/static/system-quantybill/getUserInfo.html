@@ -1,0 +1,44 @@
+﻿<!doctype html>
+<html>
+<script>
+  function DetectActiveX()
+  {
+    try {
+      var comActiveX = new ActiveXObject('WbemScripting.SWbemLocator'); // 判断IE是否已经安装插件
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+  var getSystemInfo
+  if(DetectActiveX()==true){
+    var locator = new ActiveXObject ("WbemScripting.SWbemLocator");
+    var service = locator.ConnectServer(".");
+    getSystemInfo = function(){
+      var string = "{" ;
+      //CPU 信息
+      var properties = service.ExecQuery("SELECT * FROM Win32_Processor");
+      var e = new Enumerator (properties);
+      var p = e.item ();
+      string += "\"chipSerialNumber\""+":\""+ p.ProcessorID+"\",";
+      //硬盘序列号 信息
+      var properties2 = service.ExecQuery("SELECT * FROM Win32_DiskDrive");
+      var e2 = new Enumerator (properties2);
+      var p2 = e2.item ();
+      string +="\"diskSerialNumber\""+":\""+ p2.SerialNumber+"\",";
+      //获取网络连接信息
+      var properties3 = service.ExecQuery("SELECT * FROM Win32_NetworkAdapterConfiguration Where IPEnabled=TRUE");
+      var e3 = new Enumerator (properties3);
+      var i=1;
+      var p3 = e3.item ();
+      string +="\"networkSerialNumber\""+":\"" + p3.MACAddress(0) +"\","+"\"ipAdress\""+":\""+ p3.IPAddress(0)+"\"}";
+      return string;
+    }
+  }else{
+    getSystemInfo = function(){
+      string = null
+      return string;
+    }
+  }
+</script>
+</html>

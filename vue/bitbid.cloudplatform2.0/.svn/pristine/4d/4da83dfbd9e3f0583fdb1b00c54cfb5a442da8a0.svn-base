@@ -1,0 +1,73 @@
+import request from '@/utils/axios/components-axios'
+
+export const business = {
+  /** 查询列表 */
+  queryList (params) {
+    return request({
+      url: `/opportunity-managements`,
+      method: 'get',
+      params
+    })
+  },
+  /** 根据主键查询 */
+  queryOne (params) {
+    return request({
+      url: `/opportunity-managements/${params}`,
+      method: 'get'
+    })
+  },
+  /** 根据code查询 */
+  queryOneByCode (params) {
+    return request({
+      url: `/opportunity-managements/code/${params}`,
+      method: 'get'
+    })
+  },
+  /** 保存/修改 */
+  update (data) {
+    return request({
+      url: '/opportunity-managements',
+      method: 'post',
+      data
+    })
+  },
+  /** 删除 */
+  logoff (params) {
+    return request({
+      url: `/opportunity-managements/${params}`,
+      method: 'delete'
+    })
+  },
+  /** 修改商机状态 */
+  updateStatus (data) {
+    return request({
+      url: '/opportunity-managements/updateStatus',
+      method: 'post',
+      data
+    })
+  },
+  /** 修改商机 */
+  updateByCode (data) {
+    return request({
+      url: '/opportunity-managements/updateByCode',
+      method: 'post',
+      data
+    })
+  },
+  /** 发起评估 */
+  submitAssess (data) {
+    return request({
+      url: '/opportunity-managements/submitAssess',
+      method: 'post',
+      data
+    })
+  },
+  /** 验证重复 */
+  isNoRepeated (params) {
+    return request({
+      url: `/opportunity-managements/isNoRepeated`,
+      method: 'get',
+      params
+    })
+  }
+}

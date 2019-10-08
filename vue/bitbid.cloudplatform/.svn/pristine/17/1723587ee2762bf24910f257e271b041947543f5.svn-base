@@ -1,0 +1,99 @@
+<template>
+  <div class="cloudcontent" id="cloud_registProject">
+    <!--面包屑-->
+    <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb_box">
+      <el-breadcrumb-item :to="{ path: '/index' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item class="active_bread">项目流程配置管理</el-breadcrumb-item>
+    </el-breadcrumb>
+    <!--面包屑-->
+    <div class="main">
+      <el-table
+        :data="processTypeData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="processName"
+          label="项目流程名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookBtn(scope)">查看</el-button>
+            <el-button type="text" size="small" @click="updateBtn(scope)">流程管理</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+      processTypeData: [
+        {
+          processName: '资格预审流程',
+          type: '1'
+        },
+        {
+          processName: '资格后审流程',
+          type: '2'
+        },
+        {
+          processName: '邀请招标流程',
+          type: '3'
+        },
+        {
+          processName: '竞争性谈判流程',
+          type: '4'
+        },
+        {
+          processName: '竞争性磋商流程',
+          type: '5'
+        },
+        {
+          processName: '单一来源流程',
+          type: '6'
+        },
+        {
+          processName: '询价流程',
+          type: '7'
+        }
+      ]
+    }
+  },
+  methods: {
+    // 查看
+    lookBtn (scope) {
+      this.$router.push({path: `/processManage/proProcessSet/detail/${scope.row.type}`})
+    },
+    // 流程管理
+    updateBtn (scope) {
+      this.$router.push({path: `/processManage/proProcessSet/update`, query: {type: scope.row.type}})
+    },
+    // 删除
+    delBtn () {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        // **
+      }).catch(() => {
+        return false
+      })
+    },
+    // 分页
+    handleCurrentChange () {}
+  }
+}
+</script>

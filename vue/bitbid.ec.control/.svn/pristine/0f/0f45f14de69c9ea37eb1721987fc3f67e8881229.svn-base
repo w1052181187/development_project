@@ -1,0 +1,134 @@
+<template>
+  <div id="credit-eval-page" class="cont-view">
+    <!-- 面包屑区域start -->
+    <div class="bread-box">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/">门户信息管理</a></el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/">信用评价</a></el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <!-- 面包屑区域end -->
+    <div class="">
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <el-form-item label="京东:" prop="name">
+              <el-select v-model="ruleForm.region" placeholder="请选择">
+                <el-option label="第一名" value="1"></el-option>
+                <el-option label="第二名" value="2"></el-option>
+                <el-option label="第三名" value="3"></el-option>
+                <el-option label="第四名" value="4"></el-option>
+                <el-option label="第五名" value="5"></el-option>
+                <el-option label="第六名" value="6"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="评语:" prop="desc">
+              <el-input type="textarea" v-model="ruleForm.desc" :rows="3"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="天猫:" prop="name">
+              <el-select v-model="ruleForm.region" placeholder="请选择">
+                <el-select v-model="ruleForm.region" placeholder="请选择">
+                <el-option label="第一名" value="1"></el-option>
+                <el-option label="第二名" value="2"></el-option>
+                <el-option label="第三名" value="3"></el-option>
+                <el-option label="第四名" value="4"></el-option>
+                <el-option label="第五名" value="5"></el-option>
+                <el-option label="第六名" value="6"></el-option>
+              </el-select>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="评语:" prop="desc">
+              <el-input type="textarea" v-model="ruleForm.desc" :rows="3"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="亚马逊:" prop="name">
+              <el-select v-model="ruleForm.region" placeholder="请选择">
+                <el-option label="第一名" value="1"></el-option>
+                <el-option label="第二名" value="2"></el-option>
+                <el-option label="第三名" value="3"></el-option>
+                <el-option label="第四名" value="4"></el-option>
+                <el-option label="第五名" value="5"></el-option>
+                <el-option label="第六名" value="6"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="评语:" prop="desc">
+              <el-input type="textarea" v-model="ruleForm.desc" :rows="3"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <el-form-item label="淘宝:" prop="name">
+              <el-select v-model="ruleForm.region" placeholder="请选择">
+                <el-option label="第一名" value="1"></el-option>
+                <el-option label="第二名" value="2"></el-option>
+                <el-option label="第三名" value="3"></el-option>
+                <el-option label="第四名" value="4"></el-option>
+                <el-option label="第五名" value="5"></el-option>
+                <el-option label="第六名" value="6"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="评语:" prop="desc">
+              <el-input type="textarea" v-model="ruleForm.desc" :rows="3"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="苏宁:" prop="name">
+              <el-select v-model="ruleForm.region" placeholder="请选择">
+                <el-option label="第一名" value="1"></el-option>
+                <el-option label="第二名" value="2"></el-option>
+                <el-option label="第三名" value="3"></el-option>
+                <el-option label="第四名" value="4"></el-option>
+                <el-option label="第五名" value="5"></el-option>
+                <el-option label="第六名" value="6"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="评语:" prop="desc">
+              <el-input type="textarea" v-model="ruleForm.desc" :rows="3"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="唯品会:" prop="name">
+              <el-select v-model="ruleForm.region" placeholder="请选择">
+                <el-option label="第一名" value="1"></el-option>
+                <el-option label="第二名" value="2"></el-option>
+                <el-option label="第三名" value="3"></el-option>
+                <el-option label="第四名" value="4"></el-option>
+                <el-option label="第五名" value="5"></el-option>
+                <el-option label="第六名" value="6"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="评语:" prop="desc">
+              <el-input type="textarea" v-model="ruleForm.desc" :rows="3"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item>
+          <el-button type="primary" @click="submitForm('ruleForm')">保 存</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  name: 'credit-eval',
+  data () {
+    return {
+      ruleForm: {},
+      rules: {}
+    }
+  },
+  methods: {
+    submitForm () {}
+  },
+  mounted () {}
+}
+</script>
+<style>
+
+</style>

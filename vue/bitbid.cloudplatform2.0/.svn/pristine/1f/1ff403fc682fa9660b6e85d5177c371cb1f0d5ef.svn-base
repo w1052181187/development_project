@@ -1,0 +1,6 @@
+import collaboration from './collaboration'
+import journalSummary from './journalSummary'
+export default[
+  ...collaboration,
+  ...journalSummary
+]

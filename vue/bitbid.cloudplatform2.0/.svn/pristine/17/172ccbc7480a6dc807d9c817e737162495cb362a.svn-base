@@ -1,0 +1,11 @@
+export default [
+  {
+    path: '/customerMan/customer',
+    name: '客户管理',
+    meta: {
+      title: '客户管理',
+      active: '/customerMan/customer'
+    },
+    component: resolve => require(['@/pages/customer/customer/index'], resolve)
+  }
+]

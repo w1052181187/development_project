@@ -1,0 +1,320 @@
+<template>
+  <div>
+    <div v-if="curType !== 'room'" class="nav">
+      <span @click="handleNavClick('all')">全部</span>
+      <div :class="curType === 'cabinet' || !curCabinet ? 'nav-active' : ''" v-if="(curType === 'cabinet' || curType === 'list') && curRoom" @click="handleNavClick('room')"><span class="arrow">{{'>'}}</span><span>{{curRoom}}</span></div>
+      <div :class="curType === 'list' ? 'nav-active' : ''" v-if="curType === 'list' && curCabinet"><span class="arrow">{{'>'}}</span><span>{{curCabinet}}</span></div>
+    </div>
+    <ul>
+      <li v-for="(item, index) in roomList" :key="index" class="room-item" v-if="curType === 'room'" @click="handleClick('room', item)">
+        <img v-if="index === roomList.length - 1" src="../../../assets/dai_hui.png">
+        <img v-else src="../../../assets/dai_huang.png">
+        <div>{{item.name}}</div>
+      </li>
+      <li v-for="(item, index) in cabinetList" :key="index" class="room-item" v-if="curType === 'cabinet'" @click="handleClick('cabinet', item)">
+        <img v-if="index === cabinetList.length - 1" src="../../../assets/gui_hui.png">
+        <img v-else src="../../../assets/gui_huang.png">
+        <div>{{item.name}}</div>
+      </li>
+      <template v-if="curType === 'list'">
+        <div class="topmain" style="border-bottom: 0px;">
+          <div class="seacher_box advancedsearch_box advancedsearch" style="padding: 0">
+            <el-form :model="searchForm" label-width="90px" style="width:100%">
+              <el-row>
+                <el-col style="width: 340px;">
+                  <el-form-item label="项目名称：">
+                    <el-input placeholder="请输入项目名称关键字" v-model="searchForm.projectNameLike"></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col style="width: 340px;">
+                  <el-form-item label="项目编号：">
+                    <el-input placeholder="请输入项目编号关键字" v-model="searchForm.projectCodeLike"></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col class="handBtn" style="width: 320px;margin-bottom: 6px"  v-if="!showselect">
+                  <el-button type="primary" class="search-btn" @click="search">
+                    <span>查询</span>
+                  </el-button>
+                  <el-button @click="reset">
+                    <span>重置</span>
+                  </el-button>
+                  <span @click="showselect = true" class="more">展开搜索条件</span>
+                </el-col>
+              </el-row>
+              <template v-if="showselect">
+                <el-row >
+                  <el-col style="width: 340px;">
+                    <el-form-item label="档案号：">
+                      <el-input placeholder="请输入档案号关键字" v-model="searchForm.physicalNumberLike"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col style="width: 340px;">
+                    <el-form-item label="详细位置：">
+                      <el-input placeholder="请输入详情位置关键字" v-model="searchForm.locationDescriptionLike"></el-input>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col style="width: 340px;">
+                    <el-form-item label="项目名称：">
+                      <el-input placeholder="请输入项目名称关键字" v-model="searchForm.projectNameLike"></el-input>
+                    </el-form-item>
+                    <el-form-item label="移交人：">
+                      <el-input v-model="searchForm.lastTransferName" readonly placeholder="请选择">
+                        <el-button slot="append" icon="el-icon-search" @click="showTransferDialog"></el-button>
+                      </el-input>
+                      <select-user-dialog :isComponyId="1" :showVisible="showTransferVisible" @selected="selectedTransfer" @showDialog="showTransferDialog"></select-user-dialog>
+                    </el-form-item>
+                  </el-col>
+                  <el-col style="width: 340px;">
+                    <el-form-item label="项目编号：">
+                      <el-input placeholder="请输入项目编号关键字" v-model="searchForm.projectCodeLike"></el-input>
+                    </el-form-item>
+                    <el-form-item label="档案管理员：">
+                      <el-input v-model="searchForm.adminName" readonly placeholder="请选择">
+                        <el-button slot="append" icon="el-icon-search" @click="showAdminDialog"></el-button>
+                      </el-input>
+                      <select-user-dialog :isComponyId="1" :showVisible="showAdminVisible" @selected="selectedAdmin" @showDialog="showAdminDialog"></select-user-dialog>
+                     </el-form-item>
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-form-item label="归档时间：" style="float:left; margin-right: 20px;">
+                    <span :class="isArchiveTimeSelectAll ? 'all selectall': 'all'" @click="conditionCancel()">不限</span>
+                    <el-radio-group v-model="searchForm.archivesTimeType" @change="conditionSelect($event)">
+                      <el-radio v-for="item in archiveTimeOption" :label="item.code" :key="item.code" :checked="archiveTimeFlag">{{item.name}}</el-radio>
+                    </el-radio-group>
+                  </el-form-item>
+                  <el-date-picker
+                    v-model="searchForm.archiveCustomTime"
+                    v-if="searchForm.archivesTimeType === 6"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd HH:mm:ss"
+                    :default-time="['00:00:00', '23:59:59']">
+                  </el-date-picker>
+                </el-row>
+                <div class="handBtn">
+                  <el-button  type="primary" class="search" @click="search">查询</el-button>
+                  <el-button  @click="reset">重置</el-button>
+                  <span @click="showselect = false" class="more">收起搜索条件</span>
+                </div>
+              </template>
+            </el-form>
+          </div>
+        </div>
+        <table-list ref="table" :searchForm = 'searchForm' :archivesCabinetId="archivesCabinetId" :archivesRoomId="archivesRoomId" :query = 'true'></table-list>
+      </template>
+    </ul>
+  </div>
+</template>
+
+<script>
+import {archivesRoom, archivesCabinet} from '@/api/archives'
+import selectUserDialog from '@/pages/system/users/search_user_radio'
+
+export default {
+  name: 'archivesRoom',
+  components: {
+    selectUserDialog,
+    tableList: resolve => require(['./table'], resolve)
+  },
+  data () {
+    return {
+      roomList: [],
+      cabinetList: [],
+      curType: 'room',
+      curRoom: '',
+      curCabinet: '',
+      archivesCabinetId: '',
+      archivesRoomId: '',
+      searchForm: {
+        startTime: '',
+        endTime: '',
+        projectCodeLike: '',
+        physicalNumberLike: '',
+        projectNameLike: '',
+        locationDescriptionLike: ''
+      },
+      transferTitle: '移交人选择',
+      adminTitle: '管理员选择',
+      showselect: false,
+      showAdminVisible: false,
+      checkedRoleId: '',
+      showTransferVisible: false,
+      checkedTransferRoleId: '',
+      isArchiveTimeSelectAll: true,
+      archiveTimeFlag: true,
+      archiveTimeOption: [
+        {
+          name: '近一周',
+          code: 1
+        },
+        {
+          name: '近一月',
+          code: 2
+        },
+        {
+          name: '近三月',
+          code: 3
+        },
+        {
+          name: '近半年',
+          code: 4
+        },
+        {
+          name: '近一年',
+          code: 5
+        },
+        {
+          name: '自定义',
+          code: 6
+        }
+      ]
+    }
+  },
+  watch: {
+  },
+  methods: {
+    // 高级搜索-搜索条件选择
+    conditionSelect (value) {
+      this.searchForm.archivesTimeType = value
+      this.isArchiveTimeSelectAll = false
+    },
+    // 高级搜索-取消条件
+    conditionCancel () {
+      this.archiveTimeFlag = false
+      this.searchForm.archivesTimeType = null
+      this.isArchiveTimeSelectAll = true
+    },
+    // 管理员打开
+    showAdminDialog () {
+      this.showAdminVisible = !this.showAdminVisible
+    },
+    // 选择管理员
+    selectedAdmin (obj) {
+      this.$set(this.searchForm, 'adminName', obj.name)
+      this.$set(this.searchForm, 'adminId', obj.objectId)
+      this.checkedTransferRoleId = obj.objectId
+    },
+    // 管理员打开
+    showTransferDialog () {
+      this.showTransferVisible = !this.showTransferVisible
+    },
+    // 选择移交人
+    selectedTransfer (obj) {
+      this.$set(this.searchForm, 'lastTransferName', obj.name)
+      this.$set(this.searchForm, 'lastTransferId', obj.objectId)
+      this.checkedRoleId = obj.objectId
+    },
+    // 获取档案室
+    getRoom () {
+      archivesRoom.getArchivesRoomList({
+        enterpriseId: this.$store.getters.authUser.enterpriseId
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.roomList = res.data.archivesRoomList.list
+          this.roomList.push({name: '无位置档案'})
+        }
+      })
+    },
+    // 获取档案柜
+    getCabinet (objectId) {
+      archivesCabinet.getArchivesCabinetList({
+        archivesRoomId: objectId
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.cabinetList = res.data.archivesCabinetList.list
+          this.cabinetList.push({name: '无位置档案'})
+        }
+      })
+    },
+    handleBtn (row) {
+      this.$router.push({path: `/archives/query/detail/` + row.objectId + '?status=1'})
+    },
+    handleClick (type, item) {
+      switch (type) {
+        case 'room':
+          this.curRoom = item.name
+          if (item.objectId) {
+            this.curType = 'cabinet'
+            this.archivesRoomId = item.objectId
+            this.getCabinet(item.objectId)
+          } else {
+            this.archivesCabinetId = ''
+            this.curType = 'list'
+            this.curCabinet = ''
+          }
+          break
+        case 'cabinet':
+          this.curType = 'list'
+          this.curCabinet = item.name
+          this.archivesCabinetId = item.objectId
+          break
+        default:
+          this.archivesCabinetId = ''
+          this.curCabinet = ''
+          this.archivesRoomId = ''
+      }
+    },
+    handleNavClick (type) {
+      switch (type) {
+        case 'all':
+          this.curType = 'room'
+          break
+        case 'room':
+          if (!this.curCabinet) {
+            return
+          }
+          this.curType = 'cabinet'
+          break
+      }
+    },
+    // 搜索
+    search () {
+      this.$refs['table'].handleSearch()
+    },
+    reset () {
+      // this.searchForm.archivesInfoNameLike = ''
+      // this.searchForm.numberSearch = ''
+      // this.searchForm.time = []
+      this.searchForm = {}
+      this.$refs['table'].reset()
+    }
+  },
+  mounted () {
+    this.getRoom()
+  }
+}
+</script>
+
+<style scoped>
+  .room-item {
+    margin: 24px 45px;
+    display: inline-block;
+    text-align: center;
+  }
+  .room-item img {
+    width: 52px;
+    height: 52px;
+    margin-bottom: 16px;
+  }
+  .nav {
+    color: #a0a0a0;
+  }
+  .nav span {
+    cursor: pointer;
+  }
+  .nav div {
+    display: inline-block;
+  }
+  .nav .arrow {
+    margin: 0 6px;
+  }
+  .nav-active span{
+    color: #333;
+    cursor: default;
+  }
+</style>

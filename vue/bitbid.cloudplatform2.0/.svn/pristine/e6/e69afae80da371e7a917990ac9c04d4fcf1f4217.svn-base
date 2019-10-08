@@ -1,0 +1,298 @@
+<template>
+  <div class="cloudcontent" id="archives_add">
+    <div class="main">
+      <div class="detail-title">{{info.tenderProjectName ? info.tenderProjectName : ''}}</div>
+      <div class="section_listbox">
+        <div class="section_list">
+          <ul class="section_ul">
+            <li v-for="(item, index) in bidList" :key="item.index" :class="activeBid === index ? 'cur': ''" @click="handleBidClick(item, index)">
+              <p :title="item.bidSectionName">{{item.bidSectionName}}</p>
+              <span>归档：{{item.archivesSchedule}}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="btnMore" v-if="isMore">
+          <i class="open" v-if="!isOpen" @click="handleIsOpen">展开</i>
+          <i class="close" v-if="isOpen" @click="handleIsOpen">收起</i>
+        </div>
+      </div>
+      <ul class="step">
+        <li :class="active === 1 ? 'active' : 'prev'">
+          <i v-if="active > 1"><img src="../../../assets/duigou_2.png"></i>
+          <i v-else>1</i>
+          <span>归档/移交情况</span>
+          <em></em>
+        </li>
+        <li :class="active === 2 ? 'active' : active === 3 ? 'prev' : ''">
+          <i v-if="active === 3"><img src="../../../assets/duigou_2.png"></i>
+          <i v-else>2</i>
+          <span>项目资料</span>
+          <em></em>
+        </li>
+        <li :class="active === 3 ? 'active' : ''">
+          <i>3</i>
+          <span>档案信息</span>
+        </li>
+      </ul>
+      <transferRecord v-if="active === 1" :info="info" ref="transferRecord" :isFormAdd="true"></transferRecord>
+      <file v-if="active === 2" :info="info"></file>
+      <fileEnd v-if="active === 3" ref="fileEnd" :archivesInfoId="archivesInfoId"></fileEnd>
+      <div class="submit-radio">
+        <el-button class="cancal" @click="lastStep" v-if="active === 2">{{lastText}}</el-button>
+        <el-button type="primary" @click="nextStep" :loading="isSubmiting">{{stepText}}</el-button>
+        <el-button class="cancal" @click="handleCancle" >{{cancleText}}</el-button>
+      </div>
+    </div>
+    <el-dialog :before-close='close' @opened="handleOpen" title="选择要归档的资料" :visible.sync="dialogVisible">
+      <el-table
+        :data="list"
+        ref="multipleTable"
+        border
+        style="width: 100%" header-cell-class-name="tableheader"
+        @selection-change="handleSelectionChange">
+        <el-table-column
+          width="50"
+          type="index"
+          align="center"
+          label="序号">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="档案目录"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          type="selection"
+          label="选择"
+          align="center"
+          width="100">
+        </el-table-column>
+      </el-table>
+      <div slot="footer" class="dialog-footer">
+        <el-button class="cancal" @click="close">取 消</el-button>
+        <el-button type="primary" @click="handleConfirm">确认</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import {archivesInfo} from '@/api/archives'
+
+export default {
+  name: 'add',
+  components: {
+    // 移交记录
+    transferRecord: resolve => require(['./transferRecord'], resolve),
+    // 接受资料
+    file: resolve => require(['./file'], resolve),
+    // 归档
+    fileEnd: resolve => require(['./fileEnd'], resolve)
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      stepText: '下一步',
+      lastText: '上一步',
+      cancleText: '取消',
+      // 步骤条
+      active: 1,
+      updateForm: {
+      },
+      rules: {
+      },
+      info: {
+        archivesClassifyList: []
+      },
+      fileInfo: {},
+      dialogVisible: false,
+      list: [],
+      checkedArchives: [],
+      bidList: [],
+      isMore: false, // 判断标段是否需要多行显示
+      isOpen: false, // 判断标段是否展开收起
+      activeBid: 0,
+      archivesInfoId: ''
+    }
+  },
+  methods: {
+    /**
+     * 标段切换
+     * @param item
+     * @param index
+     */
+    handleBidClick (item, index) {
+      this.activeBid = index
+      this.archivesInfoId = item.objectId
+      archivesInfo.detailArchivesInfo(item.objectId).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.info = res.data.archivesInfo
+        }
+      })
+    },
+    getData () {
+      archivesInfo.getArchivesInfoList({
+        archivesProjectId: this.$route.params.objectId,
+        queryTypeString: 'admin'
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.bidList = res.data.archivesInfoList.list
+          // 获取第一个标段的信息
+          if (this.bidList.length > 0) {
+            this.archivesInfoId = this.bidList[0].objectId
+            archivesInfo.detailArchivesInfo(this.bidList[0].objectId).then((res) => {
+              if (res.data.resCode === '0000') {
+                this.info = res.data.archivesInfo
+              }
+            })
+          }
+        }
+      })
+    },
+    // 下一步
+    nextStep () {
+      switch (this.active) {
+        case 1:
+          this.active++
+          this.stepText = '归档'
+          this.fileInfo = this.info
+          break
+        case 2:
+          // 归档
+          // 将已移交未接受的进行接收
+          this.setReceived()
+          break
+        case 3:
+          // 归档
+          this.savePosition()
+          break
+      }
+    },
+    lastStep () {
+      this.active--
+      this.cancleText = '取消'
+      this.stepText = '下一步'
+    },
+    // 取消
+    handleCancle () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    },
+    setReceived () {
+      let data = []
+      let receivedArr = []
+      this.info.archivesClassifyList.map(archivesClassify => {
+        if (Number(archivesClassify.transferStatus) === 2) { // 已移交
+          data.push(archivesClassify)
+        } else if (Number(archivesClassify.transferStatus) === 1) { // 已接收
+          receivedArr.push(archivesClassify)
+        }
+      })
+      this.list = this.info.archivesClassifyList.filter(item => Number(item.transferStatus) === 1 && Number(item.status) === 0)
+      if (data.length === 0 && receivedArr.length === 0) {
+        this.$message(
+          {
+            type: 'warning',
+            message: '您没有需要归档的资料！'
+          }
+        )
+      } else if (data.length === 0 && receivedArr.length > 0) {
+        this.dialogVisible = true
+      } else {
+        this.$confirm('归档后，未接收的档案将自动变为“已接收"，确认归档吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.info.archivesClassifyList.map(archivesClassify => {
+            if (Number(archivesClassify.transferStatus) === 2) { // 已移交
+              archivesClassify.transferStatus = 1
+            }
+          })
+          archivesInfo.receiveList(data).then((res) => {
+            if (res.data.resCode === '0000') {
+              this.list = this.info.archivesClassifyList.filter(item => Number(item.transferStatus) === 1 && Number(item.status) === 0)
+              this.dialogVisible = true
+            }
+          })
+        })
+      }
+    },
+    handleOpen () {
+      this.list.map(item => {
+        this.$refs.multipleTable.toggleRowSelection(item)
+      })
+    },
+    handleSelectionChange (val) {
+      this.checkedArchives = val
+    },
+    // 处理归档操作
+    submitArchives () {
+      this.active++
+      this.cancleText = '关闭'
+      this.stepText = '保存'
+      this.close()
+    },
+    close () {
+      this.dialogVisible = false
+    },
+    // 确认归档
+    handleConfirm () {
+      if (this.checkedArchives.length === 0) {
+        this.$message(
+          {
+            type: 'warning',
+            message: '请选择本次要归档的目录'
+          }
+        )
+        return false
+      }
+      this.$confirm('确认要归档吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.info.archivesClassifyList = this.checkedArchives
+        archivesInfo.archivesFile(this.info).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.info = res.data.archivesInfo
+            this.submitArchives()
+          }
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    savePosition () {
+      this.$refs['fileEnd'].save()
+    },
+    init () {
+      let sectionUlWrap = document.getElementsByClassName('section_ul')
+      let height = sectionUlWrap[0].clientHeight
+      if (height > 40) {
+        this.isMore = true
+      }
+      this.getData()
+    },
+    handleIsOpen () {
+      this.isOpen = !this.isOpen
+      let sectionListWrap = document.getElementsByClassName('section_list')
+      if (this.isOpen) {
+        sectionListWrap[0].style.height = 'auto'
+      } else {
+        sectionListWrap[0].style.height = 48 + 'px'
+      }
+    }
+  },
+  mounted () {
+    this.init()
+  },
+  watch: {
+    '$route': 'init'
+  }
+}
+</script>
+
+<style lang="less">
+</style>

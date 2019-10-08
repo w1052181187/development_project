@@ -1,0 +1,280 @@
+<template>
+  <div class="home-page-box" id="home">
+    <!-- <router-link :to="{path: 'page1/page5'}">
+      首页
+    </router-link> -->
+    <el-row :gutter="20">
+      <el-col :span="13">
+        <div class="home-page-left">
+          <div class="approval-box">
+            <el-tabs v-model="activeApproval">
+              <el-tab-pane name="forApproval">
+                <span slot="label">待我审批<i class="tab-total">{{'('+approvalTotal+')'}}</i></span>
+                <el-table :data="approvalTableData" border style="width: 100%">
+                  <el-table-column type="index" label="序号" width="60"></el-table-column>
+                  <el-table-column prop="title" label="标题"></el-table-column>
+                  <el-table-column prop="submitPerson" label="提交人"></el-table-column>
+                  <el-table-column prop="time" label="提交时间"></el-table-column>
+                </el-table>
+              </el-tab-pane>
+              <el-tab-pane name="more">
+                <span slot="label">
+                  <router-link to="/page/wholeList/wholeList">更多>></router-link>
+                  <!-- <router-link>更多>></router-link> -->
+                </span>
+              </el-tab-pane>
+            </el-tabs>
+            <!-- <ssptabs :currentState="currentState" :tabList="tabList" @clicktab="handleClick"></ssptabs>   -->
+          </div>
+          <div class="project-box">
+            <el-tabs v-model="activeProject">
+              <el-tab-pane name="forProject">
+                <span slot="label">我的项目<i class="tab-total">{{'('+projectTotal+')'}}</i></span>
+                <el-table :data="projectTableData" border style="width: 100%">
+                  <el-table-column type="index" label="序号" width="60"></el-table-column>
+                  <el-table-column prop="mingcheng" label="标段名称"></el-table-column>
+                  <el-table-column prop="jindu" label="当前进度" width="120"></el-table-column>
+                </el-table>
+              </el-tab-pane>
+              <el-tab-pane name="more">
+                <span slot="label">
+                  <router-link to="/page/wholeList/wholeList">更多>></router-link>
+                </span>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
+        </div>
+      </el-col>
+      <el-col :span="11">
+        <div class="home-page-right">
+          <div class="infomation-box">
+            <el-tabs v-model="activeInfomation" @tab-click="handleClick">
+              <el-tab-pane label="通知公告" name="noticeAnnouncement"></el-tab-pane>
+              <el-tab-pane label="公司动态" name="companyDynamics"></el-tab-pane>
+              <el-tab-pane name="more">
+                <span slot="label">
+                  <router-link to="/page/wholeList/wholeList">更多>></router-link>
+                </span>
+              </el-tab-pane>
+            </el-tabs>
+            <ul class="infomation-ul">
+              <li v-for="item in noticeList" :key="item.text" class="infomation-li clearfix">
+                <a class="infomation-text fl" href="javascript:;">{{item.text}}</a>
+                <span class="infomation-time fr">{{item.time}}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="shortcut-box">
+            <el-tabs v-model="activeShortcut">
+              <el-tab-pane label="功能快捷入口" name="shortcutFun">
+                <ul class="shortcut-ul clearfix">
+                  <li v-for="(item,index) in shortcutList" :key="index" class="shortcut-li fl">
+                    <img :src="item.imgSrc" class="shortcut-img" />
+                    <span class="shortcut-span">{{item.text}}</span>
+                  </li>
+                </ul>
+              </el-tab-pane>
+              <el-tab-pane name="more">
+                <span slot="label">
+                  <router-link to="/page/wholeList/wholeList">更多>></router-link>
+                </span>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
+          <div class="knowledge-box">
+            <el-tabs v-model="activeKnowledge">
+              <el-tab-pane label="知识窗口" name="knowledgeWindow">
+                <ul class="infomation-ul">
+                  <li v-for="item in knowledgeList" :key="item.text" class="infomation-li clearfix">
+                    <a class="infomation-text fl" href="javascript:;">{{item.text}}</a>
+                  </li>
+                </ul>
+              </el-tab-pane>
+              <el-tab-pane name="more">
+                <span slot="label">
+                  <router-link to="/page/wholeList/wholeList">更多>></router-link>
+                </span>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
+        </div>
+      </el-col>
+    </el-row>
+  </div>
+</template>
+<script>
+// import ssptabs from '@components/agency/zzbTabs.vue'
+export default {
+  components: {
+    // ssptabs
+  },
+  data () {
+    return {
+      activeApproval: 'forApproval', // 待我审批
+      approvalTotal: 1, // 待我审批条数
+      approvalTableData: [
+        {title: '研发中心审批', submitPerson: '小张', time: '20190102'},
+        {title: '研发中心审批', submitPerson: '小张', time: '20190102'},
+        {title: '研发中心审批', submitPerson: '小张', time: '20190102'},
+        {title: '研发中心审批', submitPerson: '小张', time: '20190102'},
+        {title: '研发中心审批', submitPerson: '小张', time: '20190102'}
+      ], // 待我审批表格数据
+      activeProject: 'forProject', // 我的项目
+      projectTotal: 11, // 我的项目条数
+      projectTableData: [
+        {mingcheng: '山西省国新能源新厂扩建施工总承包项目【一标段】', jindu: '招标公告'},
+        {mingcheng: '山西省国新能源新厂扩建施工总承包项目【一标段】', jindu: '招标公告'},
+        {mingcheng: '山西省国新能源新厂扩建施工总承包项目【一标段】', jindu: '招标公告'},
+        {mingcheng: '山西省国新能源新厂扩建施工总承包项目【一标段】', jindu: '招标公告'},
+        {mingcheng: '山西省国新能源新厂扩建施工总承包项目【一标段】', jindu: '招标公告'}
+
+      ], // 我的项目表格数据
+      activeInfomation: 'noticeAnnouncement', // 通知公告
+      noticeList: [
+        {text: '沧州港务集团及沧州临港开发区与我司谈合1', time: '20120210'},
+        {text: '沧州港务集团及沧州临港开发区与我司谈合2', time: '20120210'},
+        {text: '沧州港务集团及沧州临港开发区与我司谈合3', time: '20120210'},
+        {text: '沧州港务集团及沧州临港开发区与我司谈合4', time: '20120210'}
+      ], // 通知公告列表
+      activeShortcut: 'shortcutFun', // 快捷功能按钮
+      shortcutList: [
+        {text: '项目登记', imgSrc: '../../static/images/homepage/homefirsticon.png'},
+        {text: '项目进度', imgSrc: '../../static/images/homepage/homesecondicon.png'},
+        {text: '项目全貌', imgSrc: '../../static/images/homepage/homefirsticon.png'},
+        {text: '客户管理', imgSrc: '../../static/images/homepage/homefourthicon.png'},
+        {text: '商机登记', imgSrc: '../../static/images/homepage/homefifthicon.png'},
+        {text: '开评标室预约', imgSrc: '../../static/images/homepage/homesixthicon.png'},
+        {text: '档案查询', imgSrc: '../../static/images/homepage/homeseventhicon.png'},
+        {text: '更多', imgSrc: '../../static/images/homepage/homeeighthicon.png'}
+      ], // 快捷功能列表
+      activeKnowledge: 'knowledgeWindow', // 知识窗口
+      knowledgeList: [
+        {text: '沧州港务集团及沧州临港开发区与我司谈合1'},
+        {text: '沧州港务集团及沧州临港开发区与我司谈合2'},
+        // {text: '沧州港务集团及沧州临港开发区与我司谈合3'},
+        {text: '沧州港务集团及沧州临港开发区与我司谈合4'}
+      ] // 知识窗口列表
+    }
+  },
+  created () {
+  },
+  methods: {
+    // 通知公告切换页面，tab切换时，替换noticeList数据
+    handleClick () {
+
+    }
+  }
+}
+</script>
+<style scoped lang="less">
+.clearfix:after{
+    content:".";
+    display:block;
+    height:0;
+    clear:both;
+    visibility:hidden;
+}
+.clearfix{
+    zoom:1;
+}
+.tab-total{
+  color: red;
+  font-style: normal;
+  margin-left: 2px;
+}
+.approval-box{
+  // width: 646px;
+  height: 376px;
+  border: 1px solid #dcdfe6;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+}
+.project-box{
+  // width: 646px;
+  height: 376px;
+  border: 1px solid #dcdfe6;
+  box-sizing: border-box;
+}
+.infomation-box,
+.shortcut-box,
+.knowledge-box{
+  // width: 444px;
+  border: 1px solid #dcdfe6;
+  box-sizing: border-box;
+}
+.infomation-box{
+  height: 280px;
+  margin-bottom: 10px;
+}
+.shortcut-box{
+  height: 248px;
+  margin-bottom: 10px;
+  .shortcut-li{
+    width: 25%;
+    height: 80px;
+    text-align: center;
+  }
+  .shortcut-img{
+    display: block;
+    margin: auto;
+  }
+}
+.knowledge-box{
+  height: 224px;
+}
+.infomation-ul{
+  padding: 0 10px;
+}
+.infomation-li{
+    height: 42px;
+    line-height: 42px;
+    background-color: #f1f6fd;
+    border-radius: 10px;
+    font-size: 14px;
+    margin: 6px 0;
+    padding: 0 10px;
+    cursor: pointer;
+    .infomation-text{
+      color: #333;
+      font-size: 14px;
+      text-decoration: none;
+    }
+  }
+.infomation-li:hover{
+  background-color: #dbe8fb;
+}
+</style>
+<style lang="less">
+.home-page-box{
+  .el-tabs__header{
+    margin: 0;
+  }
+  .el-tabs__nav-wrap{
+    padding: 0 10px 1px 10px;
+  }
+  .el-tabs__nav-wrap::after{
+    background-color: #fff;
+    border-bottom: 1px solid #dcdfe6;
+  }
+  .el-tabs__nav{
+    width: 100%;
+    .el-tabs__item:last-child{
+      float: right;
+    }
+  }
+  .el-tabs__item{
+    color: #333333;
+    font-weight: bold;
+  }
+  .home-page-left{
+    .el-tabs__content{
+      padding: 10px;
+    }
+  }
+  .shortcut-box{
+    .el-tabs__content{
+      padding: 24px 0 8px 0px;
+    }
+  }
+}
+</style>

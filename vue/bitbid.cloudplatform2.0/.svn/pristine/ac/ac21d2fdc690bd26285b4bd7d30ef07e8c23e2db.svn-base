@@ -1,0 +1,170 @@
+<template>
+  <div class="cloudcontent" id="cloud_quickMenu">
+    <div class="selectBox selected">
+      <h3>已选功能</h3>
+      <p>最多添加7个常用功能</p>
+      <ul>
+        <li>
+          <img src="../../../static/images/newindex/rightico1.png"/>
+          <span>项目登记</span>
+          <em></em>
+        </li>
+        <li>
+          <img src="../../../static/images/newindex/rightico2.png"/>
+          <span>商机登记</span>
+          <em></em>
+        </li>
+        <li>
+          <img src="../../../static/images/newindex/rightico3.png"/>
+          <span>项目全貌</span>
+          <em></em>
+        </li>
+        <li>
+          <img src="../../../static/images/newindex/rightico4.png"/>
+          <span>客户管理</span>
+          <em></em>
+        </li>
+        <li>
+          <img src="../../../static/images/newindex/rightico5.png"/>
+          <span>开评标室预约</span>
+          <em></em>
+        </li>
+        <li>
+          <img src="../../../static/images/newindex/rightico6.png"/>
+          <span>档案查询</span>
+          <em></em>
+        </li>
+        <li>
+          <img src="../../../static/images/newindex/rightico7.png"/>
+          <span>比选公告</span>
+          <em></em>
+        </li>
+      </ul>
+      <div class="submit-radio">
+        <el-button type="primary">确定</el-button>
+        <el-button class="cancal">取消</el-button>
+      </div>
+    </div>
+    <div class="selectBox unselected">
+      <h3>待选功能</h3>
+      <ul>
+        <li>
+          <img src="../../../static/images/newindex/rightico1.png"/>
+          <span>项目登记</span>
+          <em></em>
+        </li>
+        <li>
+          <img src="../../../static/images/newindex/rightico2.png"/>
+          <span>商机登记</span>
+          <em></em>
+        </li>
+        <li>
+          <img src="../../../static/images/newindex/rightico3.png"/>
+          <span>项目全貌</span>
+          <em></em>
+        </li>
+        <li>
+          <img src="../../../static/images/newindex/rightico4.png"/>
+          <span>客户管理</span>
+          <em></em>
+        </li>
+        <li>
+          <img src="../../../static/images/newindex/rightico5.png"/>
+          <span>开评标室预约</span>
+          <em></em>
+        </li>
+        <li>
+          <img src="../../../static/images/newindex/rightico6.png"/>
+          <span>档案查询</span>
+          <em></em>
+        </li>
+        <li>
+          <img src="../../../static/images/newindex/rightico7.png"/>
+          <span>比选公告</span>
+          <em></em>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+<script>
+
+export default {
+  components: {
+  },
+  data () {
+    return {
+    }
+  },
+  created () {
+  },
+  methods: {},
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_quickMenu{
+    .selectBox{
+      width: 100%;
+      min-height: 200px;
+      overflow: hidden;
+      border: 1px dashed #dcdcdc;
+      position: relative;
+    }
+    .selectBox h3{
+      line-height: 24px;
+      padding:16px;
+    }
+    .selectBox p{
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      color: #ff0000;
+      left: 0;
+      top: 12px;
+    }
+    .selectBox ul{
+      text-align: center;
+      margin: 30px 0 0 0;
+      overflow: hidden;
+    }
+    .selectBox ul li{
+      width: 100px;
+      height: 100px;
+      float: left;
+      text-align: center;
+      margin: 10px 20px;
+      position: relative;
+    }
+    .selectBox ul li span{
+      width: 100%;
+      display: inline-block;
+      line-height: 32px;
+      color: #111111;
+    }
+    .selectBox ul li em{
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+      cursor: pointer;
+      position: absolute;
+      right: 10px;
+      top: -10px;
+      background: url("../../../static/images/newindex/jian.png") no-repeat;
+    }
+    .submit-radio{
+      margin: 0 10px 10px 0;
+      text-align: right;
+    }
+    .submit-radio .el-button{
+      padding: 7px 20px;
+    }
+    .unselected{
+      border: 0;
+    }
+    .unselected ul li em{
+      background: url("../../../static/images/newindex/jia.png") no-repeat;
+    }
+  }
+</style>

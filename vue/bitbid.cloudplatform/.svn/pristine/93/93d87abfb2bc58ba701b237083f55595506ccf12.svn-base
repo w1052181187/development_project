@@ -1,0 +1,147 @@
+<template>
+  <div class="cloudcontent" id="cloud_processedit">
+    <!--面包屑-->
+    <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb_box">
+      <el-breadcrumb-item :to="{ path: '/index' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/projectProcess' }">项目进度管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/projectProcess/project' }">项目管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/projectProcess/project/process' }">流程管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/projectProcess/project/process' }">开标评标</el-breadcrumb-item>
+      <el-breadcrumb-item class="active_bread">添加评标专家</el-breadcrumb-item>
+    </el-breadcrumb>
+    <!--面包屑-->
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号：" >
+              <span>{{updateForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称："  prop="tenderProjectCode">
+              <span>{{updateForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段编号："  prop="tenderProjectCode">
+              <span>{{updateForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段名称："  prop="tenderProjectCode">
+              <span>{{updateForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="专家姓名："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="身份证号码："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="专业类别："  prop="tenderProjectCode">
+              <el-cascader class=""
+                           expand-trigger="hover"
+                           :options="expertTypeOptions"
+                           v-model="SelectexpertTypeOptions"
+                           @change="">
+              </el-cascader>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="手机："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="电子邮箱："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="标段信息：">
+              <el-table
+                :data="noticeList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader"
+                @selection-change="handleSelectionChange">
+                <el-table-column
+                  type="selection"
+                  width="50">
+                </el-table-column>
+                <el-table-column
+                  prop="name"
+                  label="标段编号"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  prop="status"
+                  label="标段名称"
+                  show-overflow-tooltip>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary">提交</el-button>
+          <el-button type="primary">保存</el-button>
+          <el-button class="cancal">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import * as expertClassify from '@/assets/js/expertClassify'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      updateForm: {},
+      rules: {},
+      // 标段类型
+      expertTypeOptions: expertClassify.expertClassify,
+      SelectexpertTypeOptions: [],
+      noticeList: [
+        {
+          name: 1,
+          status: 1
+        },
+        {
+          name: 1,
+          status: 0
+        }
+      ]
+    }
+  },
+  methods: {
+    handleSelectionChange (val) {
+      this.sectionList = val
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_processedit{
+    .el-cascader{
+      width: 100%;
+    }
+  }
+</style>

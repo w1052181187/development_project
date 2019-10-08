@@ -1,0 +1,42 @@
+import request from '@/utils/axios/components-axios'
+
+export const competitor = {
+  /** 查询列表 */
+  queryList (params) {
+    return request({
+      url: `/competitors`,
+      method: 'get',
+      params
+    })
+  },
+  /** 根据主键查询 */
+  queryOne (params) {
+    return request({
+      url: `/competitors/${params}`,
+      method: 'get'
+    })
+  },
+  /** 保存/修改 */
+  update (data) {
+    return request({
+      url: '/competitors',
+      method: 'post',
+      data
+    })
+  },
+  /** 删除 */
+  logoff (params) {
+    return request({
+      url: `/competitors/${params}`,
+      method: 'delete'
+    })
+  },
+  /** 验证重复 */
+  isNoRepeated (params) {
+    return request({
+      url: `/competitors/isNoRepeated`,
+      method: 'get',
+      params
+    })
+  }
+}

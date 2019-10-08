@@ -1,0 +1,29 @@
+export default[
+  {
+    path: '/biddingSources/informationPush',
+    name: '信息推送',
+    meta: {
+      title: '信息推送',
+      active: '/biddingSources/informationPush'
+    },
+    component: () => import(/* webpackChunkName: 'agency' */ '@/pages/biddingSources/informationPush/index')
+  },
+  {
+    path: '/biddingSources/sourceProgramme',
+    name: '寻源方案',
+    meta: {
+      title: '寻访方案',
+      active: '/biddingSources/sourceProgramme'
+    },
+    component: () => import(/* webpackChunkName: 'agency' */ '@/pages/biddingSources/sourceProgramme/index')
+  },
+  {
+    path: '/biddingSources/sourceFinding',
+    name: '寻源结果',
+    meta: {
+      title: '寻源结果',
+      active: '/biddingSources/sourceFinding'
+    },
+    component: () => import(/* webpackChunkName: 'agency' */ '@/pages/biddingSources/sourceFinding/index')
+  }
+]

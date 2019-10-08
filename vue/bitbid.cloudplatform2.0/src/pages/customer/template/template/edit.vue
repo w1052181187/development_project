@@ -1,0 +1,281 @@
+<template>
+  <div class="cloudcontent" id="add_template">
+    <div class="main">
+      <el-form :model="submitForm" :rules="rules" ref="submitForm"
+               label-width="120px" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="评估模板名称：" prop="name">
+              <el-input v-model="submitForm.name" clearable placeholder="请输入模板名称">
+                <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-radio-group v-model="submitForm.status" class="status">
+              <el-radio :label="1">启用</el-radio>
+              <el-radio :label="0">禁用</el-radio>
+            </el-radio-group>
+          </el-col>
+        </el-row>
+        <el-form-item label="评估项维护：">
+          <span class="addItem" @click="showSelectDialog">添加评估项</span>
+        </el-form-item>
+        <checkbox-dialog :showVisible="showSelectVisible" :selectedIds="submitForm.noGroupingItemIds" @submitSelected="submitSelected" @showEditDialog="showSelectDialog"></checkbox-dialog>
+        <el-table
+          :data="tableData"
+          border
+          v-loading="itemsLoading"
+          :span-method="objectSpanMethod"
+          header-cell-class-name="tableheader">
+          <el-table-column
+            prop="index"
+            label="序号"
+            width="80"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="parentName"
+            label="评估项分组"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="评估项"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column label="操作" align="center" width="120">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" @click="deleteItem(scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit" v-loading="loading">保存</el-button>
+          <el-button class="cancal" @click="cancel">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import CheckboxDialog from '../item/checkbox_dialog'
+import {template} from '@/api/customer/template'
+import {trimStr} from '@/assets/js/common'
+export default {
+  components: {
+    CheckboxDialog
+  },
+  data () {
+    // 验证名称
+    let validName = (rule, value, callback) => {
+      if (value && trimStr(value)) {
+        const name = trimStr(value)
+        if (name.length < 1 || name.length > 200) {
+          callback(new Error('长度在1~200个字符'))
+        } else {
+          let query = {
+            enterpriseId: this.$store.getters.authUser.enterpriseId,
+            name: name,
+            isDelete: 0
+          }
+          if (this.$route.params.objectId) {
+            query.excludeId = this.$route.params.objectId
+          }
+          template.isNoRepeated(query).then(res => {
+            if (!res.data.data) {
+              callback(new Error('评估模板名称重复，请重新填写'))
+            } else {
+              callback()
+            }
+          })
+        }
+      } else {
+        callback(new Error('评估模板名称不能为空'))
+      }
+    }
+    return {
+      submitForm: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        status: 1,
+        evaluationItems: [],
+        noGroupingItemIds: []
+      },
+      tableData: [],
+      rowspanInfos: [],
+      loading: false,
+      itemsLoading: false,
+      showSelectVisible: false,
+      rules: {
+        name: [
+          {required: true, message: '评估模板名称不能为空', trigger: 'blur'},
+          {validator: validName, trigger: 'blur'}
+        ]
+      }
+    }
+  },
+  methods: {
+    // 初始化
+    initData () {
+      this.itemsLoading = true
+      template.queryOne(this.$route.params.objectId).then(res => {
+        this.itemsLoading = false
+        this.submitForm = res.data.data
+        // 包装评估项
+        this.wrapTableData()
+      })
+    },
+    // 包装数据
+    wrapTableData () {
+      let list = this.submitForm.evaluationItems
+      this.tableData = []
+      this.rowspanInfos = []
+      if (list && list.length) {
+        let index = 0
+        list.forEach((item, listIndex) => {
+          this.rowspanInfos[index] = item.children.length
+          if (item.children.length) {
+            item.children.forEach(child => {
+              child.index = listIndex + 1
+              child.parentName = item.name
+              this.tableData.push(child)
+              index++
+            })
+          }
+        })
+      }
+    },
+    // 计算合并项
+    objectSpanMethod ({ row, column, rowIndex, columnIndex }) {
+      if (this.rowspanInfos.length) {
+        if (columnIndex === 0 || columnIndex === 1) {
+          if (this.rowspanInfos[rowIndex]) {
+            return {
+              rowspan: this.rowspanInfos[rowIndex],
+              colspan: 1
+            }
+          } else {
+            return {
+              rowspan: 0,
+              colspan: 0
+            }
+          }
+        }
+      }
+    },
+    // 删除已选中的评估项
+    deleteItem (obj) {
+      this.submitForm.noGroupingItemIds = this.submitForm.noGroupingItemIds.filter(item => Number(item) !== Number(obj.objectId))
+      let delIndex
+      this.submitForm.evaluationItems.forEach((item, index) => {
+        if (item.objectId === obj.parentId) {
+          item.children = item.children.filter(child => Number(child.objectId) !== Number(obj.objectId))
+          if (!item.children.length) {
+            delIndex = index
+          }
+        }
+      })
+      if (typeof delIndex !== 'undefined') {
+        this.submitForm.evaluationItems.splice(delIndex, 1)
+      }
+      this.wrapTableData()
+    },
+    // 选择评估项弹框
+    showSelectDialog () {
+      this.showSelectVisible = !this.showSelectVisible
+    },
+    // 保存选中的值
+    submitSelected (selectItemsList) {
+      this.submitForm.noGroupingItemIds = this.submitForm.noGroupingItemIds.concat(selectItemsList.map(item => item.objectId))
+      let itemGroups = []
+      selectItemsList.forEach(item => {
+        let createFlag = false
+        if (itemGroups.length) {
+          let group = itemGroups.find(group => group.objectId === item.parentId)
+          if (group) {
+            let child = Object.assign({}, item)
+            delete item.parent
+            group.children.push(child)
+          } else {
+            createFlag = true
+          }
+        } else {
+          createFlag = true
+        }
+        if (createFlag) {
+          let parent = Object.assign({}, item.parent)
+          let child = Object.assign({}, item)
+          delete item.parent
+          parent.children = [child]
+          itemGroups.push(parent)
+        }
+      })
+      itemGroups.forEach(group => {
+        let evaluationItem = this.submitForm.evaluationItems.find(item => item.objectId === group.objectId)
+        if (evaluationItem) {
+          evaluationItem.children = evaluationItem.children.concat(group.children)
+        } else {
+          this.submitForm.evaluationItems.push(group)
+        }
+      })
+      this.showSelectVisible = false
+      this.wrapTableData()
+    },
+    // 保存数据
+    submit () {
+      this.$refs['submitForm'].validate((valid) => {
+        if (valid) {
+          this.$confirm('确认要提交吗?', '提示', {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.loading = true
+            template.update(this.submitForm).then(res => {
+              this.loading = false
+              if (res.data.resCode === '0000') {
+                this.cancel()
+              }
+            })
+          }).catch(() => {
+            this.loading = false
+            return false
+          })
+        }
+      })
+    },
+    // 取消
+    cancel () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.push({path: '/customer/template'})
+    }
+  },
+  mounted () {
+    // 初始化数据
+    if (this.$route.params.objectId) {
+      this.initData()
+    }
+  }
+}
+</script>
+<style lang="less">
+  .addItem{
+    font-size: 12px;
+    color: #108cee;
+    cursor: pointer;
+  }
+  .status{
+    line-height: 50px;
+  }
+  .bottom_sel{
+    height: 88px;
+    line-height: 88px;
+  }
+  .bottom_sel span{
+    margin-right: 12px;
+    cursor: pointer;
+  }
+  .bottom_sel .page{
+    float: right;
+  }
+</style>

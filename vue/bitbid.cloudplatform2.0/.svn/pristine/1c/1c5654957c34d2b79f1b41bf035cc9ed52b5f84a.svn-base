@@ -1,0 +1,210 @@
+<template>
+  <div id="prequalificationDoc">
+    <!--资格预审文件-->
+    <div class="file-type-name">
+      <span>资格预审文件</span>
+    </div>
+    <el-form :model="item.archivesProjectExpands" class="prequalification-info viewdetails">
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="标书售价（元）：">
+            <span>{{item.archivesProjectExpands ? item.archivesProjectExpands.tenderPrice : ''}}</span>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="投标保证金金额：">
+            <span>{{item.archivesProjectExpands ? item.archivesProjectExpands.tenderBondPrice : ''}}</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="发售开始时间：">
+            <span>{{item.archivesProjectExpands ? item.archivesProjectExpands.sellStartDate : ''}}</span>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="发售截止时间：">
+            <span>{{item.archivesProjectExpands ? item.archivesProjectExpands.sellEndDate : ''}}</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <el-form-item label="预审会时间：">
+            <span>{{item.archivesProjectExpands ? item.archivesProjectExpands.bidOpenDate : ''}}</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+    <!--资格预审文件-->
+    <div class="file-type-add" @click="handleEdit" v-if="canEdit">
+      <span>编辑</span>
+    </div>
+    <fileUpload class="file-type-enclosure" :canEdit="canEdit"
+                :file-list="item.refArchivesFileInformationList"
+                :object-id="item.objectId" :file-type='9' file-name='资格预审文件'></fileUpload>
+    <fileUpload class="file-type-enclosure" :canEdit="canEdit"
+                :file-list="item.refArchivesFileInformationList"
+                :object-id="item.objectId" :file-type='4' file-name='其他'></fileUpload>
+    <el-dialog :before-close='close' :title="title" :visible.sync="dialogVisible" width="50%">
+      <el-form :model="dialogForm" :rules="rules"  ref="dialogForm" :label-width="formLabelWidth">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标书售价（元）：" prop="tenderPrice">
+              <el-input v-model="dialogForm.tenderPrice"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="投标保证金金额：" prop="tenderBondPrice">
+              <el-input v-model="dialogForm.tenderBondPrice"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="发售开始时间：">
+              <el-date-picker
+                v-model="dialogForm.sellStartDate"
+                type="date"
+                value-format="yyyy-MM-dd"
+                placeholder="选择日期">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="发售截止时间：">
+              <el-date-picker
+                v-model="dialogForm.sellEndDate"
+                type="date"
+                value-format="yyyy-MM-dd"
+                placeholder="选择日期">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="预审会时间：">
+              <el-date-picker
+                v-model="dialogForm.bidOpenDate"
+                type="datetime"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                placeholder="选择日期">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button class="cancal" @click="close">取 消</el-button>
+        <el-button type="primary" @click="submitForm('dialogForm')" :loading="isLoading">确认</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import { validMoney } from '@/assets/js/validate'
+import {archivesFile} from '@/api/archives'
+export default {
+  components: {
+    fileUpload: resolve => require(['./fileUpload'], resolve)
+  },
+  data () {
+    return {
+      title: '资格预审文件',
+      // 资格预审文件信息
+      // form: {
+      //   tenderPrice: '',
+      //   tenderBondPrice: '',
+      //   sellStartDate: '',
+      //   sellEndDate: '',
+      //   bidOpenDate: ''
+      // },
+      // 日期选择
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() < Date.now() - 8.64e7
+        }
+      },
+      // 提交时验证
+      rules: {
+        tenderPrice: [
+          { required: true, min: 1, max: 100, message: '请输入标书售价', trigger: ['blur', 'change'] },
+          { validator: validMoney, trigger: ['blur', 'change'] }
+        ],
+        tenderBondPrice: [
+          { required: true, min: 1, max: 100, message: '请输入投标保证金', trigger: ['blur', 'change'] },
+          { validator: validMoney, trigger: ['blur', 'change'] }
+        ]
+      },
+      formLabelWidth: '130px',
+      // fileList: [],
+      // otherFileList: [],
+      dialogVisible: false,
+      dialogForm: {
+        tenderPrice: '',
+        tenderBondPrice: '',
+        sellStartDate: '',
+        sellEndDate: '',
+        bidOpenDate: ''
+      },
+      isUpdate: false,
+      isLoading: false
+    }
+  },
+  watch: {
+  },
+  props: ['item', 'canEdit'],
+  methods: {
+    // 编辑
+    handleEdit () {
+      this.dialogVisible = true
+      if (this.item.archivesProjectExpands) {
+        this.dialogForm = this.item.archivesProjectExpands
+      }
+    },
+    close () {
+      this.dialogVisible = false
+      this.$refs.dialogForm.resetFields()
+    },
+    // 提交
+    submitForm (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.$confirm('确认保存吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.isLoading = true
+            this.dialogForm.archivesFileId = this.item.objectId
+            archivesFile.savaOrUpdateArchivesProjectExpands(this.dialogForm).then((res) => {
+              this.isLoading = false
+              if (res.data.resCode === '0000') {
+                this.dialogForm = res.data.archivesProjectExpands
+                this.item.archivesProjectExpands = res.data.archivesProjectExpands
+                this.dialogVisible = false
+              }
+            })
+          })
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #prequalificationDoc{
+    .prequalification-info {
+      margin-top: 20px;
+    }
+    .el-date-editor.el-input, .el-date-editor.el-input__inner {
+       width: 100%;
+    }
+  }
+</style>

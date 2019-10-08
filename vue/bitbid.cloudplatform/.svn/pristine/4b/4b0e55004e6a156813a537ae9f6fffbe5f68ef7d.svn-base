@@ -1,0 +1,16 @@
+import need from '../onlineApprove/need'
+
+/**
+ * 在线审批
+ */
+export default[
+  {
+    path: '/dailyManage/onlineapprove',
+    name: 'dailymanage-onlineapprove',
+    meta: {
+      title: '在线审批'
+    },
+    component: resolve => require(['@/pages/dailyManage/onlineApprove/index'], resolve)
+  },
+  ...need
+]

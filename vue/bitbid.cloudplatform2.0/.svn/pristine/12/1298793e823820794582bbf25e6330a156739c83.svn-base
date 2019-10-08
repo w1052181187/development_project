@@ -1,0 +1,116 @@
+<template>
+  <div class="cloudcontent"  id="cloud_templateAdd">
+    <div class="main">
+      <el-form :model="dynamicValidateForm" label-width="120px" ref="dynamicValidateForm">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item :key="domain.prop"
+                          :label="domain.label"
+                          :prop="domain.prop"
+                          :rules="rules"
+                          v-for="domain in dynamicValidateForm.domains">
+              <el-input   type="money"
+                          :disabled="domain.editable"
+                          autocomplete="off"
+                          v-model.number="domain.value">
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+
+export default {
+  components: {
+  },
+  data () {
+    return {
+      dynamicValidateForm: {
+        domains: []
+      },
+      rules: [],
+      id: ''
+    }
+  },
+  methods: {
+    showEdit () {
+      let formData = new FormData()
+      formData.append('id', this.id)
+      this.dynamicValidateForm.domains = [
+        {
+          label: 'dasd',
+          prop: 'www',
+          rules: '',
+          value: 'dah'
+        }
+      ]
+    }
+  },
+  mounted () {
+    this.showEdit()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_templateAdd{
+    .showImg{
+      width:100px;
+      overflow: hidden;
+    }
+    .showImg .el-button{
+      padding: 8px 11px;
+    }
+    .showImg img{
+      margin-top: 13px;
+    }
+    .imgDialog .el-dialog__header{
+      border-bottom: 1px solid #eeeeee;
+    }
+    .imgDialog .el-dialog__body{
+      padding: 0;
+    }
+    ul.imgList{
+      width: 100%;
+      overflow: hidden;
+      margin: 20px 0 30px 0;
+    }
+    ul.imgList li{
+      float: left;
+      width: 80px;
+      height: 80px;
+      margin: 16px 30px;
+      position: relative;
+    }
+    ul.imgList li .hover{
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: none;
+      cursor: pointer;
+    }
+    ul.imgList li:hover .hover{
+      display: block;
+    }
+    .temTableData {
+      margin-top: 20px;
+      border: 0!important;
+    }
+    .optional span:hover{
+      cursor: pointer;
+      color: #409EFF;
+    }
+    .optionalDialog .el-dialog__header{
+      border-bottom: 1px solid #eeeeee;
+    }
+    .optionalDialog p{
+      color: #999999;
+      line-height: 24px;
+    }
+    .optionalDialog .submit-radio{
+      text-align: center;
+    }
+  }
+</style>

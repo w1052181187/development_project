@@ -1,0 +1,401 @@
+<template>
+  <div class="vote-room" id="vote-room">
+    <div class="proinfo-info-box">
+      <div class="title-box">
+        <p>项目信息</p>
+      </div>
+      <el-form ref="form" :model="projectInfoForm" label-width="100px" class="pro-form">
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="项目名称:">
+              <span>{{projectInfoForm.projectName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="项目编号:">
+              <span>{{projectInfoForm.projectCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="包组名称:">
+              <span>{{projectInfoForm.sectionName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="包组编号:">
+              <span>{{projectInfoForm.sectionCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+    <el-row :gutter="15" style="margin-left:0;margin-right:0;">
+      <el-col :span="12" style="padding-left:0;">
+        <div class="vote-box">
+          <div class="title-box">
+            <p>投票</p>
+          </div>
+          <div class="vote-cont">
+            <el-row>
+              <el-col :span="2">
+                <span style="color: #999;">排序</span>
+              </el-col>
+              <el-col :span="22">
+                <el-table
+                  :data="voteTableData"
+                  border
+                  :show-header="false"
+                  height="326"
+                  style="width: 100%"
+                  v-if="!queryType">
+                  <el-table-column
+                    type="index"
+                    label="序号"
+                    align="center"
+                    :index="indexMethod"
+                    width="55">
+                  </el-table-column>
+                  <el-table-column
+                    prop="nameCode"
+                    label="名称">
+                    <template slot-scope="scope">
+                      <el-select v-model="scope.row.nameCode" placeholder="请选择" :disabled="isSurveillance || disabledSelect">
+                        <el-option
+                          v-for="item in voteUnitList"
+                          :key="item.objectId"
+                          :label="item.userName"
+                          :value="item.objectId+'/'+item.userName">
+                        </el-option>
+                      </el-select>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <el-table
+                  :data="voteResultTableData"
+                  border
+                  :show-header="false"
+                  height="326"
+                  style="width: 100%"
+                  v-if="queryType">
+                  <el-table-column
+                    type="index"
+                    label="序号"
+                    align="center"
+                    :index="indexMethod"
+                    width="55">
+                  </el-table-column>
+                  <el-table-column
+                    prop="resultName"
+                    label="名称">
+                    <template slot-scope="scope">
+                      <el-select v-model="scope.row.resultName" placeholder="请选择" :disabled="isSurveillance || disabledSelect">
+                        <el-option
+                          v-for="item in voteUnitList"
+                          :key="item.objectId"
+                          :label="item.userName"
+                          :value="item.userName">
+                        </el-option>
+                      </el-select>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-col>
+            </el-row>
+          </div>
+        </div>
+      </el-col>
+      <el-col :span="12" style="padding-right:0;">
+        <div class="vote-box">
+          <div class="title-box">
+            <p>定标候选人</p>
+          </div>
+          <div class="bid-cand">
+            <el-table
+              :data="bidCandTableData"
+              border
+              :show-header="false"
+              height="326"
+              style="width: 100%">
+              <el-table-column
+                type="index"
+                label="序号"
+                align="center"
+                :index="indexMethod"
+                width="55">
+              </el-table-column>
+              <el-table-column
+                prop="userName"
+                label="名称">
+              </el-table-column>
+            </el-table>
+          </div>
+        </div>
+      </el-col>
+    </el-row>
+    <div class="submit-btns" v-if="!isSurveillance">
+      <el-button class="btn-blue-bg" size="small" @click="handleBtnClick" :disabled="isDisabled">{{(changeBtnType)? '提 交': '撤 回'}}</el-button>
+    </div>
+    <div class="foot-btn">
+      <!--底部-->
+      <footers></footers>
+      <!--底部-->
+    </div>
+  </div>
+</template>
+<script>
+import footers from '@/views/admin/footer/footer.vue'
+import {projectInfo, scalingEnd} from '@/api'
+// 状态
+import {mapState} from 'vuex'
+import {WebPushSocket} from '../../../assets/js/websocket-inst.js'
+export default {
+  name: '',
+  data () {
+    return {
+      webPushSocket: null,
+      isDisabled: false,
+      projectId: this.$store.getters.projectId, // 项目id
+      methodType: this.$route.query.methodType,
+      userId: this.$route.query.userId,
+      // 是否监标人
+      isSurveillance: this.$store.getters.authUser.roleIds[0] === 4,
+      // 逐轮票决法的轮数
+      num: this.$route.query.num || 1,
+      changeBtnType: true,
+      currentPage: 1,
+      projectInfoForm: {},
+      voteTableData: [], // 投票-排序
+      voteUnitList: [],
+      voteResultTableData: [],
+      bidCandTableData: [], // 定标候选人
+      disabledSelect: false,
+      queryType: false // 判断执行那个查询
+    }
+  },
+  computed: {
+    // 获取状态
+    ...mapState({
+      confirmMessages: (state) => {
+        return state.messages
+      }
+    })
+  },
+  watch: {
+    queryType: function (newV, oldV) {
+      if (newV) {
+        this.getOrderResult()
+      }
+    },
+    confirmMessages: function (newV, oldV) {
+      // console.log(newV)
+      if (newV.message === '确认提交') {
+        this.isDisabled = true
+      }
+    },
+    $route: function () {
+      this.num = this.$route.query.num || 1
+      this.methodType = this.$route.query.methodType
+      this.userId = this.$route.query.userId
+      this.queryType = false
+      this.disabledSelect = false
+      this.changeBtnType = true
+      this.init()
+    }
+  },
+  // 实例创建
+  created () {
+  },
+  mounted () {
+    this.init()
+    // 初始化websocket
+    this.initWebsocket()
+  },
+  methods: {
+    init () {
+      this.getOrderResult()
+      this.getProjectInfo()
+      this.getVoteRoomPage()
+    },
+    indexMethod (index) {
+      return index + (this.currentPage - 1) * 10 + 1
+    },
+    // 提交或者撤回
+    handleBtnClick (val) {
+      if (this.changeBtnType) {
+        this.submitOrderResult()
+      } else {
+        this.recallOerderResult()
+      }
+    },
+    /**
+     * 获得项目信息
+     */
+    getProjectInfo () {
+      let params = {
+        num: this.num,
+        methodType: this.methodType
+      }
+      projectInfo.scalingEndInfo(this.projectId, params).then(res => {
+        // console.log(res)
+        // 临时接受数据对象
+        let tempObj = res.data.ProjectView
+        // 项目信息-表单数据
+        this.projectInfoForm = tempObj.project
+        // 定标候选人-表格数据
+        this.bidCandTableData = tempObj.users
+        // 排序-列表
+        this.voteTableData = tempObj.users.map(item => {
+          return item
+        })
+        // 下拉list
+        this.voteUnitList = tempObj.users.map(item => {
+          return item
+        })
+      })
+    },
+    // 提交数据-排序结果
+    submitOrderResult () {
+      let data = []
+      if (this.queryType) {
+        data = this.voteResultTableData
+      } else {
+        data = this.voteTableData.map((item, index) => {
+          if (item.nameCode) {
+            return {
+              sort: index + 1,
+              projectId: item.projectId,
+              resultId: item.nameCode.split('/')[0] || null,
+              resultName: item.nameCode.split('/')[1] || null,
+              num: this.num
+            }
+          } else {
+            this.$message({
+              message: '请选择排序',
+              type: 'warning'
+            })
+          }
+        })
+      }
+      // 判断排序表格是否有重复选择
+      let result = []
+      if (data.length > 0) {
+        data.map(item => {
+          if (item !== undefined) {
+            result.push(item.resultId)
+          }
+        })
+        let setData = Array.from(new Set(result))
+        let setDataLen = setData.length
+        if (setDataLen !== data.length && data.length > 0) {
+          this.$message({
+            message: '请查看排序是否选择完整或有重复选择',
+            type: 'warning'
+          })
+        } else {
+          let params = {
+            methodType: this.methodType,
+            num: this.num,
+            projectId: this.projectId
+          }
+          scalingEnd.submitOrderResult(data, params).then(res => {
+            if (res.data.resCode === '0000') {
+              this.changeBtnType = false
+              // 禁用下拉
+              this.disabledSelect = true
+              // 推送消息
+              this.webPushSocket.sendMsg('提交数据')
+            }
+          })
+        }
+      }
+    },
+    // 获得排序结果
+    getOrderResult () {
+      let params = {
+        methodType: this.methodType,
+        num: this.num,
+        userId: this.userId
+      }
+      // console.log(params)
+      scalingEnd.getOrderResult(this.projectId, params).then((res) => {
+        let tempResult = res.data.ResultList
+        if (tempResult.length) {
+          this.queryType = true
+          // 禁用下拉
+          this.disabledSelect = true
+          this.changeBtnType = false
+          this.voteResultTableData = tempResult
+        }
+      })
+    },
+    // 撤回
+    recallOerderResult () {
+      let params = {
+        methodType: this.methodType,
+        num: this.num
+      }
+      this.queryType = false
+      scalingEnd.cancelOrderResult(this.projectId, params).then(res => {
+        if (res.data.resCode === '0000') {
+          this.getProjectInfo()
+          // this.voteResultTableData = []
+          this.changeBtnType = true
+          this.disabledSelect = false
+          // 推送消息
+          this.webPushSocket.sendMsg('撤销提交')
+        }
+      })
+    },
+    // 流程控制
+    getVoteRoomPage () {
+      scalingEnd.getVoteRoomPage(this.projectId, {methodType: this.methodType, num: this.num}).then(res => {
+        // 1已经执行-不可操作
+        // 0未执行-可操作
+        // console.log(res.data.isHide)
+        this.isDisabled = res.data.isHide === '1'
+        // console.log(this.isDisabled)
+      })
+    },
+    initWebsocket () {
+      this.webPushSocket = WebPushSocket.getInstance(this.$store.getters.projectId, this.$store.getters.authUser.userId, this.$store.getters.authUser.userName, 'All', this.methodType, this.num)
+      this.webPushSocket.init()
+    }
+  },
+  components: {
+    footers
+  },
+  destroyed () {
+    if (this.webPushSocket) {
+      this.webPushSocket.close()
+      this.webPushSocket = null
+    }
+  }
+}
+</script>
+<style lang="scss">
+#vote-room {
+  .proinfo-info-box {
+    padding: 10px;
+    margin-top: 15px;
+    background: #fff;
+    .pro-form {
+      .el-form-item {
+        margin-bottom: 0;
+      }
+      .el-form-item__content {
+        text-align: left;
+      }
+    }
+  }
+  .vote-box {
+    padding: 10px;
+    margin-top: 15px;
+    background: #fff;
+  }
+  .submit-btns {
+    padding: 20px 0;
+  }
+}
+</style>

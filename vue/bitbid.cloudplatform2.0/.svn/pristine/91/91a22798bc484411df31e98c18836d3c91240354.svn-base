@@ -1,0 +1,155 @@
+<template>
+  <div class="cloudcontent" id="cloud_processedit">
+    <approve-flow v-if="isApproved" :list="flowList" :curFlowIndex="curFlowIndex"></approve-flow>
+    <div class="project-info-line"></div>
+    <div class="main viewdetails">
+      <div class="basic-approve-title">评标报告</div>
+      <el-form :model="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <span>{{bidSection.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{bidSection.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段编号：">
+              <span>{{bidSection.bidSectionCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段名称：">
+              <span>{{bidSection.bidSectionName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="附件：">
+              <el-table
+                :data="updateForm.fileInformationList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  type="index"
+                  label="序号"
+                  width="60"
+                  align="center">
+                </el-table-column>
+                <el-table-column
+                  prop="fileName"
+                  label="文件名称"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  label="操作" align="center" width="200">
+                  <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="lookFile(scope.row)">查看</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="评审内容：">
+              <editor ref="ueditorContent" class="ueditor" :editread="editread" :content="content"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+    <template v-if="isApproved">
+      <div class="project-info-line"></div>
+      <communicate-record :tableData="communicateRecordList"></communicate-record>
+      <div class="project-info-line"></div>
+      <approve-record :approvalTaskCode="taskCode" :subjectCode="updateForm.code"></approve-record>
+    </template>
+    <div class="project-info-line"></div>
+    <approve-handle :isApproved="isApproved" :approvalTaskCode="taskCode" :noticeUser="noticeUser"></approve-handle>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import {downloadFile} from '@/assets/js/common'
+import {documentInfo} from '@/api/project'
+import approveFlow from '@/pages/todoList/commonComponents/approveFlow.vue'
+import communicateRecord from '@/pages/todoList/commonComponents/communicateRecord.vue'
+import approveRecord from '@/pages/todoList/commonComponents/approveRecord.vue'
+import approveHandle from '@/pages/todoList/commonComponents/approveHandle.vue'
+export default {
+  components: {
+    editor,
+    approveFlow,
+    approveRecord,
+    communicateRecord,
+    approveHandle
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      // 是否显示审批（0:详情 1：审批 2：审批详情 3：我发起的详情）
+      isApproved: 0,
+      auditStatus: 0,
+      objectId: '',
+      updateForm: {
+        fileInformationList: []
+      },
+      tableData: [],
+      // 富文本
+      editread: true,
+      content: '',
+      bidSection: {},
+      taskCode: '',
+      form: {},
+      // 审批流程
+      flowList: [
+      ],
+      curFlowIndex: 0,
+      communicateRecordList: [
+      ],
+      // 知会人
+      noticeUser: ''
+    }
+  },
+  methods: {
+    lookFile (file) {
+      downloadFile(file.fileName, file.relativePath)
+    },
+    getDocumentInfo () {
+      documentInfo.getById(this.objectId).then(res => {
+        this.updateForm = res.data.documentInfo
+        if (this.updateForm.bidSection) {
+          this.bidSection = this.updateForm.bidSection
+        }
+        this.updateForm.fileInformationList = res.data.documentInfo.fileInformationList
+        this.$refs.ueditorContent.setContent(this.updateForm.content)
+      })
+    },
+    init () {
+      this.isApproved = this.$route.query.isApproved
+      this.auditStatus = this.$route.query.auditStatus
+      this.objectId = this.$route.params.objectId
+      this.taskCode = this.$route.query.code
+      this.getDocumentInfo()
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_processedit{
+  }
+</style>

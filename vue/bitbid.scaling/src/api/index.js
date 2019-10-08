@@ -1,0 +1,9 @@
+export { projectInfo } from './project-info/index' // 项目
+export { scalingPrepare } from './scaling-prepare/index' // 定标准备
+export { scalingEnd } from './scaling-end/index' // 定标结果
+export { drawRecord } from './draw-record/index' // 抽签记录
+export { report } from './report/index' // 定标报告
+export { leftMenu } from './left-menu/index' // 左侧菜单栏
+export { auth } from './base/auth' // 登录
+export { biddingPrice } from './bidding-price/index' // 竞价
+export { biddingRecord } from './bidding-record/index' // 竞价

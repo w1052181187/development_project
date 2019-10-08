@@ -1,0 +1,297 @@
+<template>
+  <div class="cloudcontent" id="notify-box">
+    <!--搜索 & 添加按钮-->
+    <div class="topmain">
+      <el-row>
+        <div class="seacher_box">
+          <span>知会内容：</span>
+          <el-input class="input" style="vertical-align: top"  placeholder="请输入关键字" v-model="searchForm.contentLike"></el-input>
+          <span>知会时间：</span>
+          <el-date-picker
+            v-model="searchForm.publishTime"
+            type="daterange"
+            range-separator="--"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            value-format="yyyy-MM-dd">
+          </el-date-picker>
+          <el-button  class="search-btn" @click="search">查询</el-button>
+          <el-button  @click="reset">重置</el-button>
+        </div>
+      </el-row>
+    </div>
+    <!--搜索 & 添加按钮-->
+    <div class="main">
+      <el-button class="addbutton" @click="handleMultiDel">
+        <span>批量删除</span>
+      </el-button>
+      <el-button class="addbutton" @click="handleReaded">
+        <span>标记为已读</span>
+      </el-button>
+      <el-table
+        :data="tableData"
+        @cell-click="cellClick"
+        border
+        header-cell-class-name="tableheader"
+        @selection-change="handleSelectionChange">
+        <el-table-column
+          type="selection"
+          align="center"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          type="index"
+          label="序号"
+          align="center"
+          :index="indexMethod"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="content"
+          label="知会内容"
+          class-name="pointer"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span :class="handleTitleStyle(scope.row)" @click="handleDetail(scope)">{{scope.row.content}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="submitTime"
+          label="知会时间"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetail(scope)">去看看</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+
+<script>
+import {notice} from '@/api/notice/notice'
+
+export default {
+  name: '',
+  data () {
+    return {
+      searchForm: {
+        contentLike: '',
+        publishTime: null
+      }, // 搜索
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      tableData: [],
+      selectedData: [],
+      sectionIndex: 'currentBidSection',
+      sectionFlowStatusIndex: 'currentBidSectionFlowStatus'
+    }
+  },
+  methods: {
+    cellClick (row, column, cell, event) {
+      if (column.label === '知会内容') {
+        this.handleDetail({row: row})
+      }
+    },
+    indexMethod (index) {
+      return index + (this.currentPage - 1) * 10 + 1
+    },
+    // 重置
+    reset () {
+      this.searchForm.contentLike = ''
+      this.publishTime = null
+      this.pageNo = 0
+      this.currentPage = 1
+      this.getData()
+    },
+    // 搜索
+    search () {
+      this.pageNo = 0
+      this.currentPage = 1
+      this.getData()
+    },
+    // 多选
+    handleSelectionChange (val) {
+      this.selectedData = val
+    },
+    // 批量删除
+    handleMultiDel () {
+      if (this.selectedData.length > 0) {
+        this.$confirm('确认要将所选通知删除吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let selectIds = []
+          this.selectedData.map(item => {
+            selectIds.push(item.objectId)
+          })
+          notice.deleteNoticeList({includeIds: selectIds}).then((res) => {
+            if (res.data.resCode === '0000') {
+              this.getData()
+            }
+          })
+        })
+      } else {
+        this.$message('请选择要删除的通知')
+      }
+    },
+    // 标记已读
+    handleReaded () {
+      if (this.selectedData.length > 0) {
+        this.$confirm('确认要将所选通知设为已读吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'error'
+        }).then(() => {
+          notice.setIsReaded(this.selectedData).then((res) => {
+            this.getData()
+          })
+        })
+      } else {
+        this.$message('请选择要标记为已读的通知')
+      }
+    },
+    // 处理标题样式
+    handleTitleStyle (row) {
+      return Number(row.isReaded) === 1 ? 'readed' : 'unReaded'
+    },
+    getData () {
+      let query = {
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        messageLike: this.search_input,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        userId: this.$store.getters.authUser.userId,
+        refType: 2, // 知会与我
+        contentLike: this.searchForm.contentLike
+      }
+      if (this.searchForm.publishTime) {
+        this.$set(query, 'searchStartTime', this.searchForm.publishTime[0] + ' 00:00:00')
+        this.$set(query, 'searchEndTime', this.searchForm.publishTime[1] + ' 23:59:59')
+      }
+      notice.getMyNoticeList(query).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.tableData = res.data.noticeList.list
+          this.total = res.data.noticeList.total
+        }
+      })
+    },
+    // 表单分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getData(parseInt(this.pageNo), parseInt(this.pageSize))
+    },
+    handleDel (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+      }).catch(() => {
+        return false
+      })
+    },
+    // 去看看
+    handleDetail (scope) {
+      let isSetRead = 1
+      // 设置为已读
+      notice.detailNotice(scope.row.objectId, isSetRead).then((res) => {
+        if (res.data.resCode === '0000') {
+          sessionStorage.setItem('isOverview', this.$store.getters.permissions.includes('1010402')) // 根据正常流程展示操作按钮
+          this.$router.push({path: scope.row.routingPath})
+        }
+      })
+    },
+    clearCurProjectSession (code) {
+      let progressTemp = sessionStorage.getItem(code)
+      if (progressTemp) {
+        let curProject = JSON.parse(progressTemp)
+        if (curProject.hasOwnProperty(this.sectionIndex)) {
+          delete curProject[this.sectionIndex]
+        }
+        if (curProject.hasOwnProperty(this.sectionFlowStatusIndex)) {
+          delete curProject[this.sectionFlowStatusIndex]
+        }
+        sessionStorage.setItem(code, JSON.stringify(curProject))
+      } else {
+        sessionStorage.setItem(code, JSON.stringify({}))
+      }
+    }
+  },
+  mounted () {
+    this.getData()
+  }
+}
+</script>
+
+<style lang="less">
+  #notify-box{
+    .addbutton{
+      margin-bottom: 12px;
+      color: #fff;
+      background-color: #409EFF;
+      border-color: #409EFF;
+      float: right;
+      margin-left: 12px;
+    }
+    .search-btn{
+      margin-bottom: 12px;
+      color: #fff;
+      background-color: #409EFF;
+      border-color: #409EFF;
+      margin-left: 20px;
+      margin-right: 10px;
+    }
+    .input{
+      width: 200px;
+      margin-right: 24px;
+    }
+    .unReaded::before{
+      display: inline-block;
+      content: '';
+      width: 10px;
+      height: 10px;
+      margin-right: 6px;
+      border-radius: 50%;
+      background-color: #ff0001;
+      text-align: center;
+    }
+    .unReaded{
+      color: #333;
+      vertical-align: middle;
+      cursor: pointer;
+    }
+    .readed{
+      color: #999;
+      vertical-align: middle;
+      cursor: pointer;
+    }
+    .readed::before{
+      display: inline-block;
+      content: '';
+      width: 10px;
+      height: 10px;
+      margin-right: 6px;
+      border-radius: 50%;
+      background-color: #bbb;
+    }
+  }
+</style>

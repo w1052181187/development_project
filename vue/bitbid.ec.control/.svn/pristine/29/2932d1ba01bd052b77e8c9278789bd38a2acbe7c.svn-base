@@ -1,0 +1,141 @@
+<template>
+  <div id="consume-statis-list-page"  class="cont-view">
+    <!-- 面包屑区域start -->
+    <div class="bread-box">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/">成交管理</a></el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/">采购人消费统计</a></el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/">采购人消费统计列表</a></el-breadcrumb-item>
+      </el-breadcrumb>
+      <el-button type="info" size="small" class="go-back" @click="$router.go(-1)">返 回</el-button>
+    </div>
+    <!-- 面包屑区域end -->
+    <div class="table-box">
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%">
+        <el-table-column
+          label="序号"
+          type="index"
+          width="60"
+          :computedIndex="computedIndex"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="订单编号"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="电商平台名称"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="采购人"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="商品编号"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="商品名称"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="account"
+          label="订单金额"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="订单状态"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="成交时间"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="付款金额"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleTableBtn(scope.row, 'details')">
+              详情
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="pagination-box">
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="page.total"
+          :page-size='page.pageSize'
+          :current-page.sync="page.currentPage"
+          @current-change="handlePage"
+          @next-click="handlePage">
+        </el-pagination>
+        <!--分页-->
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  name: 'consume-statis-list',
+  data () {
+    return {
+      tableData: [{account: 2}],
+      page: {
+        total: 0,
+        pageSize: 10,
+        currentPage: 1
+      }
+    }
+  },
+  methods: {
+    /** 跳转到详情列表页 */
+    handleTableBtn (row, type) {
+      this.$router.push({path: '/index/consume-statis-details'})
+    },
+    /** 分页 */
+    handlePage () {},
+    /** 普通格式化数据，空的时候展示"---" */
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '-----'
+    },
+    /** 序号计算 */
+    computedIndex (index) {
+      return index + (this.page.currentPage - 1) * this.page.pageSize + 1
+    }
+  },
+  mounted () {}
+}
+</script>
+<style lang="less">
+#consume-statis-list-page {
+}
+</style>

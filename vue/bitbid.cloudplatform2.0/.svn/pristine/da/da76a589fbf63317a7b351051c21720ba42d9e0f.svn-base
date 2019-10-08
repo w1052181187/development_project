@@ -1,0 +1,215 @@
+<template>
+  <div>
+    <div class="file-type-name">
+      <span>投标文件</span>
+    </div>
+    <el-table
+      :data="item.refArchivesFileInformationList"
+      style="width: 100%"
+      border
+      header-cell-class-name="tableheader-filetype">
+      <el-table-column
+        type="index"
+        :index="1"
+        label="序号"
+        width="100" align="center">
+      </el-table-column>
+      <el-table-column
+        prop="bidderName"
+        label="投标人"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        prop="fileInformation.fileName"
+        label="投标文件"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        label="操作"
+        align="center"
+        width="200px">
+        <template slot-scope="scope">
+          <el-button
+            @click="handleSee(scope)"
+            type="text"
+            size="small">
+            查看
+          </el-button>
+          <el-button
+            v-if="canEdit"
+            @click="handleEditOpen(scope)"
+            type="text"
+            size="small">
+            修改
+          </el-button>
+          <el-button
+            v-if="canEdit"
+            @click="deleteRow(scope)"
+            type="text"
+            size="small">
+            删除
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <div class="file-type-add" @click="addModal" v-if="canEdit">
+      <span>+ 添加投标文件</span>
+    </div>
+    <!--增加弹框-->
+    <el-dialog :before-close='cancelFun' title="投标文件" :visible.sync="dialogVisible" width="50%">
+      <el-form :model="enclosure" :rules="rules" ref="enclosure" :label-width="formLabelWidth">
+        <el-form-item label="投标人：" prop="bidderName">
+          <el-input v-model="enclosure.bidderName" readonly placeholder="请选择">
+            <el-button slot="append" icon="el-icon-search" @click="showCustomerDialog"></el-button>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="上传文件：">
+          <upload-file @uploadSuccess="uploadOtherSuccess" @deleteSuccess="deleteSuccess"
+                       :fileArrays="enclosure.fileInformationList"
+                       :fileType="9"
+                       isImage="0">
+          </upload-file>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button class='cancle' @click="cancelFun">取消</el-button>
+        <el-button type="primary" @click="handleConfirm('enclosure')" :loading="isLoading">确认</el-button>
+      </div>
+    </el-dialog>
+    <customer-radio-dialog :showVisible="showCustomerVisible" @selected="selectedCustomer" @showDialog="showCustomerDialog"></customer-radio-dialog>
+  </div>
+</template>
+<script>
+import {downloadFile} from '@/assets/js/common'
+import uploadFile from '@/components/upload/publicFileUpload'
+import {archivesFile} from '@/api/archives'
+import CustomerRadioDialog from '@/pages/customer/customer/dialog/radio_dialog.vue'
+export default {
+  components: {
+    uploadFile,
+    CustomerRadioDialog
+  },
+  data () {
+    return {
+      // 投标人的数据
+      enclosure: {
+        fileInformationList: [],
+        bidderName: '',
+        objectId: null
+      },
+      // 判断
+      rules: {
+        bidderName: [
+          {required: true, message: '投标人不能为空', trigger: 'blur'},
+          {min: 1, max: 200, message: '请输入1~200个字符', trigger: ['blur', 'change']}
+        ]
+      },
+      dialogVisible: false,
+      formLabelWidth: '120px',
+      isLoading: false,
+      fileType: 9,
+      // 是否展示客户
+      showCustomerVisible: false,
+      // 是否为更新
+      isUpdate: false,
+      fileIndex: ''
+    }
+  },
+  watch: {
+  },
+  props: ['item', 'canEdit'],
+  methods: {
+    // 选择客户
+    selectedCustomer (obj) {
+      this.enclosure.bidderName = obj.name
+    },
+    // 客户弹框打开
+    showCustomerDialog () {
+      this.showCustomerVisible = !this.showCustomerVisible
+    },
+    uploadOtherSuccess (file) {
+      this.enclosure.fileInformationList = [file]
+    },
+    deleteSuccess (fileId) {
+      this.enclosure.fileInformationList = this.enclosure.fileInformationList.filter(item => item.relativePath !== fileId)
+    },
+    addModal () {
+      this.enclosure = {
+        fileInformationList: [],
+        bidderName: ''
+      }
+      this.isUpdate = false
+      this.dialogVisible = true
+    },
+    handleConfirm (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.isLoading = true
+          archivesFile.addOrUpdateEnclosure({
+            objectId: this.enclosure.objectId,
+            archivesFileId: this.item.objectId,
+            fileType: this.fileType,
+            bidderName: this.enclosure.bidderName,
+            fileInformationList: this.enclosure.fileInformationList
+          }).then((res) => {
+            this.isLoading = false
+            if (res.data.resCode === '0000') {
+              if (!this.isUpdate) {
+                res.data.refArchivesFileInformationList.map(file => {
+                  this.item.refArchivesFileInformationList.push(file)
+                })
+              } else {
+                this.$set(this.item.refArchivesFileInformationList, this.fileIndex, res.data.refArchivesFileInformationList[0])
+              }
+              this.dialogVisible = false
+            }
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    cancelFun () {
+      this.$refs.enclosure.resetFields()
+      this.dialogVisible = false
+    },
+    handleSee (scope) {
+      if (scope.row.fileInformation.relativePath) {
+        var name = scope.row.fileInformation.fileName
+        var path = scope.row.fileInformation.relativePath
+        downloadFile(name, path)
+      } else {
+        this.$message.error(' 请先上传文件')
+      }
+    },
+    handleEditOpen (scope) {
+      this.isUpdate = true
+      this.dialogVisible = true
+      this.enclosure = scope.row
+      this.enclosure.fileInformationList = [scope.row.fileInformation]
+      this.fileIndex = scope.$index
+    },
+    // 删除
+    deleteRow (scope) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        archivesFile.deleteEnclosure(scope.row.objectId).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.item.refArchivesFileInformationList.splice(scope.$index, 1)
+          }
+        })
+      }).catch(() => {
+        return false
+      })
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+
+</style>

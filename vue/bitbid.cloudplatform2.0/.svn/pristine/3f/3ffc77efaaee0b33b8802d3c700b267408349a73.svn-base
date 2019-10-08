@@ -1,0 +1,65 @@
+<template>
+  <div class="header" id="header">
+    <router-link :to="{path : '/main'}" class="returnHome">
+      首页
+    </router-link>
+    <div class="head_right">
+      <p>欢迎您，<span :title="$store.getters.authUser.userName">{{$store.getters.authUser.userName}}</span></p>
+      <img src="../../static/images/touxiang.png"/>
+      <span  class="logoutBtn"  @click="logout">退出</span>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'headTop',
+  methods: {
+    logout () {
+      this.$store.dispatch('Logout').then(() => {
+        this.$router.push({path: '/login'})
+      })
+    }
+  }
+}
+</script>
+
+<style lang='less'>
+  #header{
+    height: 48px;
+    line-height: 48px;
+    width: 100%;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    background: #ffffff;
+    .returnHome{
+      padding-left: 20px;
+      margin-left: 20px;
+      text-decoration: none;
+      font-size: 14px;
+      color: #333333!important;
+      cursor: pointer;
+      background: url("../../static/images/ico_home.png") left center no-repeat;
+    }
+    .head_right{
+      float: right;
+      overflow: hidden;
+      line-height:48px;
+      margin-right: 20px;
+    }
+    .head_right p{
+      float: left;
+      margin: 0 20px;
+      line-height: 48px;
+      font-size: 12px;
+    }
+    .head_right img{ vertical-align: middle;}
+    .logoutBtn{
+      color: #108cee;
+      font-size: 12px;
+      cursor: pointer;
+      margin-left: 5px;
+    }
+  }
+</style>

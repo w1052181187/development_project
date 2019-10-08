@@ -1,0 +1,283 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules"  ref= "updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称："  prop="tenderProjectName">
+              <el-input v-model="updateForm.tenderProjectName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段编号："  prop="bidSectionCode">
+              <el-input v-model="updateForm.currentBidSectionCode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段名称："  prop="bidSectionName">
+              <el-input v-model="updateForm.currentBidSectionName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="更正公告名称："  prop="title">
+              <el-input v-model="updateForm.title"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="递交投标文件方法："  prop="bidDocReferMethod">
+              <el-input v-model="updateForm.bidDocReferMethod"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="公告URL："  prop="bulletinUrl">
+              <el-input v-model="updateForm.bulletinUrl"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="发布网站："  prop="publishUrl">
+              <el-input v-model="updateForm.publishUrl"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="标段信息：" class="bitianicon">
+              <el-table
+                ref="multipleTable"
+                :data="bidSectionList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader"
+                @selection-change="handleSelectionChange"
+                :row-key="getRowKeys">
+                <el-table-column
+                  type="selection"
+                  prop="objectId"
+                  :reserve-selection="true"
+                  width="50">
+                </el-table-column>
+                <el-table-column
+                  prop="bidSectionCode"
+                  label="标段编号"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  prop="bidSectionName"
+                  label="标段名称"
+                  show-overflow-tooltip>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="公告内容：" class="bitianicon">
+              <editor ref="ueditor" class="ueditor" :editread="editread"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="附件：">
+              <upload-file @uploadSuccess="uploadOtherSuccess" @deleteSuccess="deleteSuccess"
+                           :fileArrays="updateForm.fileInformationList"
+                           fileType="9"
+                           isImage="0">
+              </upload-file>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="handleClickEvent('updateForm','submit')" :loading="loading">提交</el-button>
+          <el-button type="primary" @click="handleClickEvent('updateForm','save')" :loading="loading">保存</el-button>
+          <el-button class="cancal" @click="handleClickEvent('updateForm','cancel')">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import uploadFile from '@/components/upload/publicFileUpload'
+import {bulletinInfo} from '@/api/project/index'
+import {validateLinks} from '@/assets/js/validate'
+export default {
+  components: {
+    editor,
+    uploadFile
+  },
+  data () {
+    // 网址验证
+    let validLinks = (rule, value, callback) => {
+      if (!value) {
+        callback()
+      } else if (!validateLinks(value)) {
+        callback(new Error('请输入以http(s)开头的完整信息！'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      loading: false,
+      updateForm: {
+        fileInformationList: []
+      },
+      rules: {
+        title: [
+          { required: true, message: '公告名称不能为空', trigger: ['blur', 'change'] }
+        ],
+        bidDocReferMethod: [
+          { required: true, message: '递交投标文件方法不能为空', trigger: ['blur', 'change'] }
+        ],
+        bulletinUrl: [
+          { required: true, message: '公告URL不能为空', trigger: ['blur', 'change'] },
+          {validator: validLinks, trigger: ['blur', 'change']}
+        ],
+        publishUrl: [
+          { required: true, message: '发布网站不能为空', trigger: ['blur', 'change'] },
+          {validator: validLinks, trigger: ['blur', 'change']}
+        ],
+        bidSectionList: [
+          { required: true, message: '请选择标段', trigger: ['blur', 'change'] }
+        ],
+        content: [
+          {required: true, message: '公告内容不能为空', trigger: ['blur', 'change']}
+        ]
+      },
+      // 富文本
+      editread: false,
+      content: '',
+      noticeList: [],
+      sectionList: [],
+      bidSectionList: []
+    }
+  },
+  watch: {
+    '$route': 'getChooseBulletinInfoInfo'
+  },
+  created () {
+    this.getChooseBulletinInfoInfo()
+  },
+  methods: {
+    /** 获取当前公告信息 */
+    getChooseBulletinInfoInfo () {
+      bulletinInfo.getOneByRelatedCode(this.$route.query.code, this.$route.query.sectionSystemCode).then((res) => {
+        if (res.data.bulletinInfo) {
+          this.updateForm = res.data.bulletinInfo
+          // 获取文本编辑器的内容
+          this.$refs.ueditor.setContent(this.content = this.updateForm.content)
+          // 设置标段信息
+          this.bidSectionList = res.data.chooseBidSectionList
+          // 给已选择的标段设置值
+          this.toggleSelection(this.bidSectionList)
+          // 设置附件信息
+          if (this.updateForm.fileInformationList.length > 0) {
+            this.updateForm.fileInformationList.forEach(item => {
+              item.objectId = null
+            })
+          }
+        }
+      })
+    },
+    /** 弹窗-标段的默认选择 */
+    toggleSelection (rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.$refs.multipleTable.toggleRowSelection(row, true)
+        })
+      } else {
+        this.$refs.multipleTable.clearSelection()
+      }
+    },
+    // 获取row的key值
+    getRowKeys (row) {
+      return row.objectId
+    },
+    // 上传附件
+    uploadOtherSuccess (file) {
+      this.updateForm.fileInformationList.push(file)
+    },
+    deleteSuccess (fileId) {
+      this.updateForm.fileInformationList = this.updateForm.fileInformationList.filter(item => item.relativePath !== fileId)
+    },
+    /* 按钮点击事件：提交、保存、取消 */
+    handleClickEvent (formName, type) {
+      if (Object.is(type, 'submit') || Object.is(type, 'save')) {
+        if (this.sectionList.length === 0) {
+          this.$message.warning('请选择标段！')
+          return false
+        } else {
+          this.updateForm.bidSectionList = this.sectionList
+        }
+        if (!this.$refs.ueditor.getContent()) {
+          this.$message.warning('公告内容不能为空！')
+          return false
+        } else {
+          // 获取文本编辑器中的内容
+          this.updateForm.content = this.$refs.ueditor.getContent()
+        }
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let msg = Object.is(type, 'submit') ? '确认要提交吗?' : '确认要保存吗?'
+            this.$confirm(msg, '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+              beforeClose: (action, instance, done) => {
+                done()
+              }
+            }).then(() => {
+              this.loading = true
+              // 根据type设置当前招标项目的状态
+              if (Object.is(type, 'submit')) {
+                this.updateForm.auditStatus = 4 // 暂时不考虑审批
+              } else {
+                this.updateForm.auditStatus = 0
+              }
+              // 公告类型为更正公告
+              this.updateForm.type = 3
+              bulletinInfo.save(this.updateForm).then((res) => {
+                this.loading = false
+                if (res.data.resCode === '0000') {
+                  this.close()
+                }
+              })
+            }).catch(() => {
+              this.loading = false
+              return false
+            })
+          } else {
+            return false
+          }
+        })
+      } else if (Object.is(type, 'cancel')) {
+        this.close()
+      }
+    },
+    handleSelectionChange (val) {
+      this.sectionList = val
+    },
+    close () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style scoped>
+</style>

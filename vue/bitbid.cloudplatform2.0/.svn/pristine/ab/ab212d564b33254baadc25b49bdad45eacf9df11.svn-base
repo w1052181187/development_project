@@ -1,0 +1,314 @@
+<template>
+  <div class="cloudcontent" id="cloud_buildProject_detail">
+    <div class="main">
+      <p>信息来自比比网（比比网不对信息内容的真实性和准确性负责，也不提供验证服务）</p>
+      <div class="detail">
+        <div class="title">
+          <h3>遂宁康佳产业园区开发有限公司PCB基地工业废水处理厂(康佳工业污水厂)建设项目 (二期)</h3>
+          <el-button type="primary"> + 加入到我的商机</el-button>
+        </div>
+        <div class="part">
+          <span>项目跟进</span>
+          <div class="tablebox">
+            <el-table
+              :data="tableData"
+              border
+              style="width: 100%" header-cell-class-name="tableheader">
+              <el-table-column
+                prop="time"
+                label="日期"
+                width="200"
+                show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column
+                prop="follow"
+                label="跟进"
+                width="130"
+                show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column
+                prop="followPhase"
+                label="进展阶段"
+                width="200"
+                show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column
+                prop="followNote"
+                label="进展备注"
+                show-overflow-tooltip>
+              </el-table-column>
+            </el-table>
+          </div>
+        </div>
+        <div class="part">
+          <span>项目基本情况</span>
+          <div class="tablebox">
+            <table>
+              <tr>
+                <td class="gray">项目名称</td>
+                <td colspan="3">遂宁康佳产业园区开发有限公司PCB基地工业废水处理厂(康佳工业污水厂)建设项目 (二期)</td>
+              </tr>
+              <tr>
+                <td class="gray">更新时间</td>
+                <td>2019-05-12</td>
+                <td class="gray">跟进记录</td>
+                <td>跟进1</td>
+              </tr>
+              <tr>
+                <td class="gray">项目阶段</td>
+                <td>2019-05-12</td>
+                <td class="gray">项目地区</td>
+                <td>跟进1</td>
+              </tr>
+              <tr>
+                <td class="gray">项目性质</td>
+                <td>2019-05-12</td>
+                <td class="gray">业主类型</td>
+                <td>跟进1</td>
+              </tr>
+              <tr>
+                <td class="gray">投资总额</td>
+                <td>2019-05-12</td>
+                <td class="gray">项目规模</td>
+                <td>跟进1</td>
+              </tr>
+              <tr>
+                <td class="gray">项目类别</td>
+                <td>2019-05-12</td>
+                <td class="gray">资金来源</td>
+                <td>跟进1</td>
+              </tr>
+              <tr>
+                <td class="gray">开工时间</td>
+                <td>2019-05-12</td>
+                <td class="gray">竣工时间</td>
+                <td>跟进1</td>
+              </tr>
+              <tr>
+                <td class="gray">占地面积</td>
+                <td>2019-05-12</td>
+                <td class="gray">建筑面积</td>
+                <td>跟进1</td>
+              </tr>
+              <tr>
+                <td class="gray">建设地点</td>
+                <td>2019-05-12</td>
+                <td class="gray">&nbsp;</td>
+                <td>&nbsp;</td>
+              </tr>
+              <tr>
+                <td class="gray">项目概述</td>
+                <td colspan="3"></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="part">
+          <span>项目联系人</span>
+          <div class="tablebox">
+            <table>
+              <tr>
+                <td class="gray">业主单位</td>
+                <td>
+                  <el-row>
+                    <el-col :span="24">
+                      <label>单位名称：</label>
+                      <span>山西比比网络有限公司</span>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <label>联系人：</label>
+                      <span>张三</span>
+                    </el-col>
+                    <el-col :span="12">
+                      <label>联系电话：</label>
+                      <span>15866985478</span>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <label>手机：</label>
+                      <span>15698475634</span>
+                    </el-col>
+                    <el-col :span="12">
+                      <label>传真：</label>
+                      <span>0654-25698774</span>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <label>地址：</label>
+                      <span>山西省太原市小店区</span>
+                    </el-col>
+                  </el-row>
+                </td>
+              </tr>
+              <tr>
+                <td class="gray">设计单位</td>
+                <td>
+                  <el-row>
+                    <el-col :span="24">
+                      <label>单位名称：</label>
+                      <span>山西比比网络有限公司</span>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <label>联系人：</label>
+                      <span>张三</span>
+                    </el-col>
+                    <el-col :span="12">
+                      <label>联系电话：</label>
+                      <span>15866985478</span>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <label>手机：</label>
+                      <span>15698475634</span>
+                    </el-col>
+                    <el-col :span="12">
+                      <label>传真：</label>
+                      <span>0654-25698774</span>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <label>地址：</label>
+                      <span>山西省太原市小店区</span>
+                    </el-col>
+                  </el-row>
+                </td>
+              </tr>
+              <tr>
+                <td class="gray">施工单位</td>
+                <td>
+                  <el-row>
+                    <el-col :span="24">
+                      <label>单位名称：</label>
+                      <span>山西比比网络有限公司</span>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <label>联系人：</label>
+                      <span>张三</span>
+                    </el-col>
+                    <el-col :span="12">
+                      <label>联系电话：</label>
+                      <span>15866985478</span>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <label>手机：</label>
+                      <span>15698475634</span>
+                    </el-col>
+                    <el-col :span="12">
+                      <label>传真：</label>
+                      <span>0654-25698774</span>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <label>地址：</label>
+                      <span>山西省太原市小店区</span>
+                    </el-col>
+                  </el-row>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+
+export default {
+  components: {
+  },
+  data () {
+    return {
+      tableData: [
+        {
+          time: '2019-06-22',
+          follow: '跟进1',
+          followPhase: '施工阶段',
+          followNote: '进展备注是比比招标采购网通过一定渠道获得的项目进度计划，帮您提前把握商机!'
+        },
+        {
+          time: '2019-06-24',
+          follow: '跟进2',
+          followPhase: '施工阶段',
+          followNote: '进展备注是比比招标采购网通过一定渠道获得的项目进度计划，帮您提前把握商机!进展备注是比比招标采购网通过一定渠道获得的项目进度计划，帮您提前把握商机!'
+        }
+      ]
+    }
+  },
+  created () {
+  },
+  methods: {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_buildProject_detail{
+    .main{
+      margin-top: 0;
+    }
+    .main>p{
+      font-size: 14px;
+      line-height: 32px;
+      color: #666666;
+    }
+    .detail{
+      border: 1px solid #dddddd;
+    }
+    .detail .title{
+      text-align: center;
+      padding: 10px;
+      border-bottom: 1px solid #dddddd;
+    }
+    .detail .title h3{
+      padding: 12px 0;
+      line-height: 24px;
+    }
+    .part{
+      margin: 10px auto;
+    }
+    .part>span{
+      border-left: 2px solid #40a3f1;
+      padding-left: 12px;
+      font-weight: bold;
+    }
+    .part .tablebox{
+      margin: 12px;
+      overflow: hidden;
+    }
+    .part .tablebox table{
+      border: 1px solid #dcdfe6;
+      border-collapse: collapse;
+      width: 100%;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .part .tablebox table td{
+      padding: 10px;
+      line-height: 24px;
+      border: 1px solid #dcdfe6;
+    }
+    .part .tablebox table td.gray{
+      background: #e4eefc;
+      width: 160px;
+    }
+    .el-col label{
+      width: 80px;
+      text-align: right;
+      display: inline-block;
+    }
+  }
+</style>

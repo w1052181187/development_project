@@ -1,0 +1,246 @@
+<template>
+  <div class="cloudcontent"  id="cloud_templateCenter">
+    <div class="topmain">
+      <div class="seacher_box advancedsearch_box">
+        <el-form :model="searchForm" ref="searchForm" label-width="85px" :validate-on-rule-change="true">
+          <el-row :gutter="20">
+            <el-col :span="24">
+              <el-form-item label="模板类型：">
+                <span :class="isTemTypeSelectAll ? 'all selectall' : 'all'" @click="conditionCancel('模板类型')">不限</span>
+                <el-radio-group v-model="searchForm.typeList" @change="conditionSelect($event)">
+                  <el-radio v-for="item in temTypeList" :label="item.value" :key="item.value" >{{item.label}}</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col style="width: 320px; float: left;">
+              <el-form-item label="模板名称：" prop="messageLike">
+                <el-input class="search" v-model="searchForm.messageLike" placeholder="请输入模板名称"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col style="width: 160px; float: left;">
+              <el-button  type="primary" @click="search('searchForm')">查询</el-button>
+              <el-button  @click="reset('searchForm')">重置</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+    </div>
+    <div class="main">
+      <ul class="templateList">
+        <li v-for="(item,index) in templateList" :key="index">
+          <img :src="item.imgSrc">
+          <span>{{item.name}}</span>
+          <small>选用{{item.chooseNums}}次</small>
+          <p>
+            <em @click="lookBtn(item)">预览</em>
+            <em @click="chooseBtn(item)">选用</em>
+          </p>
+        </li>
+      </ul>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+import {templateInfo} from '@/api/system'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      searchForm: {
+        typeList: [],
+        messageLike: ''
+      },
+      temTypeList: [
+        {
+          value: 1,
+          label: '工作审批'
+        },
+        {
+          value: 2,
+          label: '工作日志'
+        },
+        {
+          value: 3,
+          label: '计划总结'
+        }
+      ],
+      temStatusOptions: [
+        {
+          value: '1',
+          label: '待发布'
+        },
+        {
+          value: '2',
+          label: '已发布'
+        },
+        {
+          value: '3',
+          label: '取消发布'
+        }
+      ],
+      templateList: [],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 12, // 每页展示条数
+      isTemTypeSelectAll: true
+    }
+  },
+  methods: {
+    conditionSelect (value) {
+      if (value) {
+        this.isTemTypeSelectAll = false
+      }
+    },
+    // 预览
+    lookBtn (item) {
+      this.$router.push({path: `/system/template/detail/${item.code}`})
+    },
+    // 选用
+    chooseBtn (item) {
+      templateInfo.getTemplate(item).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.search()
+          // 給父主件传值
+          // this.$emit('checkActiveNameFlag', 'first')
+        }
+      })
+    },
+    // 查询
+    search () {
+      this.pageNo = 0
+      this.pageSize = 12
+      this.currentPage = 1
+      this.total = 0
+      this.getTableData()
+    },
+    // 重置
+    reset () {
+      this.$refs['searchForm'].resetFields()
+      this.searchForm.typeList = []
+      this.isTemTypeSelectAll = true
+      this.search()
+    },
+    // 搜索条件 点击不限
+    conditionCancel (label) {
+      switch (label) {
+        case '模板类型':
+          this.searchForm.typeList = []
+          this.isTemTypeSelectAll = true
+          this.search()
+          break
+        default:
+          break
+      }
+    },
+    // 表格分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData(parseInt(this.pageNo), parseInt(this.pageSize))
+    },
+    handleCurrentNext (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData(parseInt(this.pageNo), parseInt(this.pageSize))
+    },
+    /** 获取列表数据 */
+    getTableData () {
+      let query = {
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        isShare: 1
+      }
+      if (this.searchForm.messageLike) {
+        query.messageLike = this.searchForm.messageLike
+      }
+      if (this.searchForm.typeList) {
+        query.typeList = this.searchForm.typeList
+      }
+      templateInfo.getList(query).then((res) => {
+        if (res.data.templateInfoList && res.data.templateInfoList.list) {
+          this.templateList = res.data.templateInfoList.list
+          this.total = res.data.templateInfoList.total
+        }
+      })
+    }
+  },
+  computed: {
+    /* isTemTypeSelectAll () {
+      return !this.searchForm.typeList.length
+    } */
+  },
+  created () {
+    this.getTableData()
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_templateCenter{
+    ul.templateList{
+      overflow: hidden;
+    }
+    ul.templateList li{
+      float: left;
+      width: 14.5%;
+      margin: 1%;
+      border: 1px solid #dddddd;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    ul.templateList li img{
+      margin-top: 13px;
+    }
+    ul.templateList li span{
+      width: 100%;
+      display: inline-block;
+      padding: 10px 0 5px 0;
+    }
+    ul.templateList li small{
+      color: #999999;
+      padding-bottom: 10px;
+      display: inline-block;
+    }
+    ul.templateList li p{
+      height: 28px;
+      line-height: 28px;
+      border-top: 1px solid #dddddd;
+    }
+    ul.templateList li p em{
+      width: 50%;
+      float: left;
+      display: inline-block;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      font-size: 12px;
+      font-style: normal;
+      cursor: pointer;
+    }
+    ul.templateList li p em:hover{
+      color: #498ce9;
+    }
+    ul.templateList li p em:nth-child(1){
+      border-right: 1px solid #dddddd;
+    }
+  }
+</style>

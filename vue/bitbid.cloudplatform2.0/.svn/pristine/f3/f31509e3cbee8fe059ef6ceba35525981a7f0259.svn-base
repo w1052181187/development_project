@@ -1,0 +1,49 @@
+body {
+  background-color: #fcfcfd;
+}
+
+#pie {
+  position: relative;
+  display: inline-block;
+  margin: 0 auto;
+  border-radius: 50%;
+  overflow: hidden;
+}
+#pie svg{
+  width: 100%;
+  height: 100%;
+  -webkit-transform: rotate(-90deg);
+          transform: rotate(-90deg);
+  overflow: visible;
+}
+#pie .percentage {
+  position: absolute;
+  opacity: 0;
+  top: 50%;
+  left: 50%;
+  font-family: Helvetica;
+  font-size: 12px;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+}
+.rendered#pie{
+  background: none;
+}
+.rendered#pie .percentage{
+  opacity: 1;
+}
+
+#pie {
+  box-shadow: none;
+  background: #9fc2f9;
+}
+#pie circle:nth-child(1) {
+  fill: #9fc2f9;
+}
+#pie circle:nth-child(2) {
+  fill: #9fc2f9;
+  stroke: #4185f4;
+}
+#pie .percentage {
+  color: white;
+}

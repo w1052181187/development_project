@@ -1,0 +1,186 @@
+<template>
+  <div class="cloudcontent"  id="cloud_templateAdd">
+    <div class="main">
+      <el-form :model="submitForm" label-width="120px" ref="submitForm">
+        <el-row v-for="(item, index) in submitForm.item" :key="index">
+          <el-col :span="item[0].type === 5 || item[0].type === 6 ? 24 : 12">
+            <el-form-item :label="item[0].name + '：'">
+              <el-input autocomplete="off"
+                        v-if="item[0].type === 1"
+                        v-model="item[1].value">
+              </el-input>
+              <el-select v-model="item[0].value" placeholder="请选择" v-if="item[0].type === 2">
+                <el-option
+                  v-for="opItem in item[0].optional"
+                  :key="opItem.value"
+                  :label="opItem.label"
+                  :value="opItem.value">
+                </el-option>
+              </el-select>
+              <el-radio-group v-model="item[0].value" v-if="item[0].type === 3">
+                <el-radio v-for="raItem in item[0].optional" :label="raItem.value" :key="raItem.value" >{{raItem.label}}</el-radio>
+              </el-radio-group>
+              <el-checkbox-group v-model="item[0].value" v-if="item[0].type === 4">
+                <el-checkbox v-for="raItem in item[0].optional" :label="raItem.value" :key="raItem.value" >{{raItem.label}}</el-checkbox>
+              </el-checkbox-group>
+              <el-date-picker
+                v-if="item[0].type === 7"
+                v-model="item[0].value"
+                type="date"
+                placeholder="选择日期">
+              </el-date-picker>
+              <el-date-picker
+                v-if="item[0].type === 8"
+                v-model="item[0].value"
+                type="datetime"
+                placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="item[1].type === 5 || item[1].type === 6 ? 24 : 12" v-if="item.length === 2">
+            <el-form-item :label="item[1].name + '：'">
+              <el-input autocomplete="off"
+                        v-if="item[1].type === 1"
+                        v-model.number="item[1].value">
+              </el-input>
+              <el-select v-model="item[1].value" placeholder="请选择" v-if="item[1].type === 2">
+                <el-option
+                  v-for="opItem in item[1].optional"
+                  :key="opItem.value"
+                  :label="opItem.label"
+                  :value="opItem.value">
+                </el-option>
+              </el-select>
+              <el-radio-group v-model="item[1].value" v-if="item[1].type === 3">
+                <el-radio v-for="raItem in item[1].optional" :label="raItem.value" :key="raItem.value" >{{raItem.label}}</el-radio>
+              </el-radio-group>
+              <el-checkbox-group v-model="item[1].value" v-if="item[1].type === 4">
+                <el-checkbox v-for="raItem in item[1].optional" :label="raItem.value" :key="raItem.value" >{{raItem.label}}</el-checkbox>
+              </el-checkbox-group>
+              <el-date-picker
+                v-if="item[1].type === 7"
+                v-model="item[1].value"
+                type="date"
+                placeholder="选择日期">
+              </el-date-picker>
+              <el-date-picker
+                v-if="item[1].type === 8"
+                v-model="item[1].value"
+                type="datetime"
+                placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import {templateInfo} from '@/api/system'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      submitForm: {
+        item: [
+          [
+            {
+              name: 'ddd',
+              value: '1000',
+              type: 1
+            },
+            {
+              name: 'ddd',
+              value: '1000',
+              type: 2
+            }
+          ],
+          [
+            {
+              name: 'ddd',
+              value: '1000',
+              type: 3
+            }
+          ]
+        ]
+      },
+      rules: [],
+      id: ''
+    }
+  },
+  methods: {
+    showEdit () {
+      templateInfo.getOne(this.$route.params.code).then((res) => {
+        console.log(res.data.templateInfo.items)
+        this.submitForm.item = JSON.parse(res.data.templateInfo.items)
+        console.log(this.submitForm.item)
+      })
+    }
+  },
+  mounted () {
+    this.showEdit()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_templateAdd{
+    .showImg{
+      width:100px;
+      overflow: hidden;
+    }
+    .showImg .el-button{
+      padding: 8px 11px;
+    }
+    .showImg img{
+      margin-top: 13px;
+    }
+    .imgDialog .el-dialog__header{
+      border-bottom: 1px solid #eeeeee;
+    }
+    .imgDialog .el-dialog__body{
+      padding: 0;
+    }
+    ul.imgList{
+      width: 100%;
+      overflow: hidden;
+      margin: 20px 0 30px 0;
+    }
+    ul.imgList li{
+      float: left;
+      width: 80px;
+      height: 80px;
+      margin: 16px 30px;
+      position: relative;
+    }
+    ul.imgList li .hover{
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: none;
+      cursor: pointer;
+    }
+    ul.imgList li:hover .hover{
+      display: block;
+    }
+    .temTableData {
+      margin-top: 20px;
+      border: 0!important;
+    }
+    .optional span:hover{
+      cursor: pointer;
+      color: #409EFF;
+    }
+    .optionalDialog .el-dialog__header{
+      border-bottom: 1px solid #eeeeee;
+    }
+    .optionalDialog p{
+      color: #999999;
+      line-height: 24px;
+    }
+    .optionalDialog .submit-radio{
+      text-align: center;
+    }
+  }
+</style>

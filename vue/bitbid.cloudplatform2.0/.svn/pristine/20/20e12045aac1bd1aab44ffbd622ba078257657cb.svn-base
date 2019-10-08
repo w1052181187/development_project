@@ -1,0 +1,81 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm">
+        <el-form-item label="标题：">
+        <span>{{updateForm.title}}</span>
+        </el-form-item>
+        <el-form-item :label="type === 'notice' ? '通知内容：' : '内容：'">
+          <editor ref="ueditor" class="ueditor" :editread="editread"></editor>
+        </el-form-item>
+        <el-form-item label="附件：">
+          <file-download :fileArrays="updateForm.fileInformationList" fileType="9"></file-download>
+        </el-form-item>
+          <el-form-item class="submit-radio">
+            <el-button class="cancal" @click="handleCancle">返回</el-button>
+          </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+import fileDownload from '@/components/download/file-download'
+import editor from '@/components/ueditor/ueditor.vue'
+import {notice} from '@/api/notice/notice'
+export default {
+  name: 'detail',
+  components: {
+    fileDownload,
+    editor
+  },
+  data () {
+    return {
+      type: '',
+      updateForm: {
+      },
+      // 富文本
+      editread: true
+    }
+  },
+  methods: {
+    detail () {
+      let isReaded = 0
+      if (this.$route.query.isSetReaded === '1') {
+        isReaded = 1
+        notice.detailNotice(this.$route.params.objectId, isReaded).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.updateForm = res.data.notice
+            this.$refs.ueditor.setContent(res.data.notice.content)
+          }
+        })
+      } else {
+        notice.detailNotice(this.$route.params.objectId, isReaded).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.updateForm = res.data.notice
+            this.$refs.ueditor.setContent(res.data.notice.content)
+          }
+        })
+      }
+    },
+    init () {
+      this.type = this.$route.meta.type
+      this.detail()
+    },
+    handleCancle () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+
+<style scoped>
+
+</style>

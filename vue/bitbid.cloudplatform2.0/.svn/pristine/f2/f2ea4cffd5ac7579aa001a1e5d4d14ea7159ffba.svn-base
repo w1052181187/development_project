@@ -1,0 +1,221 @@
+<template>
+  <div class="cloudcontent" id="otherIncome">
+    <div class="tit">
+      <span>山西国新能源旧址扩建总包工程项目<i>（项目编号：M2019052600010000001）</i></span>
+      <span class="returnBtn" @click="goBack()">返回收支列表</span>
+    </div>
+    <div class="main">
+      <!--搜索 & 添加按钮-->
+      <div class="topmain">
+        <el-row>
+          <div class="seacher_box">
+            <span>全部标段：</span>
+            <el-select v-model="sourceType" class="select">
+              <el-option
+                v-for="item in sourceOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+            <el-input class="search left" placeholder="请输入缴费单位名称关键字" v-model="messageLike">
+              <el-button  slot="append" icon="el-icon-search" type="" @click="search"></el-button>
+            </el-input>
+          </div>
+          <!--按钮-->
+          <div class="fr">
+            <el-button class="addbutton" @click="addBtn">
+              <span> + 新增支出</span>
+            </el-button>
+          </div>
+          <!--按钮-->
+        </el-row>
+      </div>
+      <!--搜索 & 添加按钮-->
+      <el-table
+        :data="tableData"
+        border
+        tooltip-effect="dark"
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='indexMethod'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          width="100"
+          label="支出项目"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="money"
+          label="支付金额/元"
+          width="100"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop=""
+          label="支付方式"
+          width="100"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop=""
+          label="支付时间"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop=""
+          label="相关标段"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop=""
+          label="支付进度"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookBtn(scope.row)">查看</el-button>
+            <el-button type="text" size="small" @click="update(scope.row)">修改</el-button>
+            <el-button type="text" size="small" @click="delBtn(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+      sourceType: null,
+      // 全部标段
+      sourceOptions: [{
+        value: null,
+        label: '全部标段'
+      }, {
+        value: 1,
+        label: '一标段'
+      }, {
+        value: 2,
+        label: '二标段'
+      }],
+      searchForm: {},
+      messageLike: '',
+      tableData: [
+        {
+          detailId: 1234567,
+          name: '会务费',
+          money: '500.00'
+        },
+        {
+          detailId: 1234567,
+          name: '场地费',
+          money: '6,000.00'
+        },
+        {
+          detailId: 1234567,
+          name: '专家费',
+          money: '6,000.00'
+        }
+      ],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      dataIndex: 1
+    }
+  },
+  watch: {
+    '$route': 'getTableData'
+  },
+  created () {
+    this.pageText = this.$route.query.text
+    this.getTableData()
+  },
+  methods: {
+    getTableData () {},
+    search () {},
+    addBtn () {
+      if (this.pageText === '其他收支') {
+        this.$router.push({path: `/project/proSettlement/otherIncomePay/otherPayAdd`, query: {text: this.pageText}})
+      } else if (this.pageText === '支出') {
+        this.$router.push({path: `/project/proSettlement/otherIncomePay/payAdd`, query: {text: this.pageText}})
+      }
+    },
+    indexMethod () {},
+    lookBtn (rowData) {
+      if (this.pageText === '其他收支') {
+        this.$router.push({path: `/project/proSettlement/otherIncomePay/otherPayDetail/${rowData.detailId}`, query: {text: this.pageText}})
+      } else if (this.pageText === '支出') {
+        this.$router.push({path: `/project/proSettlement/otherIncomePay/payDetail/${rowData.detailId}`, query: {text: this.pageText}})
+      }
+    },
+    goBack () {
+      this.$router.push({path: `/project/proSettlement/paymentTerm`})
+    },
+    update (rowData) {
+      if (this.pageText === '其他收支') {
+        this.$router.push({path: `/project/proSettlement/otherIncomePay/otherPayAdd/${rowData.detailId}`, query: {text: this.pageText}})
+      } else if (this.pageText === '支出') {
+        this.$router.push({path: `/project/proSettlement/otherIncomePay/payAdd/${rowData.detailId}`, query: {text: this.pageText}})
+      }
+    },
+    delBtn () {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+      }).catch(() => {
+        return false
+      })
+    },
+    handleCurrentChange () {},
+    handleCurrentNext () {}
+  }
+}
+</script>
+<style lang="less">
+  #otherIncome{
+    .seacher_box{
+      width: 700px;
+    }
+    .seacher_box .search{
+      width: 44%;
+    }
+    .fr>em{
+      font-size: 14px;
+      font-style: normal;
+      line-height: 40px;
+      margin: 0 10px;
+    }
+    .returnBtn{
+      float:right;
+      color:#3f63f6;
+      font-size: 14px;
+      line-height: 20px;
+      border-bottom: 1px solid #3f63f6;
+      cursor: pointer;
+    }
+  }
+</style>

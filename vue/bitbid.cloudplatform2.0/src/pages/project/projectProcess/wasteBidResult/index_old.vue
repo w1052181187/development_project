@@ -1,0 +1,153 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <div class="box">
+      <div class="topmain">
+        废标结果公告
+        <!--按钮-->
+        <el-button  type="primary" class="addbutton" @click="addBtn()" v-if="operationFlag">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="tableData"
+        header-cell-class-name="tableheader"
+        border>
+        <el-table-column
+          type="index"
+          label="序号"
+          :index='indexMethod'
+          width="50">
+        </el-table-column>
+        <el-table-column
+          prop="title"
+          label="废标结果公告名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="auditStatus"
+          label="提交状态"
+          width="120">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.auditStatus === 0">已保存</span>
+            <span  v-if="scope.row.auditStatus === 1">待审批</span>
+            <span  v-if="scope.row.auditStatus === 2">已审批</span>
+            <span  v-if="scope.row.auditStatus === 3">已驳回</span>
+            <span  v-if="scope.row.auditStatus === 4">已提交</span>
+            <span  v-if="scope.row.auditStatus === 5">已撤回</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="submitTime"
+          label="提交时间"
+          width="160">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookBtn(scope)">查看</el-button>
+            <el-button type="text" size="small" v-if="(scope.row.auditStatus === 0 || scope.row.auditStatus === 3 || scope.row.auditStatus === 5) && operationFlag" @click="updateBtn(scope)">编辑</el-button>
+            <el-button type="text" size="small" v-if="scope.row.auditStatus === 0 && operationFlag" @click="delBtn(scope)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+import {bulletinInfo} from '@/api/project'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      code: this.tenderSystemCode,
+      // 废标结果公告
+      tableData: [],
+      // 中标候选人公示  分页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10 // 每页展示条数
+    }
+  },
+  props: ['tenderSystemCode', 'sectionSystemCode', 'operationFlag', 'type'],
+  methods: {
+    // 废标结果公告
+    // 查看
+    lookBtn (scope) {
+      this.$router.push({path: `/project/projectProcess/project/process/wasteBidResult/detail/${scope.row.code}`, query: {sectionSystemCode: this.sectionSystemCode}})
+    },
+    // 添加
+    addBtn () {
+      this.$router.push({path: `/project/projectProcess/project/process/wasteBidResult/add`, query: {sectionSystemCode: this.sectionSystemCode}})
+    },
+    // 编辑
+    updateBtn (scope) {
+      this.$router.push({path: `/project/projectProcess/project/process/wasteBidResult/update`, query: {code: scope.row.code, sectionSystemCode: this.sectionSystemCode}})
+    },
+    // 删除
+    delBtn (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        // **
+        bulletinInfo.delete(scope.row.objectId).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.getNoticeList()
+          }
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    indexMethod (index) {
+      return index + (this.currentPage - 1) * 10 + 1
+    },
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageNo
+      this.getNoticeList()
+    },
+    getNoticeList () {
+      let query = {
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        tenderSystemCode: this.tenderSystemCode,
+        sectionSystemCode: this.sectionSystemCode,
+        type: 5
+      }
+      bulletinInfo.getList(query).then(res => {
+        let data = res.data.bulletinInfoList
+        if (data) {
+          this.tableData = data.list
+          this.total = data.total
+        }
+      })
+    },
+    init () {
+      this.getNoticeList()
+    }
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_processtype{
+  }
+</style>

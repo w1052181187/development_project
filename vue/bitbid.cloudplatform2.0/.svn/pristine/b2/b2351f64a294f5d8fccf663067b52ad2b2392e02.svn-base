@@ -1,0 +1,199 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" ref="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-form-item label="资质来源：">
+            <el-radio-group v-model="updateForm.source" prop="source">
+              <el-radio :label="1">自有</el-radio>
+              <el-radio :label="2">借入</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="资质类别：">
+            <el-select v-model="updateForm.type" prop="type">
+              <el-option
+                v-for="item in typeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="资质名称："  prop="title">
+            <el-input v-model="updateForm.title"></el-input>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="资质编号：">
+            <el-input v-model="updateForm.code"></el-input>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="资质等级：">
+            <el-select v-model="updateForm.grade" prop="grade">
+              <el-option
+                v-for="item in gradeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-row>
+        <template v-if="updateForm.source === 1">
+          <el-row>
+            <el-form-item label="资质主体：">
+              <el-select v-model="updateForm.body">
+                <el-option
+                  v-for="item in bodyOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-form-item label="资质有效期：">
+              <el-date-picker
+                v-model="updateForm.time"
+                type="daterange"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-form-item label="备注：">
+              <editor ref="ueditor" class="ueditor" :editread="editread"></editor>
+            </el-form-item>
+          </el-row>
+        </template>
+        <template v-if="updateForm.source === 2">
+          <el-row>
+            <el-form-item label="合作类型：">
+              <el-select v-model="updateForm.cooperation">
+                <el-option
+                  v-for="item in cooperationOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-row>
+          <el-form-item label="合作方："  prop="person">
+            <el-input v-model="updateForm.person"></el-input>
+          </el-form-item>
+          <el-row>
+            <el-form-item label="合作期间：" prop="cooperateTime">
+              <el-date-picker
+                v-model="updateForm.cooperateTime"
+                type="daterange"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
+            </el-form-item>
+          </el-row>
+          <el-form-item label="费用(元)：">
+            <el-input v-model="updateForm.cost"></el-input>
+          </el-form-item>
+          <el-row>
+            <el-form-item label="备注：">
+              <editor ref="ueditor" class="ueditor" :editread="editread"></editor>
+            </el-form-item>
+          </el-row>
+        </template>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit('updateForm')" :loading="isSubmiting">保存</el-button>
+          <el-button class="cancal" @click="close">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+export default {
+  name: '',
+  comments: {
+    editor
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      updateForm: {
+      },
+      rules: {
+        source: [
+          { required: true, message: '请选择资质来源', trigger: ['change'] }
+        ],
+        type: [
+          { required: true, message: '请选择资质类别', trigger: ['change'] }
+        ],
+        title: [
+          { required: true, message: '资质名称不能为空', trigger: ['blur', 'change'] }
+        ],
+        grade: [
+          { required: true, message: '请选择资质等级', trigger: ['change'] }
+        ],
+        person: [
+          { required: true, message: '合作方不能为空', trigger: ['change'] }
+        ],
+        cooperateTime: [
+          { type: 'date', required: true, message: '合作方不能为空', trigger: ['change'] }
+        ]
+      },
+      typeOptions: [],
+      gradeOptions: [],
+      bodyOptions: [],
+      cooperationOptions: [
+        {
+          label: '机构合作',
+          value: 1
+        },
+        {
+          label: '项目合作',
+          value: 2
+        },
+        {
+          label: '个人合作',
+          value: 3
+        }
+      ],
+      // 富文本
+      editread: false
+    }
+  },
+  methods: {
+    // 保存
+    submit (form) {
+      this.$refs[form].validate((valid) => {
+        if (valid) {
+          let content = this.$refs.ueditor.getContent()
+          this.isSubmiting = true
+          this.updateForm.content = content
+        } else {
+          return false
+        }
+      })
+    },
+    // 取消
+    close () {
+      this.$router.go(-1)
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style scoped>
+</style>

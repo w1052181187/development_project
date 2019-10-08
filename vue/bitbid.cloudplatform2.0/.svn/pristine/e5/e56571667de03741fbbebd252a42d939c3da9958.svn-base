@@ -1,0 +1,249 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main tender_confirm">
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="50">
+        </el-table-column>
+        <el-table-column
+          prop="bidSectionCode"
+          label="标段编号"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="bidSectionName"
+          label="标段名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="supplierName"
+          label="供应商名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="contactName"
+          label="联系人"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="contactNumber"
+          label="联系方式"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="contactEmail"
+          label="邮箱"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="isConfirm"
+          label="状态"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="scope.row.isConfirm === 1">已确认</span>
+            <span v-if="scope.row.isConfirm === 0">未确认</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="160">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetail(scope)">查看</el-button>
+            <el-button type="text" size="small" @click="handleEdit(scope)" v-if="scope.row.isConfirm !== 1">编辑</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+    </div>
+    <el-dialog :title="titileName" :visible.sync="dialogVisible" width="40%" :before-close="handleClose">
+      <el-form :model="supplierForm" :rules="supplierRules" ref="supplierForm">
+        <el-form-item label="标段编号：" prop="bidSectionCode" :label-width="formLabelWidth">
+          <el-input v-model="supplierForm.bidSectionCode" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="标段名称：" prop="bidSectionName" :label-width="formLabelWidth">
+          <el-input v-model="supplierForm.bidSectionName " disabled></el-input>
+        </el-form-item>
+        <el-form-item label="供应商名称：" prop="supplierName" :label-width="formLabelWidth">
+          <el-input v-model.trim="supplierForm.supplierName" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="联系人：" prop="contactName" :label-width="formLabelWidth">
+          <el-input v-model.trim="supplierForm.contactName" :disabled="!flag"></el-input>
+        </el-form-item>
+        <el-form-item label="联系方式：" prop="contactNumber" :label-width="formLabelWidth">
+          <el-input v-model.trim="supplierForm.contactNumber" :disabled="!flag"></el-input>
+        </el-form-item>
+        <el-form-item label="联系人电子邮件：" prop="contactEmail" :label-width="formLabelWidth">
+          <el-input v-model.trim="supplierForm.contactEmail" :disabled="!flag"></el-input>
+        </el-form-item>
+        <el-form-item label="确认状态：" prop="isConfirm" :label-width="formLabelWidth">
+          <el-select v-model="supplierForm.isConfirm" placeholder="请选择" :disabled="!flag">
+            <el-option
+              v-for="item in confirmOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="说明：" prop="content" :label-width="formLabelWidth">
+          <el-input v-model.trim="supplierForm.content" :disabled="!flag"
+                    type="textarea"
+                    autosize>
+          </el-input>
+        </el-form-item>
+        <el-form-item class="submit-radio submit_btn" v-if="flag">
+          <el-button type="primary" @click="submit('supplierForm', flag)" :loading="isSubmiting">提交</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import {validPhoneUser} from '@/assets/js/validate'
+import editor from '@/components/ueditor/ueditor.vue'
+import {supplierBase} from '@/api/project/index'
+export default {
+  components: {
+    editor
+  },
+  name: '',
+  data () {
+    // 电话号码
+    return {
+      bulletinSystemCode: this.$route.query.code,
+      isSubmiting: false,
+      confirmOptions: [
+        {
+          value: 1,
+          label: '已确认'
+        },
+        {
+          value: 0,
+          label: '未确认'
+        }
+      ],
+      tableData: [
+      ],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10, // 每页展示条数
+      supplierForm: {},
+      supplierRules: {
+        contactName: {required: true, message: '请填写联系人', trigger: 'blur'},
+        contactNumber: [
+          {required: true, message: '请填联系方式', trigger: 'blur'},
+          {validator: validPhoneUser, trigger: ['blur', 'change']}
+        ],
+        contactEmail: [
+          {required: true, message: '请填写电子邮件', trigger: 'blur'},
+          { type: 'email', message: '请输入正确的邮件地址', trigger: ['blur', 'change'] }
+        ],
+        isConfirm: {required: true, message: '请选择确认状态', trigger: 'blur'}
+      },
+      // 弹框lable宽度
+      formLabelWidth: '140px',
+      flag: true, // 自定义增加跟详情状态
+      titileName: '编辑',
+      dialogVisible: false
+    }
+  },
+  methods: {
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getList()
+    },
+    // 关闭弹窗
+    handleClose () {
+      this.dialogVisible = false
+      if (this.flag) {
+        this.$refs['supplierForm'].resetFields()
+      }
+    },
+    handleEdit (scope) {
+      this.dialogVisible = true
+      this.titileName = '编辑'
+      this.flag = true
+      this.detail(scope.row.code)
+    },
+    handleDetail (scope) {
+      this.dialogVisible = true
+      this.titileName = '详情'
+      this.flag = false
+      this.detail(scope.row.code)
+    },
+    getList () {
+      let params = {
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        bulletinSystemCode: this.bulletinSystemCode
+      }
+      supplierBase.getList(params).then((res) => {
+        if (res.data.resCode === '0000') {
+          let supplier = res.data.supplierBaseList
+          this.tableData = supplier.list
+          this.total = supplier.total
+        }
+      })
+    },
+    detail (code) {
+      supplierBase.getOne(code).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.supplierForm = res.data.supplierBase
+        }
+      })
+    },
+    submit (form, flag) {
+      this.$refs[form].validate((valid) => {
+        if (valid) {
+          supplierBase.save(this.supplierForm).then((res) => {
+            if (res.data.resCode === '0000') {
+              this.getList()
+              this.handleClose()
+            }
+          })
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  mounted () {
+    this.getList()
+  }
+}
+</script>
+
+<style scoped>
+  .tender_confirm {
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  .addbtn{
+    border: 1px solid #3f63f6;
+    height: 32px;
+    padding: 7px 12px;
+    margin-bottom: 12px;
+  }
+  .btn_right{
+    float: right;
+  }
+  .submit_btn {
+    text-align: center;
+  }
+</style>

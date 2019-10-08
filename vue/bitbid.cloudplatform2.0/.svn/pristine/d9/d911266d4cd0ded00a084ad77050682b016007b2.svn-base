@@ -1,0 +1,116 @@
+<template>
+  <div class="cloudcontent" id="archives-detail">
+    <div class="main">
+      <div class="detail-title">{{info.tenderProjectName ? info.tenderProjectName : ''}}</div>
+      <div class="section_listbox">
+        <div class="section_list">
+          <ul class="section_ul">
+            <li v-for="(item, index) in bidList" :key="item.index" :class="activeBid === index ? 'cur': ''" @click="handleBidClick(item, index)">
+              <p :title="item.name">{{item.name}}</p>
+              <span>移交&nbsp;{{item.progressValue}}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="btnMore" v-if="isMore">
+          <i class="open" v-if="!isOpen" @click="handleIsOpen">展开</i>
+          <i class="close" v-if="isOpen" @click="handleIsOpen">收起</i>
+        </div>
+      </div>
+      <el-tabs v-model="activeTab">
+        <el-tab-pane label="移交情况" name="1">
+          <transfer-situation :info="info"></transfer-situation>
+        </el-tab-pane>
+        <el-tab-pane label="标段信息" name="2">
+          <section-info :info="info"></section-info>
+        </el-tab-pane>
+        <el-tab-pane label="移交资料" name="3">
+          <file-pack-download :info="info"></file-pack-download>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+  </div>
+</template>
+<script>
+import {archivesInfo} from '@/api/archives'
+export default {
+  components: {
+    transferSituation: resolve => require(['./transferSituation'], resolve),
+    sectionInfo: resolve => require(['./sectionInfo'], resolve),
+    filePackDownload: resolve => require(['./filePackDownload'], resolve)
+  },
+  data () {
+    return {
+      title: '',
+      activeTab: '1',
+      info: {},
+      bidList: [
+        {
+          name: 'ddd的大佛而疯狂尾盘问了人陪了人情味了饿',
+          progressValue: '1/5'
+        },
+        {
+          name: 'ddd',
+          progressValue: '2/5'
+        },
+        {
+          name: 'ddd',
+          progressValue: '3/5'
+        },
+        {
+          name: 'ddd',
+          progressValue: '4/5'
+        }
+      ],
+      isMore: false, // 判断标段是否需要多行显示
+      isOpen: false, // 判断标段是否展开收起
+      activeBid: 0
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  methods: {
+    /**
+     * 标段切换
+     * @param item
+     * @param index
+     */
+    handleBidClick (item, index) {
+      this.activeBid = index
+    },
+    init () {
+      let sectionUlWrap = document.getElementsByClassName('section_ul')
+      let height = sectionUlWrap[0].clientHeight
+      if (height > 40) {
+        this.isMore = true
+      }
+      this.getData()
+    },
+    getData () {
+      let isSetRecord = 0 // 不设置查询记录
+      archivesInfo.detailArchivesInfo(this.$route.params.objectId, isSetRecord).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.info = res.data.archivesInfo
+        }
+      })
+    },
+    handleIsOpen () {
+      this.isOpen = !this.isOpen
+      let sectionListWrap = document.getElementsByClassName('section_list')
+      if (this.isOpen) {
+        sectionListWrap[0].style.height = 'auto'
+      } else {
+        sectionListWrap[0].style.height = 48 + 'px'
+      }
+    }
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+
+<style lang="less">
+  #archives-detail{
+  }
+</style>

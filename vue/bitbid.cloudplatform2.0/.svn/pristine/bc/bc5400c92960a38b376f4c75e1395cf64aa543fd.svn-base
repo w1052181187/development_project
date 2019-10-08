@@ -1,0 +1,29 @@
+export default [
+  {
+    path: '/project/projectProcess/exploration/add',
+    name: '流程管理-踏勘记录-添加',
+    meta: {
+      title: '流程管理-踏勘记录-添加',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/exploration/add'], resolve)
+  },
+  {
+    path: '/project/projectProcess/exploration/update',
+    name: '流程管理-踏勘记录-修改',
+    meta: {
+      title: '流程管理-踏勘记录-修改',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/exploration/update'], resolve)
+  },
+  {
+    path: '/project/projectProcess/exploration/detail/:objectId',
+    name: '流程管理-踏勘记录-详情',
+    meta: {
+      title: '流程管理-踏勘记录-详情',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/exploration/detail'], resolve)
+  }
+]

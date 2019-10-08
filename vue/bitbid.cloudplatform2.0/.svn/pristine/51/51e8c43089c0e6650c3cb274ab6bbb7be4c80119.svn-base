@@ -1,0 +1,300 @@
+<template>
+  <div class="cloudcontent" id="archives_add">
+    <div class="main">
+      <ul class="step">
+        <li :class="active === 1 ? 'active' : 'prev'">
+          <i v-if="active > 1"><img src="../../../assets/duigou_2.png"></i>
+          <i v-else>1</i>
+          <span>移交记录</span>
+          <em></em>
+        </li>
+        <li :class="active === 2 ? 'active' : active === 3 ? 'prev' : ''">
+          <i v-if="active === 3"><img src="../../../assets/duigou_2.png"></i>
+          <i v-else>2</i>
+          <span>移交资料</span>
+          <em></em>
+        </li>
+        <li :class="active === 3 ? 'active' : ''">
+          <i>3</i>
+          <span>归档</span>
+        </li>
+      </ul>
+      <transferRecord v-if="active === 1" ref="transferRecord"></transferRecord>
+      <file v-if="active === 2" :info="info"></file>
+      <fileEnd v-if="active === 3" ref="fileEnd"></fileEnd>
+      <div class="submit-radio">
+        <el-button class="cancal" @click="lastStep" v-if="active === 2">{{lastText}}</el-button>
+        <el-button type="primary" @click="nextStep" :loading="isSubmiting">{{stepText}}</el-button>
+        <el-button class="cancal" @click="handleCancle" >{{cancleText}}</el-button>
+      </div>
+    </div>
+    <el-dialog :before-close='close' @opened="handleOpen" title="选择要归档的资料" :visible.sync="dialogVisible">
+      <el-table
+        :data="list"
+        ref="multipleTable"
+        border
+        style="width: 100%" header-cell-class-name="tableheader"
+        @selection-change="handleSelectionChange">
+        <el-table-column
+          width="50"
+          type="index"
+          align="center"
+          label="序号">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="档案目录"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          type="selection"
+          label="选择"
+          align="center"
+          width="100">
+        </el-table-column>
+      </el-table>
+      <div slot="footer" class="dialog-footer">
+        <el-button class="cancal" @click="close">取 消</el-button>
+        <el-button type="primary" @click="handleConfirm">确认</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import {archivesInfo} from '@/api/archives'
+
+export default {
+  name: 'add',
+  components: {
+    // 移交记录
+    transferRecord: resolve => require(['./transferRecord'], resolve),
+    // 接受资料
+    file: resolve => require(['./file'], resolve),
+    // 归档
+    fileEnd: resolve => require(['./fileEnd'], resolve)
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      stepText: '下一步',
+      lastText: '上一步',
+      cancleText: '取消',
+      // 步骤条
+      active: 1,
+      updateForm: {
+      },
+      rules: {
+      },
+      info: {
+        archivesClassifyList: []
+      },
+      fileInfo: {},
+      dialogVisible: false,
+      list: [],
+      checkedArchives: []
+    }
+  },
+  methods: {
+    getData () {
+      let isSetRecord = 0 // 不设置查询记录
+      archivesInfo.detailArchivesInfo(this.$route.params.objectId, isSetRecord).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.info = res.data.archivesInfo
+        }
+      })
+    },
+    // 下一步
+    nextStep () {
+      switch (this.active) {
+        case 1:
+          this.active++
+          this.stepText = '归档'
+          this.fileInfo = this.info
+          break
+        case 2:
+          // 归档
+          // 将已移交未接受的进行接收
+          this.setReceived()
+          break
+        case 3:
+          // 归档
+          this.savePosition()
+          break
+      }
+    },
+    lastStep () {
+      this.active--
+      this.cancleText = '取消'
+      this.stepText = '下一步'
+    },
+    // 取消
+    handleCancle () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    },
+    setReceived () {
+      let data = []
+      let receivedArr = []
+      this.info.archivesClassifyList.map(archivesClassify => {
+        if (Number(archivesClassify.transferStatus) === 2) { // 已移交
+          data.push(archivesClassify)
+        } else if (Number(archivesClassify.transferStatus) === 1) { // 已接收
+          receivedArr.push(archivesClassify)
+        }
+      })
+      this.list = this.info.archivesClassifyList.filter(item => Number(item.transferStatus) === 1 && Number(item.status) === 0)
+      if (data.length === 0 && receivedArr.length === 0) {
+        this.$message(
+          {
+            type: 'warning',
+            message: '您没有需要归档的资料！'
+          }
+        )
+      } else if (data.length === 0 && receivedArr.length > 0) {
+        this.dialogVisible = true
+      } else {
+        this.$confirm('归档后，未接收的档案将自动变为“已接收"，确认归档吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.info.archivesClassifyList.map(archivesClassify => {
+            if (Number(archivesClassify.transferStatus) === 2) { // 已移交
+              archivesClassify.transferStatus = 1
+            }
+          })
+          archivesInfo.receiveList(data).then((res) => {
+            if (res.data.resCode === '0000') {
+              this.list = this.info.archivesClassifyList.filter(item => Number(item.transferStatus) === 1 && Number(item.status) === 0)
+              this.dialogVisible = true
+            }
+          })
+        })
+      }
+    },
+    handleOpen () {
+      this.list.map(item => {
+        this.$refs.multipleTable.toggleRowSelection(item)
+      })
+    },
+    handleSelectionChange (val) {
+      this.checkedArchives = val
+    },
+    // 处理归档操作
+    submitArchives () {
+      this.active++
+      this.cancleText = '关闭'
+      this.stepText = '保存'
+      this.close()
+    },
+    close () {
+      this.dialogVisible = false
+    },
+    // 确认归档
+    handleConfirm () {
+      if (this.checkedArchives.length === 0) {
+        this.$message(
+          {
+            type: 'warning',
+            message: '请选择本次要归档的目录'
+          }
+        )
+        return false
+      }
+      this.$confirm('确认要归档吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.info.archivesClassifyList = this.checkedArchives
+        archivesInfo.archivesFile(this.info).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.info = res.data.archivesInfo
+            this.submitArchives()
+          }
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    savePosition () {
+      this.$refs['fileEnd'].save()
+    }
+  },
+  mounted () {
+    this.getData()
+  },
+  watch: {
+    '$route': 'getData'
+  }
+}
+</script>
+
+<style lang="less">
+  #archives_add {
+    ul.step{
+      list-style: none;
+      width: 616px;
+      height: 38px;
+      /*cursor: pointer;*/
+      overflow: hidden;
+      margin: 0 auto;
+      text-align: center;
+    }
+    ul.step li{
+      float: left;
+      height: 38px;
+      margin-right: 150px;
+      position: relative;
+    }
+    ul.step li i{
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      -webkit-border-radius: 50%;
+      -moz-border-radius: 50%;
+      border-radius: 50%;
+      background: #bbbbbb;
+      color: #ffffff;
+      font-style: normal;
+    }
+    ul.step li img {
+      width: 17px;
+      height: 11px;
+    }
+    ul.step li span{
+      display: inline-block;
+      line-height: 38px;
+      margin-left: 10px;
+      font-size: 14px;
+      color: #999;
+    }
+    ul.step li:last-child{
+      margin-right: 0px;
+    }
+    ul.step li em{
+      position: absolute;
+      width: 104px;
+      height: 2px;
+      display: block;
+      left: 120px;
+      top: 18px;
+      background: #eeeeee;
+    }
+    ul.step li.active i{
+      background: #498ce9;
+    }
+    ul.step li.active span{
+      color: #333333;
+    }
+    ul.step li.prev i{
+      background: #498ce9;
+    }
+    ul.step li.prev span{
+      color: #333;
+    }
+  }
+</style>

@@ -1,0 +1,348 @@
+<template>
+  <div>
+    <!--弹窗  竞争对手分析  修改-->
+    <el-dialog :title="titleName" :visible.sync="showVisible" :before-close="cancel" v-loading="loading">
+      <el-form :model="submitForm" ref="competitorForm" :label-width="formLabelWidth" :rules="rules">
+        <el-row>
+          <el-col>
+            <el-form-item label="企业名称：" prop="name">
+              <el-input v-model="submitForm.name" placeholder="请输入企业名称" clearable>
+                <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <el-form-item label="竞争力：" prop="level">
+              <el-rate v-model="submitForm.level"
+                       show-score
+                       text-color="#ff9900"
+                       score-template="{value}">
+              </el-rate>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <el-form-item label="工商信息：" prop="businessInfo">
+              <el-input v-model="submitForm.businessInfo" type="textarea" placeholder="请输入工商信息">
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <el-form-item label="分支机构：" prop="branch">
+              <el-input v-model="submitForm.branch" type="textarea" placeholder="请输入分支机构"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <el-form-item label="主要成员及股东名单：" prop="mainMembers">
+              <el-input v-model="submitForm.mainMembers" type="textarea" placeholder="请输入主要成员及股东名单"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-form-item label="企业资质等级：" prop="categoryId">
+            <el-col :span="8">
+              <el-select v-model="submitForm.categoryId" placeholder="请选择" @change="changeCategory">
+                <el-option
+                  v-for="item in categoryFirstOptions"
+                  :key="item.objectId"
+                  :label="item.name"
+                  :value="item.objectId">
+                </el-option>
+              </el-select>
+            </el-col>
+            <el-col :span="8">
+              <el-select v-model="submitForm.gradeId" placeholder="请选择">
+                <el-option
+                  v-for="item in categorySecondOptions"
+                  :key="item.objectId"
+                  :label="item.name"
+                  :value="item.objectId">
+                </el-option>
+              </el-select>
+            </el-col>
+          </el-form-item>
+        </el-row>
+      </el-form>
+      <el-row>
+        <el-col>
+          <el-form :model="submitForm" ref="yearProjectSituationList" :validate-on-rule-change="true">
+            <el-form-item label="近一年承接项目情况：">
+              <el-table
+                :data="submitForm.yearProjectSituationList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  type="index"
+                  label="序号"
+                  width="60"
+                  align="center">
+                </el-table-column>
+                <el-table-column
+                  label="项目名称"
+                  show-overflow-tooltip>
+                  <template slot-scope='scope'>
+                    <el-form-item :prop="'yearProjectSituationList.'+ scope.$index + '.name'" :rules="rules.projectName">
+                      <el-input v-model="scope.row.name" clearable placeholder="请输入项目名称">
+                        <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                      </el-input>
+                    </el-form-item>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="项目金额(元)"
+                  show-overflow-tooltip>
+                  <template slot-scope='scope'>
+                    <el-form-item :prop="'yearProjectSituationList.'+ scope.$index + '.amount'" :rules="rules.amount">
+                      <el-input v-model="scope.row.amount" clearable placeholder="请输入项目金额">
+                        <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                      </el-input>
+                    </el-form-item>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="操作" align="center" width="80px">
+                  <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="delSituation(scope.$index, 1)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <div class="addbutton"><span @click="addProjectSituation(1)">+ 新增</span></div>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col>
+          <el-form :model="submitForm" ref="ownerProjectSituationList" :validate-on-rule-change="true">
+            <el-form-item label="承接本招标人项目情况：">
+              <el-table
+                :data="submitForm.ownerProjectSituationList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  type="index"
+                  label="序号"
+                  width="60"
+                  align="center">
+                </el-table-column>
+                <el-table-column
+                  label="项目名称"
+                  show-overflow-tooltip>
+                  <template slot-scope='scope'>
+                    <el-form-item :prop="'ownerProjectSituationList.'+ scope.$index + '.name'" :rules="rules.projectName">
+                      <el-input v-model="scope.row.name" clearable placeholder="请输入项目名称">
+                        <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                      </el-input>
+                    </el-form-item>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="项目金额(元)"
+                  show-overflow-tooltip>
+                  <template slot-scope='scope'>
+                    <el-form-item :prop="'ownerProjectSituationList.'+ scope.$index + '.amount'" :rules="rules.amount">
+                      <el-input v-model="scope.row.amount" clearable placeholder="请输入项目金额">
+                        <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                      </el-input>
+                    </el-form-item>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="操作" align="center" width="80px">
+                  <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="delSituation(scope.$index, 2)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <div class="addbutton"><span @click="addProjectSituation(2)">+ 新增</span></div>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submit" v-loading="submitLoading">保 存</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+    <!--弹窗  竞争对手分析 编辑 修改-->
+  </div>
+</template>
+<script>
+import { competitor } from '@/api/customer'
+import {category} from '@/api/resource'
+import {validMoney} from '@/assets/js/validate'
+export default {
+  data () {
+    return {
+      loading: false,
+      submitLoading: false,
+      titleName: '添加竞争对手信息',
+      submitForm: {
+        analysisCode: this.relatedCode,
+        level: 0,
+        categoryId: null,
+        gradeId: null,
+        yearProjectSituationList: [],
+        ownerProjectSituationList: []
+      },
+      formLabelWidth: '170px',
+      // 资质等级联动一级
+      categoryFirstOptions: [],
+      // 资质等级联动二级
+      categorySecondOptions: [],
+      rules: {
+        name: [
+          { required: true, message: '企业名称不能为空', trigger: 'blur' },
+          { min: 1, max: 20, message: '长度在1~20个字符', trigger: 'blur' }
+        ],
+        textArea: [
+          { min: 1, max: 500, message: '长度在1~500个字符', trigger: 'blur' }
+        ],
+        projectName: [
+          { required: true, message: '项目名称不能为空', trigger: 'blur' },
+          { min: 1, max: 50, message: '长度在1~50个字符', trigger: 'blur' }
+        ],
+        amount: [
+          { required: true, message: '项目名称不能为空', trigger: 'blur' },
+          {validator: validMoney, trigger: 'blur'}
+        ]
+      }
+    }
+  },
+  props: ['isEdit', 'editObjectId', 'showVisible', 'relatedCode'],
+  watch: {
+    showVisible (value) {
+      if (value) {
+        if (this.isEdit) {
+          this.titleName = '修改竞争对手信息'
+          this.initData()
+        }
+      } else {
+        this.titleName = '添加竞争对手信息'
+        // 清除所有数据
+        let newSubmitForm = {
+          analysisCode: this.relatedCode,
+          categoryId: null,
+          gradeId: null,
+          yearProjectSituationList: [],
+          ownerProjectSituationList: []
+        }
+        this.submitForm = newSubmitForm
+      }
+    }
+  },
+  methods: {
+    // 获取列表数据
+    initData () {
+      this.loading = true
+      competitor.queryOne(this.editObjectId).then(res => {
+        this.loading = false
+        let obj = res.data.data
+        if (obj.categoryId) {
+          category.getCategoryLevelList(obj.categoryId).then(res => {
+            this.categorySecondOptions = res.data.categoryList
+            this.submitForm = obj
+            this.submitForm.level = Number(this.submitForm.level)
+          })
+        }
+      })
+    },
+    // 初始化资质信息
+    initCategoryFirst () {
+      category.getCategoryList().then((res) => {
+        this.categoryFirstOptions = res.data.categoryList
+      })
+    },
+    // 初始化资质信息二级
+    initCategorySecond (firstId) {
+      category.getCategoryLevelList(firstId).then(res => {
+        this.categorySecondOptions = res.data.categoryList
+      })
+    },
+    // 企业资质等级第一级改变触发
+    changeCategory (value) {
+      this.initCategorySecond(value)
+      // 清除二级
+      this.submitForm.gradeId = null
+    },
+    // 新增项目情况
+    addProjectSituation (type) {
+      let projectSituation = {
+        name: '',
+        amount: ''
+      }
+      switch (type) {
+        case 1:
+          this.$refs['yearProjectSituationList'].validate((valid) => {
+            if (valid) {
+              projectSituation.type = 1
+              this.submitForm.yearProjectSituationList.push(projectSituation)
+            }
+          })
+          break
+        case 2:
+          this.$refs['ownerProjectSituationList'].validate((valid) => {
+            if (valid) {
+              projectSituation.type = 2
+              this.submitForm.ownerProjectSituationList.push(projectSituation)
+            }
+          })
+          break
+      }
+    },
+    // 删除项目情况
+    delSituation (index, type) {
+      switch (type) {
+        case 1:
+          this.submitForm.yearProjectSituationList.splice(index, 1)
+          break
+        case 2:
+          this.submitForm.ownerProjectSituationList.splice(index, 1)
+          break
+      }
+    },
+    // 保存
+    submit () {
+      this.$refs['competitorForm'].validate((valid) => {
+        if (valid) {
+          this.$refs['yearProjectSituationList'].validate((valid) => {
+            if (valid) {
+              this.$refs['ownerProjectSituationList'].validate((valid) => {
+                if (valid) {
+                  this.submitLoading = true
+                  this.submitForm.analysisCode = this.relatedCode
+                  competitor.update(this.submitForm).then(res => {
+                    this.submitLoading = false
+                    if (res.data.resCode === '0000') {
+                      this.cancel()
+                      this.$emit('saveSuccess')
+                    }
+                  })
+                }
+              })
+            }
+          })
+        }
+      })
+    },
+    // 关闭
+    cancel () {
+      this.submitForm.objectId = null
+      this.$emit('showDialog', false)
+    }
+  },
+  mounted () {
+    // 初始化资质信息
+    this.initCategoryFirst()
+  }
+}
+</script>
+<style scoped>
+</style>

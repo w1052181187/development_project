@@ -1,0 +1,176 @@
+<template>
+  <div class="cloudcontent" id="cloud_customer_detail">
+    <div class="main">
+      <div class="tit">
+        <span>山西国新能源旧址扩建总包工程项目<i>（项目编号：M2019052600010000001）</i></span>
+      </div>
+      <el-table
+        :data="feeTableData"
+        border
+        style="width: 100%; margin-top: 20px;"
+        row-key="id"
+        header-cell-class-name="tableheader">
+        <el-table-column
+          prop="name"
+          label=""
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="income"
+          label="收入"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="spending"
+          label="支出"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="netIncome"
+          label="净收入"
+          show-overflow-tooltip>
+        </el-table-column>
+      </el-table>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  data () {
+    return {
+      // 费用
+      value1: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)],
+      feeTableData: [
+        {
+          id: 1,
+          name: '项目合计',
+          income: 2000,
+          spending: 500,
+          netIncome: 1500,
+          children: [{
+            id: 11,
+            name: '标书费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 12,
+            name: '保证金',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 13,
+            name: '服务费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 14,
+            name: '*****费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 15,
+            name: '其他',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }]
+        },
+        {
+          id: 2,
+          name: '标段一',
+          income: 2000,
+          spending: 500,
+          netIncome: 1500,
+          children: [{
+            id: 21,
+            name: '标书费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 22,
+            name: '保证金',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 23,
+            name: '服务费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 24,
+            name: '*****费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 25,
+            name: '其他',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }]
+        },
+        {
+          id: 3,
+          name: '标段二',
+          income: 2000,
+          spending: 500,
+          netIncome: 1500,
+          children: [{
+            id: 31,
+            name: '标书费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 32,
+            name: '保证金',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 33,
+            name: '服务费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 34,
+            name: '*****费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 35,
+            name: '其他',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }]
+        }
+      ],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: null, // 总条数
+      pageSize: 10 // 每页展示条数
+    }
+  },
+  methods: {
+    dataIndex (index) {
+      return 1
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_customer_detail {
+  }
+</style>

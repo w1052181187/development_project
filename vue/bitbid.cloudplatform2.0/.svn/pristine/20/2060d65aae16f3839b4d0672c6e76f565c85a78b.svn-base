@@ -1,0 +1,62 @@
+export default[
+  {
+    path: '/office/workApproval',
+    name: '工作审批',
+    meta: {
+      title: '工作审批',
+      active: '/office/workApproval'
+      // permission: 'admin'
+    },
+    component: () => import(/* webpackChunkName: 'office' */ '@/pages/office/workApproval/index')
+  },
+  {
+    path: '/office/workApproval/add',
+    name: '新增审批',
+    meta: {
+      title: '新增审批',
+      active: '/office/workApproval'
+      // permission: 'admin'
+    },
+    component: () => import(/* webpackChunkName: 'office' */ '@/pages/office/workApproval/add')
+  },
+  {
+    path: '/office/workApproval/update',
+    name: '修改审批',
+    meta: {
+      title: '修改审批',
+      active: '/office/workApproval'
+      // permission: 'admin'
+    },
+    component: () => import(/* webpackChunkName: 'office' */ '@/pages/office/workApproval/add')
+  }
+  // {
+  //   path: '/office/collaboration/reply',
+  //   name: '回复工作协同',
+  //   meta: {
+  //     title: '回复工作协同',
+  //     active: '/office/collaboration'
+  //     // permission: 'admin'
+  //   },
+  //   component: () => import(/* webpackChunkName: 'office' */ '@/pages/office/collaboration/add')
+  // },
+  // {
+  //   path: '/office/collaboration/forward',
+  //   name: '转发工作协同',
+  //   meta: {
+  //     title: '转发工作协同',
+  //     active: '/office/collaboration'
+  //     // permission: 'admin'
+  //   },
+  //   component: () => import(/* webpackChunkName: 'office' */ '@/pages/office/collaboration/add')
+  // },
+  // {
+  //   path: '/office/collaboration/detail',
+  //   name: '查看工作协同',
+  //   meta: {
+  //     title: '查看工作协同',
+  //     active: '/office/collaboration'
+  //     // permission: 'admin'
+  //   },
+  //   component: () => import(/* webpackChunkName: 'office' */ '@/pages/office/collaboration/detail')
+  // }
+]

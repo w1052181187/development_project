@@ -1,0 +1,193 @@
+<template>
+  <div>
+    <el-dialog title="选择人员" :before-close="cancel" :visible.sync="showVisible">
+      <div class="lefttree">
+        <tree @handleNodeClick="clickDeparment" :filterText="filterDepartment" :startWithRootFlag = "isStartRootFlag"></tree>
+      </div>
+      <div class="rightselect">
+        <el-row style="margin-bottom: 10px;">
+          <el-col :span="24">
+            <span style="display: inline-block;">姓名：</span>
+            <el-input class="search" placeholder="请输入姓名关键字" style="display: inline-block; width: 200px;" v-model="queryModel.nameLike"></el-input>
+            <el-button  type="primary" class="search" @click="search">查询</el-button>
+          </el-col>
+        </el-row>
+        <el-table
+          :data="selectData"
+          v-loading="loading"
+          border
+          style="width: 100%" header-cell-class-name="tableheader">
+          <el-table-column
+            prop="name"
+            label="名称"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="department.name"
+            label="部门"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="radio"
+            label="操作"
+            align="center"
+            width="90">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" @click="selected(scope.row)">选择</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="page.total"
+          :page-size='page.pageSize'
+          :current-page.sync="page.currentPage"
+          @current-change="handlePage"
+          @next-click="handlePage">
+        </el-pagination>
+        <!--分页-->
+      </div>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import tree from '@/pages/system/department/tree/tree_detail'
+import {user} from '@/api/system'
+export default {
+  components: {
+    tree
+  },
+  data () {
+    return {
+      page: {
+        pageSize: 10,
+        pageNo: 1,
+        total: 0, // 总条数
+        currentPage: 1
+      },
+      selectData: [],
+      departmentId: null,
+      filterDepartment: '',
+      treeMode: 1,
+      isStartRootFlag: false,
+      queryModel: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        isDelete: 0,
+        type: 2,
+        messageLike: '',
+        nameLike: '',
+        account: ''
+      },
+      loading: false
+    }
+  },
+  props: ['showVisible', 'selectedCode', 'isComponyId'],
+  methods: {
+    // 获取部门ID
+    clickDeparment (id) {
+      this.page.pageNo = 1
+      this.page.currentPage = 1
+      this.departmentId = id
+    },
+    // 获取列表数据,稍作延迟(部门树获取)
+    getTableData () {
+      this.loading = true
+      let queryModel = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        isDelete: 0,
+        pageNum: this.page.pageNo,
+        pageSize: this.page.pageSize,
+        departmentId: this.departmentId,
+        nameLike: this.queryModel.nameLike,
+        type: 2,
+        treeMode: 1
+      }
+      user.queryList(queryModel).then((res) => {
+        this.loading = false
+        this.selectData = res.data.data
+        this.page.total = res.data.page.totalRows
+      })
+    },
+    // 用户列表数据(查询)
+    queryUserList () {
+      this.queryModel.pageNum = this.page.pageNo
+      this.queryModel.pageSize = this.page.pageSize
+      user.queryList(this.queryModel).then((res) => {
+        this.selectData = res.data.data
+        this.page.total = res.data.page.totalRows
+      })
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 表单分页
+    handlePage (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = nowNum
+      this.getTableData()
+    },
+    search () {
+      this.queryUserList()
+    },
+    // 选择
+    selected (obj) {
+      this.$emit('selected', obj)
+      this.cancel()
+    },
+    // 取消
+    cancel () {
+      this.$emit('showDialog')
+      this.queryModel.nameLike = ''
+      this.getTableData()
+    }
+  },
+  mounted () {
+    // 列表初始化
+    if (this.isComponyId) {
+      this.departmentId = this.$store.getters.authUser.departmentComponyId
+      this.treeMode = 1
+      this.isStartRootFlag = true
+    }
+    this.getTableData()
+  },
+  watch: {
+    departmentId () {
+      this.getTableData()
+    }
+  }
+}
+</script>
+<style scoped>
+  .selectbox{
+    background: #f7f8f9;
+    padding: 10px 0;
+    margin-bottom: 0px;
+  }
+  .el-dialog__body{
+    /*overflow: hidden;*/
+  }
+  .el-dialog__body:after {
+    display: block;
+    content: "";
+    clear: both;
+  }
+  .lefttree{
+    width: 30%;
+    float: left;
+    /*padding: 10px 0;*/
+    /*border: 1px solid #dcdfe6;*/
+  }
+  .lefttree .el-tree{
+    margin-top: 0;
+  }
+  .rightselect{
+    width: 67%;
+    float: right;
+  }
+  .rightselect .el-table{
+    margin-top: 0px;
+  }
+</style>

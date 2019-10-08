@@ -1,0 +1,298 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" ref="updateForm" :validate-on-rule-change="true">
+        <div class="border">
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目编号：">
+                <el-input v-model="updateForm.tenderProjectCode" disabled></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="项目名称：">
+                <el-input v-model="updateForm.tenderProjectName" disabled></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="招标人：">
+                <el-input v-model="updateForm.tendererName" disabled></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="项目经理：">
+                <el-input v-model="updateForm.firstProjectLeaderName" disabled></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
+        <el-row>
+          <el-tabs v-model="activeTab">
+            <el-tab-pane label="项目情况总结" name="1">
+              <el-form-item label="项目背景与要求：">
+                <el-input
+                  type="textarea"
+                  placeholder="请输入项目背景与要求"
+                  :autosize="{ minRows: 4}"
+                  v-model="updateForm.projectBackgroundRequirements">
+                </el-input>
+              </el-form-item>
+              <el-form-item label="项目情况说明：" prop="projectDescription">
+                <el-input
+                  type="textarea"
+                  placeholder="请输入项目情况说明"
+                  :autosize="{ minRows: 4}"
+                  v-model="updateForm.projectDescription">
+                </el-input>
+              </el-form-item>
+            </el-tab-pane>
+            <el-tab-pane label="专家评价" name="2">
+              <el-table
+                :data="updateForm.expertProjectList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  label="专家姓名"
+                  width="160"
+                  show-overflow-tooltip>
+                  <template slot-scope='scope'>
+                    <el-form-item>
+                      <span>{{scope.row.expertName}}</span>
+                    </el-form-item>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="评标标段"
+                  width="200"
+                  show-overflow-tooltip>
+                  <template slot-scope='scope'>
+                    <el-form-item>
+                      <span>{{scope.row.bidSectionName}}</span>
+                    </el-form-item>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="评价内容"
+                  show-overflow-tooltip>
+                  <template slot-scope='scope'>
+                    <el-form-item
+                      :prop="'expertProjectList.' + scope.$index + '.evaluationContent'">
+                      <el-input
+                        type="textarea"
+                        placeholder="请输入评价内容"
+                        autosize
+                        v-model="scope.row.evaluationContent">
+                      </el-input>
+                    </el-form-item>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="星级"
+                  width="160"
+                  show-overflow-tooltip>
+                  <template slot-scope='scope'>
+                    <el-form-item :prop="'expertProjectList.' + scope.$index + '.grade'">
+                      <el-rate v-model="scope.row.grade" :allow-half=true></el-rate>
+                    </el-form-item>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-tab-pane>
+            <el-tab-pane label="招标人评价" name="3">
+              <el-form-item label="评价内容：">
+                <el-input
+                  type="textarea"
+                  placeholder="请输入评价内容"
+                  :autosize="{ minRows: 4}"
+                  v-model="tendererEvaluateInfo.evaluationContent">
+                </el-input>
+              </el-form-item>
+            </el-tab-pane>
+          </el-tabs>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit('updateForm', 0)" :loading="isSubmiting">保存</el-button>
+          <el-button type="primary" class="submitBtn" @click="submit('updateForm', 1)" :loading="isSubmiting">提交</el-button>
+          <el-button class="cancal" @click="close">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+import {tenderProject, summaryAndEvaluate, tenderProjectSummary, evaluateInfo} from '@/api/project'
+import { expertProject } from '@/api/resource'
+export default {
+  name: 'add',
+  components: {
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      activeTab: '1',
+      updateForm: {
+        tenderProjectCode: '',
+        projectDescription: '',
+        expertProjectList: [] // 专家评价
+      },
+      tendererEvaluateInfo: {
+        evaluationContent: ''
+      }, // 招标人评价
+      rules: {
+        projectDescription: [
+          { required: true, message: '项目情况说明不能为空', trigger: 'blur' }
+        ]
+      },
+      rate: null
+    }
+  },
+  methods: {
+    // 提交/保存
+    submit (form, status) {
+      if (this.activeTab !== '1' && this.updateForm.projectDescription === '') {
+        this.$message.warning('项目情况总结信息不完整，请进行完善！')
+        return false
+      }
+      this.$refs[form].validate((valid) => {
+        if (valid) {
+          let msg = Object.is(status, 1) ? '提交后数据将锁定，不允许修改，确认要提交吗?' : '确认要保存吗?'
+          this.$confirm(msg, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            beforeClose: (action, instance, done) => {
+              done()
+            }
+          }).then(() => {
+            this.isSubmiting = true
+            let summaryAndEvaluateInfo = {}
+            summaryAndEvaluateInfo.tenderProjectSummary = {
+              objectId: Number(sessionStorage.getItem('checkSummaryAndAndEvaluate')) === 0 ? null : this.updateForm.objectId,
+              tenderSystemCode: Number(sessionStorage.getItem('checkSummaryAndAndEvaluate')) === 0 ? this.updateForm.code : this.updateForm.tenderSystemCode,
+              tenderProjectCode: this.updateForm.tenderProjectCode,
+              tenderProjectName: this.updateForm.tenderProjectName,
+              tendererName: this.updateForm.tendererName,
+              firstProjectLeaderName: this.updateForm.firstProjectLeaderName,
+              projectBackgroundRequirements: this.updateForm.projectBackgroundRequirements,
+              projectDescription: this.updateForm.projectDescription,
+              status: Number(status)
+            }
+            let evaluateInfoList = [this.tendererEvaluateInfo]
+            evaluateInfoList[0].tenderSystemCode = Number(sessionStorage.getItem('checkSummaryAndAndEvaluate')) === 0 ? this.updateForm.code : this.updateForm.tenderSystemCode // 招标项目系统编号
+            evaluateInfoList[0].tendererName = this.updateForm.tendererName // 评价招标人名称
+            evaluateInfoList[0].evaluationType = 1 // 评价类型（0.专家评价 1.招标人评价）
+            summaryAndEvaluateInfo.evaluateInfoList = evaluateInfoList
+            // 专家评分
+            summaryAndEvaluateInfo.expertProjectList = this.updateForm.expertProjectList.filter(item => item.evaluationContent || item.grade)
+            summaryAndEvaluate.save(summaryAndEvaluateInfo).then((res) => {
+              if (res.data.resCode === '0000') {
+                this.isSubmiting = false
+                this.close()
+              }
+            })
+          }).catch(() => {
+            this.isSubmiting = false
+            return false
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    // 取消
+    close () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.push({path: '/project/projectSum'})
+    },
+    /** 初始化项目信息 */
+    detail () {
+      if (Number(sessionStorage.getItem('checkSummaryAndAndEvaluate')) === 0) {
+        tenderProject.getOne(this.$route.query.tenderSystemCode).then((res) => {
+          if (res.data.tenderProject) {
+            this.updateForm.code = res.data.tenderProject.code
+            this.updateForm.tenderProjectCode = res.data.tenderProject.projectCode
+            this.updateForm.tenderProjectName = res.data.tenderProject.tenderProjectName
+            this.updateForm.tendererName = res.data.tenderProject.tendererName
+            this.updateForm.firstProjectLeaderName = res.data.tenderProject.firstProjectLeaderName
+          }
+        })
+      } else if (Number(sessionStorage.getItem('checkSummaryAndAndEvaluate')) === 1) {
+        tenderProjectSummary.getByRelatedCode(this.$route.query.tenderSystemCode).then((res) => {
+          if (res.data.tenderProjectSummary) {
+            this.updateForm.objectId = res.data.tenderProjectSummary.objectId
+            this.updateForm.code = res.data.tenderProjectSummary.code
+            this.updateForm.tenderSystemCode = res.data.tenderProjectSummary.tenderSystemCode
+            this.updateForm.tenderProjectCode = res.data.tenderProjectSummary.tenderProjectCode
+            this.updateForm.tenderProjectName = res.data.tenderProjectSummary.tenderProjectName
+            this.updateForm.tendererName = res.data.tenderProjectSummary.tendererName
+            this.updateForm.firstProjectLeaderName = res.data.tenderProjectSummary.firstProjectLeaderName
+            this.updateForm.projectBackgroundRequirements = res.data.tenderProjectSummary.projectBackgroundRequirements
+            this.updateForm.projectDescription = res.data.tenderProjectSummary.projectDescription
+          }
+        })
+      }
+    },
+    /** 获取招标人评价信息 */
+    getTenderEvaluateInfo () {
+      let queryModel = {
+        tenderSystemCode: this.$route.query.tenderSystemCode,
+        evaluationType: 1
+      }
+      evaluateInfo.getList(queryModel).then((res) => {
+        if (res.data.evaluateInfoList.length > 0) {
+          this.tendererEvaluateInfo = res.data.evaluateInfoList[0]
+        }
+      })
+    },
+    /** 获取专家信息 */
+    getExpertProjectList () {
+      let queryModel = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        isDelete: 0,
+        tenderSystemCode: this.$route.query.tenderSystemCode,
+        pageNo: 0,
+        pageSize: 1000,
+        orderByField: 'OBJECT_ID',
+        orderByMode: 'ASC'
+      }
+      expertProject.queryList(queryModel).then((res) => {
+        this.updateForm.expertProjectList = res.data.data.list
+      })
+    },
+    init () {
+      // 初始化基本数据
+      this.detail()
+      // 获取专家项目信息
+      this.getExpertProjectList()
+      // 获取招标人评价信息
+      this.getTenderEvaluateInfo()
+    }
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+
+<style scoped>
+  .border{
+    border: 1px solid #DCDFE6;
+    padding: 20px 0 0 0;
+    margin-bottom: 20px;
+  }
+  .border .el-form-item{
+    margin-bottom: 20px;
+  }
+  .addbtn{
+    border: 1px solid #3f63f6;
+    height: 32px;
+    padding: 7px 12px;
+    margin-bottom: 12px;
+  }
+  .el-rate__icon{
+    line-height: 30px;
+  }
+</style>

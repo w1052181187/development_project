@@ -1,0 +1,180 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-tabs v-model="activeTab">
+        <el-tab-pane label="预约管理" name="1">
+          <OrderManager @addOrder="addOrder"></OrderManager>
+        </el-tab-pane>
+        <el-tab-pane label="我的预约" name="2">
+          <MyOrder @updateOrder="updateOrder"></MyOrder>
+        </el-tab-pane>
+        <el-tab-pane label="开评标室列表" name="3">
+          <BidRoomList></BidRoomList>
+        </el-tab-pane>
+      </el-tabs>
+      <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="50%"
+                 :before-close="close">
+        <el-form :model="form" :rules="rules" ref="form"
+                 :label-width="formLabelWidth" :validate-on-rule-change="true">
+          <el-form-item label="开评标室：">
+            <span>{{form.name}}</span>
+          </el-form-item>
+          <el-form-item label="使用时间：" prop="time" >
+            <el-row>
+              <el-col :span="16">
+                <el-date-picker
+                  v-model="form.time"
+                  type="datetimerange"
+                  range-separator="-"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期">
+                </el-date-picker>
+              </el-col>
+              <el-col :span="4">
+                <span class="check_order" @click="handleCheckOrder">检测是否可预约</span>
+              </el-col>
+            </el-row>
+            <el-row v-if="isChecked">
+              <div class="can_order" v-if="checkOrderResult"><img src="../../../../static/images/can-order.png">可以预约</div>
+              <div class="can_not_order" v-else><img src="../../../../static/images/not-order.png">该时间段已被预约</div>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="选择项目：">
+            <el-select v-model="form.project">
+              <el-option
+                v-for="item in roomOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="用途：" prop="businessType" >
+            <el-radio-group v-model="form.businessType">
+              <el-radio :label="1">开标</el-radio>
+              <el-radio :label="2">评标</el-radio>
+              <el-radio :label="3">开标/评标</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="备注：">
+            <el-input
+              type="textarea"
+              :autosize="{ minRows: 4}"
+              v-model="form.remark">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="预约人：">
+            <span>预约人</span>
+          </el-form-item>
+          <el-form-item label="预约时间：">
+            <span>预约人</span>
+          </el-form-item>
+          <el-form-item class="submit-radio">
+            <el-button type="primary" @click="submit" :loading="isSubmiting">保存</el-button>
+            <el-button class="cancal" @click="close">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: '',
+  components: {
+    // 预约管理
+    OrderManager: resolve => require(['./orderManager.vue'], resolve),
+    MyOrder: resolve => require(['./myOrder.vue'], resolve),
+    BidRoomList: resolve => require(['./bidRoomList.vue'], resolve)
+  },
+  data () {
+    return {
+      activeTab: '1',
+      isSubmiting: false,
+      dialogVisible: false,
+      form: {
+      },
+      formLabelWidth: '120px',
+      dialogTitle: '新增预约',
+      rules: {
+        businessType: [
+          { required: true, message: '请选择用途', trigger: ['change'] }
+        ],
+        time: [
+          { required: true, message: '请选择使用时间', trigger: ['blur', 'change'] }
+        ]
+      },
+      roomOptions: [],
+      isChecked: false,
+      checkOrderResult: true
+    }
+  },
+  methods: {
+    // 修改预约
+    updateOrder (scope) {
+      this.dialogTitle = '修改预约'
+      this.form = scope.row
+      console.log(this.form)
+      this.dialogVisible = true
+    },
+    // 点击预约
+    addOrder (scope) {
+      this.dialogTitle = '新增预约'
+      this.dialogVisible = true
+    },
+    // 检测是否可预约
+    handleCheckOrder () {
+      this.isChecked = true
+      this.checkOrderResult = true
+    },
+    close () {
+      this.dialogVisible = false
+      this.$refs['form'].resetFields()
+    },
+    submit () {
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          this.isSubmiting = true
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style scoped>
+  .check_order{
+    color: #108cee;
+    font-size: 12px;
+    text-decoration: underline;
+    margin-left: 12px;
+    cursor: pointer;
+  }
+  .can_order{
+    color: #c5c5c5;
+    font-size: 12px;
+    /*padding: 6px 0;*/
+    /*box-sizing: border-box;*/
+  }
+  .can_order img{
+    margin-right: 6px;
+    width: 12px;
+    height: 12px;
+  }
+  .can_not_order{
+    color: #c5c5c5;
+    font-size: 12px;
+    /*padding: 6px 0;*/
+    /*box-sizing: border-box;*/
+  }
+  .can_not_order img{
+    margin-right: 6px;
+    width: 12px;
+    height: 12px;
+  }
+</style>

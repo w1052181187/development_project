@@ -1,0 +1,260 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <div class="box">
+      <div class="topmain">
+        中标候选人公示疑义及澄清
+        <!--按钮-->
+        <el-button class="addbutton">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="tableData"
+        border>
+        <el-table-column
+          prop="date"
+          label="疑义标题">
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="投标人">
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="提交状态">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '1'">已保存</span>
+            <span  v-if="scope.row.status === '2'">已提交</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          label="提交时间">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small">查看</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'">编辑</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <div class="box">
+      <div class="topmain">
+        中标结果公告
+        <!--按钮-->
+        <el-button class="addbutton">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="tableData"
+        border>
+        <el-table-column
+          prop="date"
+          label="中标结果公告名称">
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="提交状态">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '1'">已保存</span>
+            <span  v-if="scope.row.status === '2'">已提交</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          label="提交时间">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small">查看</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'">编辑</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <div class="box">
+      <div class="topmain">
+        中标通知书
+        <!--按钮-->
+        <el-button class="addbutton">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="tableData"
+        border>
+        <el-table-column
+          prop="date"
+          label="中标人">
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="中标价格">
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="提交状态">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '1'">已保存</span>
+            <span  v-if="scope.row.status === '2'">已提交</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          label="提交时间">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small">查看</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'">编辑</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <div class="box">
+      <div class="topmain">
+        招标结果通知书
+        <!--按钮-->
+        <el-button class="addbutton">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="tableData"
+        border>
+        <el-table-column
+          prop="date"
+          label="招标结果通知书标题">
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="提交状态">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '1'">已保存</span>
+            <span  v-if="scope.row.status === '2'">已提交</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          label="提交时间">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small">查看</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'">编辑</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+      tableData: [{
+        date: '上海市普陀区金沙江路',
+        status: '1',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '1',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '2',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '2',
+        address: '2016-05-04'
+      }],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10, // 每页展示条数
+    }
+  },
+  methods: {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_processtype{
+    .box{
+      padding: 0 20px;
+      overflow: hidden;
+      border-top: 20px solid #f5f5f5;
+    }
+    .box .topmain{
+      line-height: 40px;
+      color: #111111;
+      font-weight: bold;
+      padding: 0px;
+      margin: 10px auto;
+    }
+    .topmain .addbutton{
+      float: right;
+    }
+    .box .el-table{
+      width: 100%;
+    }
+  }
+</style>

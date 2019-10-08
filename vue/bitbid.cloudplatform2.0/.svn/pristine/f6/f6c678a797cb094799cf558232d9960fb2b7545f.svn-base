@@ -1,0 +1,319 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" ref="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <el-input v-model="updateForm.tenderProjectCode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <el-input v-model="updateForm.tenderProjectName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标人：">
+              <el-input v-model="updateForm.tendererName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目经理：">
+              <el-input v-model="updateForm.firstProjectLeaderName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-tabs v-model="activeTab" @tab-click="handleClickTabs">
+            <el-tab-pane label="项目情况总结" name="1">
+              <el-form-item label="项目背景与要求：">
+                <el-input
+                  type="textarea"
+                  :autosize="{ minRows: 4}"
+                  v-model="updateForm.projectBackgroundRequirements">
+                </el-input>
+              </el-form-item>
+              <el-form-item label="项目情况说明：" prop="projectDescription">
+                <el-input
+                  type="textarea"
+                  :autosize="{ minRows: 4}"
+                  v-model="updateForm.projectDescription">
+                </el-input>
+              </el-form-item>
+            </el-tab-pane>
+            <el-tab-pane label="专家评价" name="2">
+              <el-button class="addbtn" @click="addEvaluateBtn">+ 新增</el-button>
+              <el-table
+                :data="updateForm.expertEvaluateList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  label="专家姓名"
+                  show-overflow-tooltip>
+                  <template slot-scope='scope'>
+                    <el-form-item
+                      :prop="'expertEvaluateList.' + scope.$index + '.evaluateExpertCode'"
+                      :rules="rules.evaluateExpertCode"
+                      label-width="0px">
+                    <el-select v-model="scope.row.evaluateExpertCode" placeholder="请选择" @visible-change="checkChooseStatus" @change="changeExpert(scope.$index)">
+                      <el-option
+                        v-for="item in expertNameOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                        :disabled="item.disabled">
+                      </el-option>
+                    </el-select>
+                    </el-form-item>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="评价内容"
+                  show-overflow-tooltip>
+                  <template slot-scope='scope'>
+                    <el-form-item
+                      :prop="'expertEvaluateList.' + scope.$index + '.evaluationContent'"
+                      :rules="rules.evaluationContent">
+                      <el-input
+                        type="textarea"
+                        autosize
+                        v-model="scope.row.evaluationContent">
+                      </el-input>
+                    </el-form-item>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="操作" align="center" width="100">
+                  <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="delEvaluateBtn(scope.$index)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-tab-pane>
+            <el-tab-pane label="招标人评价" name="3">
+              <el-form-item label="评价内容：">
+                <el-input
+                  type="textarea"
+                  :autosize="{ minRows: 4}"
+                  v-model="updateForm.tendererEvaluateInfo.evaluationContent">
+                </el-input>
+              </el-form-item>
+            </el-tab-pane>
+          </el-tabs>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit('updateForm', 1)" :loading="isSubmiting">提交</el-button>
+          <el-button type="primary" @click="submit('updateForm', 0)" :loading="isSubmiting">保存</el-button>
+          <el-button class="cancal" @click="close">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+import {tenderProject, expert, summaryAndEvaluate, tenderProjectSummary, evaluateInfo} from '@/api/project'
+export default {
+  name: 'add',
+  components: {
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      activeTab: '1',
+      updateForm: {
+        tenderProjectCode: '',
+        projectDescription: '',
+        tendererEvaluateInfo: {}, // 招标人评价
+        expertEvaluateList: [] // 专家评价
+      },
+      rules: {
+        projectDescription: [
+          { required: true, message: '项目情况说明不能为空', trigger: ['blur', 'change'] }
+        ],
+        evaluateExpertCode: [
+          { required: true, message: '请选择专家姓名', trigger: ['blur', 'change'] }
+        ],
+        evaluationContent: [
+          { required: true, message: '专家评价内容不能为空', trigger: ['blur', 'change'] }
+        ]
+      },
+      expertNameOptions: []
+    }
+  },
+  methods: {
+    /**
+     * 增加专家评价
+     */
+    addEvaluateBtn () {
+      this.updateForm.expertEvaluateList.push({
+        evaluateExpertCode: '',
+        expertName: '',
+        evaluationContent: ''
+      })
+    },
+    delEvaluateBtn (index) {
+      this.updateForm.expertEvaluateList.splice(index, 1)
+      this.checkChooseStatus()
+    },
+    // 提交/保存
+    submit (form, status) {
+      this.$refs[form].validate((valid) => {
+        if (valid) {
+          this.isSubmiting = true
+          let summaryAndEvaluateInfo = {}
+          summaryAndEvaluateInfo.tenderProjectSummary = {
+            objectId: sessionStorage.getItem('checkSummaryAndAndEvaluate') === 0 ? null : this.updateForm.objectId,
+            tenderSystemCode: sessionStorage.getItem('checkSummaryAndAndEvaluate') === 0 ? this.updateForm.code : this.updateForm.tenderSystemCode,
+            tenderProjectCode: this.updateForm.tenderProjectCode,
+            tenderProjectName: this.updateForm.tenderProjectName,
+            tendererName: this.updateForm.tendererName,
+            firstProjectLeaderName: this.updateForm.firstProjectLeaderName,
+            projectBackgroundRequirements: this.updateForm.projectBackgroundRequirements,
+            projectDescription: this.updateForm.projectDescription,
+            status: Number(status)
+          }
+          let evaluateInfoList = this.updateForm.expertEvaluateList.concat(this.updateForm.tendererEvaluateInfo)
+          if (evaluateInfoList.length > 0) {
+            evaluateInfoList.forEach(item => {
+              item.tenderSystemCode = sessionStorage.getItem('checkSummaryAndAndEvaluate') === 0 ? this.updateForm.code : this.updateForm.tenderSystemCode // 招标项目系统编号
+              item.tendererName = (item.evaluateExpertCode && item.evaluateExpertCode !== null) ? null : this.updateForm.tendererName // 评价招标人名称
+              item.evaluationType = (item.evaluateExpertCode && item.evaluateExpertCode !== null) ? 0 : 1 // 评价类型（0.专家评价 1.招标人评价）
+            })
+          }
+          summaryAndEvaluateInfo.evaluateInfoList = evaluateInfoList
+          summaryAndEvaluate.save(summaryAndEvaluateInfo).then((res) => {
+            if (res.data.resCode === '0000') {
+              this.isSubmiting = false
+              this.$store.commit('delete_tabs', this.$route.fullPath)
+            }
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    // 取消
+    close () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+    },
+    detail () {
+      if (Number(sessionStorage.getItem('checkSummaryAndAndEvaluate')) === 0) {
+        tenderProject.getOne(this.$route.query.tenderSystemCode).then((res) => {
+          if (res.data.tenderProject) {
+            this.updateForm.code = res.data.tenderProject.code
+            this.updateForm.tenderProjectCode = res.data.tenderProject.tenderProjectCode
+            this.updateForm.tenderProjectName = res.data.tenderProject.tenderProjectName
+            this.updateForm.tendererName = res.data.tenderProject.tendererName
+            this.updateForm.firstProjectLeaderName = res.data.tenderProject.firstProjectLeaderName
+          }
+        })
+      } else if (Number(sessionStorage.getItem('checkSummaryAndAndEvaluate')) === 1) {
+        tenderProjectSummary.getByRelatedCode(this.$route.query.tenderSystemCode).then((res) => {
+          if (res.data.tenderProjectSummary) {
+            this.updateForm.objectId = res.data.tenderProjectSummary.objectId
+            this.updateForm.code = res.data.tenderProjectSummary.code
+            this.updateForm.tenderSystemCode = res.data.tenderProjectSummary.tenderSystemCode
+            this.updateForm.tenderProjectCode = res.data.tenderProjectSummary.tenderProjectCode
+            this.updateForm.tenderProjectName = res.data.tenderProjectSummary.tenderProjectName
+            this.updateForm.tendererName = res.data.tenderProjectSummary.tendererName
+            this.updateForm.firstProjectLeaderName = res.data.tenderProjectSummary.firstProjectLeaderName
+            this.updateForm.projectBackgroundRequirements = res.data.tenderProjectSummary.projectBackgroundRequirements
+            this.updateForm.projectDescription = res.data.tenderProjectSummary.projectDescription
+          }
+        })
+      }
+    },
+    // tabs切换
+    handleClickTabs (data) {
+      this.activeTab = data.name
+      // 页面切换后重新获取数据
+      let query = {}
+      if (this.activeTab === '2') { // 专家评价
+        query = {
+          tenderSystemCode: this.$route.query.tenderSystemCode,
+          evaluationType: 0
+        }
+      } else if (this.activeTab === '3') { // 招标人评价
+        query = {
+          tenderSystemCode: this.$route.query.tenderSystemCode,
+          evaluationType: 1
+        }
+      }
+      evaluateInfo.getList(query).then((res) => {
+        if (res.data.evaluateInfoList) {
+          if (this.activeTab === '2') { // 专家评价
+            this.updateForm.expertEvaluateList = res.data.evaluateInfoList
+            this.updateForm.expertEvaluateList.forEach(item => {
+              item.objectId = null
+            })
+          } else if (this.activeTab === '3') { // 招标人评价
+            this.updateForm.tendererEvaluateInfo = res.data.evaluateInfoList[0]
+          }
+        }
+      })
+    },
+    /** 获取专家信息 */
+    getExpertList () {
+      expert.getInProjectSummary(this.$route.query.tenderSystemCode).then((res) => {
+        if (res.data.expertList) {
+          res.data.expertList.forEach(item => {
+            let obj = {}
+            obj.value = item.code
+            obj.label = item.expertName
+            obj.disabled = false
+            this.expertNameOptions.push(obj)
+          })
+        }
+      })
+    },
+    /** 判断专家是否可选 */
+    checkChooseStatus () {
+      if (this.updateForm.expertEvaluateList.length > 0) {
+        for (let i = 0; i < this.updateForm.expertEvaluateList.length; i++) {
+          for (let j = 0; j < this.expertNameOptions.length; j++) {
+            if (this.updateForm.expertEvaluateList[i].evaluateExpertCode === this.expertNameOptions[j].value) {
+              this.expertNameOptions[j].disabled = true
+              continue
+            }
+          }
+        }
+      }
+    },
+    /** 为选择的专家补全信息 */
+    changeExpert (index) {
+      this.updateForm.expertEvaluateList[index].expertName = this.getExpertName(this.updateForm.expertEvaluateList[index].evaluateExpertCode)
+    },
+    /** 获取专家名称 */
+    getExpertName (expertCode) {
+      let expertName = ''
+      for (let i = 0; i < this.expertNameOptions.length; i++) {
+        if (expertCode === this.expertNameOptions[i].value) {
+          expertName = this.expertNameOptions[i].label
+          break
+        }
+      }
+      return expertName
+    },
+    init () {
+      this.getExpertList()
+      this.detail()
+    }
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+
+<style scoped>
+  .addbtn{
+    border: 1px solid #3f63f6;
+    height: 32px;
+    padding: 7px 12px;
+    margin-bottom: 12px;
+  }
+</style>

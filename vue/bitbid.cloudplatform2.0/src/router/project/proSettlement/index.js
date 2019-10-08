@@ -1,0 +1,416 @@
+export default[
+  {
+    path: '/project/proSettlement',
+    name: '项目结算',
+    meta: {
+      title: '项目结算',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/index')
+  },
+  {
+    path: '/project/proSettlement/paymentTerm',
+    name: '收支项列表',
+    meta: {
+      title: '收支项列表',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/paymentTerm')
+  },
+  {
+    path: '/project/proSettlement/paymentDetails/tenderFeeList',
+    name: '标书费列表',
+    meta: {
+      title: '标书费列表',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/paymentDetails/tenderFeeList')
+  },
+  {
+    path: '/project/proSettlement/paymentDetails/tenderFeeAdd',
+    name: '标书费新增',
+    meta: {
+      title: '标书费新增',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/paymentDetails/tenderFeeAdd')
+  },
+  {
+    path: '/project/proSettlement/paymentDetails/tenderFeeAdd/:objectId',
+    name: '标书费修改',
+    meta: {
+      title: '标书费修改',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/paymentDetails/tenderFeeAdd')
+  },
+  {
+    path: '/project/proSettlement/paymentDetails/tenderFeeDetail/:objectId',
+    name: '标书费详情',
+    meta: {
+      title: '标书费详情',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/paymentDetails/tenderFeeDetail')
+  },
+  {
+    path: '/project/proSettlement/paymentDetails/serviceList',
+    name: '服务费列表',
+    meta: {
+      title: '服务费列表',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/paymentDetails/tenderFeeList')
+  },
+  {
+    path: '/project/proSettlement/paymentDetails/serviceAdd',
+    name: '服务费新增',
+    meta: {
+      title: '服务费新增',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/paymentDetails/tenderFeeAdd')
+  },
+  {
+    path: '/project/proSettlement/paymentDetails/serviceAdd/:objectId',
+    name: '服务费修改',
+    meta: {
+      title: '服务费修改',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/paymentDetails/tenderFeeAdd')
+  },
+  {
+    path: '/project/proSettlement/paymentDetails/serviceDetail/:objectId',
+    name: '服务费详情',
+    meta: {
+      title: '服务费详情',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/paymentDetails/tenderFeeDetail')
+  },
+  {
+    path: '/project/proSettlement/paymentDetails/customerList',
+    name: '收入不退还-按用户',
+    meta: {
+      title: '收入不退还-按用户',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/paymentDetails/tenderFeeList')
+  },
+  {
+    path: '/project/proSettlement/paymentDetails/customerAdd',
+    name: '新增',
+    meta: {
+      title: '新增',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/paymentDetails/tenderFeeAdd')
+  },
+  {
+    path: '/project/proSettlement/paymentDetails/customerAdd/:objectId',
+    name: '修改',
+    meta: {
+      title: '修改',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/paymentDetails/tenderFeeAdd')
+  },
+  {
+    path: '/project/proSettlement/paymentDetails/customerDetail/:objectId',
+    name: '详情',
+    meta: {
+      title: '详情',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/paymentDetails/tenderFeeDetail')
+  },
+  {
+    path: '/project/proSettlement/payTotal',
+    name: '收支统计',
+    meta: {
+      title: '收支统计',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/payTotal')
+  },
+  // 其他收入列表
+  {
+    path: '/project/proSettlement/otherIncomePay/otherIncome',
+    name: '其他收入列表',
+    meta: {
+      title: '其他收入列表',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/otherIncomePay/otherIncome')
+  },
+  {
+    path: '/project/proSettlement/otherIncomePay/otherIncomeAdd',
+    name: '其他收入列表新增',
+    meta: {
+      title: '其他收入列表新增',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/otherIncomePay/otherIncomeAdd')
+  },
+  {
+    path: '/project/proSettlement/otherIncomePay/otherIncomeDetail/:objectId',
+    name: '其他收入列表查看',
+    meta: {
+      title: '其他收入列表查看',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/otherIncomePay/otherIncomeDetail')
+  },
+  {
+    path: '/project/proSettlement/otherIncomePay/otherIncomeAdd/:objectId',
+    name: '其他收入列表修改',
+    meta: {
+      title: '其他收入列表修改',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/otherIncomePay/otherIncomeAdd')
+  },
+  // 收入不退还按收费项
+  {
+    path: '/project/proSettlement/otherIncomePay/feesList',
+    name: '收入不退还按收费项列表',
+    meta: {
+      title: '收入不退还按收费项列表',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/otherIncomePay/otherIncome')
+  },
+  {
+    path: '/project/proSettlement/otherIncomePay/feesAdd',
+    name: '收入不退还按收费项新增',
+    meta: {
+      title: '收入不退还按收费项新增',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/otherIncomePay/otherIncomeAdd')
+  },
+  {
+    path: '/project/proSettlement/otherIncomePay/feesDetail/:objectId',
+    name: '收入不退还按收费项查看',
+    meta: {
+      title: '收入不退还按收费项查看',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/otherIncomePay/otherIncomeDetail')
+  },
+  {
+    path: '/project/proSettlement/otherIncomePay/feesAdd/:objectId',
+    name: '收入不退还按收费项修改',
+    meta: {
+      title: '收入不退还按收费项修改',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/otherIncomePay/otherIncomeAdd')
+  },
+  // 其他支出
+  {
+    path: '/project/proSettlement/otherIncomePay/otherPay',
+    name: '其他支出列表',
+    meta: {
+      title: '其他支出列表',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/otherIncomePay/otherPay')
+  },
+  {
+    path: '/project/proSettlement/otherIncomePay/otherPayAdd',
+    name: '其他支出新增',
+    meta: {
+      title: '其他支出新增',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/otherIncomePay/otherPayAdd')
+  },
+  {
+    path: '/project/proSettlement/otherIncomePay/otherPayDetail/:objectId',
+    name: '其他支出查看',
+    meta: {
+      title: '其他支出查看',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/otherIncomePay/otherPayDetail')
+  },
+  {
+    path: '/project/proSettlement/otherIncomePay/otherPayAdd/:objectId',
+    name: '其他支出修改',
+    meta: {
+      title: '其他支出修改',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/otherIncomePay/otherPayAdd')
+  },
+  // 支出
+  {
+    path: '/project/proSettlement/otherIncomePay/payList',
+    name: '支出列表',
+    meta: {
+      title: '支出列表',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/otherIncomePay/otherPay')
+  },
+  {
+    path: '/project/proSettlement/otherIncomePay/payAdd',
+    name: '支出新增',
+    meta: {
+      title: '支出新增',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/otherIncomePay/otherPayAdd')
+  },
+  {
+    path: '/project/proSettlement/otherIncomePay/payDetail/:objectId',
+    name: '支出查看',
+    meta: {
+      title: '支出查看',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/otherIncomePay/otherPayDetail')
+  },
+  {
+    path: '/project/proSettlement/otherIncomePay/payAdd/:objectId',
+    name: '支出修改',
+    meta: {
+      title: '支出修改',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/otherIncomePay/otherPayAdd')
+  },
+  {
+    path: '/project/proSettlement/customDetails/customChargeList',
+    name: '收入退还列表',
+    meta: {
+      title: '收入退还列表',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/customDetails/customChargeList')
+  },
+  {
+    path: '/project/proSettlement/customDetails/customChargeAdd',
+    name: '收入退还新增',
+    meta: {
+      title: '收入退还新增',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/customDetails/customChargeAdd')
+  },
+  {
+    path: '/project/proSettlement/customDetails/customChargeAdd/:objectId',
+    name: '收入退还修改',
+    meta: {
+      title: '收入退还修改',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/customDetails/customChargeAdd')
+  },
+  {
+    path: '/project/proSettlement/customDetails/customChargeReturn/:objectId',
+    name: '收入退还-退还费用',
+    meta: {
+      title: '退还费用',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/customDetails/customChargeReturn')
+  },
+  {
+    path: '/project/proSettlement/customDetails/customChargeDetail/:objectId',
+    name: '收入退还详情',
+    meta: {
+      title: '收入退还详情',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/customDetails/customChargeDetail')
+  },
+  {
+    path: '/project/proSettlement/customDetails/depositList',
+    name: '保证金列表',
+    meta: {
+      title: '保证金列表',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/customDetails/customChargeList')
+  },
+  {
+    path: '/project/proSettlement/customDetails/depositAdd',
+    name: '保证金新增',
+    meta: {
+      title: '保证金新增',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/customDetails/customChargeAdd')
+  },
+  {
+    path: '/project/proSettlement/customDetails/depositAdd/:objectId',
+    name: '保证金修改',
+    meta: {
+      title: '保证金修改',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/customDetails/customChargeAdd')
+  },
+  {
+    path: '/project/proSettlement/customDetails/depositReturn/:objectId',
+    name: '保证金-退还费用',
+    meta: {
+      title: '退还费用',
+      active: '/project/proSettlement',
+      permission: '1050202'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/customDetails/customChargeReturn')
+  },
+  {
+    path: '/project/proSettlement/customDetails/depositDetail/:objectId',
+    name: '保证金详情',
+    meta: {
+      title: '保证金详情',
+      active: '/project/proSettlement',
+      permission: '1050201'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/proSettlement/customDetails/customChargeDetail')
+  }
+]

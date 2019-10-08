@@ -1,0 +1,551 @@
+<template>
+  <div class="cloudcontent"  id="cloud_templateAdd">
+    <div class="main">
+      <el-form :model="addForm" :rules="rules" ref="addForm" label-width="90px" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="模板类型："  prop="type">
+              <el-radio-group v-model="addForm.type">
+                <el-radio :label="1">工作审批</el-radio>
+                <el-radio :label="2">工作日志</el-radio>
+                <el-radio :label="3">计划总结</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="模板名称："  prop="name">
+              <el-input v-model="addForm.name"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <span>提示：不得超过12个字</span>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="选择图标："  prop="imgSrc" class="bitianicon">
+              <div class="showImg">
+                <el-button type="primary" @click="dialogVisible = true">
+                  <span>选择模板</span>
+                </el-button>
+                <img :src="defaultImg"/>
+              </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="模板说明："  prop="illustration">
+              <el-input type="textarea" v-model="addForm.illustration"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="模板项：" class="bitianicon">
+              <el-button type="primary" @click="addRow">
+                <span>新增</span>
+              </el-button>
+              <template>
+                <el-table
+                  :data="temTableData"
+                  :show-header="false"
+                  class="temTableData"
+                  style="width: 100%">
+                  <el-table-column
+                    type="index"
+                    label="序号"
+                    width="60"
+                    align="center">
+                  </el-table-column>
+                  <el-table-column
+                    prop="name"
+                    width="200">
+                    <template slot-scope="scope">
+                      <el-input v-model="scope.row.name" placeholder="模板项名称"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="type"
+                    width="200">
+                    <template slot-scope="scope">
+                      <el-select v-model="scope.row.type" placeholder="请选择" @change="changeType(scope.$index)">
+                        <el-option
+                          v-for="item in typeOptions"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value">
+                        </el-option>
+                      </el-select>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="optional">
+                    <template slot-scope="scope">
+                      <div class="optional" v-if="scope.row.type === 2 || scope.row.type === 3 || scope.row.type === 4">
+                        <span v-if="scope.row.original0ptional" @click="dialogOptionalVisible = true">{{scope.row.original0ptional}}</span>
+                        <span v-if="!scope.row.original0ptional" @click="editDialogOptional(scope.$index)">可选项</span>
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="isFillIn"
+                    width="80">
+                    <template slot-scope="scope">
+                      <el-checkbox v-model="scope.row.isFillIn">必选</el-checkbox>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    width="140">
+                    <template slot-scope="scope">
+                      <el-button type="text" size="small" v-if="scope.$index !== 0" @click="moveUp(scope.$index)">上移</el-button>
+                      <el-button type="text" size="small" v-if="scope.$index !== Number(temTableData.length - 1)" @click="moveDown(scope.$index)">下移</el-button>
+                      <el-button type="text" size="small" @click="delBtn(scope.$index)">删除</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </template>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="handleClickEvent('addForm','save')" :loading="loading">保存</el-button>
+          <el-button class="cancal" @click="handleClickEvent('addForm','cancel')">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+    <el-dialog
+      title="选择图标"
+      width="700px"
+      class="imgDialog"
+      :visible.sync="dialogVisible">
+      <ul class="imgList">
+        <li v-for="(item,index) in imgList" :key="index">
+          <img :src="item.imgSrc"/>
+          <div class="hover" @click="imgSelected(item)"><img src="../../../../static/images/office/selected.png"/></div>
+        </li>
+      </ul>
+    </el-dialog>
+    <el-dialog
+      title="编辑可选项"
+      width="480px"
+      class="optionalDialog"
+      :visible.sync="dialogOptionalVisible">
+      <template>
+        <el-input type="textarea" v-model="desc"></el-input>
+        <p>注：各可选项单独占一行</p>
+        <p>选项1</p>
+        <p>选项2</p>
+        <div class="submit-radio">
+          <el-button type="primary" @click="handleOptionalEvent('save')" >确定</el-button>
+          <el-button class="cancal" @click="handleOptionalEvent('cancel')" >取消</el-button>
+        </div>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import {templateInfo} from '@/api/system'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      addForm: {
+        type: 1
+      },
+      rulesList: {},
+      loading: false,
+      defaultImg: '../../static/images/office/default.png',
+      // 选择图标弹窗
+      dialogVisible: false,
+      imgList: [
+        {
+          imgSrc: '../../static/images/office/icon1.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon2.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon3.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon4.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon5.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon6.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon7.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon8.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon9.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon10.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon11.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon12.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon13.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon14.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon15.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon16.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon17.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon18.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon19.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon20.png'
+        }
+      ],
+      // 模板项
+      /* temTableData: [
+        {
+          name: '',
+          type: '',
+          optional: ''
+        },
+        {
+          name: '',
+          type: ''
+        },
+        {
+          name: '',
+          type: ''
+        },
+        {
+          name: '',
+          type: ''
+        }
+      ], */
+      temTableData: [],
+      // 模板项类型
+      typeOptions: [
+        {
+          value: 1,
+          label: '输入框'
+        },
+        {
+          value: 2,
+          label: '选择框'
+        },
+        {
+          value: 3,
+          label: '单选框'
+        },
+        {
+          value: 4,
+          label: '多选框'
+        },
+        {
+          value: 5,
+          label: '图文'
+        },
+        {
+          value: 6,
+          label: '附件'
+        },
+        {
+          value: 7,
+          label: '日期(年月日)'
+        },
+        {
+          value: 8,
+          label: '日期(年月日时分秒)'
+        }
+      ],
+      // 可选项弹窗
+      dialogOptionalVisible: false,
+      desc: '',
+      rules: {
+        name: [
+          { required: true, message: '模板名称不能为空', trigger: ['blur', 'change'] },
+          { min: 1, max: 12, message: '长度在 1 到 12 个字符', trigger: ['blur', 'change'] }
+        ],
+        type: [
+          { required: true, message: '请选择模板类型', trigger: 'change' }
+        ]
+      },
+      clickRowIndex: '', // 当前操作的模板项
+      templateSystemCode: this.$route.query.code
+    }
+  },
+  methods: {
+    /** 改变模板项类型 */
+    changeType (index) {
+      this.temTableData[index].value = this.temTableData[index].type === 4 ? [] : ''
+      this.temTableData[index].original0ptional = ''
+      // this.temTableData[index].optional = [{label: '-10000'}]
+      this.temTableData[index].optional = []
+    },
+    /** 打开编辑可选项弹框 */
+    editDialogOptional (index) {
+      this.desc = ''
+      this.dialogOptionalVisible = true
+      this.clickRowIndex = index
+    },
+    /** 编辑可选项 */
+    handleOptionalEvent (operation) {
+      if (Object.is(operation, 'save')) {
+        if (this.desc !== '') {
+          let arr = this.desc.split('\n')
+          for (let i = 0; i < arr.length; i++) {
+            if (arr[i]) {
+              this.temTableData[this.clickRowIndex].optional.push({'label': arr[i], 'value': i + 1})
+            }
+          }
+          this.temTableData[this.clickRowIndex].original0ptional = this.desc
+        }
+      } else if (Object.is(operation, 'cancel')) {
+        this.desc = ''
+      }
+      this.dialogOptionalVisible = false
+    },
+    handleClickEvent (formName, operation) {
+      if (Object.is(operation, 'save')) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let msg = ''
+            if (this.temTableData.length === 0) {
+              msg = '模板项不能为空，请添加'
+            } else {
+              if (!this.checkItems()) {
+                msg = '模板项信息不完整，请核查'
+              } else if (this.checkItemsName()) {
+                msg = '模板项名称不能重复，请核查'
+              }
+            }
+            if (msg) {
+              this.$message({
+                type: 'warning',
+                message: msg
+              })
+              return false
+            }
+            this.$confirm('确认要保存吗?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+              beforeClose: (action, instance, done) => {
+                done()
+              }
+            }).then(() => {
+              this.loading = true
+              this.addForm.originalItems = JSON.stringify(this.addOtherItemInfo())
+              this.addForm.items = JSON.stringify(this.addOtherItemInfo())
+              this.addForm.enterpriseId = this.$store.getters.authUser.enterpriseId
+              templateInfo.save(this.addForm).then((res) => {
+                this.loading = false
+                if (res.data.resCode === '0000') {
+                  this.$store.commit('delete_tabs', this.$route.fullPath)
+                  this.$router.go(-1)
+                }
+              })
+            })
+          } else {
+            this.loading = false
+            return false
+          }
+        })
+      } else if (Object.is(operation, 'cancel')) {
+        this.$store.commit('delete_tabs', this.$route.fullPath)
+        this.$router.go(-1)
+      }
+    },
+    /** 判断模板项格式是否正确 */
+    checkItems () {
+      let flag = false
+      let i = 0
+      for (; i < this.temTableData.length; i++) {
+        // 标签名称不能为空
+        // 选择框不能为空
+        // 如果为选择框，则一定要存在选项值
+        if (this.temTableData[i].name === '' || this.temTableData[i].type === '') {
+          break
+        } else if (this.temTableData[i].type === 2 && this.temTableData[i].optional === '') {
+          break
+        }
+      }
+      if (i === this.temTableData.length) {
+        flag = true
+      }
+      return flag
+    },
+    /** 判断模板项名称是否重复 */
+    checkItemsName () {
+      let flag = false
+      let i = 0
+      for (; i < this.temTableData.length; i++) {
+        if (flag) {
+          break
+        }
+        for (let j = 0; j < this.temTableData.length; j++) {
+          if (i !== j && this.temTableData[i].name === this.temTableData[j].name) {
+            flag = true
+            break
+          }
+        }
+      }
+      return flag
+    },
+    /** 补充模板项信息 */
+    addOtherItemInfo () {
+      let type = 0
+      // 判断是否有附件存在，设置附件业务类型
+      for (let i = 0; i < this.temTableData.length; i++) {
+        this.temTableData[i].order = i
+        this.temTableData[i].isFillIn = this.temTableData[i].isFillIn ? 1 : 0
+        if (Number(this.temTableData[i].type) === 6) {
+          this.temTableData[i].businessType = type++
+        }
+      }
+      return this.temTableData
+    },
+    handleClick (tab, event) {},
+    imgSelected (val) {
+      this.dialogVisible = false
+      this.addForm.imgSrc = val.imgSrc
+      this.defaultImg = val.imgSrc
+    },
+    addRow () {
+      this.temTableData.push(
+        {
+          name: '',
+          type: '',
+          original0ptional: '',
+          optional: [],
+          isFillIn: '', // 是否必填
+          order: '', // 顺序
+          value: '',
+          businessType: '',
+          fileInformations: []
+        }
+      )
+    },
+    moveUp: function (index) {
+      const temp = this.temTableData[index]
+      if (index > 0 && index < this.temTableData.length) {
+        this.temTableData.splice(index, 1)
+        this.temTableData.splice(index - 1, 0, temp)
+      }
+    },
+    moveDown: function (index) {
+      const temp = this.temTableData[index]
+      if (index >= 0 && index < this.temTableData.length - 1) {
+        this.temTableData.splice(index, 1)
+        this.temTableData.splice(index + 1, 0, temp)
+      }
+    },
+    delBtn (index) {
+      this.temTableData.splice(index, 1)
+    },
+    init () {
+      if (this.templateSystemCode) {
+        templateInfo.getOne(this.templateSystemCode).then((res) => {
+          if (res.data.templateInfo) {
+            this.addForm = res.data.templateInfo
+            this.defaultImg = this.addForm.imgSrc
+            this.temTableData = JSON.parse(this.addForm.originalItems)
+            this.temTableData.forEach(item => {
+              if (Number(item.isFillIn) === 1) {
+                item.isFillIn = true
+              } else {
+                item.isFillIn = false
+              }
+              return item
+            })
+          }
+        })
+      }
+    }
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_templateAdd{
+    .showImg{
+      width:100px;
+      overflow: hidden;
+    }
+    .showImg .el-button{
+      padding: 8px 11px;
+    }
+    .showImg img{
+      margin-top: 13px;
+    }
+    .imgDialog .el-dialog__header{
+      border-bottom: 1px solid #eeeeee;
+    }
+    .imgDialog .el-dialog__body{
+      padding: 0;
+    }
+    ul.imgList{
+      width: 100%;
+      overflow: hidden;
+      margin: 20px 0 30px 0;
+    }
+    ul.imgList li{
+      float: left;
+      width: 80px;
+      height: 80px;
+      margin: 16px 30px;
+      position: relative;
+    }
+    ul.imgList li .hover{
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: none;
+      cursor: pointer;
+    }
+    ul.imgList li:hover .hover{
+      display: block;
+    }
+    .temTableData {
+      margin-top: 20px;
+      border: 0!important;
+    }
+    .optional span:hover{
+      cursor: pointer;
+      color: #409EFF;
+    }
+    .optionalDialog .el-dialog__header{
+      border-bottom: 1px solid #eeeeee;
+    }
+    .optionalDialog p{
+      color: #999999;
+      line-height: 24px;
+    }
+    .optionalDialog .submit-radio{
+      text-align: center;
+    }
+  }
+</style>

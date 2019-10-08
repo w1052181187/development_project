@@ -1,0 +1,6 @@
+import aptitude from './aptitude'
+import biddingRoom from './biddingRoom'
+export default [
+  ...aptitude,
+  ...biddingRoom
+]

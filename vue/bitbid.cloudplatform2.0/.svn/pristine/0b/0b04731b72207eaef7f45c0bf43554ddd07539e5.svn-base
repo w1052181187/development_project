@@ -1,0 +1,20 @@
+export default[
+  {
+    path: '/system/enterprise',
+    name: '企业管理',
+    meta: {
+      title: '企业管理',
+      active: '/system/enterprise'
+    },
+    component: resolve => require(['@/pages/system/enterprise/index'], resolve)
+  },
+  {
+    path: '/system/enterprise/detail',
+    name: '企业信息查看',
+    meta: {
+      title: '企业信息查看',
+      active: '/system/enterprise'
+    },
+    component: resolve => require(['@/pages/system/enterprise/detail'], resolve)
+  }
+]

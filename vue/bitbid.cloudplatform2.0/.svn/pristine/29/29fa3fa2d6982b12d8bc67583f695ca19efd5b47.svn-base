@@ -1,0 +1,109 @@
+<template>
+  <div>
+    <el-table
+      :data="tableData"
+      border
+      style="width: 100%"
+      header-cell-class-name="tableheader">
+      <el-table-column
+        type="index"
+        label="序号"
+        width="60"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        prop="name"
+        label="合同编号"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="name"
+        label="合同名称"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="name"
+        label="签订日期"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="name"
+        label="联系人"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="name"
+        label="联系电话"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="name"
+        label="合同文件"
+        width="80">
+        <template slot-scope="scope">
+          <el-button type="text" size="small" @click="downloadBtn(scope)">下载</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!--分页-->
+    <el-pagination
+      background
+      layout="prev, pager, next"
+      :total="page.total"
+      :page-size='page.pageSize'
+      :current-page.sync="page.currentPage"
+      @current-change="handlePage"
+      @next-click="handlePage">
+    </el-pagination>
+    <!--分页-->
+  </div>
+</template>
+<script>
+export default {
+  data () {
+    return {
+      loading: false,
+      tableData: [],
+      page: {
+        pageSize: 10,
+        pageNo: 1,
+        total: 0, // 总条数
+        currentPage: 1
+      },
+      queryModel: {
+        relatedCode: this.relatedCode,
+        isDelete: 0
+      }
+    }
+  },
+  props: ['relatedCode'],
+  methods: {
+    getTableData () {
+      // this.loading = true
+      this.queryModel.pageNo = this.page.pageNo
+      this.queryModel.pageSize = this.page.pageSize
+      // contacts.queryList(this.queryModel).then(res => {
+      //   this.queryModel.pageNo = this.page.pageNo
+      //   this.tableData = res.data.data.list
+      //   this.page.total = res.data.data.total
+      // })
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 表单分页
+    handlePage (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = (nowNum - 1) * this.page.pageSize
+      this.getTableData()
+    }
+  },
+  mounted () {
+    // 初始化
+    this.getTableData()
+  }
+}
+</script>
+<style lang="less">
+</style>

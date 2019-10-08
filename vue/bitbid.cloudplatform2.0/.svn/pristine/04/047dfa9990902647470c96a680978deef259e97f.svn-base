@@ -1,0 +1,371 @@
+<template>
+  <div class="tender-fee cloudcontent" id="tenderFee">
+    <div class="main">
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
+        <el-form-item label="缴费单位：" prop="bidderName" readonly>
+          <el-input v-model="ruleForm.bidderName" readonly>
+            <el-button slot="append" size="mini" @click="companyChooseMtd">选择</el-button>
+          </el-input>
+        </el-form-item>
+        <!--<el-form-item v-if="pageText === '保证金'" label="应缴金额（元）：" prop="amountPayable">-->
+          <!--<el-input v-model="ruleForm.amountPayable"></el-input>-->
+        <!--</el-form-item>-->
+        <el-form-item label="缴纳金额（元）：" prop="amount">
+          <el-input v-model="ruleForm.amount"></el-input>
+        </el-form-item>
+        <el-form-item label="缴费方式：" prop="paymentMethod">
+          <el-select v-model="ruleForm.paymentMethod" placeholder="请选择">
+            <el-option v-for="item in paymentList" :key="item.value" :label="item.text" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="缴费时间：" prop="paymentTime">
+          <el-date-picker v-model="ruleForm.paymentTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd HH:mm:ss">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="缴费标段：" prop="paymentTenders">
+          <!-- <el-input v-model="ruleForm.paymentTenders">
+            <el-button slot="append" size="mini" @click="paymentTendersMtd">选择</el-button>
+          </el-input> -->
+          <el-button type="primary" @click="paymentTendersMtd">选择</el-button>
+          <el-table :data="paymentTendersTable" border tooltip-effect="dark" class="" header-cell-class-name="tableheader">
+              <el-table-column fixed type="index" width="60" label="序号"></el-table-column>
+              <el-table-column prop="bidSectionCode" label="标段编号"></el-table-column>
+              <el-table-column prop="bidSectionName" label="标段名称"></el-table-column>
+              <el-table-column prop="" label="操作">
+                <template slot-scope="scope">
+                  <el-button type="text" size="small" @click="delRowLine(scope.$index, paymentTendersTable)">删除</el-button>
+                </template>
+              </el-table-column>
+          </el-table>
+        </el-form-item>
+        <el-form-item label="备注：" prop="remarks">
+          <el-input v-model="ruleForm.remarks"></el-input>
+        </el-form-item>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="saveCustomCharge('ruleForm', 1)">提交</el-button>
+          <el-button type="primary" @click="saveCustomCharge('ruleForm', 0)">保存</el-button>
+          <el-button class="cancal">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+    <!-- 缴费单位弹框 -->
+    <el-dialog title="选择缴费单位" :visible.sync="companyChooseBox" class="company-choose-box" :width="'800px'">
+      <div class="dialogUnaudited-content">
+        <div>
+          <el-input v-model="companyChooseName">
+            <el-button slot="append" size="mini" @click="companyChooseSrh">查询</el-button>
+          </el-input>
+          <p>无符合条件的记录<a href="javascript:;" @click="addNewPaymentComoany">新增缴费单位</a></p>
+        </div>
+        <el-table v-if="isPaymentTable" :data="companyTableData" border tooltip-effect="dark" class=""
+          ref="tableRef" header-cell-class-name="tableheader" @row-click="tableRowClick">
+            <el-table-column fixed type="index" width="60" label="序号"></el-table-column>
+            <el-table-column prop="name" label="缴费单位"></el-table-column>
+            <el-table-column prop="choose" label="选择"></el-table-column>
+        </el-table>
+        <el-pagination v-if="isPaymentTable" background layout="prev, pager, next" :total="pages.total" :page-size='pages.pageSize'
+          :current-page.sync="pages.pageNo" @current-change="handleCurrentChange"
+          @next-click="handleCurrentNext">
+        </el-pagination>
+        <div v-if="!isPaymentTable">
+          <el-form>
+            <el-form-item label="缴费单位：" prop="paymentUnit">
+              <el-input v-model="paymentUnit"></el-input>
+            </el-form-item>
+          </el-form>
+          <div class="dialog-btn-box">
+            <el-button type="primary" @click="addNewCompantBtn">确认</el-button>
+            <el-button type="cancel" @click="isPaymentTable = true">取消</el-button>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
+    <!-- 缴费标段弹框 -->
+    <el-dialog title="选择缴费标段" :visible.sync="paymentTendersBox" class="company-choose-box" :width="'800px'">
+      <div class="dialogUnaudited-content">
+        <div>
+          <el-input v-model="paymentTendersName">
+            <el-button slot="append" size="mini" @click="paymentTenderSrh">查询</el-button>
+          </el-input>
+        </div>
+        <el-table :data="tenderTableData" border tooltip-effect="dark" class=""
+          ref="tableRef" header-cell-class-name="tableheader" @selection-change="getNewTenderTableData">
+            <el-table-column fixed type="index" width="60" label="序号"></el-table-column>
+            <el-table-column fixed type="selection" width="50" align="center"></el-table-column>
+            <el-table-column prop="bidSectionCode" width="" label="标段编号"></el-table-column>
+            <el-table-column prop="bidSectionName" width="" label="标段名称"></el-table-column>
+        </el-table>
+        <el-pagination background layout="prev, pager, next" :total="pageSrh.total" :page-size='pageSrh.pageSize'
+          :current-page.sync="pageSrh.pageNo" @current-change="handleTenderCurrentChange"
+          @next-click="handleTenderCurrentNext">
+        </el-pagination>
+        <div class="dialog-btn-box">
+          <el-button type="primary" @click="determineChooseTender">确认</el-button>
+          <el-button type="cancel" @click="paymentTendersBox = false">取消</el-button>
+        </div>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import {validateMoney} from '@/assets/js/validate'
+import {bidder, bidSection, settlementItem} from '@/api/project'
+const validMoney = (rule, value, callback) => {
+  if (!validateMoney(value)) {
+    callback(new Error('请输入正确的金额'))
+  } else {
+    callback()
+  }
+}
+export default {
+  components: {
+  },
+  data () {
+    return {
+      pageText: '', // 哪种收支项目新增
+      pageType: '', // 页面类型,// add-新增页，modify-修改页
+      ruleForm: {
+        bidderName: '',
+        amount: '',
+        premiumReceived: '',
+        returnMethod: '',
+        paymentTime: '',
+        paymentTenders: [],
+        remarks: '',
+        status: ''
+      },
+      rules: {
+        bidderName: [{ required: true, message: '请输入缴费单位', trigger: 'change' }],
+        amount: [{ required: true, message: '请输入缴费金额', trigger: 'change' },
+          { required: true, trigger: 'change', validator: validMoney }],
+        paymentMethod: [{ required: true, message: '请选择缴费方式', trigger: 'change' }],
+        paymentTime: [{ required: true, message: '请选择缴费时间', trigger: 'change' }],
+        paymentTenders: [{ required: true, message: '请选择缴费标段', trigger: 'change' }]
+      },
+      paymentList: [
+        {value: '1', text: '支付宝'},
+        {value: '2', text: '微信'},
+        {value: '3', text: '银联'},
+        {value: '4', text: '现金'},
+        {value: '5', text: '汇款'},
+        {value: '6', text: '支票'},
+        {value: '7', text: '保函'},
+        {value: '8', text: '其他'}
+      ], // 缴费方式
+      paymentTendersTable: [],
+      companyChooseBox: false, // 选择缴费单位弹框
+      companyChooseName: '', // 弹框缴费单位名称
+      companyTableData: [], // 选择单位表格
+      pages: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
+      }, // 选择单位分页
+      paymentUnit: '', // 弹框新增缴费单位名称
+      isPaymentTable: true, // 是否为缴费单位表格
+      paymentTendersBox: false, // 选择缴费标段弹框
+      paymentTendersName: '', // 缴费标段查询框
+      tenderTableData: [],
+      pageSrh: {
+        pageNo: 1,
+        pageSize: 10,
+        total: 0
+      }, // 选择缴费标段分页
+      newTenderTableData: []
+    }
+  },
+  watch: {
+  },
+  mounted () {
+    this.pageText = this.$route.query.text
+    this.pageType = this.$route.query.type
+    console.log(this.pageText, this.pageType)
+    if (this.pageType === 'modify') {
+      this.loadRuleFormData()
+    }
+  },
+  methods: {
+    // 获取初始数据
+    loadRuleFormData () {
+      settlementItem.getSettlementItem(this.$route.params.objectId).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.ruleForm = res.data.settlementItem
+          this.paymentTendersTable = res.data.settlementItem.bidSectionList
+          this.ruleForm.paymentTenders = this.paymentTendersTable
+        }
+      })
+    },
+    // 保存按钮
+    saveCustomCharge (formName, payStatus) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          let message = ''
+          if (payStatus === 0) {
+            message = '确认要保存吗?'
+          } else {
+            message = '确认要提交吗?'
+          }
+          this.$confirm(message, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            beforeClose: (action, instance, done) => {
+              done()
+            }
+          }).then(() => {
+            bidder.saveBidder({
+              name: this.paymentUnit,
+              tenderSystemCode: this.$route.query.tenderSystemCode
+            }).then((res) => {
+              if (res.data.resCode === '0000') {
+                // 同步标段
+                let sectionSystemCode = []
+                console.log(this.ruleForm.paymentTenders)
+                this.ruleForm.paymentTenders.forEach(item => {
+                  sectionSystemCode.push(item.code)
+                })
+                this.ruleForm.sectionSystemCode = sectionSystemCode.join()
+                this.ruleForm.status = payStatus
+                this.ruleForm.itemType = 3
+                this.ruleForm.groupCode = this.$route.query.settlementGroupCode
+                if (this.pageType === 'add') {
+                  settlementItem.saveSettlementItem(this.ruleForm).then((res) => {
+                    if (res.data.resCode === '0000') {
+                      this.$router.go(-1)
+                    }
+                  })
+                } else {
+                  settlementItem.updateSettlementItem(this.ruleForm).then((res) => {
+                    if (res.data.resCode === '0000') {
+                      this.$router.go(-1)
+                    }
+                  })
+                }
+              }
+            })
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    // 缴费单位选择按钮
+    companyChooseMtd () {
+      console.log('缴费单位')
+      this.companyChooseBox = true
+      this.isPaymentTable = true
+      this.loadComoanyChooseTable()
+      this.paymentUnit = ''
+    },
+    getBidderList () {
+      // 获取缴费单位
+      bidder.getBidderList({
+        pageNo: this.pages.pageNo,
+        pageSize: this.pages.pageSize,
+        messageLike: this.companyChooseName,
+        tenderSystemCode: this.$route.query.tenderSystemCode
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.companyTableData = res.data.bidderList.list
+          this.pages.total = res.data.bidderList.total
+        }
+      })
+    },
+    // 获取查询缴费单位表格
+    loadComoanyChooseTable () {
+      this.getBidderList()
+    },
+    // 缴费单位查询方法
+    companyChooseSrh () {
+      this.pages.pageSize = 10
+      this.pages.pageNo = 1
+    },
+    // 单击缴费单位表格
+    tableRowClick (row, event, column) {
+      this.ruleForm.bidderName = row.name
+      console.log(row.name)
+      this.companyChooseBox = false
+    },
+    handleCurrentChange () {},
+    handleCurrentNext () {},
+    // 新增缴费单位按钮
+    addNewPaymentComoany () {
+      this.isPaymentTable = false
+    },
+    // 新增缴费单位确认按钮
+    addNewCompantBtn () {
+      if (this.paymentUnit) {
+        this.ruleForm.bidderName = this.paymentUnit
+        this.companyChooseBox = false
+      } else {
+        this.$message('请填写缴费单位')
+      }
+    },
+    // 缴费标段选择按钮
+    paymentTendersMtd () {
+      this.paymentTendersBox = true
+      this.getBidSetion()
+    },
+    // 获取项目下的标段
+    getBidSetion () {
+      bidSection.getList({
+        pageNo: this.pageSrh.pageNo,
+        pageSize: this.pageSrh.pageSize,
+        tenderSystemCode: this.$route.query.tenderSystemCode,
+        messageLike: this.paymentTendersName,
+        auditStatusList: '2,4'
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.tenderTableData = res.data.bidSectionList.list
+          this.pageSrh.total = res.data.bidSectionList.total
+        }
+      })
+    },
+    // 缴费标段查询方法
+    paymentTenderSrh () {
+      this.pageSrh.pageSize = 10
+      this.pageSrh.pageNo = 1
+      this.getBidSetion()
+    },
+    getNewTenderTableData (data) {
+      this.newTenderTableData = data
+    },
+    handleTenderCurrentChange () {},
+    handleTenderCurrentNext () {},
+    // 确认选择缴费标段
+    determineChooseTender () {
+      this.paymentTendersTable = this.newTenderTableData
+      this.paymentTendersTable.forEach(x => {
+        this.ruleForm.paymentTenders.push(x)
+      })
+      this.paymentTendersBox = false
+    },
+    // 缴费标段表格单行删除
+    delRowLine (index, data) {
+      data.splice(index, 1)
+      this.ruleForm.paymentTenders = []
+      data.forEach(x => {
+        this.ruleForm.paymentTenders.push(x.value)
+      })
+    }
+  }
+}
+</script>
+<style scoped lang="less">
+.company-choose-box{
+  p{
+    line-height: 30px;
+  }
+  .dialog-btn-box{
+    text-align: center;
+  }
+}
+</style>
+<style lang="less">
+.company-choose-box{
+  .el-dialog__body{
+    padding: 0 20px 20px 20px;
+  }
+}
+</style>

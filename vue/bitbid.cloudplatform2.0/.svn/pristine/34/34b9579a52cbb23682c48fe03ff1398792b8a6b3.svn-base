@@ -1,0 +1,38 @@
+export default [
+  {
+    path: '/customer/template',
+    name: '评估模板',
+    meta: {
+      title: '评估模板',
+      active: '/customer/template'
+    },
+    component: resolve => require(['@/pages/customer/template/index'], resolve)
+  },
+  {
+    path: '/customer/template/addTemplate',
+    name: '评估模板-添加',
+    meta: {
+      title: '评估模板-添加',
+      active: '/customer/template'
+    },
+    component: resolve => require(['@/pages/customer/template/addTemplate'], resolve)
+  },
+  {
+    path: '/customer/template/updateTemplate',
+    name: '评估模板-修改',
+    meta: {
+      title: '评估模板-修改',
+      active: '/customer/template'
+    },
+    component: resolve => require(['@/pages/customer/template/updateTemplate'], resolve)
+  },
+  {
+    path: '/customer/template/detailTemplate/:objectId',
+    name: '评估模板-详情',
+    meta: {
+      title: '评估模板-详情',
+      active: '/customer/template'
+    },
+    component: resolve => require(['@/pages/customer/template/detailTemplate'], resolve)
+  }
+]

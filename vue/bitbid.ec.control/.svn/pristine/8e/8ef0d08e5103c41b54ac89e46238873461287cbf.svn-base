@@ -1,0 +1,171 @@
+<template>
+  <div id="print-page"  class="cont-view">
+    <!-- 面包屑区域start -->
+    <div class="bread-box">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item>成交管理</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/index/order-cert' }">订单核销凭证打印</el-breadcrumb-item>
+        <el-breadcrumb-item>打印</el-breadcrumb-item>
+      </el-breadcrumb>
+      <el-button type="info" size="small" class="go-back" @click="$router.go(-1)">返 回</el-button>
+    </div>
+    <!-- 面包屑区域end -->
+    <div class="print-btn">
+      <el-button size="small" type="primary" @click="print">打 印</el-button>
+    </div>
+    <div class="print-area">
+      <div class="print-warp" ref="printBox">
+        <h3 class="print-title">核销凭证单</h3>
+        <table class="table-cont">
+          <tr>
+            <td class="print-r">电商平台名称</td>
+            <td class="print-l" colspan="5">{{printForm.ecPlatform || '-----'}}</td>
+          </tr>
+          <tr>
+            <td class="print-r">采购人</td>
+            <td class="print-l" colspan="5">{{printForm.buyName}}</td>
+          </tr>
+          <tr>
+            <td class="print-r">订单编号</td>
+            <td class="print-l" colspan="2">{{printForm.orderNum}}</td>
+            <td class="print-r">订单金额</td>
+            <td class="print-l" colspan="2">{{printForm.orderAmount}}</td>
+          </tr>
+          <tr>
+            <td class="print-r">订单状态</td>
+            <td class="print-l" colspan="2">{{printForm.orderStatus | filteredOrderStatus}}</td>
+            <td class="print-r">成交时间</td>
+            <td class="print-l" colspan="2">{{printForm.dealTime | filterTime}}</td>
+          </tr>
+          <tr>
+            <td class="print-r">付款金额</td>
+            <td class="print-l" colspan="2">{{printForm.orderSumPrice}}</td>
+            <td></td>
+            <td colspan="2"></td>
+          </tr>
+          <tr>
+            <td class="print-m">商品编号</td>
+            <td class="print-m">商品名称</td>
+            <td class="print-m">品牌</td>
+            <td class="print-m">型号</td>
+            <td class="print-m">单价</td>
+            <td class="print-m">数量</td>
+          </tr>
+          <tr v-for="(item, index) in printForm.articleList" :key="index">
+            <td class="print-m">{{item.articleNum}}</td>
+            <td class="print-m">{{item.articleName}}</td>
+            <td class="print-m">{{item.brand}}</td>
+            <td class="print-m">{{item.modelNum}}</td>
+            <td class="print-m">{{item.unitPrice}}</td>
+            <td class="print-m">{{item.orderAmount}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import {transactionRecord} from '@/api'
+import {dateFormat} from '@/assets/js/common'
+export default {
+  name: 'print',
+  data () {
+    return {
+      printForm: {},
+      routerParams: this.$route.params.id,
+      count: 0
+    }
+  },
+  methods: {
+    getOne () {
+      transactionRecord.getOne(this.routerParams).then(res => {
+        // console.log(res)
+        this.printForm = res.data.transactionRecord
+      })
+    },
+    print () {
+      this.count++
+      let obj = {
+        printNum: this.count + this.printForm.printNum,
+        printStatus: 1,
+        id: this.$route.params.id
+      }
+      transactionRecord.save(obj).then(res => {
+      })
+      this.$print(this.$refs.printBox)
+    }
+  },
+  filters: {
+    /** 格式化订单状态 */
+    filteredOrderStatus (orderStatus) {
+      if (orderStatus === 1) {
+        return '已接单'
+      } else if (orderStatus === 2) {
+        return '已发货'
+      } else if (orderStatus === 3) {
+        return '已验收'
+      } else if (orderStatus === 4) {
+        return '已成交'
+      } else if (orderStatus === 5) {
+        return '已评价'
+      }
+    },
+    /** 打印状态 */
+    formatePrintStatus (Value) {
+      let obj = {
+        0: '未打印',
+        1: '已打印'
+      }
+      return obj[Value]
+    },
+    filterTime (val) {
+      if (val) {
+        return dateFormat(val, 'yyyy-MM-dd hh:mm:ss')
+      } else {
+        return '-----'
+      }
+    }
+  },
+  mounted () {
+    this.getOne()
+  }
+}
+</script>
+<style media="print" lang="less" scoped>
+.print-btn {
+  text-align: right;
+}
+.print-area {
+  padding: 20px 20px 40px;
+  margin-top: 10px ;
+  background: #eee;
+}
+.print-warp {
+  background: #fff;
+  padding: 30px;
+}
+.print-warp .table-cont {
+  width: 100%;
+  border: 1px solid #333;
+  border-collapse: collapse;
+}
+.print-warp .print-title {
+  text-align: center;
+}
+.table-cont tr, .table-cont td {
+  border: 1px solid #333;
+}
+.table-cont td {
+  padding: 3px 8px;
+}
+.table-cont .print-r {
+  text-align: right;
+}
+.table-cont .print-l {
+  text-align: left;
+}
+.table-cont .print-m {
+  text-align: center;
+}
+</style>

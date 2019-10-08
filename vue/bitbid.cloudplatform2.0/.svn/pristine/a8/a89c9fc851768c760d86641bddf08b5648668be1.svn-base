@@ -1,0 +1,53 @@
+import request from '@/utils/axios/components-axios'
+
+export const bidOpeningRoom = {
+  /**
+   * 开评标室列表
+   */
+  getBidOpeningRoomList (query) {
+    return request({
+      url: '/bidOpeningRooms',
+      method: 'get',
+      params: query
+    })
+  },
+  /**
+   * 获取开评标室及其预约
+   */
+  getBidOpeningRoomAndRecordList (query) {
+    return request({
+      url: '/bidOpeningRooms/getRoomAndRecord',
+      method: 'get',
+      params: query
+    })
+  },
+  /**
+   * 保存 || 修改 || 禁用开评标室
+   */
+  saveOrUpdateBidOpeningRoom (query) {
+    return request({
+      url: '/bidOpeningRooms',
+      method: 'post',
+      params: query
+    })
+  },
+  /**
+   * 判断开评标室是否在指定时间 段内被预约
+   */
+  checkBidOpeningRoomIsOedered (query) {
+    return request({
+      url: '/bidOpeningRooms/checkByDate',
+      method: 'put',
+      params: query
+    })
+  },
+  /**
+   * 删除开评标室
+   */
+  deleteBidOpeningRoom (objectId) {
+    return request({
+      url: '/bidOpeningRooms/delete/' + objectId,
+      method: 'put'
+    })
+  }
+}

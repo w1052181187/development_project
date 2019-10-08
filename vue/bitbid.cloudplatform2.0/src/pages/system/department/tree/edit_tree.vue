@@ -1,0 +1,181 @@
+<template>
+  <div class="expand" id="expand" v-loading="loading">
+    <div>
+        <el-tree ref="expandMenuList" class="expand-tree"
+        :data="setTree"
+        node-key="id"
+        highlight-current
+        :props="defaultProps"
+        :expand-on-click-node="false"
+        :render-content="renderContent"
+        :default-expanded-keys="defaultExpandKeys"
+        :filter-node-method="filterNode"
+        @node-click="handleNodeClick"></el-tree>
+      </div>
+  </div>
+</template>
+<!-- VUE饿了么树形控件添加增删改功能按钮 -->
+<script>
+import TreeRender from './edit_tree_render'
+import {department} from '@/api/system'
+export default{
+  name: 'tree',
+  data () {
+    return {
+      maxexpandId: 999999999, // 新增节点开始id
+      non_maxexpandId: 99999999, // 新增节点开始id(不更改)
+      setTree: [], // 节点树数据
+      defaultProps: {
+        children: 'children',
+        label: 'label'
+      },
+      defaultExpandKeys: [], // 默认展开节点列表
+      editStatus: false,
+      loading: false
+    }
+  },
+  props: ['filterText'],
+  watch: {
+    filterText (val) {
+      this.$refs.expandMenuList.filter(val)
+    }
+  },
+  methods: {
+    // ***********************************插件树的方法*************************************
+    filterNode (value, data) {
+      if (!value) return true
+      return data.label.indexOf(value) !== -1
+    },
+    handleNodeClick (d, n, s) { // 点击节点
+      if (d.label) {
+        d.editFlag = false // 放弃编辑状态
+        this.$emit('handleNodeClick', d.id)
+      }
+    },
+    renderContent (h, {node, data, store}) { // 加载节点
+      let that = this
+      return h(TreeRender, {
+        props: {
+          DATA: data,
+          NODE: node,
+          STORE: store,
+          maxexpandId: that.non_maxexpandId
+        },
+        on: {
+          nodeAdd: (nodeData, d, n) => that.handleAdd(nodeData, d, n),
+          nodeEdit: (nodeData, d) => that.handleEdit(nodeData, d),
+          nodeDel: (s, d, n) => that.handleDelete(s, d, n)
+        }
+      })
+    },
+    // 增加节点
+    handleAdd (nodeData, data, n) {
+      // 添加数据
+      nodeData.children = nodeData.children || []
+      nodeData.children.push(data)
+      // 展开节点
+      if (!n.expanded) {
+        n.expanded = true
+      }
+      this.editStatus = false
+    },
+    // 编辑节点
+    handleEdit (nodeData, data) {
+      nodeData.label = data.label
+      nodeData.type = data.type
+      nodeData.parentType = data.parentType
+      nodeData.children.forEach(item => {
+        item.parentType = nodeData.type
+      })
+    },
+    // *******************************************接口调用开始*********************************
+    // 树列表数据
+    treeList (openId) {
+      department.queryList(this.$store.getters.authUser.enterpriseId).then((res) => {
+        this.setTree = res.data.deptTreeData
+        // 展开第一个数据
+        let deptOpenIds = res.data.deptTreeData[0].id
+        this.defaultExpandKeys = [deptOpenIds]
+        if (openId) {
+          this.defaultExpandKeys.push(openId)
+        }
+      })
+    },
+    // 删除
+    handleDelete (s, d, n) { // 删除节点
+      this.$confirm('是否删除此数据吗？', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        if (d.parentDepartmentId === 0) {
+          this.$message.error('此节点为最高节点，不可删除！')
+          return false
+        }
+        this.loading = true
+        department.delete(d.id).then((res) => {
+          this.loading = false
+          this.treeList()
+        })
+      }).catch(() => {
+        return false
+      })
+    }
+  },
+  mounted () {
+    // 树列表数据调用
+    this.treeList()
+  }
+}
+</script>
+
+<style lang="less">
+  #expand{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+  .expand>div{
+    height:85%;
+    margin:0 auto;
+    max-width:400px;
+    overflow-y:auto;
+  }
+  .expand>div::-webkit-scrollbar-track{
+    box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    border-radius:5px;
+  }
+  .expand>div::-webkit-scrollbar-thumb{
+    background-color:rgba(50, 65, 87, 0.5);
+    outline:1px solid slategrey;
+    border-radius:5px;
+  }
+  .expand>div::-webkit-scrollbar{
+    width:10px;
+  }
+  .expand-tree{
+    border:1px solid #dcdfe6;
+    margin-top:10px;
+  }
+  .expand-tree .el-tree-node.is-current,
+  .expand-tree .el-tree-node:hover{
+    overflow:hidden;
+  }
+  .expand-tree .is-current>.el-tree-node__content .tree-btn,
+  .expand-tree .el-tree-node__content:hover .tree-btn{
+    display:inline-block;
+  }
+  .expand-tree .is-current>.el-tree-node__content .tree-label{
+    font-weight:600;
+  }
+  .el-button--primary {
+    color: #fff;
+    background-color: #3d63f4;
+    border-color: #3d63f4;
+  }
+  .el-tree-node {
+      white-space: nowrap;
+      outline: 0;
+      padding: 5px 0;
+    }
+}
+</style>

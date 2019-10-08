@@ -1,0 +1,4 @@
+import collaboration from './collaboration'
+export default[
+  ...collaboration
+]

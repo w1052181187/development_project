@@ -1,0 +1,140 @@
+<template>
+  <div>
+    <el-dialog :title="title" width="600px" :before-close="cancel" :visible.sync="showVisible">
+      <el-form :model="submitForm" :rules="rules" ref="submitForm" v-loading="loading">
+        <el-form-item label="名称：" prop="name" :label-width="formLabelWidth">
+          <el-input v-model.trim="submitForm.name" placeholder="请输入名称">
+            <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="类型：" prop="type" :label-width="formLabelWidth">
+          <el-radio-group v-model="submitForm.type">
+            <el-radio :label="1" v-if="canChangeType">部门</el-radio>
+            <el-radio :label="2" v-if="type === 2 || type === 4">公司</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer operationbtn">
+        <el-button type="info" @click="cancel()">取 消</el-button>
+        <el-button type="primary" @click="save()" v-loading="submitLoading">确 定</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import {department} from '@/api/system'
+import {trimStr} from '@/assets/js/common'
+export default {
+  data () {
+    let validName = (rule, value, callback) => {
+      if (value && trimStr(value)) {
+        const name = trimStr(value)
+        if (value.length > 20) {
+          callback(new Error('编辑内容不能超过20个字符'))
+        } else {
+          department.isNoRepeated({
+            enterpriseId: this.$store.getters.authUser.enterpriseId,
+            objectId: this.editObjectId,
+            parentDepartmentId: this.parentId,
+            isDelete: 0,
+            name
+          }).then(res => {
+            if (!res.data.data) {
+              callback(new Error('名称重复，请重新填写'))
+            } else {
+              callback()
+            }
+          })
+        }
+      } else {
+        callback(new Error('名称不能为空'))
+      }
+    }
+    return {
+      title: '新增',
+      loading: false,
+      submitLoading: false,
+      submitForm: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        name: '',
+        type: 1
+      },
+      formLabelWidth: '120px',
+      rules: {
+        name: [
+          {validator: validName, trigger: 'blur'},
+          { required: true, message: '名称不能为空', trigger: 'blur' }
+        ],
+        type: [
+          { required: true, message: '类型不能为空', trigger: 'change' }
+        ]
+      }
+    }
+  },
+  props: ['editObjectId', 'showVisible', 'parentId', 'type', 'parentType', 'canChangeType'],
+  watch: {
+    editObjectId (value) {
+      if (value) {
+        this.title = '新增'
+        this.initData()
+      } else {
+        this.title = '编辑'
+      }
+    },
+    showVisible (value) {
+      if (!value) {
+        this.$refs['submitForm'].resetFields()
+        this.submitForm = {
+          enterpriseId: this.$store.getters.authUser.enterpriseId,
+          name: '',
+          type: 1
+        }
+      }
+    }
+  },
+  methods: {
+    initData () {
+      this.loading = true
+      department.queryOne(this.editObjectId).then(res => {
+        this.loading = false
+        this.submitForm = res.data.data
+      })
+    },
+    save () {
+      this.$refs['submitForm'].validate((valid) => {
+        if (valid) {
+          this.$confirm('提交后数据将锁定，不允许修改，确认要提交吗?', '提示', {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.submitLoading = true
+            this.submitForm.parentDepartmentId = this.parentId
+            department.update(this.submitForm).then(res => {
+              this.submitLoading = false
+              let obj = res.data.data
+              this.submitForm.objectId = obj.objectId
+              this.submitForm.parentType = this.parentType
+              if (res.data.resCode === '0000') {
+                this.$emit('submitSuccess', Object.assign({}, this.submitForm), !!this.editObjectId)
+              }
+            }).catch(() => {
+              this.submitLoading = false
+            })
+          }).catch(() => {
+            this.submitLoading = false
+            return false
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    cancel () {
+      this.$emit('showDialog')
+    }
+  }
+}
+</script>
+<style>
+</style>

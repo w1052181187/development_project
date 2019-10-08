@@ -1,0 +1,9 @@
+import Cdepartment from '@/pages/dailyManage/department/index'
+
+export default[
+  {
+    path: '/dailyManage/department',
+    name: 'cloud-department',
+    component: Cdepartment
+  }
+]

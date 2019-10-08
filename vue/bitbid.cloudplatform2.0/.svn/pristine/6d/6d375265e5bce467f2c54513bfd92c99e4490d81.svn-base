@@ -1,0 +1,194 @@
+<template>
+  <div class="cloudcontent" id="homejuris">
+    <div class="main">
+      <div class="penserviceconbox">
+        <div class="penserviceconconbox">
+          <!--模块内容-->
+          <div class="typebigbox">
+            <el-row class="tac">
+              <el-col :span="24">
+                <el-menu class="el-menu-vertical-demo" v-loading="loading">
+                  <el-submenu v-for="(item, index) in moduleTree" :index="index + ''" :key="item.id">
+                    <template slot="title">
+                      <span>{{item.label}}</span>
+                    </template>
+                    <el-menu-item-group>
+                      <el-menu-item v-for="chield in item.children" :index="chield.id + ''" :key="chield.id" @click="selectModule(chield.id)">{{chield.label}}</el-menu-item>
+                    </el-menu-item-group>
+                  </el-submenu>
+                </el-menu>
+              </el-col>
+            </el-row>
+          </div>
+          <!--模块内容-->
+          <permissions :selectedModuleId="selectedModuleId" :modulePermissions="modulePermissions" :roleModulePermissionIds="roleModulePermissionIds" @selectPermissions="selectPermissions"></permissions>
+          <!--按钮-->
+          <div class="jursdbtn">
+            <el-button @click="submitData" type="primary">保 存</el-button>
+            <el-button @click="cancel">取 消</el-button>
+          </div>
+          <!--按钮-->
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import permissions from './permissions.vue'
+import {role, module} from '@/api/system'
+
+export default {
+  components: {
+    permissions
+  },
+  data () {
+    return {
+      loading: false,
+      moduleTree: [],
+      allPermissionsMap: {},
+      rolePermissionIdsMap: {},
+      selectedModuleId: '',
+      modulePermissions: [],
+      roleModulePermissionIds: []
+    }
+  },
+  watch: {
+    selectedModuleId (value) {
+      this.modulePermissions = this.allPermissionsMap[value]
+      this.roleModulePermissionIds = this.rolePermissionIdsMap[value]
+    }
+  },
+  methods: {
+    initData () {
+      // 获取所有模块
+      // 获取所有权限，根据模块Id分类
+      // 获取该用户的所有权限，根据模块Id分类
+      // TODO 如果查询慢，则拆开
+      this.loading = true
+      module.queryList({roleId: this.$route.query.objectId}).then(res => {
+        this.loading = false
+        this.moduleTree = res.data.treeData
+        this.allPermissionsMap = res.data.allPermissionsMap
+        this.rolePermissionIdsMap = res.data.rolePermissionIdsMap || {}
+      })
+    },
+    // 选中模块
+    selectModule (moduleId) {
+      this.selectedModuleId = moduleId
+    },
+    // 选择权限
+    selectPermissions (arr) {
+      if (arr.length) {
+        this.rolePermissionIdsMap[this.selectedModuleId] = arr
+      } else {
+        delete this.rolePermissionIdsMap[this.selectedModuleId]
+      }
+    },
+    submitData () {
+      if (Object.keys(this.rolePermissionIdsMap).length) {
+        this.$confirm('确认保存吗？', '提示', {
+          comfirmButtonText: '确认',
+          cancelButtonText: '取消',
+          type: 'success'
+        }).then(() => {
+          const data = {
+            rolePermissionIdsMap: this.rolePermissionIdsMap,
+            roleId: this.$route.query.objectId
+          }
+          role.bindPermissions(data).then(res => {
+            if (res.data.resCode === '0000') {
+              this.$store.commit('delete_tabs', this.$route.fullPath)
+              this.$router.push({path: '/system/roles'})
+            }
+          })
+        }).catch(() => { return false })
+      } else {
+        this.$message({
+          type: 'warning',
+          message: '请选择操作权限'
+        })
+        return false
+      }
+    },
+    // 取消
+    cancel () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.push({path: '/system/roles'})
+    }
+  },
+  mounted () {
+    this.initData()
+  }
+}
+</script>
+<style lang="less">
+  #homejuris{
+    .penserviceconbox{
+      padding: 0 20px;
+    }
+    .typebigbox{
+      display: inline-block;
+      width: 240px;
+      border: 1px solid #f4f4f4;
+      vertical-align: top;
+    }
+    .typebox{
+      text-align: center;
+    }
+    .operation_jurisdiction{
+      display: inline-block;
+      vertical-align: top;
+      margin-left: 20px;
+      border: 1px solid #dcdfe6;
+      width: 580px;
+    }
+    .operation_juristitle{
+      height: 57px;
+      background: #e4eefc;
+      font-size: 14px;
+      line-height: 57px;
+      border-bottom: 1px solid #dcdfe6;
+      padding: 0 20px;
+      box-sizing: border-box;
+      color:#333333;
+    }
+    .operation_juriscon{
+      padding:20px;
+    }
+    .datarange_bigbox{
+      display: inline-block;
+      vertical-align: top;
+      margin-left: 20px;
+      border: 1px solid #dcdfe6;
+    }
+    .operation_datarangetitle{
+      width:280px;
+      height: 57px;
+      background: #e4eefc;
+      font-size: 14px;
+      line-height: 57px;
+      padding: 0 20px;
+      border-bottom: 1px solid #dcdfe6;
+      box-sizing: border-box;
+      color:#333333;
+    }
+    .operation_datarangecon{
+      padding:20px;
+    }
+    .jursdbtn{
+      text-align: center;
+      margin-top: 40px;
+    }
+    .el-button--primary {
+      color: #fff;
+      background-color: #3f63f6;
+      border-color: #3f63f6;
+    }
+    .disableenable{
+      display: inline-block;
+      vertical-align: top;
+      float: right;
+      cursor: pointer;
+    }
+  }
+</style>

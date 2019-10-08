@@ -1,0 +1,183 @@
+/**
+ * Created by Administrator on 2019-3-7.
+ * 响应招标
+ */
+export default [
+  // {
+  //   path: '/project/projectProcess/prequalification_response/add',
+  //   name: '项目进度-添加报名信息',
+  //   meta: {
+  //     title: '项目进度-添加报名信息',
+  //     active: '/project/projectProcess'
+  //   },
+  //   component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/prequalificationResponse/add')
+  // },
+  // {
+  //   path: '/project/projectProcess/prequalification_response/update',
+  //   name: '项目进度-修改报名信息',
+  //   meta: {
+  //     title: '项目进度-修改报名信息',
+  //     active: '/project/projectProcess'
+  //   },
+  //   component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/prequalificationResponse/update')
+  // },
+  // {
+  //   path: '/project/projectProcess/prequalification_response/detail/:objectId',
+  //   name: '项目进度-查看报名信息',
+  //   meta: {
+  //     title: '项目进度-查看报名信息',
+  //     active: '/project/projectProcess'
+  //   },
+  //   component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/prequalificationResponse/detail')
+  // },
+  {
+    path: '/project/projectProcess/bidresponse/add_bond',
+    name: '项目进度-添加保证金缴纳记录',
+    meta: {
+      title: '项目进度-添加保证金缴纳记录',
+      active: '/project/projectProcess',
+      permission: '1010402'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/bidResponse/addBond')
+  },
+  {
+    path: '/project/projectProcess/bidresponse/update_bond',
+    name: '项目进度-修改保证金缴纳记录',
+    meta: {
+      title: '项目进度-修改保证金缴纳记录',
+      active: '/project/projectProcess',
+      permission: '1010402'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/bidResponse/updateBond')
+  },
+  {
+    path: '/project/projectProcess/bidresponse/bond_detail/:objectId',
+    name: '项目进度-查看保证金缴纳记录',
+    meta: {
+      title: '项目进度-修改保证金缴纳记录',
+      active: '/project/projectProcess',
+      permission: '1010401'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/bidResponse/bondDetail')
+  },
+  {
+    path: '/project/projectProcess/bidresponse/add_cost',
+    name: '项目进度-添加招标文件发售记录',
+    meta: {
+      title: '项目进度-添加招标文件发售记录',
+      active: '/project/projectProcess',
+      permission: '1010402'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/bidResponse/addCost')
+  },
+  {
+    path: '/project/projectProcess/bidresponse/update_cost',
+    name: '项目进度-修改招标文件发售记录',
+    meta: {
+      title: '项目进度-修改招标文件发售记录',
+      active: '/project/projectProcess',
+      permission: '1010402'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/bidResponse/updateCost')
+  },
+  {
+    path: '/project/projectProcess/bidresponse/cost_detail/:objectId',
+    name: '项目进度-查看招标文件发售记录',
+    meta: {
+      title: '项目进度-查看招标文件发售记录',
+      active: '/project/projectProcess',
+      permission: '1010401'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/bidResponse/costDetail')
+  },
+  {
+    path: '/project/projectProcess/bidresponse/add_file',
+    name: '项目进度-添加投标文件递交情况',
+    meta: {
+      title: '项目进度-添加投标文件递交情况',
+      active: '/project/projectProcess',
+      permission: '1010402'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/bidResponse/addFile')
+  },
+  {
+    path: '/project/projectProcess/bidresponse/update_file',
+    name: '项目进度-修改投标文件递交情况',
+    meta: {
+      title: '项目进度-修改投标文件递交情况',
+      active: '/project/projectProcess',
+      permission: '1010402'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/bidResponse/updateFile')
+  },
+  {
+    path: '/project/projectProcess/bidresponse/file_detail/:objectId',
+    name: '项目进度-查看投标文件递交情况',
+    meta: {
+      title: '项目进度-查看投标文件递交情况',
+      active: '/project/projectProcess',
+      permission: '1010401'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/bidResponse/fileDetail')
+  },
+  {
+    path: '/project/projectProcess/bidresponse/add_doubt',
+    name: '项目进度-添加招标文件疑义澄清',
+    meta: {
+      title: '项目进度-添加招标文件疑义澄清',
+      active: '/project/projectProcess',
+      permission: '1010402'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/bidResponse/addDoubt')
+  },
+  {
+    path: '/project/projectProcess/bidresponse/update_doubt',
+    name: '项目进度-修改招标文件疑义澄清',
+    meta: {
+      title: '项目进度-修改招标文件疑义澄清',
+      active: '/project/projectProcess',
+      permission: '1010402'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/bidResponse/updateDoubt')
+  },
+  {
+    path: '/project/projectProcess/bidresponse/doubt_detail/:objectId',
+    name: '项目进度-查看招标文件疑义澄清',
+    meta: {
+      title: '项目进度-查看招标文件疑义澄清',
+      active: '/project/projectProcess',
+      permission: '1010401'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/bidResponse/doubtDetail')
+  },
+  {
+    path: '/project/projectProcess/bidresponse/add_clarify',
+    name: '项目进度-添加招标澄清修改文件',
+    meta: {
+      title: '项目进度-添加招标澄清修改文件',
+      active: '/project/projectProcess',
+      permission: '1010402'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/bidResponse/addClarify')
+  },
+  {
+    path: '/project/projectProcess/bidresponse/update_clarify',
+    name: '项目进度-修改招标澄清修改文件',
+    meta: {
+      title: '项目进度-修改招标澄清修改文件',
+      active: '/project/projectProcess',
+      permission: '1010402'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/bidResponse/updateClarify')
+  },
+  {
+    path: '/project/projectProcess/bidresponse/clarify_detail/:objectId',
+    name: '项目进度-查看招标澄清修改文件',
+    meta: {
+      title: '项目进度-查看招标澄清修改文件',
+      active: '/project/projectProcess',
+      permission: '1010401'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/bidResponse/clarifyDetail')
+  }
+]

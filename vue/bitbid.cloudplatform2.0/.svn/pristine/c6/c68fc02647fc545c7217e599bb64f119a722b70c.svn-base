@@ -1,0 +1,15 @@
+import request from '@/utils/axios/up-axios'
+
+export const user = {
+  /**
+   * 查询列表
+   * @param data
+   */
+  queryList (params) {
+    return request({
+      url: `/users/list`,
+      method: 'get',
+      params
+    })
+  }
+}

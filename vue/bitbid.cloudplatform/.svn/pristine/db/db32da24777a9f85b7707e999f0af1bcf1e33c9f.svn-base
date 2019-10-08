@@ -1,0 +1,225 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <!--面包屑-->
+    <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb_box">
+      <el-breadcrumb-item :to="{ path: '/index' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/dailyManage/onlineapprove' }">在线审批</el-breadcrumb-item>
+      <el-breadcrumb-item class="active_bread">待我审批</el-breadcrumb-item>
+    </el-breadcrumb>
+    <!--搜索 & 添加按钮-->
+    <el-row>
+      <div class="seacher_box">
+        <span>业务来源：</span>
+        <el-select v-model="source" class="select">
+          <el-option
+            v-for="item in sourceOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <span class="left">审批类型：</span>
+        <el-select v-model="type" class="select">
+          <el-option
+            v-for="item in typeOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <span class="left">审批状态：</span>
+        <el-select v-model="status" class="select left">
+          <el-option
+            v-for="item in statusOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <el-input class="search left" style="vertical-align: top"  placeholder="请输入项目名称关键字" v-model="search_input"></el-input>
+        <el-button  slot="append" icon="el-icon-search" type="" @click="search"></el-button>
+      </div>
+    </el-row>
+      <!--搜索 & 添加按钮-->
+    <div class="main">
+      <el-table
+        :data="tableData"
+        border>
+        <el-table-column
+          type="index"
+          label="序号"
+          width="50">
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="业务来源"
+          width="80">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '1'">招标</span>
+            <span  v-if="scope.row.status === '2'">询价</span>
+            <span  v-if="scope.row.status === '3'">竞争性谈判</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="审批类型"
+          width="80">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '1'">招标文件</span>
+            <span  v-if="scope.row.status === '2'">招标公告</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          label="项目编号"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          label="项目名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          label="申请人"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="提交状态">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '1'">已保存</span>
+            <span  v-if="scope.row.status === '2'">已提交</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          label="提交时间">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="60">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" v-if="scope.row.status === '1'" @click="handleDetail(scope)">查看</el-button>
+            <el-button type="text" size="small" @click="handleApprove(scope)" v-else>审批</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: '',
+  data () {
+    return {
+      search_input: '',
+      statusOptions: [{
+        value: null,
+        label: '全部'
+      }, {
+        value: 1,
+        label: '待审批'
+      }, {
+        value: 2,
+        label: '已审批'
+      }, {
+        value: 4,
+        label: '已驳回'
+      }],
+      status: null,
+      sourceOptions: [{
+        value: null,
+        label: '全部'
+      }, {
+        value: 1,
+        label: '招标'
+      }, {
+        value: 2,
+        label: '询价'
+      }, {
+        value: 3,
+        label: '竞争性谈判'
+      }],
+      source: null,
+      typeOptions: [{
+        value: null,
+        label: '全部'
+      }, {
+        value: 1,
+        label: '招标文件'
+      }, {
+        value: 2,
+        label: '招标公告'
+      }],
+      type: null,
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10, // 每页展示条数
+      tableData: [{
+        date: '上海市普陀区金沙江路',
+        status: '1',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '1',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '2',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '2',
+        address: '2016-05-04'
+      }]
+    }
+  },
+  methods: {
+    search () {
+    },
+    handleCurrentChange () {
+    },
+    handleDetail (scope) {
+      this.$router.push({path: `/dailyManage/onlineapprove/need/detail/${scope.row.objectId}`})
+    },
+    handleApprove (scope) {
+      this.$router.push({path: '/dailyManage/onlineapprove/need/approve'})
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style scoped>
+  .main {
+    width: 100%;
+    padding: 0 24px;
+    box-sizing: border-box;
+  }
+  .seacher_box {
+    margin: 10px 24px;
+  }
+  .select{
+    width: 14%;
+  }
+  .search{
+    width: 20%;
+  }
+  .left {
+    margin-left: 12px;
+  }
+</style>

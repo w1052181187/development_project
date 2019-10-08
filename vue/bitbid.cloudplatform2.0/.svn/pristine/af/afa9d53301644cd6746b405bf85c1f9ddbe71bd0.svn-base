@@ -1,0 +1,631 @@
+<template>
+  <div class="cloudcontent" id="cloud_customer_detail">
+    <div class="main">
+      <div class="tit">
+        <span>山西省国新能源发展集团有限公司</span>
+        <em>负责人： 张三</em>
+      </div>
+      <el-tabs class="detail_tab" v-model="activeName2" type="card" @tab-click="handleClick">
+        <el-tab-pane label="概况" name="first">
+          <proDetail></proDetail>
+        </el-tab-pane>
+        <el-tab-pane label="比选公告" name="second">
+          <div class="noticemain">
+            <div class="fl">
+              <editor ref="readueditor" class="ueditor" :content="content"></editor>
+            </div>
+            <div class="fr">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content"></editor>
+            </div>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane label="招标人" name="third">
+          <el-collapse v-model="activeNames" @change="handleChange">
+            <el-collapse-item title="业主基本信息" name="1">
+              <div class="tabbox">
+                <h3>山西省国新能源发展集团有限公司</h3>
+                <el-form :model="addForm" ref="addForm" :validate-on-rule-change="true">
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="统一社会信用代码：">
+                        <span>{{addForm.code}}</span>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="公司类型：">
+                        <span>{{addForm.code}}</span>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="法定代表人：">
+                        <span>{{addForm.code}}</span>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="成立时间：">
+                        <span>{{addForm.code}}</span>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="所在地：">
+                        <span>{{addForm.code}}</span>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="行业分类：">
+                        <span>{{addForm.code}}</span>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="详细地址：">
+                        <span>{{addForm.code}}</span>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="员工人数：">
+                        <span>{{addForm.code}}</span>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="注册资本：">
+                        <span>{{addForm.code}}</span>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="客户网址：">
+                        <span>{{addForm.code}}</span>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="公司电话：">
+                        <span>{{addForm.code}}</span>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="24">
+                      <el-form-item label="经营范围：">
+                        <el-input type="textarea"  v-model="addForm.code" readonly></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                </el-form>
+              </div>
+            </el-collapse-item>
+            <el-collapse-item title="企业关系图谱" name="2">
+              <div class="tabbox">
+                <div class="familyTree">
+                  <div class="mainName">
+                    <div class="list">
+                      <i class="down" @click="show(1)" v-if="!showfirst"><img src="../../../../static/images/familytree/jiahao1.png"/> </i>
+                      <i class="up" @click="hidden(1)" v-if="isShow && showfirst"><img src="../../../../static/images/familytree/jianhao1.png"/></i>
+                      <ul v-show="isShow && showfirst">
+                        <li>
+                          <span><strong title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</strong> <i>80%</i></span>
+                          <em></em>
+                        </li>
+                        <li>
+                          <span><strong title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</strong> <i>80%</i></span>
+                          <em></em>
+                        </li>
+                        <li>
+                          <span><strong title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</strong> <i>80%</i></span>
+                          <em></em>
+                        </li>
+                      </ul>
+                      <div class="right_whiteline"></div>
+                    </div>
+                    <span title="投资方 （93799 万元）">投资方 （93799 万元）</span>
+                    <em><img src="../../../../static/images/familytree/jiantouarrow1.png"></em>
+                    <span title="山西省国新能源发展集团有限公司" class="company">山西省国新能源发展集团有限公司</span>
+                    <em><img src="../../../../static/images/familytree/jiantouarrow2.png"></em>
+                    <span title="对外投资">对外投资</span>
+                    <div class="list">
+                      <i class="down" @click="show(2)" v-if="!showsecond"><img src="../../../../static/images/familytree/jiahao1.png"/> </i>
+                      <i class="up" @click="hidden(2)" v-if="isShow && showsecond"><img src="../../../../static/images/familytree/jianhao1.png"/></i>
+                      <ul v-show="isShow && showsecond">
+                        <li>
+                          <em></em>
+                          <span title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</span>
+                        </li>
+                        <li>
+                          <em></em>
+                          <span title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</span>
+                        </li>
+                        <li>
+                          <em></em>
+                          <span title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</span>
+                        </li>
+                      </ul>
+                      <div class="left_whiteline"></div>
+                    </div>
+                  </div>
+                  <div class="mainName_bot">
+                    <span title="股东（10人）">股东（10人）
+                      <i class="down" @click="show(3)" v-if="!showthird"><img src="../../../../static/images/familytree/jiahao2.png"/> </i>
+                      <i class="up" @click="hidden(3)" v-if="isShow && showthird"><img src="../../../../static/images/familytree/jianhao2.png"/></i>
+                      <em><img src="../../../../static/images/familytree/jiantouarrow3.png"></em>
+                    </span>
+                    <div class="list" v-show="isShow && showthird">
+                      <ul>
+                        <li>
+                          <em></em>
+                          <span><strong title="刘军">刘军</strong> <i>董事</i></span>
+                        </li>
+                        <li>
+                          <em></em>
+                          <span><strong title="陈明">陈明</strong> <i>董事</i></span>
+                        </li>
+                        <li>
+                          <em></em>
+                          <span><strong title="丁永军">丁永军</strong> <i>董事</i></span>
+                        </li>
+                      </ul>
+                      <div class="left_whiteline"></div>
+                    </div>
+                    <span title="分支机构" class="jt">分支机构
+                      <i class="down" @click="show(4)" v-if="!showfouth"><img src="../../../../static/images/familytree/jiahao2.png"/> </i>
+                      <i class="up" @click="hidden(4)" v-if="isShow && showfouth"><img src="../../../../static/images/familytree/jianhao2.png"/></i>
+                      <em><img src="../../../../static/images/familytree/jiantouarrow4.png"></em>
+                    </span>
+                    <div class="list" v-show="isShow && showfouth">
+                      <ul>
+                        <li>
+                          <span title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</span>
+                          <em></em>
+                        </li>
+                        <li>
+                          <span title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</span>
+                          <em></em>
+                        </li>
+                        <li>
+                          <span title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</span>
+                          <em></em>
+                        </li>
+                      </ul>
+                      <div class="right_whiteline"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </el-collapse-item>
+            <el-collapse-item title="企业经营与财务状况" name="3">
+              <div class="tabbox">
+                <el-form>
+                  <el-input type="textarea"  v-model="addForm.code" readonly></el-input>
+                </el-form>
+              </div>
+            </el-collapse-item>
+            <el-collapse-item title="近三年合作代理机构名单" name="4">
+              <div class="tabbox tabfour">
+                <el-form :model="addForm" ref="addForm" :validate-on-rule-change="true">
+                  <el-table
+                    class="addcon"
+                    :data="addForm.contactList"
+                    border
+                    style="width: 100%" header-cell-class-name="tableheader">
+                    <el-table-column
+                      type="index"
+                      label="序号"
+                      width="60"
+                      align="center">
+                    </el-table-column>
+                    <el-table-column
+                      label="代理机构名称"
+                      show-overflow-tooltip>
+                    </el-table-column>
+                    <el-table-column
+                      label="合作项目"
+                      show-overflow-tooltip>
+                    </el-table-column>
+                  </el-table>
+                </el-form>
+              </div>
+            </el-collapse-item>
+            <el-collapse-item title="其他参考数据" name="5">
+              <div class="tabbox">
+                <el-form :model="addForm" ref="addForm" label-width="200px" :validate-on-rule-change="true">
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="公开招标项目总数量：">
+                        <span>{{addForm.code}}</span>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="合作服务机构数量：">
+                        <span>{{addForm.code}}</span>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="公开招标项目可统计金额：">
+                        <span>{{addForm.code}}</span>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="24">
+                      <el-form-item label="招标人发布比选入围类似项目：">
+                        <el-input type="textarea"  v-model="addForm.code" readonly></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                </el-form>
+              </div>
+            </el-collapse-item>
+          </el-collapse>
+        </el-tab-pane>
+        <el-tab-pane label="竞争对手" name="fourth">
+          <competitorInfo></competitorInfo>
+        </el-tab-pane>
+        <el-tab-pane label="预测" name="fifth">
+          <el-form :model="addForm" class="proinfo_box" ref="addForm" :validate-on-rule-change="true">
+            <el-row>
+              <el-col>
+                <el-form-item label="预测成功率：">
+                  <span>{{addForm.code}}</span>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col>
+                <el-form-item label="成功的关键因素：">
+                  <span>{{addForm.code}}</span>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col>
+                <el-form-item label="可能的失败因素：">
+                  <span>{{addForm.code}}</span>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col>
+                <el-form-item label="其他：">
+                  <el-input type="textarea"  v-model="addForm.code" readonly></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col>
+                <el-form-item label="是否推进该项目：">
+                  <el-radio disabled v-model="addForm.radio" label="推进">推进</el-radio>
+                  <el-radio disabled v-model="addForm.radio" label="暂不推进">暂不推进</el-radio>
+                  <el-radio disabled v-model="addForm.radio" label="放弃">放弃</el-radio>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane label="评估" name="sixth">
+          <el-form :model="addForm">
+            <el-row>
+              <el-col :span="2">
+                <el-form-item label="发起人：" label-width="60px">
+                  <span>张宇</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="3">
+                <el-form-item label="评估日期：" label-width="80px">
+                  <span>2019-03-15</span>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+          <el-table
+            :data="projectData"
+            border
+            show-summary
+            :summary-method="getSummaries"
+            :cell-style="handleCellStyle"
+            :span-method="handleMerge"
+            header-cell-class-name="tableheader">
+            <el-table-column
+              type="index"
+              label="序号"
+              width="80"
+              :index="handleIndex"
+              align="center">
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="评估项分组"
+              align="center"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="item"
+              label="评估项"
+              align="center"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="description"
+              label="描述"
+              align="center"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="score"
+              label="分值"
+              align="center"
+              width="160"
+              show-overflow-tooltip>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane label="跟进" name="seventh">
+          <div class="follow_top">
+            <span>跟进记录 （3）</span>
+          </div>
+          <div class="follow_mian">
+            <ul>
+              <li>
+                <div class="record">
+                  <span class="time">2019-03-27</span>
+                  <span class="method">到访</span>
+                  <span class="peo">张亮亮</span>
+                  <span class="jt"></span>
+                  <span class="unawares">赵总、张经理</span>
+                  <span class="phase">意向客户阶段</span>
+                </div>
+                <div class="sum">
+                  <textarea readonly>内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内</textarea>
+                </div>
+              </li>
+              <li>
+                <div class="record">
+                  <span class="time">2019-03-27</span>
+                  <span class="method">到访</span>
+                  <span class="peo">张亮亮</span>
+                  <span class="jt"></span>
+                  <span class="unawares">赵总、张经理</span>
+                  <span class="phase">谈判客户阶段</span>
+                </div>
+                <div class="sum">
+                  <textarea readonly>内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内</textarea>
+                </div>
+              </li>
+              <li>
+                <div class="record">
+                  <span class="time">2019-03-27</span>
+                  <span class="method">到访</span>
+                  <span class="peo">张亮亮</span>
+                  <span class="jt"></span>
+                  <span class="unawares">赵总、张经理</span>
+                  <span class="phase">谈判客户阶段</span>
+                </div>
+                <div class="sum">
+                  <textarea readonly>内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内</textarea>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+  </div>
+</template>
+<script>
+import proDetail from './detail/baseInfo'
+import competitorInfo from './competitor/list_detail'
+import editor from '@/components/ueditor/ueditor.vue'
+export default {
+  components: {
+    proDetail,
+    competitorInfo,
+    editor
+  },
+  data () {
+    return {
+      activeName2: 'first',
+      addForm: {
+        code: '内容内容内容内容内容内容内容',
+        contactList: [],
+        radio: '1'
+      },
+      // 招标人
+      activeNames: '1',
+      // 企业族谱 显示隐藏
+      isShow: false,
+      showfirst: false,
+      showsecond: false,
+      showthird: false,
+      showfouth: false,
+      activeName: 'first',
+      dialogFormVisible: false,
+      // 评估
+      projectData: [
+        {
+          name: '组1',
+          item: '项1',
+          description: '',
+          score: ''
+        },
+        {
+          name: '组1',
+          item: '项2',
+          description: '',
+          score: ''
+        },
+        {
+          name: '组1',
+          item: '项3',
+          description: '',
+          score: ''
+        },
+        {
+          name: '组2',
+          item: '项1',
+          description: '',
+          score: ''
+        },
+        {
+          name: '组2',
+          item: '项2',
+          description: '',
+          score: ''
+        },
+        {
+          name: '组2',
+          item: '项3',
+          description: '',
+          score: ''
+        },
+        {
+          name: '组2',
+          item: '项4',
+          description: '',
+          score: ''
+        }
+      ],
+      mergeArr: [], // 每行需要合并的行数
+      indexArr: [] // 序号索引数组
+    }
+  },
+  methods: {
+    handleClick (tab, event) {
+      console.log(tab, event)
+    },
+    dataIndex (index) {
+      return 1
+    },
+    // 查看
+    lookBtn (scope) {
+    },
+    downloadBtn (scope) {
+    },
+    handleCurrentChange () {},
+    show (val) {
+      console.log(val)
+      console.log('11111' + this.isShow)
+      this.isShow = true
+      switch (val) {
+        case 1:
+          this.showfirst = true
+          break
+        case 2:
+          this.showsecond = true
+          break
+        case 3:
+          this.showthird = true
+          break
+        case 4:
+          this.showfouth = true
+          break
+      }
+      console.log('22222' + this.isShow)
+      console.log('1' + this.showfirst)
+      console.log('2' + this.showsecond)
+      console.log('3' + this.showthird)
+      console.log('4' + this.showfouth)
+    },
+    hidden (val) {
+      switch (val) {
+        case 1:
+          this.showfirst = false
+          break
+        case 2:
+          this.showsecond = false
+          break
+        case 3:
+          this.showthird = false
+          break
+        case 4:
+          this.showfouth = false
+          break
+      }
+    },
+    // 评估
+    handleCellStyle ({row, column, rowIndex, columnIndex}) {
+      if (columnIndex === 0 || columnIndex === 1) {
+        return 'background-color: #f8faf7;color:#333'
+      }
+    },
+    handleMerge ({ row, column, rowIndex, columnIndex }) {
+      if (columnIndex === 0 || columnIndex === 1) {
+        let rowCount = this.mergeArr[rowIndex]
+        let colCount = rowCount > 0 ? 1 : 0
+        return {
+          rowspan: rowCount,
+          colspan: colCount
+        }
+      }
+    },
+    handleIndex (index) {
+      return this.indexArr[index]
+    },
+    handleMergeData () {
+      this.mergeArr = []
+      this.indexArr = []
+      this.mergeArr.push(1)
+      this.indexArr.push(1)
+      let pos = 0
+      let indexTmp = 1
+      for (let i = 1; i < this.projectData.length; i++) {
+        if (this.projectData[i].name === this.projectData[i - 1].name) {
+          this.mergeArr[pos] += 1
+          this.mergeArr.push(0)
+        } else {
+          this.mergeArr.push(1)
+          pos = i
+          indexTmp++
+        }
+        this.indexArr.push(indexTmp)
+      }
+    },
+    // handleCurrentChange (nowNum) {
+    //   this.currentPage = nowNum
+    //   this.pageNo = (nowNum - 1) * this.pageSize
+    //   this.getTableData()
+    // },
+    getTableData () {
+      this.handleMergeData()
+    },
+    // 合计方法
+    getSummaries (param) {
+      const { columns, data } = param
+      const sums = []
+      let score = 0
+      data.map((item) => {
+        score += Number(item.score)
+      })
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计'
+          return
+        }
+        if (index === 4) {
+          sums[index] = score
+        } else {
+          sums[index] = ''
+        }
+      })
+      return sums
+    }
+  },
+  mounted () {
+    this.getTableData()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_customer_detail {
+    .el-textarea__inner{
+      height: 160px;
+    }
+  }
+</style>

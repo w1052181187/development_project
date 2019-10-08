@@ -1,0 +1,33 @@
+export default [
+  {
+    path: '/archives/management',
+    name: '档案管理',
+    meta: {
+      title: '档案管理',
+      active: '/archives/management',
+      permission: '1070201'
+    },
+    component: () => import(/* webpackChunkName: 'archives' */ '@/pages/archives/management/index')
+  },
+  {
+    path: '/archives/management/add/:objectId',
+    name: '新增归档',
+    meta: {
+      title: '新增归档',
+      active: '/archives/management',
+      permission: '1070202'
+    },
+    component: () => import(/* webpackChunkName: 'archives' */ '@/pages/archives/management/add')
+  },
+  {
+    path: '/archives/management/detail/:objectId',
+    name: '档案查看',
+    meta: {
+      title: '档案查看',
+      active: '/archives/management',
+      permission: '1070201',
+      type: 'management'
+    },
+    component: () => import(/* webpackChunkName: 'archives' */ '@/pages/archives/management/detail')
+  }
+]

@@ -1,0 +1,76 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <div class="main">
+      <el-table
+        :data="tableData"
+        border
+        header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          align="center"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="type"
+          label="编号类型">
+          <template slot-scope="scope">
+            <span v-if="Number(scope.row.type) === 1">客户编号</span>
+            <span v-if="Number(scope.row.type) === 2">商机编号</span>
+            <span v-if="Number(scope.row.type) === 3">项目编号</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="example"
+          label="编号示例">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="160">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleEdit(scope)">编辑</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: '',
+  data () {
+    return {
+      tableData: [
+        {
+          type: '1',
+          example: '00001'
+        },
+        {
+          type: '2',
+          example: '00001'
+        },
+        {
+          type: '3',
+          example: '00001'
+        }
+      ],
+      isSubmiting: false
+    }
+  },
+  methods: {
+    handleEdit (scope) {
+      this.$router.push({path: `/system/autonumber/edit`, query: {type: scope.row.type}})
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style scoped>
+  .main {
+    width: 100%;
+    padding: 0 24px;
+    box-sizing: border-box;
+  }
+</style>

@@ -1,0 +1,1144 @@
+<template>
+  <div class="cloudcontent" id="cloud_business_analysis">
+    <div class="main">
+      <el-form :model="addForm" class="proinfo_box" ref="addForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>山西省国新能源新厂扩建施工总承包项目</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <span>GY18ZB-08-01</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标类型：">
+              <span>工程/货物/服务</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="所在地：">
+              <span>山西省 太原市</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="发布时间：">
+              <span>2019-02-19</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="报名截止时间：">
+              <span>2019-03-20</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <el-tabs v-model="activeName2" type="card" @tab-click="handleClick">
+        <el-tab-pane label="比选公告" name="first">
+          <div class="noticemain">
+            <div class="fl">
+              <editor ref="readueditor" class="ueditor" :content="content"></editor>
+            </div>
+            <div class="fr">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content"></editor>
+              <div class="submit-radio">
+                <el-button type="primary">保存</el-button>
+              </div>
+            </div>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane label="招标业主分析" name="second">
+          <el-collapse v-model="activeNames" @change="handleChange">
+            <el-collapse-item title="业主基本信息" name="1">
+              <div class="tabbox">
+                <h3>山西省国新能源发展集团有限公司</h3>
+                <el-form :model="addForm" ref="addForm" :validate-on-rule-change="true">
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="统一社会信用代码：">
+                        <el-input v-model="addForm.code"></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="公司类型：">
+                        <el-input v-model="addForm.code"></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="法定代表人：">
+                        <el-input v-model="addForm.code"></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="成立时间：">
+                        <el-date-picker type="date" placeholder="选择日期" v-model="addForm.date1" style="width: 100%;"></el-date-picker>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="所在地：">
+                        <el-cascader class=""
+                                     expand-trigger="hover"
+                                     :options="addressOptions"
+                                     v-model="addForm.selectedCityOptions"
+                                     @change="handleCityChange">
+                        </el-cascader>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="行业分类：">
+                        <el-input v-model="addForm.code"></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="详细地址：">
+                        <el-input v-model="addForm.code"></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="员工人数：">
+                        <el-input v-model="addForm.code"></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="注册资本：">
+                        <el-input v-model="addForm.code"></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="客户网址：">
+                        <el-input v-model="addForm.code"></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="公司电话：">
+                        <el-input v-model="addForm.code"></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="24">
+                      <el-form-item label="经营范围：">
+                        <el-input type="textarea"  v-model="addForm.code"></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <div class="submit-radio">
+                    <el-button type="primary">保存</el-button>
+                  </div>
+                </el-form>
+              </div>
+            </el-collapse-item>
+            <el-collapse-item title="企业关系图谱" name="2">
+              <div class="tabbox">
+                <el-button  type="primary" class="edit" @click="dialogFormVisible = true"> 编辑</el-button>
+                <div class="familyTree">
+                  <div class="mainName">
+                    <div class="list">
+                      <i class="down" @click="show(1)" v-if="!showfirst"><img src="../../../../static/images/familytree/jiahao1.png"/> </i>
+                      <i class="up" @click="hidden(1)" v-if="isShow && showfirst"><img src="../../../../static/images/familytree/jianhao1.png"/></i>
+                      <ul v-show="isShow && showfirst">
+                        <li>
+                          <span><strong title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</strong> <i>80%</i></span>
+                          <em></em>
+                        </li>
+                        <li>
+                          <span><strong title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</strong> <i>80%</i></span>
+                          <em></em>
+                        </li>
+                        <li>
+                          <span><strong title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</strong> <i>80%</i></span>
+                          <em></em>
+                        </li>
+                      </ul>
+                      <div class="right_whiteline"></div>
+                    </div>
+                    <span title="投资方 （93799 万元）">投资方 （93799 万元）</span>
+                    <em><img src="../../../../static/images/familytree/jiantouarrow1.png"></em>
+                    <span title="山西省国新能源发展集团有限公司" class="company">山西省国新能源发展集团有限公司</span>
+                    <em><img src="../../../../static/images/familytree/jiantouarrow2.png"></em>
+                    <span title="对外投资">对外投资</span>
+                    <div class="list">
+                      <i class="down" @click="show(2)" v-if="!showsecond"><img src="../../../../static/images/familytree/jiahao1.png"/> </i>
+                      <i class="up" @click="hidden(2)" v-if="isShow && showsecond"><img src="../../../../static/images/familytree/jianhao1.png"/></i>
+                      <ul v-show="isShow && showsecond">
+                        <li>
+                          <em></em>
+                          <span title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</span>
+                        </li>
+                        <li>
+                          <em></em>
+                          <span title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</span>
+                        </li>
+                        <li>
+                          <em></em>
+                          <span title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</span>
+                        </li>
+                      </ul>
+                      <div class="left_whiteline"></div>
+                    </div>
+                  </div>
+                  <div class="mainName_bot">
+                    <span title="股东（10人）">股东（10人）
+                      <i class="down" @click="show(3)" v-if="!showthird"><img src="../../../../static/images/familytree/jiahao2.png"/> </i>
+                      <i class="up" @click="hidden(3)" v-if="isShow && showthird"><img src="../../../../static/images/familytree/jianhao2.png"/></i>
+                      <em><img src="../../../../static/images/familytree/jiantouarrow3.png"></em>
+                    </span>
+                    <div class="list" v-show="isShow && showthird">
+                      <ul>
+                        <li>
+                          <em></em>
+                          <span><strong title="刘军">刘军</strong> <i>董事</i></span>
+                        </li>
+                        <li>
+                          <em></em>
+                          <span><strong title="陈明">陈明</strong> <i>董事</i></span>
+                        </li>
+                        <li>
+                          <em></em>
+                          <span><strong title="丁永军">丁永军</strong> <i>董事</i></span>
+                        </li>
+                      </ul>
+                      <div class="left_whiteline"></div>
+                    </div>
+                    <span title="分支机构" class="jt">分支机构
+                      <i class="down" @click="show(4)" v-if="!showfouth"><img src="../../../../static/images/familytree/jiahao2.png"/> </i>
+                      <i class="up" @click="hidden(4)" v-if="isShow && showfouth"><img src="../../../../static/images/familytree/jianhao2.png"/></i>
+                      <em><img src="../../../../static/images/familytree/jiantouarrow4.png"></em>
+                    </span>
+                    <div class="list" v-show="isShow && showfouth">
+                      <ul>
+                        <li>
+                          <span title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</span>
+                          <em></em>
+                        </li>
+                        <li>
+                          <span title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</span>
+                          <em></em>
+                        </li>
+                        <li>
+                          <span title="山西省国新能源发展集团有限公司">山西省国新能源发展集团有限公司</span>
+                          <em></em>
+                        </li>
+                      </ul>
+                      <div class="right_whiteline"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </el-collapse-item>
+            <el-collapse-item title="企业经营与财务状况" name="3">
+              <div class="tabbox">
+                <el-form>
+                  <el-input type="textarea"  v-model="addForm.code"></el-input>
+                  <div class="submit-radio">
+                    <el-button type="primary">保存</el-button>
+                  </div>
+                </el-form>
+              </div>
+            </el-collapse-item>
+            <el-collapse-item title="近三年合作代理机构名单" name="4">
+              <div class="tabbox tabfour">
+                <el-form :model="addForm" ref="addForm" :validate-on-rule-change="true">
+                  <el-table
+                    class="addcon"
+                    :data="addForm.contactList"
+                    border
+                    style="width: 100%" header-cell-class-name="tableheader">
+                    <el-table-column
+                      type="index"
+                      label="序号"
+                      width="60"
+                      align="center">
+                    </el-table-column>
+                    <el-table-column
+                      label="代理机构名称"
+                      show-overflow-tooltip>
+                      <template slot-scope='scope'>
+                        <el-form-item>
+                          <el-input v-model="scope.row.name"></el-input>
+                        </el-form-item>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="合作项目"
+                      show-overflow-tooltip>
+                      <template slot-scope='scope'>
+                        <el-form-item>
+                          <el-input v-model="scope.row.contact"></el-input>
+                        </el-form-item>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="操作" align="center" width="100">
+                      <template slot-scope="scope">
+                        <el-button type="text" size="small" @click="delDataBtn(scope.$index)">删除</el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <div class="addbutton"><span @click="addData">+ 新增</span></div>
+                  <div class="submit-radio">
+                    <el-button type="primary">保存</el-button>
+                  </div>
+                </el-form>
+              </div>
+            </el-collapse-item>
+            <el-collapse-item title="其他参考数据" name="5">
+              <div class="tabbox">
+                <el-form :model="addForm" ref="addForm" label-width="200px" :validate-on-rule-change="true">
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="公开招标项目总数量：">
+                        <el-input v-model="addForm.code"></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="合作服务机构数量：">
+                        <el-input v-model="addForm.code"></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="公开招标项目可统计金额：">
+                        <el-input v-model="addForm.code"></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="24">
+                      <el-form-item label="招标人发布比选入围类似项目：">
+                        <el-input type="textarea"  v-model="addForm.code"></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <div class="submit-radio">
+                    <el-button type="primary">保存</el-button>
+                  </div>
+                </el-form>
+              </div>
+            </el-collapse-item>
+          </el-collapse>
+        </el-tab-pane>
+        <el-tab-pane label="竞争对手分析" name="third">
+          <div class="button_box">
+            <el-button  type="primary" @click="dialogFormTwoVisible = true"> + 添加竞争对手信息 </el-button>
+          </div>
+          <el-table
+            :data="tableData"
+            style="width: 100%">
+            <el-table-column
+              type="index"
+              label="序号"
+              width="60"
+              :index='dataIndex'
+              align="center">
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="企业名称">
+            </el-table-column>
+            <el-table-column label="参与本业主项目情况">
+              <el-table-column
+                prop="name"
+                label="项目数量">
+              </el-table-column>
+              <el-table-column
+                prop="name"
+                label="项目金额">
+              </el-table-column>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="竞争力">
+              <template slot-scope="scope">
+                <el-rate v-model="scope.row.rate" disabled></el-rate>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="操作" align="center" width="200">
+              <template slot-scope="scope">
+                <el-button type="text" size="small" @click="lookBtn(scope)">查看</el-button>
+                <el-button type="text" size="small" @click="updateBtn(scope)">修改</el-button>
+                <el-button type="text" size="small">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane label="项目整体分析" name="fourth">
+          <el-form :model="addForm" class="proinfo_box" ref="addForm" :validate-on-rule-change="true">
+            <el-row>
+              <el-col>
+                <el-form-item label="预测成功率：">
+                  <el-input v-model="addForm.code"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col>
+                <el-form-item label="成功的关键因素：">
+                  <el-input v-model="addForm.code"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col>
+                <el-form-item label="可能的失败因素：">
+                  <el-input v-model="addForm.code"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col>
+                <el-form-item label="其他：">
+                  <el-input type="textarea"  v-model="addForm.code"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col>
+                <el-form-item label="是否推进该项目：">
+                  <el-checkbox-group v-model="addForm.code">
+                    <el-checkbox label="推进"></el-checkbox>
+                    <el-checkbox label="暂不推进"></el-checkbox>
+                    <el-checkbox label="放弃"></el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+          <div class="submit-radio">
+            <el-button type="primary">保存</el-button>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+    <!--弹窗  编辑企业族谱-->
+    <el-dialog title="企业关系图谱" :visible.sync="dialogFormVisible">
+      <el-form :model="form">
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+          <el-tab-pane label="投资方" name="first">
+            <el-table
+              class="addcon"
+              :data="addForm.contactList"
+              border
+              style="width: 100%" header-cell-class-name="tableheader">
+              <el-table-column
+                type="index"
+                label="序号"
+                width="60"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                label="投资方"
+                show-overflow-tooltip>
+                <template slot-scope='scope'>
+                  <el-form-item>
+                    <el-input v-model="scope.row.name"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="投资金额（万元）"
+                show-overflow-tooltip>
+                <template slot-scope='scope'>
+                  <el-form-item>
+                    <el-input v-model="scope.row.contact"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="占比（%）"
+                show-overflow-tooltip>
+                <template slot-scope='scope'>
+                  <el-form-item>
+                    <el-input v-model="scope.row.contact"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="操作" align="center" width="100">
+                <template slot-scope="scope">
+                  <el-button type="text" size="small" @click="delDataBtn(scope.$index)">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <div class="addbutton"><span @click="addData">+ 新增</span></div>
+          </el-tab-pane>
+          <el-tab-pane label="股东" name="second">
+            <el-table
+              class="addcon"
+              :data="addForm.contactList"
+              border
+              style="width: 100%" header-cell-class-name="tableheader">
+              <el-table-column
+                type="index"
+                label="序号"
+                width="60"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                label="股东"
+                show-overflow-tooltip>
+                <template slot-scope='scope'>
+                  <el-form-item>
+                    <el-input v-model="scope.row.name"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="职务"
+                show-overflow-tooltip>
+                <template slot-scope='scope'>
+                  <el-form-item>
+                    <el-input v-model="scope.row.contact"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="操作" align="center" width="100">
+                <template slot-scope="scope">
+                  <el-button type="text" size="small" @click="delDataBtn(scope.$index)">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <div class="addbutton"><span @click="addData">+ 新增</span></div>
+          </el-tab-pane>
+          <el-tab-pane label="分支机构" name="third">
+            <el-table
+              class="addcon"
+              :data="addForm.contactList"
+              border
+              style="width: 100%" header-cell-class-name="tableheader">
+              <el-table-column
+                type="index"
+                label="序号"
+                width="60"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                label="分支机构"
+                show-overflow-tooltip>
+                <template slot-scope='scope'>
+                  <el-form-item>
+                    <el-input v-model="scope.row.name"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="操作" align="center" width="100">
+                <template slot-scope="scope">
+                  <el-button type="text" size="small" @click="delDataBtn(scope.$index)">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <div class="addbutton"><span @click="addData">+ 新增</span></div>
+          </el-tab-pane>
+          <el-tab-pane label="对外投资" name="fourth">
+            <el-table
+              class="addcon"
+              :data="addForm.contactList"
+              border
+              style="width: 100%" header-cell-class-name="tableheader">
+              <el-table-column
+                type="index"
+                label="序号"
+                width="60"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                label="对外投资"
+                show-overflow-tooltip>
+                <template slot-scope='scope'>
+                  <el-form-item>
+                    <el-input v-model="scope.row.name"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="操作" align="center" width="100">
+                <template slot-scope="scope">
+                  <el-button type="text" size="small" @click="delDataBtn(scope.$index)">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <div class="addbutton"><span @click="addData">+ 新增</span></div>
+          </el-tab-pane>
+        </el-tabs>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogFormVisible = false">保 存</el-button>
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+      </div>
+    </el-dialog>
+    <!--弹窗  编辑企业族谱-->
+    <!--弹窗  竞争对手分析 编辑 修改-->
+    <el-dialog title="新增竞争对手" :visible.sync="dialogFormTwoVisible">
+      <el-form :model="form">
+        <el-row>
+          <el-col>
+            <el-form-item label="企业名称：">
+              <el-input v-model="addForm.code"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <el-form-item label="竞争力：">
+              <el-rate v-model="addForm.rate"
+                       show-score
+                       text-color="#ff9900"
+                       score-template="{value}">
+              </el-rate>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <el-form-item label="工商信息：">
+              <el-input v-model="addForm.code" type="textarea"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <el-form-item label="分支机构：">
+              <el-input v-model="addForm.code" type="textarea"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <el-form-item label="主要成员及股东名单：">
+              <el-input v-model="addForm.code" type="textarea"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <el-form-item label="企业资质等级：">
+              <el-cascader
+                :options="options"
+                v-model="selectedOptions"
+                @change="handleChange">
+              </el-cascader>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <el-form-item label="近一年承接项目情况：">
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <el-form-item label="承接本招标人项目情况：">
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogFormVisible = false">保 存</el-button>
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+      </div>
+    </el-dialog>
+    <!--弹窗  竞争对手分析 编辑 修改-->
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import * as region from '@/assets/js/region'
+export default {
+  components: {
+    editor
+  },
+  data () {
+    return {
+      addForm: {
+        contactList: []
+      },
+      activeName2: 'first',
+      activeNames: '1',
+      // 地址三级联动
+      addressOptions: region.CityInfo,
+      selectedcityOptions: [],
+      // 富文本编辑器
+      editread: false,
+      content: '',
+      // 企业族谱 显示隐藏
+      isShow: false,
+      showfirst: false,
+      showsecond: false,
+      showthird: false,
+      showfouth: false,
+      activeName: 'first',
+      dialogFormVisible: false,
+      // 竞争对手分析
+      tableData: [
+        {
+          name: '首都华盛顿和阿萨德稍等哈',
+          rate: 4
+        }
+      ],
+      dialogFormTwoVisible: false
+    }
+  },
+  methods: {
+    addData () {
+      this.addForm.contactList.push({
+        name: '',
+        contact: ''
+      })
+    },
+    handleCityChange () {},
+    dataIndex () {},
+    change () {},
+    handleClick () {},
+    handleChange () {},
+    delDataBtn () {},
+    show (val) {
+      console.log(val)
+      console.log('11111' + this.isShow)
+      this.isShow = true
+      switch (val) {
+        case 1:
+          this.showfirst = true
+          break
+        case 2:
+          this.showsecond = true
+          break
+        case 3:
+          this.showthird = true
+          break
+        case 4:
+          this.showfouth = true
+          break
+      }
+      console.log('22222' + this.isShow)
+      console.log('1' + this.showfirst)
+      console.log('2' + this.showsecond)
+      console.log('3' + this.showthird)
+      console.log('4' + this.showfouth)
+    },
+    hidden (val) {
+      switch (val) {
+        case 1:
+          this.showfirst = false
+          break
+        case 2:
+          this.showsecond = false
+          break
+        case 3:
+          this.showthird = false
+          break
+        case 4:
+          this.showfouth = false
+          break
+      }
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_business_analysis {
+    .proinfo_box{
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid #eeeeee;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .el-tabs{
+      margin-top: 20px;
+    }
+    .el-tabs--card>.el-tabs__header{
+      border: 0px;
+    }
+    .el-tabs__item{
+      width: 138px;
+      padding: 0px;
+      text-align: center;
+    }
+    .el-tabs--card>.el-tabs__header .el-tabs__nav{
+      border: 1px solid #4a8cea;
+      border-left: 0px;
+    }
+    .el-tabs__item.is-active{
+      background: #4a8cea;
+      color: #ffffff;
+    }
+    .el-tabs--card>.el-tabs__header .el-tabs__item{
+      border-bottom: 0px;
+      border-left: 1px solid #4a8cea;
+    }
+    //  比选公告
+    .noticemain{
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid #eeeeee;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .noticemain .fl{
+      float: left;
+      width: 73%;
+      padding: 1%;
+    }
+    .noticemain .fl .edui-editor{
+      border: 0px;
+    }
+    .noticemain .fl .edui-editor-toolbarboxinner{
+      display: none;
+    }
+    .noticemain .fl .edui-default .edui-editor-toolbarbox{
+      display: none;
+    }
+    .noticemain .fr{
+      width: 23%;
+      padding: 1%;
+      float: right;
+      padding-bottom: 20px;
+      border-left: 1px solid #eeeeee;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .el-collapse-item__header{
+      height: 51px;
+      line-height: 51px;
+      padding-left: 20px;
+      background: #f5f7f8;
+      color: #333333;
+      border: 1px solid #eeeeee;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .el-collapse-item__content{
+      border: 1px solid #eeeeee;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      border-top: 0px;
+      border-bottom: 0px;
+      padding: 20px;
+    }
+    // 招标业主分析
+    .tabbox{
+      overflow: auto;
+      position: relative;
+    }
+    .tabbox h3{
+      margin-bottom: 20px;
+    }
+    .tabbox .edit{
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      width: 100px;
+    }
+    .addbutton{
+      width: 100%;
+      margin-top: 10px;
+      height: 52px;
+      line-height: 52px;
+      text-align: center;
+      border: 1px dashed #d2d2d2;
+      color: #d2d2d2;
+      background: #ffffff;
+      font-weight: bold;
+      cursor: pointer;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .addbutton:hover{
+      border: 1px dashed #34abff;
+      color: #34abff;
+    }
+    .tabfour .el-form-item__content{
+      margin-left: 0px;
+    }
+    .button_box{
+      margin-bottom: 20px;
+      text-align: right;
+    }
+    .el-textarea__inner{
+      height: 200px;
+    }
+    // 企业族谱
+    .familyTree{
+      width: 100%;
+      min-width: 1120px;
+      overflow: auto;
+      margin: 0 auto;
+      margin-top: 60px;
+      color: #111111;
+      font-weight: bold;
+      position: relative;
+      min-height: 500px;
+    }
+    .familyTree .mainName{
+      width: 1120px;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+    .familyTree .mainName span{
+      max-width: 176px;
+      min-width: 100px;
+      padding: 0 12px;
+      height: 50px;
+      line-height: 50px;
+      background: #ebfaeb;
+      overflow: hidden;
+      -ms-text-overflow: ellipsis;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: inline-block;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+      float: left;
+    }
+    .familyTree .mainName span.company{
+      background: #b7dcfa;
+    }
+    .familyTree .mainName em{
+      height: 50px;
+      line-height: 50px;
+      vertical-align: middle;
+      display: inline-block;
+      width: 25px;
+      margin: 0 15px;
+      text-align: center;
+      float: left;
+    }
+    .familyTree .mainName em img{
+      vertical-align: middle;
+    }
+    .familyTree .mainName .list{
+      display: inline-block;
+      width: 200px;
+      float: left;
+      margin: 0px;
+      position: relative;
+      min-height: 50px;
+    }
+    .familyTree .mainName .list i.down,.familyTree .mainName .list i.up{
+      position: absolute;
+      top: 17px;
+      left: 10px;
+      display: inline-block;
+    }
+    .familyTree .mainName .list:first-child i.down,.familyTree .mainName .list:first-child i.up{
+      position: absolute;
+      top: 17px;
+      left: 176px;
+      display: inline-block;
+    }
+    .familyTree .mainName .list ul{
+      width: 100%;
+      margin-top: 50px;
+      border-left: 1px solid #14a614;
+      overflow: hidden;
+    }
+    .familyTree .mainName .list ul li{
+      float: left;
+      width: 100%;
+      line-height: 50px;
+      margin: 5px 0;
+    }
+    .familyTree .mainName .list ul li span{
+      width: 90%;
+      padding: 0 4%;
+      float: left;
+      display: block;
+    }
+    .familyTree .mainName .list ul li span strong{
+      width: 80%;
+      float: left;
+      overflow: hidden;
+      -ms-text-overflow: ellipsis;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .familyTree .mainName .list ul li span i{
+      width: 20%;
+      float: right;
+      text-align: right;
+      font-style: normal;
+    }
+    .familyTree .mainName .list ul li em{
+      width: 3%;
+      float: left;
+      display: block;
+      color: #14a614;
+      padding: 0px;
+      margin: 0px;
+      overflow: hidden;
+      background: url("../../../../static/images/familytree/line1.png") center center no-repeat;
+    }
+    .familyTree .mainName .list:first-child ul{
+      border-left: 0px;
+      border-right: 1px solid #14a614;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .familyTree .mainName_bot{
+      width: 440px;
+      text-align: center;
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      margin-left: -280px;
+      padding-top: 90px;
+    }
+    .familyTree .mainName_bot span{
+      width: 120px;
+      padding: 0 12px;
+      height: 50px;
+      line-height: 50px;
+      background: #fff2de;
+      -ms-text-overflow: ellipsis;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: inline-block;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+      position: absolute;
+      top: 40px;
+      right: 0px;
+    }
+    .familyTree .mainName_bot>span:first-child{
+      right: 296px;
+    }
+    .familyTree .mainName_bot>span:first-child em{
+      position: absolute;
+      top: -40px;
+      right: 0px;
+    }
+    .familyTree .mainName_bot>span.jt{
+      margin-left: 0px;
+    }
+    .familyTree .mainName_bot>span.jt em{
+      position: absolute;
+      top: -40px;
+      left: 0px;
+    }
+    .familyTree .mainName_bot span i.down,.familyTree .mainName_bot span i.up{
+      position: absolute;
+      top: 0px;
+      left: -20px;
+      display: inline-block;
+    }
+    .familyTree .mainName_bot span.jt i.down,.familyTree .mainName_bot span.jt i.up{
+      position: absolute;
+      top: 0px;
+      left: 150px;
+      display: inline-block;
+    }
+    .familyTree .mainName_bot .list{
+      display: inline-block;
+      width: 144px;
+      float: left;
+      margin: 0px;
+      position: relative;
+    }
+    .familyTree .mainName_bot .list:last-child{
+      float: right;
+    }
+    .familyTree .mainName_bot .list ul{
+      width: 100%;
+      margin-top: 0px;
+      border-left: 1px solid #f5a623;
+      overflow: hidden;
+    }
+    .familyTree .mainName_bot .list:last-child ul{
+      border-left: 0px;
+      border-right: 1px solid #f5a623;
+    }
+    .familyTree .mainName_bot .list ul li{
+      float: left;
+      width: 100%;
+      line-height: 50px;
+      margin: 5px 0;
+    }
+    .familyTree .mainName_bot .list ul li span{
+      width: 83%;
+      padding: 0 6%;
+      float: left;
+      display: block;
+      position: relative;
+      top: 0px;
+      overflow: hidden;
+    }
+    .familyTree .mainName_bot .list ul li span strong{
+      max-width: 50%;
+      overflow: hidden;
+      float: left;
+    }
+    .familyTree .mainName_bot .list ul li span i{
+      max-width: 40%;
+      margin-left: 10%;
+      float: left;
+      font-style: normal;
+    }
+    .familyTree .mainName_bot .list ul li em{
+      width: 5%;
+      height: 50px;
+      line-height: 50px;
+      float: left;
+      display: block;
+      color: #f5a623;
+      padding: 0px;
+      margin: 0px;
+      overflow: hidden;
+      background: url("../../../../static/images/familytree/line2.png") center center no-repeat;
+    }
+    .familyTree .mainName_bot .list:first-child ul{
+      border-left: 0px;
+      border-right: 1px solid #f5a623;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .left_whiteline{
+      position: absolute;
+      bottom: 0px;
+      left: 0px;
+      width: 1px;
+      height: 30px;
+      background: #ffffff;
+    }
+    .right_whiteline{
+      position: absolute;
+      bottom: 0px;
+      right: -1px;
+      width: 2px;
+      height: 30px;
+      background: #ffffff;
+    }
+  }
+</style>

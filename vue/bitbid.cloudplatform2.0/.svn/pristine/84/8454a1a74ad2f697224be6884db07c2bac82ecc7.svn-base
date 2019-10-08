@@ -1,0 +1,206 @@
+<template>
+  <div class="cloudcontent" id="cloud_customer_detail" :loading="loading">
+    <div class="main">
+      <div class="tit">
+        <span>{{tenderProjectName}}<i>（项目编号：{{tenderProjectCode}}）</i></span>
+      </div>
+      <el-table
+        :data="feeTableData"
+        border
+        style="width: 100%; margin-top: 20px;"
+        row-key="id"
+        @expand-change="expandSelect"
+        header-cell-class-name="tableheader">
+        <el-table-column
+          prop="name"
+          label=""
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="income"
+          label="收入（单位：元）"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="spending"
+          label="支出（单位：元）"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="netIncome"
+          label="净收入（单位：元）"
+          show-overflow-tooltip>
+        </el-table-column>
+      </el-table>
+    </div>
+  </div>
+</template>
+<script>
+import {tenderProject, settlementStatistical} from '@/api/project'
+export default {
+  data () {
+    return {
+      loading: false,
+      // 费用
+      value1: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)],
+      feeTableData: [
+        {
+          id: 1,
+          name: '项目合计',
+          income: 2000,
+          spending: 500,
+          netIncome: 1500,
+          children: [{
+            id: 11,
+            name: '标书费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 12,
+            name: '保证金',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 13,
+            name: '服务费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 14,
+            name: '*****费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 15,
+            name: '其他',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }]
+        },
+        {
+          id: 2,
+          name: '标段一',
+          income: 2000,
+          spending: 500,
+          netIncome: 1500,
+          children: [{
+            id: 21,
+            name: '标书费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 22,
+            name: '保证金',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 23,
+            name: '服务费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 24,
+            name: '*****费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 25,
+            name: '其他',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }]
+        },
+        {
+          id: 3,
+          name: '标段二',
+          income: 2000,
+          spending: 500,
+          netIncome: 1500,
+          children: [{
+            id: 31,
+            name: '标书费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 32,
+            name: '保证金',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 33,
+            name: '服务费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 34,
+            name: '*****费',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }, {
+            id: 35,
+            name: '其他',
+            income: 2000,
+            spending: 500,
+            netIncome: 1500
+          }]
+        }
+      ],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: null, // 总条数
+      pageSize: 10, // 每页展示条数
+      tenderSystemCode: this.$route.query.tenderSystemCode,
+      tenderProjectName: '',
+      tenderProjectCode: ''
+    }
+  },
+  created () {
+    this.getTenderProjectName()
+    this.getTableData()
+  },
+  methods: {
+    /** 查询项目名称 */
+    getTenderProjectName () {
+      this.loading = true
+      tenderProject.getOne(this.tenderSystemCode).then((res) => {
+        if (res.data.tenderProject) {
+          this.tenderProjectName = res.data.tenderProject.tenderProjectName
+          this.tenderProjectCode = res.data.tenderProject.tenderProjectCode
+        }
+      })
+    },
+    /** 获取列表数据 */
+    getTableData () {
+      settlementStatistical.getList(this.tenderSystemCode).then((res) => {
+        // console.log(res)
+      })
+    },
+    /** 选中某行的信息 */
+    expandSelect (row, expandedRows) {
+      // expandedRows(true: 打开； false:关闭)
+    },
+    dataIndex (index) {
+      return 1
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_customer_detail {
+  }
+</style>

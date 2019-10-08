@@ -1,0 +1,244 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <div class="basic-info-title">档案基本信息</div>
+      <el-form :model="form" label-width="84px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="档案名称：">
+              <span>{{form.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="档案编码：">
+              <span>{{form.archivesCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="移交人：">
+              <span>{{form.filesCount}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="档案管理员：">
+              <span>{{form.archivingDepartmentName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="归档时间：">
+              <span>{{form.filingTime}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="档案状态：">
+              <span>正常</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <template v-if="isShowTransferRecord">
+        <div class="basic-info-title">档案移交记录</div>
+        <el-form>
+          <el-table
+            :data="recordData"
+            border
+            style="width: 100%" header-cell-class-name="tableheader">
+            <el-table-column
+              width="50"
+              type="index"
+              align="center"
+              label="序号">
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="档案目录"
+              align="center"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="移交状态"
+              align="center"
+              width="100"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="最新移交人"
+              align="center"
+              width="120"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="最新移交时间"
+              align="center"
+              width="160"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="接受人"
+              align="center"
+              width="120"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="接受时间"
+              align="center"
+              width="160"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="归档状态"
+              align="center"
+              width="80"
+              show-overflow-tooltip>
+              <template slot-scope="scope">
+                <span>{{scope.row.fileStatus === 1 ? '已归档' : '未归档'}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="归档时间"
+              align="center"
+              width="160"
+              show-overflow-tooltip>
+            </el-table-column>
+          </el-table>
+        </el-form>
+      </template>
+      <div class="basic-info-title">实物档案信息</div>
+      <el-form :model="positionForm" label-width="70px">
+        <el-form-item label="档案位置：">
+          <span>{{positionForm.position}}</span>
+        </el-form-item>
+        <el-form-item label="档案编号：">
+          <span>{{positionForm.code}}</span>
+        </el-form-item>
+        <el-table
+          :data="positionData"
+          border
+          style="width: 100%" header-cell-class-name="tableheader">
+          <el-table-column
+            width="50"
+            type="index"
+            align="center"
+            label="序号">
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="档案目录"
+            align="center"
+            width="200"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            label="详细位置描述"
+            prop="name"
+            align="center"
+            show-overflow-tooltip>
+          </el-table-column>
+        </el-table>
+      </el-form>
+      <div class="basic-info-title">查阅记录</div>
+      <el-form>
+        <el-table
+          :data="lookData"
+          border
+          style="width: 100%" header-cell-class-name="tableheader">
+          <el-table-column
+            width="50"
+            type="index"
+            :index='dataIndex'
+            align="center"
+            label="序号">
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="部门"
+            align="center"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="人员"
+            align="center"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="查阅时间"
+            align="center"
+            show-overflow-tooltip>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="total"
+          :page-size='pageSize'
+          :current-page.sync="currentPage"
+          @current-change="handleCurrentChange">
+        </el-pagination>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  props: {
+    info: [Object],
+    isShowTransferRecord: [Boolean]
+  },
+  components: {
+  },
+  data () {
+    return {
+      form: {},
+      // 档案移交记录
+      recordData: [
+        {}
+      ],
+      positionForm: {},
+      // 实物信息
+      positionData: [
+        {}
+      ],
+      // 查阅记录
+      lookData: [
+        {}
+      ],
+      currentPage: 1,
+      pageNo: 0,
+      total: null,
+      pageSize: 10
+    }
+  },
+  methods: {
+    dataIndex (index) {
+      return index + (this.currentPage - 1) * this.pageSize + 1
+    },
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getLookRecord()
+    },
+    // 获取查阅记录
+    getLookRecord () {
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #file-end {
+  }
+</style>

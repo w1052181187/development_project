@@ -1,0 +1,243 @@
+<template>
+  <div class="cloudcontent"  id="cloud_workApprovalDetail" v-loading="allLoading">
+    <approve-flow :approvalTaskCode="approvalTaskCode" :subjectCode="submitForm.code" v-if="tableFlag"></approve-flow>
+    <div class="project-info-line" v-if="isApproved"></div>
+    <div class="main viewdetails collaborationDetail" style="margin-bottom: 0;">
+      <div class="tit">
+        <span style="width: 100%; display: block;">{{submitForm.title}}</span>
+        <span style="font-weight: normal; font-size: 14px; margin-left: 10px;">项目名称：{{submitForm.tenderProjectName}}</span>
+        <i>提交日期：{{submitForm.sendDate | formatDate}}</i>
+        <i>提交人：{{submitForm.senderName}}</i>
+      </div>
+      <el-form class="submitForm" :model="submitForm" label-width="120px" ref="submitForm">
+        <el-row v-for="(item, index) in submitForm.item" :key="index">
+          <el-col :span="item[0].type === 5 || item[0].type === 6 ? 24 : 12">
+            <el-form-item :label="item[0].name + '：'">
+              <span v-if="item[0].type === 1">{{item[0].value}}</span>
+              <span v-if="item[0].type === 2">
+                <i style="font-style:normal" v-for = "(selectItem, index) in item[0].optional" :key="index" v-if="item[0].value === selectItem.value">{{selectItem.label}}</i>
+              </span>
+              <el-radio-group v-model="item[0].value" v-if="item[0].type === 3">
+                <el-radio v-for="raItem in item[0].optional" :label="raItem.value" :key="raItem.value" disabled>{{raItem.label}}</el-radio>
+              </el-radio-group>
+              <el-checkbox-group v-model="item[0].value" v-if="item[0].type === 4">
+                <el-checkbox v-for="raItem in item[0].optional" :label="raItem.value" :key="raItem.value" disabled>{{raItem.label}}</el-checkbox>
+              </el-checkbox-group>
+              <el-date-picker
+                v-if="item[0].type === 7"
+                v-model="item[0].value"
+                type="date"
+                placeholder="选择日期">
+              </el-date-picker>
+              <el-date-picker
+                v-if="item[0].type === 8"
+                v-model="item[0].value"
+                type="datetime"
+                placeholder="选择日期时间">
+              </el-date-picker>
+              <editor  v-if="item[0].type === 5" :ref="'ueditor' + index" class="ueditor" :editread="editread" :content="content" @contentChange="handleContentChange"></editor>
+              <file-download  v-if="item[0].type === 6" :fileArrays="item[0].fileInformations" :fileType="item[0].businessType"></file-download>
+            </el-form-item>
+          </el-col>
+          <el-col :span="item[1].type === 5 || item[1].type === 6 ? 24 : 12" v-if="item.length === 2">
+            <el-form-item :label="item[1].name + '：'">
+              <span v-if="item[1].type === 1">{{item[1].value}}</span>
+              <span v-if="item[1].type === 2">
+                <i style="font-style:normal" v-for = "(selectItem, index) in item[1].optional" :key="index" v-if="item[1].value === selectItem.value">{{selectItem.label}}</i>
+              </span>
+              <el-radio-group v-model="item[1].value" v-if="item[1].type === 3">
+                <el-radio v-for="raItem in item[1].optional" :label="raItem.value" :key="raItem.value" disabled>{{raItem.label}}</el-radio>
+              </el-radio-group>
+              <el-checkbox-group v-model="item[1].value" v-if="item[1].type === 4">
+                <el-checkbox v-for="raItem in item[1].optional" :label="raItem.value" :key="raItem.value" disabled>{{raItem.label}}</el-checkbox>
+              </el-checkbox-group>
+              <el-date-picker
+                v-if="item[1].type === 7"
+                v-model="item[1].value"
+                type="date"
+                placeholder="选择日期">
+              </el-date-picker>
+              <el-date-picker
+                v-if="item[1].type === 8"
+                v-model="item[1].value"
+                type="datetime"
+                placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="补充资料：">
+              <el-table
+                :data="supplementFileList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  label="附件"
+                  show-overflow-tooltip>
+                  <template slot-scope="scope">
+                    <file-download :fileArrays="scope.row.fileInformation" fileType="9"></file-download>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="createName"
+                  label="提交人"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  prop="createDate"
+                  label="提交时间"
+                  show-overflow-tooltip>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+    <template>
+      <div class="project-info-line"></div>
+      <communicate-record @confirmSubmit="confirmSubmit" v-if="tableFlag" :isShowUpload="isShowUpload" :relatedCode="submitForm.code" :flowType='flowType' :creator="submitForm.senderId" :createName="submitForm.senderName" :routingPath="routingPath" :nodeContent="nodeContent"></communicate-record>
+      <div class="project-info-line"></div>
+      <approve-record :tableFlag="tableFlag"  :approvalTaskCode="approvalTaskCode" :flowStatus='flowStatus' :subjectCode="submitForm.code" ></approve-record>
+    </template>
+    <approve-handle :isApproved="isApproved" :approvalTaskCode="approvalTaskCode"></approve-handle>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import fileDownload from '@/components/download/file-download'
+import approveFlow from '@/pages/todoList/commonComponents/approveFlow.vue'
+import communicateRecord from '@/pages/todoList/commonComponents/communicateRecord.vue'
+import approveRecord from '@/pages/todoList/commonComponents/approveRecord.vue'
+import approveHandle from '@/pages/todoList/commonComponents/approveHandle.vue'
+import {approvalNode} from '@/api/todoList/flow/approval-node'
+import {journalSummary} from '@/api/office'
+import {dateFormat} from '@/assets/js/common'
+export default {
+  components: {
+    editor,
+    fileDownload,
+    approveFlow,
+    communicateRecord,
+    approveRecord,
+    approveHandle
+  },
+  data () {
+    return {
+      // 是否显示审批（0:详情 1：审批 2：审批详情 3：我发起的详情）
+      isApproved: this.$route.query.isApproved || 2,
+      allLoading: true,
+      submitForm: {
+        item: []
+      },
+      isShowUpload: true,
+      reviewForm: {},
+      // 富文本
+      editread: true,
+      content: '',
+      loading: false,
+      historyReviewList: [],
+      approvalTaskCode: '', // 对应的审批任务code
+      // 审批流程
+      flowList: [
+      ],
+      curFlowIndex: 0,
+      communicateRecordList: [
+        {}
+      ],
+      routingPath: '', // 路由地址
+      nodeContent: '',
+      flowType: 'workApproval', // 审批类型
+      tableFlag: false,
+      flowStatus: 99,
+      supplementFileList: [] // 补充文件
+    }
+  },
+  filters: {
+    // 格式化时间
+    formatDate (value) {
+      return value ? dateFormat(value, 'yyyy-MM-dd') : '---'
+    }
+  },
+  created () {
+    this.init()
+  },
+  watch: {
+    '$route': 'init'
+  },
+  methods: {
+    // 查询工作日志/计划总结单条数据
+    getJournalSummary () {
+      journalSummary.getById(this.$route.params.objectId).then(res => {
+        let journalSummary = res.data.journalSummary
+        if (journalSummary) {
+          this.submitForm = journalSummary
+          this.submitForm.item = JSON.parse(journalSummary.content)
+          if (this.submitForm.item && this.submitForm.item.length > 0) {
+            this.$nextTick(function () {
+              this.submitForm.item.map((item, index) => {
+                if (item[0].type === 5) {
+                  this.$refs['ueditor' + index][0].setContent(item[0].value)
+                }
+              })
+            })
+          }
+          // 沟通记录
+          this.nodeContent = this.submitForm.title + '审批'
+          this.routingPath = '/office/workApproval/detail/' + this.$route.params.objectId
+          this.allLoading = false
+        }
+      })
+    },
+    // 查询当前节点是否需要审批
+    checkedIsNeedFlow (flowStatus) {
+      approvalNode.checkedIsNeedFlow(flowStatus).then((res) => {
+        if (res.data.resCode === '0000') {
+          if (res.data.isNeedFlow === 1) {
+            this.tableFlag = true
+          }
+        }
+      })
+    },
+    init () {
+      this.isApproved = this.$route.query.isApproved
+      this.auditStatus = this.$route.query.auditStatus
+      this.approvalTaskCode = this.$route.query.code
+      this.checkedIsNeedFlow(this.flowStatus)
+      this.getJournalSummary()
+    },
+    confirmSubmit (obj) {
+      this.supplementFileList = obj
+      console.log(this.supplementFileList)
+    },
+    handleCancle () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    },
+    // 上传附件
+    uploadOtherSuccess (file) {
+    },
+    deleteSuccess (fileId) {
+    },
+    // 图文
+    handleContentChange () {}
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_workApprovalDetail{
+    .submitForm{
+      margin: 20px 0 5px 0;
+    }
+    .reviewContent{
+      height: 100px;
+    }
+    .reviewContent .el-textarea__inner{
+      height: 100px;
+    }
+  }
+</style>

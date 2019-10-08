@@ -1,0 +1,357 @@
+<template>
+  <div class="cloudcontent" id="cloud_archives_man">
+    <div class="main">
+      <div class="topmain">
+        <!--按钮-->
+        <div class="btnbigbox">
+          <div class="addrole">
+            <el-button class="addbutton" @click="openProject">
+              <span> + 新增归档</span>
+            </el-button>
+          </div>
+        </div>
+        <!--按钮-->
+        <div class="seacher_box">
+          <span>归档情况：</span>
+          <el-select class="select" v-model="status" placeholder="请选择" >
+            <el-option
+              v-for="item in searchClassify"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <span>项目名称：</span>
+          <el-input class="search" placeholder="请输入项目名称" style="vertical-align: top"  v-model="searchContent">
+            <el-button slot="append" icon="el-icon-search" type="" @click="search('archivesInfo')"></el-button>
+          </el-input>
+        </div>
+      </div>
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='dataIndex'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="tenderProjectName"
+          label="招标项目"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="bidSectionCode"
+          label="标段编号"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="bidSectionName"
+          label="标段名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="projectLeader"
+          label="项目经理"
+          :formatter="formatterProjectLeader"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="filingTime"
+          label="归档时间"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="归档情况"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="scope.row.status === 0">待归档</span>
+            <span v-if="scope.row.status === 1">已归档</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleLookBtn(scope)">查阅</el-button>
+            <template v-if="scope.row.status === 0">
+              <el-button type="text" size="small" @click="handleEditBtn(scope)">编辑</el-button>
+              <el-button type="text" size="small" @click="handleDelBtn(scope)">删除</el-button>
+            </template>
+            <el-button type="text" size="small" @click="handleDestoryBtn(scope)" v-if="scope.row.status === 1">销毁</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+      <el-dialog title="选择归档标段" :visible.sync="dialogTableVisible">
+        <div class="topmain">
+          <div class="seacher_box">
+            <span>项目名称：</span>
+            <el-input class="search" placeholder="请输入项目名称" style="vertical-align: top"  v-model="searchContent">
+              <el-button slot="append" icon="el-icon-search" type="" @click="search('bidSection')"></el-button>
+            </el-input>
+          </div>
+        </div>
+        <el-table :data="dialogTableData"
+                  border
+                  style="width: 100%" header-cell-class-name="tableheader">
+          <el-table-column
+            prop="radio"
+            label=""
+            width="50"
+            align="center"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <el-radio v-model="isChecked" style="vertical-align: top" :label="scope.row.objectId">&nbsp;</el-radio>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="bidSectionCode"
+            label="标段编号"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="bidSectionName"
+            label="标段名称"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="tenderProjectName"
+            label="所属招标项目"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="flowStatus"
+            label="标段状态"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <span>{{scope.row.flowStatus === 17 ? '已结束' : '未结束'}}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="dialogTotal"
+          :page-size='dialogPageSize'
+          :current-page.sync="dialogCurrentPage"
+          @current-change="handleDialogCurrentChange">
+        </el-pagination>
+        <!--分页-->
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="handleConfirm">确 定</el-button>
+          <el-button @click="dialogTableVisible = false">取 消</el-button>
+        </div>
+      </el-dialog>
+    </div>
+  </div>
+</template>
+<script>
+import {bidSection} from '@/api/project'
+import {archivesInfo} from '@/api/archives'
+
+export default
+
+{
+  components: {
+  },
+  data () {
+    return {
+      status: null,
+      searchClassify: [{
+        value: null,
+        label: '全部'
+      }, {
+        value: '0',
+        label: '待归档'
+      }, {
+        value: '1',
+        label: '已归档'
+      }],
+      searchContent: '',
+      tableData: [],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: null, // 总条数
+      pageSize: 10, // 每页展示条数
+      dialogCurrentPage: 1,
+      dialogPageNo: 0,
+      dialogTotal: null, // 总条数
+      dialogPageSize: 10, // 每页展示条数
+      dialogTableVisible: false,
+      dialogTableData: [],
+      isChecked: ''
+    }
+  },
+  watch: {
+    $route: 'resetView'
+  },
+  methods: {
+    // 获取归档信息
+    getArchivesInfos () {
+      archivesInfo.getArchivesInfoList({
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        status: this.status,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        projectNameLike: this.searchContent
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.tableData = res.data.archivesInfoList.list
+          this.total = res.data.archivesInfoList.total
+        }
+      })
+    },
+    // 搜索
+    search (searchType) {
+      if (searchType === 'archivesInfo') {
+        this.getArchivesInfos()
+      } else if (searchType === 'bidSection') {
+        this.getDialogTableData()
+      }
+    },
+    // 分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getArchivesInfos()
+    },
+    // 选择标段分页
+    handleDialogCurrentChange (nowNum) {
+      this.dialogCurrentPage = nowNum
+      this.dialogPageNo = (nowNum - 1) * this.dialogPageSize
+      this.getDialogTableData()
+    },
+    dataIndex (index) {
+      return index + (this.currentPage - 1) * this.pageSize + 1
+    },
+    handleLookBtn (scope) {
+      this.$router.push({path: `/archives/management/detail/` + scope.row.objectId, query: {status: scope.row.status}})
+    },
+    handleEditBtn (scope) {
+      this.$router.push({path: `/archives/management/update/` + scope.row.objectId})
+    },
+    handleDelBtn (scope) {
+      this.$confirm('删除后不可恢复，是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        archivesInfo.deleteArchivesInfo(scope.row.objectId).then((res) => {
+          this.getArchivesInfos()
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 销毁
+    handleDestoryBtn (scope) {
+      this.$confirm('档案销毁后不可恢复，是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        archivesInfo.deleteArchivesInfo(scope.row.objectId).then((res) => {
+          this.getArchivesInfos()
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    handleConfirm () {
+      this.dialogTableVisible = false
+      let bidInfo = this.dialogTableData.filter(item => item.objectId === this.isChecked)
+      if (bidInfo.length <= 0) {
+        this.$message({
+          message: '请先选择标段',
+          type: 'warning'
+        })
+        return false
+      }
+      if (bidInfo[0].flowStatus === 17) {
+        // 判断该档案是否已归档
+        archivesInfo.checkBidSectionArchived(bidInfo[0].code).then((res) => {
+          if (res.data.resCode === '0000') {
+            // 可归档
+            if (res.data.canArchive) {
+              // 保存归档信息
+              archivesInfo.saveArchivesInfo({
+                tenderSystemCode: bidInfo[0].tenderSystemCode,
+                sectionSystemCode: bidInfo[0].code,
+                tenderProjectName: bidInfo[0].tenderProjectName,
+                bidSectionCode: bidInfo[0].bidSectionCode,
+                tenderProjectCode: bidInfo[0].tenderProjectCode,
+                bidSectionName: bidInfo[0].bidSectionName
+              }).then((res) => {
+                if (res.data.resCode === '0000') {
+                  // 已结束
+                  this.$router.push({path: `/archives/management/add/` + res.data.archivesInfo.objectId})
+                }
+              })
+            } else {
+              this.$message({
+                message: '该标段已归档',
+                type: 'warning'
+              })
+            }
+          }
+        })
+      } else {
+        // 未结束
+        this.$alert('该标段流程未结束，不允许归档', '提示:', {
+          confirmButtonText: '关闭',
+          type: 'warning'
+        })
+      }
+    },
+    openProject () {
+      this.dialogTableVisible = true
+      this.getDialogTableData()
+    },
+    // 获取项目以及标段
+    getDialogTableData () {
+      let query = {
+        pageNo: this.dialogPageNo,
+        pageSize: this.dialogPageSize,
+        messageLike: this.searchContent,
+        enterpriseId: this.$store.getters.authUser.enterpriseId
+      }
+      bidSection.getList(query).then(res => {
+        this.dialogTableData = res.data.bidSectionList.list
+        this.dialogTotal = res.data.bidSectionList.total
+      })
+    },
+    formatterProjectLeader (row, column) {
+      return row.projectLeader.split(',')[0]
+    }
+  },
+  mounted () {
+    this.getArchivesInfos()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_archives_man {
+    .seacher_box{
+      width: 700px;
+      height: 41px;
+    }
+    .search{
+      width: 50%;
+    }
+  }
+</style>

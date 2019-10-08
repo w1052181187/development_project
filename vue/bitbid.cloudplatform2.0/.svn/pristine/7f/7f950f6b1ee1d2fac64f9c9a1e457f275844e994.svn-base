@@ -1,0 +1,172 @@
+<template>
+  <div class="cloudcontent" id="cloud_registProject">
+    <div class="main">
+      <div class="topmain">
+        <!--按钮-->
+        <div class="btnbigbox">
+          <!--添加角色-->
+          <div class="addrole">
+            <el-button class="addbutton" @click="addBtn">
+              <span> + 添加</span>
+            </el-button>
+          </div>
+          <!--添加角色-->
+        </div>
+        <!--按钮-->
+        <div class="seacher_box">
+          <span>代理合同名称：</span>
+          <el-input class="search" placeholder="请输入代理合同名称关键字" style="vertical-align: top"  v-model="messageLike" clearable>
+            <el-button  slot="append" icon="el-icon-search" type="" @click="searchBtn"></el-button>
+          </el-input>
+        </div>
+      </div>
+      <el-table
+        :data="registProjectData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='dataIndex'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="agencyContractCode"
+          label="代理合同编号"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="agencyContractName"
+          label="代理合同名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="entrustEnterpriseName"
+          label="委托单位"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="提交状态"
+          width="100"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === 0">已保存</span>
+            <span  v-if="scope.row.status === 1">待审批</span>
+            <span  v-if="scope.row.status === 2">已审批</span>
+            <span  v-if="scope.row.status === 3">已驳回</span>
+            <span  v-if="scope.row.status === 4">已提交</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="submitTime"
+          label="提交时间"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookBtn(scope)">查看</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === 0 || scope.row.status === 3" @click="updateBtn(scope)">编辑</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === 0 || scope.row.status === 3" @click="delBtn(scope)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+import {agencyContract} from '@/api/knowledge'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      messageLike: '',
+      registProjectData: [],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: null, // 总条数
+      pageSize: 10 // 每页展示条数
+    }
+  },
+  watch: {
+    $route: 'resetView'
+  },
+  methods: {
+    resetView () {
+      this.getAgencyContractList(this.pageNo)
+    },
+    // 搜索
+    searchBtn () {
+      this.getAgencyContractList(0)
+    },
+    // 添加
+    addBtn (scope) {
+      this.$router.push({path: `/knowledge/agencyContract/add`})
+    },
+    // 查看
+    lookBtn (scope) {
+      this.$router.push({path: `/knowledge/agencyContract/detail/${scope.row.code}`})
+    },
+    // 修改
+    updateBtn (scope) {
+      this.$router.push({path: `/knowledge/agencyContract/update/${scope.row.code}`})
+    },
+    // 删除
+    delBtn (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        agencyContract.delete(scope.row.objectId).then(() => {
+          this.getAgencyContractList(this.pageNo)
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getAgencyContractList(this.pageNo)
+    },
+    dataIndex (index) {
+      return index + (this.currentPage - 1) * this.pageSize + 1
+    },
+    // 代理合同列表查询
+    getAgencyContractList (pageNo) {
+      let query = {
+        pageNo: pageNo,
+        pageSize: this.pageSize,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        messageLike: this.messageLike || null
+      }
+      agencyContract.getList(query).then(res => {
+        let data = res.data.agencyContractList
+        if (data) {
+          this.registProjectData = data.list
+          this.total = data.total
+        }
+      })
+    }
+  },
+  mounted () {
+    this.getAgencyContractList(this.pageNo)
+  }
+}
+</script>

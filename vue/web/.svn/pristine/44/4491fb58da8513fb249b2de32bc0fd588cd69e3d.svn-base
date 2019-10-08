@@ -1,0 +1,44 @@
+import {titleName} from '@/assets/js/common'
+
+export default[
+  {
+    path: '/index/info-manage/model',
+    name: 'model',
+    meta: {
+      permissions: [1, 2],
+      title: '范本大全' + titleName,
+      active: '/index/info-manage/model'
+    },
+    component: resolve => require(['@/pages/info-manage/model/index'], resolve)
+  },
+  {
+    path: '/index/model/add',
+    name: 'poladd',
+    meta: {
+      permissions: [1, 2],
+      title: '新增范本' + titleName,
+      active: '/index/info-manage/model'
+    },
+    component: resolve => require(['@/pages/info-manage/model/add'], resolve)
+  },
+  {
+    path: '/index/model/update',
+    name: 'polupdate',
+    meta: {
+      permissions: [1, 2],
+      title: '修改范本' + titleName,
+      active: '/index/info-manage/model'
+    },
+    component: resolve => require(['@/pages/info-manage/model/update'], resolve)
+  },
+  {
+    path: '/index/model/detail/:objectId',
+    name: 'poldetail',
+    meta: {
+      permissions: [1, 2],
+      title: '详情' + titleName,
+      active: '/index/info-manage/model'
+    },
+    component: resolve => require(['@/pages/info-manage/model/detail'], resolve)
+  }
+]

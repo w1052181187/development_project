@@ -1,0 +1,86 @@
+<template>
+  <div>
+    <div class="file-type-name">
+      <span>评价信息</span>
+    </div>
+    <el-form :model="item.archivesProjectExpands" ref="form" >
+<!--      <el-form-item label-width="0px">-->
+<!--        <el-input type="textarea" v-model="item.archivesProjectExpands.evaluationInformation" disabled></el-input>-->
+<!--      </el-form-item>-->
+      <el-form-item label="评价信息：">
+        <span>{{item.archivesProjectExpands ? item.archivesProjectExpands.evaluationInformation : ''}}</span>
+      </el-form-item>
+    </el-form>
+    <div class="file-type-add" @click="handleEdit" v-if="canEdit">
+      <span>编辑</span>
+    </div>
+    <file-upload class="file-type-enclosure" :canEdit="canEdit"
+                 :file-list="item.refArchivesFileInformationList"
+                 :objectId="item.objectId" :file-type="9" file-name='相关'></file-upload>
+
+    <el-dialog :before-close='close' :title="title" :visible.sync="dialogVisible">
+      <el-form :model="dialogForm" ref="dialogForm" :label-width="formLabelWidth">
+        <el-form-item label="评价信息：">
+          <el-input type="textarea" v-model="dialogForm.evaluationInformation"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button class="cancal" @click="close">取 消</el-button>
+        <el-button type="primary" @click="submitForm('dialogForm')">确认</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import {archivesFile} from '@/api/archives'
+export default {
+  components: {
+    fileUpload: resolve => require(['./fileUpload'], resolve)
+  },
+  data () {
+    return {
+      title: '代理工作评价',
+      dialogVisible: false,
+      formLabelWidth: '120px',
+      dialogForm: {
+        evaMessage: ''
+      }
+    }
+  },
+  watch: {
+  },
+  props: ['item', 'canEdit'],
+  methods: {
+    // 编辑
+    handleEdit () {
+      this.dialogVisible = true
+    },
+    close () {
+      this.dialogVisible = false
+      this.$refs.dialogForm.resetFields()
+    },
+    // 提交
+    submitbtnFun (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.dialogForm.archivesFileId = this.item.objectId
+          archivesFile.savaOrUpdateArchivesProjectExpands(this.dialogForm).then((res) => {
+          })
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #jobeva{
+    .el-button--primary {
+      background-color: #409eff!important;
+      border-color: #409eff!important;
+    }
+  }
+</style>

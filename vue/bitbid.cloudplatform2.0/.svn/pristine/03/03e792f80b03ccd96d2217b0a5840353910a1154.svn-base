@@ -1,0 +1,213 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-table
+        :data="projectData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="bidOpeningRoom.name"
+          label="开评标室"
+          width="140"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="usedDate"
+          label="禁用时间"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="tenderProjectName"
+          label="禁用原因"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="180">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="updateRecord(scope)">修改</el-button>
+            <el-button type="text" size="small" @click="delRecord(scope)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <!-- 禁用设置弹窗-->
+    <el-dialog :title="dialogDisableTitle" :visible.sync="dialogDisableVisible" width="50%"
+               :before-close="closeDisable">
+      <el-form :model="disableForm" :rules="disableFormRules" ref="disableForm"
+               :label-width="formLabelWidth" :validate-on-rule-change="true">
+        <el-form-item label="开评标室：">
+          <span class="form_content_width">{{disableForm.name}}</span>
+        </el-form-item>
+        <el-form-item label="禁用时间：" prop="time" >
+          <el-date-picker
+            v-model="disableForm.time"
+            type="datetimerange"
+            range-separator="-"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            value-format="yyyy-MM-dd HH:mm:ss"
+          >
+          </el-date-picker>
+          <span class="check_order" @click="handleDisableCheckOrder">检测是否可禁用</span>
+          <el-row v-if="isDisableChecked">
+            <div class="can_order" v-if="checkDisableResult"><img src="../../../../static/images/can-order.png">可以禁用</div>
+            <div class="can_not_order" v-else><img src="../../../../static/images/not-order.png">该时间段已被预约</div>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="禁用原因：">
+          <el-input
+            class="form_content_width"
+            type="textarea"
+            :autosize="{ minRows: 4}"
+            v-model="disableForm.reason">
+          </el-input>
+        </el-form-item>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submitDisable" :loading="isDisableSubmiting">保存</el-button>
+          <el-button class="cancal" @click="closeDisable">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import {bidOpeningRoom} from '@/api/resource'
+export default {
+  name: '',
+  data () {
+    return {
+      projectData: [],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      formLabelWidth: '120px',
+      isDisableSubmiting: false,
+      dialogDisableVisible: false,
+      disableForm: {
+      },
+      dialogDisableTitle: '禁用设置',
+      disableFormRules: {
+        time: [
+          { required: true, message: '请选择禁用时间', trigger: ['blur', 'change'] }
+        ]
+      },
+      disableRoomOptions: [],
+      isDisableChecked: false,
+      checkDisableResult: true
+    }
+  },
+  methods: {
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData()
+    },
+    updateRecord (scope) {
+      this.dialogDisableVisible = true
+    },
+    delRecord (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+      }).catch(() => {
+        return false
+      })
+    },
+    // 检测是否可预约(禁用设置)
+    handleDisableCheckOrder () {
+      this.isDisableChecked = true
+      let query = {
+        objectId: this.disableForm.objectId,
+        forbiddenStartDate: this.disableForm.time[0],
+        forbiddenEndDate: this.disableForm.time[1]
+      }
+      bidOpeningRoom.checkBidOpeningRoomIsOedered(query).then(res => {
+        this.checkDisableResult = res.data.flag
+      })
+    },
+    closeDisable () {
+      this.dialogDisableVisible = false
+      this.$refs['disableForm'].resetFields()
+    },
+    submitDisable () {
+      this.$refs['disableForm'].validate((valid) => {
+        if (valid) {
+          this.disableForm.forbiddenStartDate = this.disableForm.time[0]
+          this.disableForm.forbiddenEndDate = this.disableForm.time[1]
+          this.isDisableSubmiting = true
+          bidOpeningRoom.saveOrUpdateBidOpeningRoom(this.disableForm).then(res => {
+            this.getTableData()
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    // 获取禁用记录
+    getTableData () {
+    }
+  },
+  mounted () {
+    this.getTableData()
+  }
+}
+</script>
+
+<style scoped>
+  .form_content_width{
+    width: 400px;
+  }
+  .check_order{
+    color: #108cee;
+    font-size: 12px;
+    text-decoration: underline;
+    margin-left: 12px;
+    cursor: pointer;
+  }
+  .can_order{
+    color: #c5c5c5;
+    font-size: 12px;
+    /*padding: 6px 0;*/
+    /*box-sizing: border-box;*/
+  }
+  .can_order img{
+    margin-right: 6px;
+    width: 12px;
+    height: 12px;
+  }
+  .can_not_order{
+    color: #c5c5c5;
+    font-size: 12px;
+    /*padding: 6px 0;*/
+    /*box-sizing: border-box;*/
+  }
+  .can_not_order img{
+    margin-right: 6px;
+    width: 12px;
+    height: 12px;
+  }
+</style>

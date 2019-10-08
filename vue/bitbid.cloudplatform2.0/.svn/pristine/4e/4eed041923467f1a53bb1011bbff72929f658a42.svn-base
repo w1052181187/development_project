@@ -1,0 +1,154 @@
+<template>
+  <div class="tender-fee-list cloudcontent" id="tenderFeeList">
+    <div class="tit">
+      <span class="fl">山西国新能源旧址扩建总包工程项目<i>（项目编号：M2019052600010000001）</i></span>
+      <a href="javascript:;" class="returnBtn fr" @click="toPaymentTerm">返回收支列表</a>
+    </div>
+    <div class="main">
+      <div class="topmain">
+        <el-row>
+          <div class="seacher_box">
+            <el-select v-model="ruleForm.fullBid" placeholder="请选择">
+              <el-option v-for="item in fullBidList" :key="item.value" :label="item.text" :value="item.value">
+              </el-option>
+            </el-select>
+            <el-select v-if="pageText === '标书费'" v-model="ruleForm.tenderType" placeholder="请选择">
+              <el-option v-for="item in tenderTypeList" :key="item.value" :label="item.text" :value="item.value">
+              </el-option>
+            </el-select>
+            <el-input class="keyword-input" v-model="ruleForm.keyword" placeholder="请输入缴费单位名称关键字"></el-input>
+            <el-button @click="tenderFeeSrh">查询</el-button>
+          </div>
+          <div class="fr">
+            <el-button class="addbutton">
+              <span @click="addChargeBtn">新增收费</span>
+            </el-button>
+          </div>
+        </el-row>
+      </div>
+      <el-table :data="tableData" border tooltip-effect="dark" style="width: 100%"
+        header-cell-class-name="tableheader">
+        <el-table-column type="index" label="序号" width="60" align="center">
+        </el-table-column>
+        <el-table-column prop="unit" label="缴费单位" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="change" label="缴费金额/元" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="type" label="缴费方式" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="time" label="缴费时间" show-overflow-tooltip></el-table-column>
+        <el-table-column v-if="pageText === '标书费'" prop="tender" label="缴费标段" show-overflow-tooltip></el-table-column>
+        <el-table-column v-if="pageText !== '标书费'" prop="tender" label="相关标段" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="tenderType" label="标书类型" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="progress" label="缴费进度" show-overflow-tooltip></el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="modifyRowLine(scope.row)">修改</el-button>
+            <el-button type="text" size="small" @click="seeRowDetail(scope.row)">查看</el-button>
+            <el-button type="text" size="small" @click="delRowLine(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination background layout="prev, pager, next" :total="pages.total" :page-size='pages.pageSize'
+        :current-page.sync="pages.pageNo" @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+      pageText: '', // 哪种收支项目列表
+      ruleForm: {
+        fullBid: '',
+        tenderType: '',
+        keyword: ''
+      },
+      fullBidList: [
+        {value: 'value1', text: '一标段'},
+        {value: 'value2', text: '二标段'}
+      ], // 全部标段下拉列表
+      tenderTypeList: [
+        {value: 'value1', text: '招标文件'},
+        {value: 'value2', text: '资格预审文件'}
+      ], // 标书类型下拉列表
+      tableData: [
+        {detailId: 12346, unit: '比比网络', change: 100, type: '微信', time: 20190302, tender: '一标段', tenderType: '招标文件', progress: '50%'}
+      ],
+      pages: {
+        pageNo: 1,
+        pageSize: 1,
+        total: 1
+      }
+    }
+  },
+  watch: {
+  },
+  created () {
+    this.pageText = this.$route.query.text
+  },
+  methods: {
+    // 返回收支列表
+    toPaymentTerm () {
+      this.$router.push({path: `/project/proSettlement/paymentTerm`})
+    },
+    // 查询按钮
+    tenderFeeSrh () {
+
+    },
+    // 新增收费按钮
+    addChargeBtn () {
+      if (this.pageText === '标书费') {
+        this.$router.push({path: `/project/proSettlement/paymentDetails/tenderFeeAdd`, query: {type: 'add', text: this.pageText}})
+      } else if (this.pageText === '服务费') {
+        this.$router.push({path: `/project/proSettlement/paymentDetails/serviceAdd`, query: {type: 'add', text: this.pageText}})
+      } else {
+        this.$router.push({path: `/project/proSettlement/paymentDetails/customerAdd`, query: {type: 'add', text: this.pageText}})
+      }
+    },
+    indexMethod () {},
+    // 修改按钮
+    modifyRowLine (rowData) {
+      // this.$router.push({path: `/project/proSettlement/paymentDetails/tenderFeeAdd/${rowData.detailId}`})
+      if (this.pageText === '标书费') {
+        this.$router.push({path: `/project/proSettlement/paymentDetails/tenderFeeAdd/${rowData.detailId}`, query: {type: 'modify', text: this.pageText}})
+      } else if (this.pageText === '服务费') {
+        this.$router.push({path: `/project/proSettlement/paymentDetails/serviceAdd/${rowData.detailId}`, query: {type: 'modify', text: this.pageText}})
+      } else {
+        this.$router.push({path: `/project/proSettlement/paymentDetails/customerAdd/${rowData.detailId}`, query: {type: 'modify', text: this.pageText}})
+      }
+    },
+    // 查看按钮
+    seeRowDetail (rowData) {
+      if (this.pageText === '标书费') {
+        this.$router.push({path: `/project/proSettlement/paymentDetails/tenderFeeDetail/${rowData.detailId}`, query: {text: this.pageText}})
+      } else if (this.pageText === '服务费') {
+        this.$router.push({path: `/project/proSettlement/paymentDetails/serviceDetail/${rowData.detailId}`, query: {text: this.pageText}})
+      } else {
+        this.$router.push({path: `/project/proSettlement/paymentDetails/customerDetail/${rowData.detailId}`, query: {text: this.pageText}})
+      }
+    },
+    // 删除按钮
+    delRowLine () {
+
+    },
+    handleCurrentChange () {},
+    handleCurrentNext () {}
+  }
+}
+</script>
+<style lang="less" scoped>
+
+</style>
+<style lang="less">
+.tender-fee-list{
+  .el-select{
+    width: 120px;
+  }
+  .keyword-input{
+    width: 200px;
+  }
+}
+</style>

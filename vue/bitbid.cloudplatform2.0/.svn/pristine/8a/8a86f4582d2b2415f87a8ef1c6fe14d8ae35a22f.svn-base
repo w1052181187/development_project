@@ -1,0 +1,390 @@
+<template>
+  <div class="cloudcontent"  id="cloud_collaboration">
+    <div class="tabList">
+      <ul>
+        <li :class="active === 1 ? 'active': ''" @click="getList('未读')">未读(5)</li>
+        <li :class="active === 2 ? 'active': ''" @click="getList('我收到的')">我收到的</li>
+        <li :class="active === 3 ? 'active': ''" @click="getList('我发出的')">我发出的</li>
+        <li :class="active === 4 ? 'active': ''" @click="getList('草稿')">草稿</li>
+      </ul>
+    </div>
+    <div class="topmain">
+      <div class="seacher_box advancedsearch_box">
+        <el-form :model="searchForm" ref="searchForm" label-width="85px" :validate-on-rule-change="true">
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="发送日期：" style="float: left; margin-right: 20px;">
+                <span :class="isTimeSelectAll ? 'all selectall': 'all'" @click="conditionCancel('发送日期')">不限</span>
+                <el-radio-group v-model="searchForm.time">
+                  <el-radio v-for="item in timeOption" :label="item.name" :key="item.code">{{item.name}}</el-radio>
+                </el-radio-group>
+              </el-form-item>
+              <el-date-picker
+                v-model="searchForm.customTime"
+                v-if="searchForm.time === 6"
+                @change = "filterTime"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="协同类型：">
+                <span :class="isTypeSelectAll ? 'all selectall' : 'all'" @click="conditionCancel('协同类型')">不限</span>
+                <el-checkbox-group v-model="searchForm.type">
+                  <el-checkbox v-for="item in typeList" :label="item.label" :key="item.value" >{{item.label}}</el-checkbox>
+                </el-checkbox-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col style="width: 320px; float: left;">
+              <el-form-item label="发送人：" prop="messageLike">
+                <el-input class="search" v-model="searchForm.user" placeholder="点击选择发送人">
+                  <el-button type="primary" slot="append" @click="showUserDialog">选择</el-button>
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col style="width: 320px; float: left;">
+              <el-form-item label="标题：" prop="messageLike">
+                <el-input class="search" v-model="searchForm.messageLike" placeholder="请输入标题"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col style="width: 160px; float: left;">
+              <el-button  type="primary" @click="search('searchForm')">查询</el-button>
+              <el-button  @click="reset('searchForm')">重置</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+    </div>
+    <div class="main">
+      <!--按钮-->
+      <div class="btnbigbox">
+        <el-button type="primary" class="readbutton">
+          <span>≡ 全部标为已读 </span>
+        </el-button>
+        <el-button type="primary" class="addbutton" @click="addBtn">
+          <span> + 新建</span>
+        </el-button>
+      </div>
+      <!--按钮-->
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index="indexMethod"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="标题"
+          class-name="tableTile"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <i :class="scope.row.isRead ? 'read' : 'unread'"></i>
+            <em v-if="scope.row.isHighPriority" :class="scope.row.isRead ? 'read' : 'unread'">高优先级</em>
+            <span :class="scope.row.isRead ? 'read' : 'unread'">{{scope.row.name}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="temCreateUser"
+          label="提交人"
+          width="120"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="createDate"
+          label="提交时间"
+          width="160"
+          :formatter="formatDate"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="220">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleClickEvent(scope, '查看')">查看</el-button>
+            <el-button type="text" size="small" @click="handleClickEvent(scope, '编辑')">编辑</el-button>
+            <el-button type="text" size="small" @click="handleClickEvent(scope, '删除')">删除</el-button>
+           </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <select-user-dialog :showVisible="showUserVisible" @selected="selectedUser" @showDialog="showUserDialog"></select-user-dialog>
+  </div>
+</template>
+<script>
+import {dateFormat} from '@/assets/js/common'
+import selectUserDialog from '@/pages/system/users/search_user_radio'
+export default {
+  components: {
+    selectUserDialog
+  },
+  data () {
+    return {
+      active: 1,
+      searchForm: {
+        time: [],
+        customTime: '',
+        type: [],
+        user: ''
+      },
+      typeList: [
+        {
+          value: 1,
+          label: '工作沟通'
+        },
+        {
+          value: 2,
+          label: '工作协同'
+        },
+        {
+          value: 3,
+          label: '活动交流'
+        },
+        {
+          value: 4,
+          label: '请示汇报'
+        },
+        {
+          value: 5,
+          label: '资源协调'
+        },
+        {
+          value: 6,
+          label: '其他'
+        }
+      ],
+      // 发送日期
+      timeOption: [
+        {
+          name: '近一周',
+          code: 1
+        },
+        {
+          name: '近一月',
+          code: 2
+        },
+        {
+          name: '近三月',
+          code: 3
+        },
+        {
+          name: '近半年',
+          code: 4
+        },
+        {
+          name: '近一年',
+          code: 5
+        },
+        {
+          name: '自定义',
+          code: 6
+        }
+      ],
+      // 选择发送人
+      showUserVisible: false,
+      tableData: [
+        {
+          name: '工作沟通',
+          isRead: false,
+          isHighPriority: true
+        },
+        {
+          name: '工作沟通',
+          isRead: true,
+          isHighPriority: true
+        },
+        {
+          name: '工作沟通*******',
+          isRead: true,
+          isHighPriority: false
+        }
+      ],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10 // 每页展示条数
+    }
+  },
+  methods: {
+    // 顶部tab菜单
+    getList (type) {
+      switch (type) {
+        case '未读':
+          this.active = 1
+          break
+        case '我收到的':
+          this.active = 2
+          break
+        case '我发出的':
+          this.active = 3
+          break
+        case '草稿':
+          this.active = 4
+          break
+        default:
+          break
+      }
+    },
+    filterTime (value) {
+    },
+    // 选择人员弹框打开
+    showUserDialog () {
+      this.showUserVisible = !this.showUserVisible
+    },
+    selectedUser (obj) {
+      this.searchForm.user = obj.name
+    },
+    // 查询
+    search () {},
+    // 重置
+    reset () {},
+    // 搜索条件 点击不限
+    conditionCancel (label) {
+      switch (label) {
+        case '发送日期':
+          this.searchForm.time = []
+          break
+        case '协同类型':
+          this.searchForm.type = []
+          break
+        default:
+          break
+      }
+    },
+    // 新增
+    addBtn () {
+      this.$router.push({path: `/office/collaboration/add`})
+    },
+    // 表格序号
+    indexMethod (index) {
+      return index + (this.currentPage - 1) * 10 + 1
+    },
+    // 表格分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+    },
+    handleCurrentNext (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+    },
+    // 格式化时间
+    formatDate (row, col, cellValue) {
+      return cellValue ? dateFormat(cellValue, 'yyyy-MM-dd') : '---'
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    handleClickEvent (scope, type) {
+      switch (type) {
+        case '查看':
+          this.$router.push({path: `/office/collaboration/detail/${scope.row.objectId}`})
+          break
+        case '编辑':
+          this.$router.push({path: `/office/collaboration/update`})
+          break
+        default:
+          break
+      }
+    }
+  },
+  computed: {
+    isTimeSelectAll () {
+      return !this.searchForm.time.length
+    },
+    isTypeSelectAll () {
+      return !this.searchForm.type.length
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_collaboration{
+    .tabList{
+      width: 100%;
+      margin-top: 5px;
+      border-bottom: 1px solid #dcdfe6;
+      overflow: hidden;
+    }
+    .tabList ul{
+      overflow: hidden;
+    }
+    .tabList ul li{
+      float: left;
+      width: auto;
+      padding: 0 20px;
+      margin: 0 10px;
+      line-height: 32px;
+      cursor: pointer;
+    }
+    .tabList ul li:first-child{
+      margin-left: 0;
+    }
+    .tabList ul li.active{
+      color: #498ce9;
+      border-bottom: 2px solid #498ce9;
+    }
+    .tableTile i{
+      width: 10px;
+      height: 10px;
+      -webkit-border-radius: 50%;
+      -moz-border-radius: 50%;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .tableTile i.read{
+      background: #dddddd;
+    }
+    .tableTile i.unread{
+      background: #fe8d24;
+    }
+    .tableTile em{
+      display: inline-block;
+      width: 60px;
+      height: 23px;
+      font-style: normal;
+      text-align: center;
+      font-size: 12px;
+    }
+    .tableTile em.read{
+      background: #e8f2ff;
+      color: #a6bfee;
+    }
+    .tableTile em.unread{
+      background: #c9e0ff;
+      color: #1465d6;
+    }
+    .tableTile span.read{
+      color: #dddddd;
+    }
+    .tableTile span.unread{
+      color: #333333;
+    }
+  }
+</style>

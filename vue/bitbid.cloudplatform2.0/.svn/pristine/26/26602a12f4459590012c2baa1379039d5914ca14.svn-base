@@ -1,0 +1,111 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <div class="main">
+      <el-table
+        :data="tableData"
+        border
+        header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          align="center"
+          :index="computedIndex"
+          width="60">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          :formatter="simpleFormatData"
+          label="编号类型">
+        </el-table-column>
+        <el-table-column
+          prop="autoNumberDetail"
+          :formatter="simpleFormatData"
+          label="编号示例">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="160">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="page.total"
+        :page-size='page.pageSize'
+        :current-page.sync="page.currentPage"
+        @current-change="handlePage"
+        @next-click="handlePage">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+
+<script>
+import {autoNumber} from '@/api/system'
+export default {
+  data () {
+    return {
+      loading: false,
+      page: {
+        pageSize: 10,
+        pageNo: 0,
+        total: 0, // 总条数
+        currentPage: 1
+      },
+      queryModel: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        isDelete: 0,
+        excludeId: 4
+      },
+      tableData: []
+    }
+  },
+  methods: {
+    // 获取列表数据,稍作延迟
+    getTableData () {
+      this.loading = true
+      this.queryModel.pageNo = this.page.pageNo
+      this.queryModel.pageSize = this.page.pageSize
+      autoNumber.queryList(this.queryModel).then(res => {
+        this.loading = false
+        this.tableData = res.data.data.list
+        this.page.total = res.data.data.total
+      })
+    },
+    // 编辑
+    handleEdit (row) {
+      this.$router.push({path: `/system/auto-number/edit/${row.numberType}`})
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 序号计算
+    computedIndex (index) {
+      return index + (this.page.currentPage - 1) * this.page.pageSize + 1
+    },
+    // 表单分页
+    handlePage (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = (nowNum - 1) * this.page.pageSize
+      this.getTableData()
+    }
+  },
+  mounted () {
+    // 初始化
+    this.getTableData()
+  }
+}
+</script>
+
+<style scoped>
+  .main {
+    width: 100%;
+    padding: 0 24px;
+    box-sizing: border-box;
+  }
+</style>

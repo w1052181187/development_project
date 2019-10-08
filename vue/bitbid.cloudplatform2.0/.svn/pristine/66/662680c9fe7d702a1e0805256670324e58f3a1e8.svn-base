@@ -1,0 +1,183 @@
+<template>
+  <div class="cloudcontent" id="cloud_agencyContract">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" ref="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="代理合同编号："  prop="agencyContractCode">
+              <el-input v-model="updateForm.agencyContractCode"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="代理合同名称："  prop="agencyContractName">
+              <el-input v-model="updateForm.agencyContractName"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="委托单位："  prop="entrustEnterpriseName">
+              <el-input v-model="updateForm.entrustEnterpriseName" readonly>
+                <el-button slot="append" icon="el-icon-search" @click="showCustomerDialog"></el-button>
+              </el-input>
+            </el-form-item>
+            <customer-radio-dialog :showVisible="showCustomerVisible" @selected="selectedCustomer" @showDialog="showCustomerDialog"></customer-radio-dialog>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="委托单位联系人："  prop="entrustEnterpriseContacts">
+              <el-input v-model="updateForm.entrustEnterpriseContacts"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="委托单位联系电话："  prop="entrustEnterpriseContactsPhone">
+              <el-input v-model="updateForm.entrustEnterpriseContactsPhone"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="合同签订日期：" prop="contractSigningDate">
+              <el-date-picker
+                style="width:100%;"
+                v-model="updateForm.contractSigningDate"
+                type="datetime"
+                placeholder="选择日期时间"
+                value-format="timestamp">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="收费比例："  prop="chargeRatio">
+              <el-input v-model="updateForm.chargeRatio"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="负责人："  prop="userId">
+              <el-input v-model="updateForm.userId"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="负责部门："  prop="departmentId">
+              <el-input v-model="updateForm.departmentId"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="备注：">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="合同扫描件：">
+              <upload-file @uploadSuccess="uploadOtherSuccess" @deleteSuccess="deleteSuccess"
+                           :fileArrays="updateForm.fileInformationList"
+                           fileType="9"
+                           isImage="0">
+              </upload-file>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submitBtn('updateForm')">提交</el-button>
+          <el-button type="primary" @click="saveBtn('updateForm')">保存</el-button>
+          <el-button class="cancal" @click="$router.go(-1)">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import {agencyContract} from '@/api/knowledge'
+import uploadFile from '@/components/upload/publicFileUpload'
+import {validPhoneUser} from '@/assets/js/validate.js'
+import CustomerRadioDialog from '@/pages/customer/customer/dialog/radio_dialog.vue'
+export default {
+  components: {
+    editor,
+    uploadFile,
+    CustomerRadioDialog
+  },
+  data () {
+    return {
+      updateForm: {
+        fileInformationList: []
+      },
+      rules: {
+        agencyContractCode: {required: true, message: '请填写代理合同编号', trigger: 'blur'},
+        agencyContractName: {required: true, message: '请填写代理合同名称', trigger: 'blur'},
+        entrustEnterpriseName: {required: true, message: '请填写委托单位', trigger: 'change'},
+        contractSigningDate: {required: true, message: '请填写合同签订日期', trigger: 'change'},
+        entrustEnterpriseContactsPhone: { validator: validPhoneUser, trigger: 'blur' },
+        chargeRatio: { min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur' }
+      },
+      // 富文本
+      editread: false,
+      content: '',
+      // 客户管理选择弹框
+      showCustomerVisible: false
+    }
+  },
+  methods: {
+    // 上传附件
+    uploadOtherSuccess (file) {
+      this.updateForm.fileInformationList.push(file)
+    },
+    deleteSuccess (fileId) {
+      this.updateForm.fileInformationList = this.updateForm.fileInformationList.filter(item => item.relativePath !== fileId)
+    },
+    saveBtn (val) {
+      this.$refs[val].validate((vaild) => {
+        if (vaild) {
+          this.updateForm.status = 0
+          this.updateForm.contractContent = this.$refs.ueditor.getContent()
+          this.updateForm.contractSigningDate = new Date(this.updateForm.contractSigningDate).getTime()
+          agencyContract.save(this.updateForm).then(() => {
+            this.$router.push({path: `/knowledge/agencyContract`})
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    // 客户弹框打开/关闭
+    showCustomerDialog () {
+      this.showCustomerVisible = !this.showCustomerVisible
+    },
+    // 选择客户
+    selectedCustomer (obj) {
+      this.updateForm.customerManagementCode = obj.code
+      this.updateForm.entrustEnterpriseName = obj.name
+    },
+    submitBtn (val) {
+      this.$refs[val].validate((vaild) => {
+        if (vaild) {
+          this.updateForm.status = 4
+          this.updateForm.submitTime = new Date().getTime()
+          this.updateForm.contractContent = this.$refs.ueditor.getContent()
+          this.updateForm.contractSigningDate = new Date(this.updateForm.contractSigningDate).getTime()
+          agencyContract.save(this.updateForm).then(() => {
+            this.$router.push({path: `/knowledge/agencyContract`})
+          })
+        } else {
+          return false
+        }
+      })
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_agencyContract {
+    .el-select{
+      width: 100%;
+    }
+  }
+</style>

@@ -1,0 +1,357 @@
+<template>
+  <div class="cloudcontent" id="cloud_customer_bus">
+    <div class="topmain selectbox">
+      <el-form :model="queryModel" ref="queryModel" label-width="85px" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="商机阶段：" prop="dicStageCodes">
+              <el-checkbox-group v-model="queryModel.dicStageCodes" v-loading="dicOpportunityStageLoading">
+                <el-checkbox v-for="item in dicOpportunityStageList" :label="item.name" :key="item.code">{{item.name}}</el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="商机状态：" prop="includeStatus">
+              <el-checkbox-group v-model="queryModel.includeStatus">
+                <el-checkbox v-for="item in opportunityStates" :label="item.label" :key="item.label">{{item.name}}</el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col style="width: 320px; float: left;">
+            <el-form-item label="项目名称：" prop="messageLike">
+              <el-input class="search" v-model="queryModel.messageLike" placeholder="请输入项目名称">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col  style="width: 320px; float: left;">
+            <el-form-item label="客户名称：" prop="customerNameLike">
+              <el-input class="search" v-model="queryModel.customerNameLike" placeholder="请输入客户名称">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col style="width: 200px; float: left;">
+            <el-button  type="primary" class="search" @click="handlePage(1)">查询</el-button>
+            <el-button  @click="reset('queryModel')">重置</el-button>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+    <div class="main">
+      <div class="btnbigbox" v-if="$store.getters.permissions.includes('1040202')">
+        <div class="addrole">
+          <el-button type="primary" class="addbutton" @click="addBtn">
+            <span> + 新增</span>
+          </el-button>
+        </div>
+      </div>
+      <el-table
+        :data="tableData"
+        border
+        v-loading="loading"
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :computedIndex="computedIndex"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="projectName"
+          label="项目名称"
+          width="400"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="dicStageCode"
+          label="商机阶段"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="商机状态"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="scope.row.status === 0">未评估</span>
+            <span v-if="scope.row.status === 1">评估中</span>
+            <span v-if="scope.row.status === 2">跟进中</span>
+            <span v-if="scope.row.status === 3">赢单</span>
+            <span v-if="scope.row.status === 4">输单</span>
+            <span v-if="scope.row.status === 5">商机关闭</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="createDate"
+          label="登记时间"
+          :formatter="formatDate"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="chargePersonName"
+          label="负责人"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookBtn(scope)">查看</el-button>
+            <el-button type="text" size="small" @click="updateBtn(scope)" v-if="(scope.row.status === 0 || scope.row.status === 2) && $store.getters.permissions.includes('1040202')">修改</el-button>
+            <el-button type="text" size="small" @click="followBtn(scope)" v-if="scope.row.status < 3">跟进</el-button>
+            <!--<el-button type="text" size="small" @click="logoff(scope.row.objectId)"  v-if="scope.row.status === 0 && $store.getters.permissions.includes('1040202')">删除</el-button>-->
+            <!--更多弹框-->
+            <el-tooltip placement="bottom" effect="light" v-if="scope.row.status < 3 && scope.row.customerManagementCode">
+              <div slot="content">
+                <template>
+                  <el-button type="text" size="small" @click="analysisBtn(scope)">商机分析</el-button>
+                  <el-button type="text" size="small" @click="assessBtn(scope)" v-if="scope.row.status < 1">商机评估</el-button>
+                  <el-button type="text" size="small" @click="updateStatus(scope.row, 5)">商机关闭</el-button>
+                  <el-button type="text" size="small" @click="showDialog('dialogWinVisible', scope.row)">赢单</el-button>
+                  <el-button type="text" size="small" @click="updateStatus(scope.row, 4)">输单</el-button>
+                </template>
+              </div>
+              <el-button  type="text" size="small" v-if="$store.getters.permissions.includes('1040202')">更多</el-button>
+            </el-tooltip>
+            <!--更多弹框-->
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="page.total"
+        :page-size='page.pageSize'
+        :current-page.sync="page.currentPage"
+        @current-change="handlePage"
+        @next-click="handlePage">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <win-dialog :showVisible="dialogWinVisible" :dialogObj="dialogObj" :dicOpportunityStageList="dicOpportunityStageList" @saveSuccess="updateStatusForWin" @showDialog="showDialog"></win-dialog>
+    <lose-dialog :showVisible="dialogLoseVisible" @showDialog="showDialog"></lose-dialog>
+  </div>
+</template>
+<script>
+import { business } from '@/api/customer'
+import { dataDictionary } from '@/api/system'
+import {dateFormat} from '@/assets/js/common'
+import WinDialog from './dialog/win_dialog'
+import LoseDialog from './dialog/lose_dialog'
+
+export default {
+  components: {
+    WinDialog,
+    LoseDialog
+  },
+  data () {
+    return {
+      loading: false,
+      page: {
+        pageSize: 10,
+        pageNo: 0,
+        total: 0, // 总条数
+        currentPage: 1
+      },
+      queryModel: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        isDelete: 0,
+        messageLike: '',
+        customerNameLike: '',
+        dicStageCodes: [],
+        includeStatus: []
+      },
+      tableData: [],
+      // 商机阶段字典项Id
+      dicOpportunityStageId: 10005,
+      // 商机阶段集合
+      dicOpportunityStageList: [],
+      dicOpportunityStageLoading: true,
+      opportunityStates: [{
+        label: 0,
+        name: '未评估'
+      }, {
+        label: 1,
+        name: '评估中'
+      }, {
+        label: 2,
+        name: '跟进中'
+      }, {
+        label: 3,
+        name: '赢单'
+      }, {
+        label: 4,
+        name: '输单'
+      }, {
+        label: 5,
+        name: '商机关闭'
+      }],
+      dialogWinVisible: false,
+      dialogLoseVisible: false,
+      dialogObj: {}
+    }
+  },
+  methods: {
+    // 获取列表数据,稍作延迟
+    getTableData () {
+      this.loading = true
+      this.queryModel.pageNo = this.page.pageNo
+      this.queryModel.pageSize = this.page.pageSize
+      business.queryList(this.queryModel).then(res => {
+        setTimeout(() => {
+          this.loading = false
+          this.tableData = res.data.data.list
+          this.page.total = res.data.data.total
+        }, 300)
+      })
+    },
+    // 初始化字典项商机阶段
+    initOpportunityStage () {
+      let query = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        dictionaryDirectoryId: this.dicOpportunityStageId
+      }
+      dataDictionary.getDetailList(query).then(res => {
+        this.dicOpportunityStageLoading = false
+        this.dicOpportunityStageList = res.data.dictionaryDetails
+      })
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 格式化时间
+    formatDate (row, col, cellValue) {
+      return cellValue ? dateFormat(cellValue, 'yyyy-MM-dd') : '---'
+    },
+    // 添加
+    addBtn () {
+      this.$router.push({path: `/customerMan/business/add`})
+    },
+    // 查看
+    lookBtn (scope) {
+      this.$router.push({path: `/customerMan/business/detail/${scope.row.code}`})
+    },
+    // 修改
+    updateBtn (scope) {
+      this.$router.push({path: `/customerMan/business/update/${scope.row.objectId}`})
+    },
+    // 跟进
+    followBtn (scope) {
+      this.$router.push({path: `/customerMan/business/follow/${scope.row.code}/opportunity`})
+    },
+    // 商机分析
+    analysisBtn (scope) {
+      this.$router.push({path: `/customerMan/business/analysis/${scope.row.code}`})
+    },
+    // 商机评估
+    assessBtn (scope) {
+      this.$router.push({path: `/customerMan/business/assess/${scope.row.code}`})
+    },
+    // 删除
+    logoff (objectId) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        business.logoff(objectId).then(() => {
+          this.handlePage(1)
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 赢单/输单
+    showDialog (dialogType, obj) {
+      if (obj) {
+        this.dialogObj = obj
+      }
+      this[dialogType] = !this[dialogType]
+    },
+    // 赢单修改状态
+    updateStatusForWin () {
+      this.handlePage(1)
+    },
+    // 输单/关闭修改状态
+    updateStatus (obj, status) {
+      this.$confirm('确认要提交吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        obj.status = status
+        let updateStatusForm = {
+          record: obj
+        }
+        business.updateStatus(updateStatusForm).then(res => {
+          if (res.data.resCode === '0000') {
+            this.tableData.find(item => item.objectId === obj.objectId).status = status
+            if (status === 4) {
+              this.showDialog('dialogLoseVisible')
+            }
+          }
+        })
+      }).catch(() => {
+        this.loading = false
+        return false
+      })
+    },
+    // 序号计算
+    computedIndex (index) {
+      return index + (this.page.currentPage - 1) * this.page.pageSize + 1
+    },
+    // 表单分页
+    handlePage (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = (nowNum - 1) * this.page.pageSize
+      this.getTableData()
+    },
+    // 重置
+    reset (formName) {
+      this.$refs[formName].resetFields()
+      this.page.currentPage = 1
+      this.page.pageNo = 0
+      this.getTableData()
+    }
+  },
+  mounted () {
+    // 客户价值初始化
+    this.initOpportunityStage()
+    // 列表初始化
+    this.getTableData()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_customer_bus {
+    .tabletitles{
+      background:#f7f8fa!important;
+    }
+    .main{
+      margin: 0px;
+    }
+    .selectbox{
+      margin-bottom: 20px;
+    }
+    .el-form-item__label{
+      color: #333333;
+      text-align: left;
+    }
+    .el-form-item{
+      margin-bottom: 0px;
+    }
+  }
+  .el-tooltip__popper.is-light{
+    border: 1px solid #108cee!important;
+  }
+  .el-tooltip__popper.is-light[x-placement^=bottom] .popper__arrow{
+    border-bottom-color: #108cee;
+  }
+</style>

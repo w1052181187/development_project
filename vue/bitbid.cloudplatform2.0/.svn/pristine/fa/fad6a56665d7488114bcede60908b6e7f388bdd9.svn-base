@@ -1,0 +1,32 @@
+export default [
+  {
+    path: '/archives/transfer',
+    name: '档案移交',
+    meta: {
+      title: '档案移交',
+      active: '/archives/transfer',
+      permission: '1070301'
+    },
+    component: () => import(/* webpackChunkName: 'archives' */ '@/pages/archives/transfer/index')
+  },
+  {
+    path: '/archives/transfer/add/:objectId',
+    name: '新增档案移交',
+    meta: {
+      title: '新增档案移交',
+      active: '/archives/transfer',
+      permission: '1070202'
+    },
+    component: () => import(/* webpackChunkName: 'archives' */ '@/pages/archives/transfer/add')
+  },
+  {
+    path: '/archives/transfer/detail/:objectId',
+    name: '查看档案移交情况',
+    meta: {
+      title: '查看档案移交情况',
+      active: '/archives/transfer',
+      permission: '1070201'
+    },
+    component: () => import(/* webpackChunkName: 'archives' */ '@/pages/archives/transfer/detail')
+  }
+]

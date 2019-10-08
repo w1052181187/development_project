@@ -1,0 +1,276 @@
+<template>
+  <div class="viewdetails">
+    <div class="basic-info-title">档案基本信息</div>
+    <el-form :model="info" label-width="84px">
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="项目名称：">
+            <span>{{info.tenderProjectName}}</span>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="档案编号：">
+            <span>{{info.archivesCode}}</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="项目编号：">
+            <span>{{info.tenderProjectCode}}</span>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="档案管理员：">
+            <span>{{info.adminName}}</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="招标人：">
+            <span>{{info.bidderName}}</span>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="归档状态：">
+            <span v-if="Number(info.archivesStatus) === 0">待归档</span>
+            <span v-if="Number(info.archivesStatus) === 1">部分归档</span>
+            <span v-if="Number(info.archivesStatus) === 2">全部归档</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="移交人：">
+            <span>{{info.lastTransferName}}</span>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="归档时间：">
+            <span>{{info.filingTime}}</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="档案状态：">
+            <span>正常</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+    <!--<template v-if="isShowTransferRecord">-->
+      <!--<div class="basic-info-title">档案移交记录</div>-->
+      <!--<el-form>-->
+        <!--<el-table-->
+          <!--:data="info.archivesClassifyList"-->
+          <!--border-->
+          <!--style="width: 100%" header-cell-class-name="tableheader">-->
+          <!--<el-table-column-->
+            <!--width="50"-->
+            <!--type="index"-->
+            <!--align="center"-->
+            <!--label="序号">-->
+          <!--</el-table-column>-->
+          <!--<el-table-column-->
+            <!--prop="name"-->
+            <!--label="档案目录"-->
+            <!--align="center"-->
+            <!--show-overflow-tooltip>-->
+          <!--</el-table-column>-->
+          <!--<el-table-column-->
+            <!--prop="transferStatus"-->
+            <!--label="移交状态"-->
+            <!--align="center"-->
+            <!--width="100"-->
+            <!--show-overflow-tooltip>-->
+            <!--<template slot-scope="scope">-->
+              <!--<span v-if="scope.row.transferStatus === 0">待移交</span>-->
+              <!--<span v-if="scope.row.transferStatus === 1">已接收</span>-->
+              <!--<span v-if="scope.row.transferStatus === 2">已移交</span>-->
+              <!--<span v-if="scope.row.transferStatus === 3">已退回</span>-->
+            <!--</template>-->
+          <!--</el-table-column>-->
+          <!--<el-table-column-->
+            <!--prop="lastTransferName"-->
+            <!--label="最新移交人"-->
+            <!--align="center"-->
+            <!--width="120"-->
+            <!--show-overflow-tooltip>-->
+          <!--</el-table-column>-->
+          <!--<el-table-column-->
+            <!--prop="lastTransferTime"-->
+            <!--label="最新移交时间"-->
+            <!--align="center"-->
+            <!--width="160"-->
+            <!--show-overflow-tooltip>-->
+          <!--</el-table-column>-->
+          <!--<el-table-column-->
+            <!--prop="status"-->
+            <!--label="归档状态"-->
+            <!--align="center"-->
+            <!--width="100"-->
+            <!--show-overflow-tooltip>-->
+            <!--<template slot-scope="scope">-->
+              <!--<span v-if="scope.row.transferStatus === 0"></span>-->
+              <!--<template v-else>-->
+                <!--<span v-if="scope.row.status === 0">未归档</span>-->
+                <!--<span v-if="scope.row.status === 1" class="transferStatus-accept">已归档</span>-->
+              <!--</template>-->
+            <!--</template>-->
+          <!--</el-table-column>-->
+          <!--<el-table-column-->
+            <!--prop="filingTime"-->
+            <!--label="归档时间"-->
+            <!--align="center"-->
+            <!--width="160"-->
+            <!--show-overflow-tooltip>-->
+          <!--</el-table-column>-->
+        <!--</el-table>-->
+      <!--</el-form>-->
+    <!--</template>-->
+    <div class="basic-info-title">实物档案信息</div>
+    <el-form :model="info" label-width="70px">
+      <el-form-item label="档案位置：">
+        <span>{{info.detailedLocation}}</span>
+      </el-form-item>
+      <el-form-item label="实物编号：">
+        <span>{{info.physicalNumber}}</span>
+      </el-form-item>
+      <!--<el-table-->
+        <!--:data="info.archivesClassifyList"-->
+        <!--border-->
+        <!--style="width: 100%" header-cell-class-name="tableheader">-->
+        <!--<el-table-column-->
+          <!--width="50"-->
+          <!--type="index"-->
+          <!--align="center"-->
+          <!--label="序号">-->
+        <!--</el-table-column>-->
+        <!--<el-table-column-->
+          <!--prop="name"-->
+          <!--label="档案目录"-->
+          <!--align="center"-->
+          <!--width="200"-->
+          <!--show-overflow-tooltip>-->
+        <!--</el-table-column>-->
+        <!--<el-table-column-->
+          <!--label="详细位置描述"-->
+          <!--prop="locationDescription"-->
+          <!--align="center"-->
+          <!--show-overflow-tooltip>-->
+        <!--</el-table-column>-->
+      <!--</el-table>-->
+    </el-form>
+    <div class="basic-info-title">查阅记录</div>
+    <el-table
+      :data="readRecordList"
+      border
+      style="width: 100%" header-cell-class-name="tableheader">
+      <el-table-column
+        width="50"
+        type="index"
+        :index='dataIndex'
+        align="center"
+        label="序号">
+      </el-table-column>
+      <el-table-column
+        prop="departmentName"
+        label="部门"
+        align="center"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="userName"
+        label="人员"
+        align="center"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="readDate"
+        label="查阅时间"
+        align="center"
+        show-overflow-tooltip>
+      </el-table-column>
+    </el-table>
+    <el-pagination
+      background
+      layout="prev, pager, next"
+      :total="total"
+      :page-size='pageSize'
+      :current-page.sync="currentPage"
+      @current-change="handleCurrentChange">
+    </el-pagination>
+  </div>
+</template>
+<script>
+import {readRecord} from '@/api/archives/management/readRecord'
+
+export default {
+  props: {
+    info: [Object],
+    isShowTransferRecord: [Boolean]
+  },
+  components: {
+  },
+  data () {
+    return {
+      form: {},
+      // 档案移交记录
+      recordData: [],
+      positionForm: {},
+      // 实物信息
+      positionData: [
+        {}
+      ],
+      readRecordList: [],
+      // 查阅记录
+      lookData: [
+        {}
+      ],
+      currentPage: 1,
+      pageNo: 0,
+      total: null,
+      pageSize: 10
+    }
+  },
+  methods: {
+    dataIndex (index) {
+      return index + (this.currentPage - 1) * this.pageSize + 1
+    },
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getLookRecord()
+    },
+    // 获取查阅记录
+    getLookRecord () {
+      if (!this.info) {
+        return
+      }
+      readRecord.getRecordList({
+        relatedCode: this.info.code,
+        pageNo: this.pageNo,
+        pageSize: this.pageSize
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.readRecordList = res.data.readRecordList.list
+          this.total = res.data.readRecordList.total
+        }
+      })
+    }
+  },
+  watch: {
+    info () {
+      this.getLookRecord()
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #file-end {
+  }
+</style>

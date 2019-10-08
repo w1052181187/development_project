@@ -1,0 +1,234 @@
+<template>
+  <div class="cloudcontent" id="cloud_updatesection">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" ref= "updateForm" :validate-on-rule-change="true" v-loading="loading">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{updateForm.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <span>{{updateForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段名称："  prop="bidSectionName">
+              <el-input v-model="updateForm.bidSectionName"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段编号："  prop="bidSectionCode">
+              <el-input v-model="updateForm.bidSectionCode"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段类型："  prop="selectBidsTypeOptions">
+              <el-cascader class=""
+                           expand-trigger="hover"
+                           :options="bidsTypeOptions"
+                           v-model="updateForm.selectBidsTypeOptions"
+                           @change="handleCityChange">
+              </el-cascader>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段合同估算价(元)：">
+              <el-input v-model="updateForm.contractReckonPrice"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标文件售价(元)：" prop="docGetFee">
+              <el-input v-model="updateForm.docGetFee"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box" >
+            <el-form-item label="标段内容：" prop="sectionContent" ref="sectionContent">
+              <editor ref="sectionEditor" class="ueditor" :editread="editread" :content="updateForm.sectionContent" v-model="updateForm.sectionContent"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="投标人资格条件：" ref="bidderContent">
+              <editor ref="bidderEditor" class="ueditor" :editread="editread" :content="bidderContent" v-model="updateForm.bidderContent"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="handleClickEvent('updateForm','submit')">提交</el-button>
+          <el-button type="primary" @click="handleClickEvent('updateForm','save')">保存</el-button>
+          <el-button class="cancal" @click="handleClickEvent('updateForm','cancel')">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import * as bidsType from '@/assets/js/constants'
+import {bidSection} from '@/api/project'
+import {validateMoney} from '@/assets/js/validate'
+export default {
+  components: {
+    editor
+  },
+  data () {
+    // 验证数字
+    let validNum = (rule, value, callback) => {
+      if (!value) {
+        callback()
+      } else if (!validateMoney(value)) {
+        callback(new Error('请输入数字且最多两位小数！'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      updateForm: {
+        tenderProjectName: '',
+        selectBidsTypeOptions: []
+      },
+      rules: {
+        bidSectionName: [
+          { required: true, message: '标段名称不能为空', trigger: ['blur', 'change'] }
+        ],
+        bidSectionCode: [
+          { required: true, message: '标段编号不能为空', trigger: ['blur', 'change'] }
+        ],
+        selectBidsTypeOptions: [
+          { required: true, message: '请选择标段类型', trigger: ['blur', 'change'] }
+        ],
+        contractReckonPrice: [
+          { required: true, message: '标段合同估算价不能为空', trigger: ['blur', 'change'] },
+          {validator: validNum, trigger: ['blur', 'change']}
+        ],
+        docGetFee: [
+          { required: true, message: '招标文件售价不能为空', trigger: ['blur', 'change'] },
+          {validator: validNum, trigger: ['blur', 'change']}
+        ],
+        sectionContent: [
+          {required: true, message: '标段内容不能为空', trigger: ['blur', 'change']}
+        ],
+        bidderContent: [
+          { required: true, message: '投标人资格条件不能为空', trigger: ['blur', 'change'] }
+        ]
+      },
+      // 标段类型
+      bidsTypeOptions: bidsType.bidsType,
+      value: '',
+      // 富文本
+      editread: false,
+      sectionContent: '',
+      bidderContent: '',
+      loading: false
+    }
+  },
+  watch: {
+    '$route': 'getChooseBidSectionInfo'
+  },
+  created () {
+    this.getChooseBidSectionInfo()
+  },
+  methods: {
+    /** 获取当前选择的标段信息 */
+    getChooseBidSectionInfo () {
+      bidSection.getOne(this.$route.query.code).then((res) => {
+        if (res.data.bidSection) {
+          this.updateForm = res.data.bidSection
+          // 获取文本编辑器的内容
+          this.$refs.sectionEditor.setContent(this.sectionContent = this.updateForm.bidSectionContent)
+          this.$refs.bidderEditor.setContent(this.bidderContent = this.updateForm.bidQualification)
+          // 获取标段（包）分类代码
+          let list = this.getClassifyList(this.updateForm.tenderProjectClassifyCode)
+          if (list.length > 0) {
+            this.updateForm.selectBidsTypeOptions = [list[0], list[1], list[2], list[4]]
+          }
+        }
+      })
+    },
+    /** 获取标段分类代码的集合 */
+    getClassifyList (tenderProjectClassifyCode) {
+      let list = tenderProjectClassifyCode.split('-')
+      return list
+    },
+    /* 按钮点击事件：提交、保存、取消 */
+    handleClickEvent (formName, type) {
+      // this.validContent()
+      if (Object.is(type, 'submit') || Object.is(type, 'save')) {
+        if (!this.$refs.sectionEditor.getContent()) {
+          this.$message.warning('标段内容需要进行输入！')
+          return false
+        }
+        this.updateForm.sectionContent = this.$refs.sectionEditor.getContent()
+        this.updateForm.bidderContent = this.$refs.bidderEditor.getContent()
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.loading = true
+            // 获取文本编辑器中的内容
+            if (this.$refs.sectionEditor) {
+              this.updateForm.bidSectionContent = this.$refs.sectionEditor.getContent()
+            }
+            if (this.$refs.bidderEditor) {
+              this.updateForm.bidQualification = this.$refs.bidderEditor.getContent()
+            }
+            // 根据type设置当前招标项目的状态
+            if (Object.is(type, 'submit')) {
+              this.updateForm.auditStatus = 4 // 暂时不考虑审批
+              this.updateForm.flowStatus = 5 // 暂时不考虑审批
+            } else {
+              this.updateForm.auditStatus = 0
+              this.updateForm.flowStatus = 1 // 未开始
+            }
+            // 设置关联招标项目的code信息
+            // this.updateForm.tenderSystemCode = this.$route.query.code
+            bidSection.save(this.updateForm).then((res) => {
+              this.loading = false
+              if (res.data.resCode === '0000') {
+                this.$store.commit('delete_tabs', this.$route.fullPath)
+                this.$router.push({path: '/project/projectProcess/project', query: {code: this.updateForm.tenderSystemCode}})
+              }
+            })
+          } else {
+            return false
+          }
+        })
+      } else if (Object.is(type, 'cancel')) {
+        this.$store.commit('delete_tabs', this.$route.fullPath)
+        this.$router.push({path: '/project/projectProcess/project', query: {code: this.updateForm.tenderSystemCode}})
+      }
+    },
+    /** 标段类型的选择 */
+    handleCityChange () {
+      if (this.updateForm.selectBidsTypeOptions) {
+        let str = ''
+        for (let i = 0; i < this.updateForm.selectBidsTypeOptions.length; i++) {
+          if (i === this.updateForm.selectBidsTypeOptions.length - 1) {
+            str += this.updateForm.selectBidsTypeOptions[i]
+          } else {
+            str += this.updateForm.selectBidsTypeOptions[i]
+            str += '-'
+          }
+        }
+        this.updateForm.tenderProjectClassifyCode = str
+      }
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_updatesection {
+    .el-select{
+      width: 100%;
+    }
+  }
+</style>

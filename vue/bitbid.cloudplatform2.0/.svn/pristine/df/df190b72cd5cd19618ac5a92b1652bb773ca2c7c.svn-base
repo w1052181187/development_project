@@ -1,0 +1,200 @@
+<template>
+  <div id="zztprequalificationDoc">
+    <!--资格预审文件-->
+    <div class="file-type-name">
+      <span>资格预审文件</span>
+    </div>
+    <el-form :model="form" class="prequalification-info">
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="标书售价（元）：">
+            <span>{{form.tenderPrice}}</span>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="投标保证金金额：">
+            <span>{{form.tenderBondPrice}}</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="发售开始时间：">
+            <span>{{form.sellStartDate}}</span>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="发售截止时间：">
+            <span>{{form.sellEndDate}}</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <el-form-item label="开标时间：">
+            <span>{{form.bidOpenDate}}</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+    <!--资格预审文件-->
+    <div class="file-type-add" @click="handleEdit" v-if="canEdit">
+      <span>编辑</span>
+    </div>
+    <fileUpload class="file-type-enclosure" :canEdit="canEdit" :file-list="fileList" :object-id="objectId" :file-type='9' file-name='资格预审文件'></fileUpload>
+    <fileUpload class="file-type-enclosure" :canEdit="canEdit" :file-list="otherFileList" :object-id="objectId" :file-type='4' file-name='其他'></fileUpload>
+
+    <el-dialog :before-close='close' :title="title" :visible.sync="dialogVisible">
+      <el-form :model="dialogForm" :rules="rules"  ref="dialogForm" :label-width="formLabelWidth">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标书售价（元）：" prop="tenderPrice">
+              <el-input v-model="dialogForm.tenderPrice"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="投标保证金金额：" prop="tenderBondPrice">
+              <el-input v-model="dialogForm.tenderBondPrice"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="发售开始时间：">
+              <el-date-picker
+                v-model="dialogForm.sellStartDate"
+                type="date"
+                :picker-options="pickerOptions"
+                value-format="yyyy-MM-dd"
+                placeholder="选择日期">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="发售截止时间：">
+              <el-date-picker
+                v-model="dialogForm.sellEndDate"
+                type="date"
+                :picker-options="pickerOptions"
+                value-format="yyyy-MM-dd"
+                placeholder="选择日期">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="开标时间：">
+              <el-date-picker
+                v-model="dialogForm.bidOpenDate"
+                type="datetime"
+                :picker-options="pickerOptions"
+                value-format="yyyy-MM-dd"
+                placeholder="选择日期">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button class="cancal" @click="close">取 消</el-button>
+        <el-button type="primary" @click="submitForm('dialogForm')">确认</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import { validMoney } from '@/assets/js/validate'
+import {archivesFile} from '@/api/archives'
+export default {
+  components: {
+    fileUpload: resolve => require(['./fileUpload'], resolve)
+  },
+  data () {
+    return {
+      title: '资格预审文件',
+      // 资格预审文件信息
+      form: {
+        tenderPrice: '',
+        tenderBondPrice: '',
+        sellStartDate: '',
+        sellEndDate: '',
+        bidOpenDate: ''
+      },
+      // 日期选择
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() < Date.now() - 8.64e7
+        }
+      },
+      // 提交时验证
+      rules: {
+        tenderPrice: [
+          { min: 1, max: 100, message: '请输入标书售价', trigger: ['blur', 'change'] },
+          { validator: validMoney, trigger: ['blur', 'change'] }
+        ],
+        tenderBondPrice: [
+          { min: 1, max: 100, message: '请输入投标保证金', trigger: ['blur', 'change'] },
+          { validator: validMoney, trigger: ['blur', 'change'] }
+        ]
+      },
+      formLabelWidth: '120px',
+      fileList: [],
+      otherFileList: [],
+      dialogVisible: false,
+      dialogForm: {
+        tenderPrice: '',
+        tenderBondPrice: '',
+        sellStartDate: '',
+        sellEndDate: '',
+        bidOpenDate: ''
+      }
+    }
+  },
+  watch: {
+    item (value) {
+      this.from = value.archivesProjectExpands
+      value.refArchivesFileInformationList.map(file => {
+        if (file.fileType === 9) {
+          this.fileList.push(file)
+        } else if (file.fileType === 4) {
+          this.otherFileList.push(file)
+        }
+      })
+    },
+    objectId () {}
+  },
+  props: ['item', 'canEdit', 'objectId'],
+  methods: {
+    // 编辑
+    handleEdit () {
+      this.dialogVisible = true
+    },
+    close () {
+      this.dialogVisible = false
+      this.$refs.dialogForm.resetFields()
+    },
+    // 提交
+    submitForm (formName) {
+      this.$refs[formName].validate((valid) => {
+        this.dialogForm.objectId = this.objectId
+        archivesFile.savaOrUpdateArchivesProjectExpands(this.dialogForm).then((res) => {
+        })
+        if (valid) {
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #zztprequalificationDoc{
+    .prequalification-info {
+      margin-top: 20px;
+    }
+  }
+</style>

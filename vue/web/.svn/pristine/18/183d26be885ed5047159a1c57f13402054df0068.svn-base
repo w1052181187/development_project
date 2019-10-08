@@ -1,0 +1,211 @@
+<template>
+  <div id="ckresultannocheck" class="smaincontent">
+    <div class="headertitle">
+      <!--面包屑-->
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/main' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item>公告审核</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/annoapprove/ckresultanno' }">中标公告审核</el-breadcrumb-item>
+        <el-breadcrumb-item>审核中标公告</el-breadcrumb-item>
+      </el-breadcrumb>
+      <!--面包屑-->
+      <div class="returnboxbig">
+        <template>
+          <el-button @click="close">返回</el-button>
+        </template>
+      </div>
+    </div>
+    <div class="contentbigbox">
+      <template>
+        <el-form :model="winBidForm" ref="winBidForm">
+          <table class="detailtable">
+            <tr>
+              <td>公告名称：</td>
+              <td  colspan="2">
+                <template>
+                  <span>{{winBidForm.noticeName}}</span>
+                </template>
+              </td>
+              <td>公告性质：</td>
+              <td  colspan="2">
+                <span v-if="winBidForm.noticeNature === '1'">正常公示</span>
+                <span v-if="winBidForm.noticeNature === '2'">更正公示</span>
+                <span v-if="winBidForm.noticeNature === '9'">其他</span>
+              </td>
+            </tr>
+            <tr>
+              <td>招标项目编号：</td>
+              <td  colspan="2">
+                <span>{{winBidForm.tenderProjectCode}}</span>
+              </td>
+              <td>招标项目名称：</td>
+              <td  colspan="2">
+                <span>{{winBidForm.tenderExpandsInfo.tenderProjectName}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>标段（包）编号：</td>
+              <td colspan="2">
+                <span>{{winBidForm.bidSectionCode}}</span>
+              </td>
+              <td>中标人名称：</td>
+              <td  colspan="2">
+                <span>{{winBidForm.winBidderName}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>中标价格：</td>
+              <td colspan="2">
+                <span>{{winBidForm.bidAmount}}</span>
+              </td>
+              <td>其他类型中标价：</td>
+              <td  colspan="2">
+                <span>{{winBidForm.otherBidPrice}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>中标公告编号：</td>
+              <td colspan="5">
+                <span>{{winBidForm.tenderExpandsInfo.bulletinCode}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>公告发布时间：</td>
+              <td colspan="2">
+                <span>{{winBidForm.noticeSendTime}}</span>
+              </td>
+              <td>是否接受联合体：</td>
+              <td  colspan="2">
+                <span v-if="winBidForm.syndicatedFlag === 1">是</span>
+                <span v-if="winBidForm.syndicatedFlag === 0">否</span>
+              </td>
+            </tr>
+            <tr>
+              <td>公告内容：</td>
+              <td  colspan="5">
+                <template >
+                  <editor ref="ueditor" class="ueditor" :editread="true"></editor>
+                </template>
+              </td>
+            </tr>
+            <tr v-if="fileObject !== null">
+              <td>公示附件：</td>
+              <td  colspan="5">
+                <filedownload :fileObject="fileObject"></filedownload>
+              </td>
+            </tr>
+            <approve @approveForm="approveForm" ref="approveForm"></approve>
+          </table>
+          <el-form-item class="submit-radio">
+            <el-button type="primary" @click="submitForm()">提交</el-button>
+            <el-button class="cancel" @click="close">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </template>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import filedownload from '@/components/file-download'
+import approve from '@/components/approve.vue'
+import {resultAnno} from '@/api'
+export default {
+  components: {
+    editor,
+    filedownload,
+    approve
+  },
+  data () {
+    return {
+
+      fileObject: {},
+      winBidForm: {
+        tenderExpandsInfo: {}
+      },
+      status: null,
+      childForm: {}
+    }
+  },
+  methods: {
+    detail () {
+      resultAnno.detail(this.$route.query.objectId).then((res) => {
+        this.winBidForm = res.data.winBidBulletin
+        this.fileObject = res.data.winBidBulletin.fileInformations.length === 0 ? null : res.data.winBidBulletin.fileInformations[0]
+        return this.winBidForm
+      }).then((result) => {
+        this.$refs.ueditor.setContent(result.noticeContent)
+      })
+    },
+    close () {
+      this.$router.push({path: '/annoapprove/ckresultanno', query: {status: this.status}})
+    },
+    approveForm (formV) {
+      this.childForm = formV
+      this.childForm.relatedCode = this.winBidForm.code
+    },
+    submitForm () {
+      // 必填验证
+      this.$refs.approveForm.handleValidate()
+      if (this.childForm.auditStatus === 0 && !this.childForm.opinion.trim()) {
+        this.$message({
+          message: '请填写审批意见',
+          type: 'warning'
+        })
+        return false
+      }
+      // 提交数据
+      this.winBidForm.recordOfApprovals = []
+      this.winBidForm.recordOfApprovals.push(this.childForm)
+      // 同步审批结果
+      this.winBidForm.status = this.childForm.auditStatus === 1 ? 2 : 3
+      resultAnno.approve(this.winBidForm).then((res) => {
+        this.$router.push({path: '/annoapprove/ckresultanno', query: {status: this.status}})
+      })
+    }
+  },
+  mounted () {
+    this.status = this.$route.query.status ? this.$route.query.status : null
+    this.detail()
+  }
+}
+</script>
+<style lang="less">
+  #ckresultannocheck{
+    .select {
+      float: left;
+      width: 100%;
+    }
+    .el-cascader{
+      float: left;
+      width: 100%;
+    }
+    .el-date-editor{
+      float: left;
+      width: 100%;
+    }
+    .el-date-editor.el-input, .el-date-editor.el-input__inner{
+      width: 100%;
+    }
+    .expandtable{
+      margin-bottom: 10px;
+    }
+    .expandtable  .cell{
+      height: 40px;
+      line-height: 40px;
+    }
+    .expandtable  .cell span{
+      color: #66b1ff;
+    }
+    .el-radio{
+      float: left;
+      line-height: 40px;
+    }
+    span.el-radio__input,span.el-radio__label{
+      float: none;
+    }
+    .el-textarea__inner{
+      height: 120px;
+    }
+  }
+</style>

@@ -1,0 +1,253 @@
+<template>
+  <div class="cloudcontent" id="cloud_processedit">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" ref="updateForm" :validate-on-rule-change="true" :label-width="formLabelWidth">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <el-input v-model="bidSection.tenderProjectCode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <el-input v-model="bidSection.tenderProjectName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段编号：">
+              <el-input v-model="bidSection.bidSectionCode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段名称：">
+              <el-input v-model="bidSection.bidSectionName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标结果通知书标题："  prop="content">
+              <el-input v-model="updateForm.content"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="中标人："  prop="successfulBidders">
+              <el-input v-model="updateForm.successfulBidders" readonly>
+                <el-button slot="append" size="mini" @click="btnChoose(1, 0)">选择</el-button>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="未中标人：">
+              <el-button class="addbtn" @click="addEvaluateBtn">+ 新增</el-button>
+              <el-table
+                :data="updateForm.unsuccessfulBidderList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  prop="bidderName"
+                  label="投标人名称"
+                  show-overflow-tooltip>
+                  <template slot-scope='scope'>
+                    <el-input v-model="scope.row.bidderName" readonly>
+                      <el-button slot="append" size="mini" @click="btnChoose(2, scope.$index)">选择</el-button>
+                    </el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="操作" align="center" width="100">
+                  <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="delEvaluateBtn(scope.$index)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="招标结果附件：">
+              <upload-file @uploadSuccess="uploadOtherSuccess" @deleteSuccess="deleteSuccess"
+                           :fileArrays="updateForm.fileInformationList"
+                           fileType="9"
+                           isImage="0">
+              </upload-file>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit('updateForm', 1)" :loading="isSubmiting">提交</el-button>
+          <el-button type="primary" @click="submit('updateForm', 0)" :loading="isSaving">保存</el-button>
+          <el-button class="cancal" @click="close">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+    <bidder-dialog :tenderSystemCode="tenderSystemCode" :showVisible="showBidderVisible" @selected="selectedBidder" @showDialog="showBidderDialog"></bidder-dialog>
+  </div>
+</template>
+<script>
+import uploadFile from '@/components/upload/publicFileUpload'
+import {resultInfo, bidSection} from '@/api/project'
+import bidderDialog from '@/pages/project/projectProcess/common/bidder_dialog.vue'
+export default {
+  components: {
+    uploadFile,
+    bidderDialog
+  },
+  data () {
+    return {
+      tenderSystemCode: this.$route.query.tenderSystemCode,
+      sectionSystemCode: this.$route.query.sectionSystemCode,
+      isSaving: false,
+      isSubmiting: false,
+      updateForm: {
+        successfulBidders: '',
+        fileInformationList: [],
+        unsuccessfulBidderList: []
+      },
+      bidSection: [],
+      rules: {
+        successfulBidders: {required: true, message: '请填写中标人', trigger: ['blur', 'change']},
+        content: {required: true, message: '请填写中标结果通知书标题', trigger: ['blur', 'change']}
+      },
+      tableData: [],
+      formLabelWidth: '160px',
+      showBidderVisible: false,
+      flag: null,
+      index: 0
+    }
+  },
+  methods: {
+    /**
+     * 增加未投标人
+     */
+    addEvaluateBtn () {
+      this.updateForm.unsuccessfulBidderList.push({})
+    },
+    delEvaluateBtn (index) {
+      this.updateForm.unsuccessfulBidderList.splice(index, 1)
+    },
+    // 上传附件
+    uploadOtherSuccess (file) {
+      this.updateForm.fileInformationList.push(file)
+    },
+    deleteSuccess (fileId) {
+      this.updateForm.fileInformationList = this.updateForm.fileInformationList.filter(item => item.relativePath !== fileId)
+    },
+    // 提交/保存
+    submit (form, status) {
+      if (this.updateForm.unsuccessfulBidderList && this.updateForm.unsuccessfulBidderList.length > 0) {
+        let continueFlag = true
+        this.updateForm.unsuccessfulBidderList.map(item => {
+          if (!item.bidderName) {
+            continueFlag = false
+            return false
+          }
+        })
+        if (!continueFlag) {
+          this.$message({
+            message: '请填写未中标人！',
+            type: 'warning'
+          })
+          return
+        }
+      }
+      this.$refs[form].validate((vaild) => {
+        if (vaild) {
+          let msg = Object.is(status, 1) ? '提交后数据将锁定，不允许修改，确认要提交吗?' : '确定要保存吗?'
+          this.$confirm(msg, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            beforeClose: (action, instance, done) => {
+              done()
+            }
+          }).then(() => {
+            if (Object.is(status, 0)) {
+              this.isSaving = true
+              this.updateForm.auditStatus = 0
+            } else if (Object.is(status, 1)) {
+              this.isSubmiting = true
+              this.updateForm.auditStatus = 4
+              this.updateForm.submitTime = new Date().getTime()
+            }
+            this.updateForm.tenderSystemCode = this.tenderSystemCode
+            this.updateForm.sectionSystemCode = this.sectionSystemCode
+            this.updateForm.type = 6
+            let unsuccessfulBidders = ''
+            this.updateForm.unsuccessfulBidderList.map(item => {
+              unsuccessfulBidders = unsuccessfulBidders + item.bidderName + ';'
+            })
+            this.updateForm.unsuccessfulBidders = unsuccessfulBidders.substring(0, unsuccessfulBidders.length - 1)
+            resultInfo.update(this.updateForm).then((res) => {
+              this.isSaving = false
+              this.isSubmiting = false
+              if (res.data.resCode === '0000') {
+                this.close()
+              }
+            })
+          }).catch(() => {
+            this.isSaving = false
+            this.isSubmiting = false
+            return false
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    // 取消
+    close () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    },
+    // 查询当前标段信息
+    getBidSection () {
+      bidSection.getOne(this.sectionSystemCode).then(res => {
+        this.bidSection = res.data.bidSection
+      })
+    },
+    init () {
+      this.getBidSection()
+    },
+    // 选择投标人
+    btnChoose (flag, index) {
+      this.flag = flag
+      this.index = index
+      this.showBidderVisible = true
+    },
+    // 选择投标人弹窗 打开/关闭
+    showBidderDialog () {
+      this.showBidderVisible = !this.showBidderVisible
+    },
+    // 已选择投标人信息
+    selectedBidder (obj) {
+      if (this.flag === 1) {
+        this.updateForm.successfulBidders = obj.name
+      } else if (this.flag === 2) {
+        this.$set(this.updateForm.unsuccessfulBidderList[this.index], 'bidderName', obj.name)
+      }
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_processedit{
+    .addbtn{
+      border: 1px solid #3f63f6;
+      height: 32px;
+      padding: 7px 12px;
+      margin-bottom: 12px;
+    }
+  }
+</style>

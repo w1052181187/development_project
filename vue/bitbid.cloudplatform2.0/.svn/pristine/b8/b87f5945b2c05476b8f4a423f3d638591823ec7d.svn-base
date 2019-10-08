@@ -1,0 +1,325 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" ref= "updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目名称："  prop="tenderProjectName">
+              <el-input v-model="updateForm.tenderProjectName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目编号："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段名称："  prop="bidSectionName">
+              <el-input v-model="updateForm.currentBidSectionName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段编号："  prop="bidSectionCode">
+              <el-input v-model="updateForm.currentBidSectionCode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="更正公告名称："  prop="title">
+              <el-input v-model="updateForm.title"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="递交投标文件方法："  prop="bidDocReferMethod">
+              <el-input v-model="updateForm.bidDocReferMethod"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row v-if="updateForm.type === 1">
+          <el-col :span="12">
+            <el-form-item label="开标时间：" prop="bidOpeningTime">
+              <el-date-picker
+                v-model="updateForm.bidOpeningTime"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                type="datetime"
+                start-placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="开标地点：" prop="bidOpeningAddress">
+              <el-input v-model="updateForm.bidOpeningAddress"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row v-if="updateForm.type === 2">
+          <el-col :span="12">
+            <el-form-item label="资格预审会时间：" prop="prequalificationTime">
+              <el-date-picker
+                v-model="updateForm.prequalificationTime"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                type="datetime"
+                start-placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="资格预审会地点：" prop="prequalificationAddress">
+              <el-input v-model="updateForm.prequalificationAddress"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="公告链接：">
+              <el-input v-model="updateForm.bulletinUrl"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="发布网站：">
+              <el-input v-model="updateForm.publishUrl"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="标段信息："  class="bitianicon">
+              <el-table
+                :data="updateForm.bidSectionList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader"
+                @selection-change="handleSelectionChange">
+                <el-table-column
+                  type="selection"
+                  width="50">
+                </el-table-column>
+                <el-table-column
+                  prop="bidSectionCode"
+                  label="标段编号"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  prop="bidSectionName"
+                  label="标段名称"
+                  show-overflow-tooltip>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="公告内容：">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="附件：">
+              <upload-file @uploadSuccess="uploadOtherSuccess" @deleteSuccess="deleteSuccess"
+                           :fileArrays="updateForm.fileInformationList"
+                           fileType="9"
+                           isImage="0">
+              </upload-file>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="handleClickEvent('updateForm','save')" :loading="loading">保存</el-button>
+          <el-button type="primary" class="submitBtn" @click="handleClickEvent('updateForm','submit')" :loading="loading">提交</el-button>
+          <el-button class="cancal" @click="handleClickEvent('updateForm','cancel')">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import uploadFile from '@/components/upload/publicFileUpload'
+import {bulletinInfo} from '@/api/project/index'
+export default {
+  components: {
+    editor,
+    uploadFile
+  },
+  name: '',
+  data () {
+    return {
+      loading: false,
+      updateForm: {
+        tenderProjectName: '',
+        fileInformationList: [],
+        bidSectionList: [],
+        bidOpeningTime: '',
+        bidOpeningAddress: '',
+        prequalificationTime: '',
+        prequalificationAddress: ''
+      },
+      rules: {
+        title: [
+          { required: true, message: '公告名称不能为空', trigger: ['blur', 'change'] }
+        ],
+        bidDocReferMethod: [
+          { required: true, message: '递交投标文件方法不能为空', trigger: ['blur', 'change'] }
+        ],
+        bidSectionList: [
+          { required: true, message: '请选择标段', trigger: ['blur', 'change'] }
+        ],
+        content: [
+          {required: true, message: '公告内容不能为空', trigger: ['blur', 'change']}
+        ],
+        bidOpeningTime: [
+          {required: true, message: '开标时间不能为空', trigger: ['blur', 'change']}
+        ],
+        bidOpeningAddress: [
+          {required: true, message: '开标地点不能为空', trigger: ['blur', 'change']}
+        ],
+        prequalificationTime: [
+          {required: true, message: '资格预审会时间不能为空', trigger: ['blur', 'change']}
+        ],
+        prequalificationAddress: [
+          {required: true, message: '资格预审会地点不能为空', trigger: ['blur', 'change']}
+        ]
+      },
+      // 富文本
+      editread: false,
+      noticeList: [],
+      bidSectionList: [],
+      sectionList: [],
+      content: ''
+    }
+  },
+  created () {
+    this.getChooseBulletinInfoInfo()
+  },
+  methods: {
+    /** 获取当前公告信息 */
+    getChooseBulletinInfoInfo () {
+      bulletinInfo.getOneByRelatedCode(this.$route.query.bulletinCode, this.$route.query.sectionSystemCode).then((res) => {
+        if (res.data.bulletinInfo) {
+          // 设置标段信息
+          this.updateForm.bidSectionList = res.data.chooseBidSectionList
+          if (this.updateForm.bidSectionList.length > 0) {
+            this.updateForm.bidSectionList.forEach(item => {
+              item.objectId = null
+            })
+          }
+          // 页面展示
+          this.updateForm.tenderProjectName = res.data.bulletinInfo.tenderProjectName
+          this.updateForm.tenderProjectCode = res.data.bulletinInfo.tenderProjectCode
+          this.updateForm.currentBidSectionName = res.data.bulletinInfo.currentBidSectionName
+          this.updateForm.currentBidSectionCode = res.data.bulletinInfo.currentBidSectionCode
+          this.updateForm.type = res.data.bulletinInfo.type
+          this.updateForm.bidOpeningTime = res.data.bulletinInfo.bidOpeningTime
+          this.updateForm.bidOpeningAddress = res.data.bulletinInfo.bidOpeningAddress
+          this.updateForm.prequalificationTime = res.data.bulletinInfo.prequalificationTime
+          this.updateForm.prequalificationAddress = res.data.bulletinInfo.prequalificationAddress
+          // 用于保存关联关系
+          this.updateForm.bidSectionName = res.data.bulletinInfo.currentBidSectionName
+          this.updateForm.bidSectionCode = res.data.bulletinInfo.currentBidSectionCode
+          this.updateForm.tenderSystemCode = res.data.bulletinInfo.tenderSystemCode
+          this.updateForm.sectionSystemCode = res.data.bulletinInfo.sectionSystemCode
+          this.updateForm.enterpriseId = res.data.bulletinInfo.enterpriseId
+          this.updateForm.departmentId = res.data.bulletinInfo.departmentId
+          this.updateForm.originalTitle = res.data.bulletinInfo.title
+          // 获取文本编辑器的内容
+          if (res.data.bulletinInfo.content) {
+            this.$refs.ueditor.setContent(this.content = res.data.bulletinInfo.content)
+          }
+        }
+      })
+    },
+    // 上传附件
+    uploadOtherSuccess (file) {
+      this.updateForm.fileInformationList.push(file)
+    },
+    deleteSuccess (fileId) {
+      this.updateForm.fileInformationList = this.updateForm.fileInformationList.filter(item => item.relativePath !== fileId)
+    },
+    validLinks (str) {
+      const reg = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/
+      return reg.test(str)
+    },
+    /* 按钮点击事件：提交、保存、取消 */
+    handleClickEvent (formName, type) {
+      if (Object.is(type, 'submit') || Object.is(type, 'save')) {
+        // 公告链接格式的判断
+        if (this.updateForm.bulletinUrl && !this.validLinks(this.updateForm.bulletinUrl)) {
+          this.$message({
+            type: 'warning',
+            message: '公告链接格式有误！'
+          })
+          return false
+        }
+        if (this.sectionList.length === 0) {
+          this.$message.warning('请选择标段！')
+          return false
+        } else {
+          this.updateForm.bidSectionList = this.sectionList
+        }
+        // 获取文本编辑器中的内容
+        if (this.$refs.ueditor.getContent()) {
+          this.updateForm.content = this.$refs.ueditor.getContent()
+        }
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let msg = Object.is(type, 'submit') ? '提交后数据将锁定，不允许修改，确认要提交吗?' : '确认要保存吗?'
+            this.$confirm(msg, '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+              beforeClose: (action, instance, done) => {
+                done()
+              }
+            }).then(() => {
+              this.loading = true
+              // 根据type设置当前招标项目的状态
+              if (Object.is(type, 'submit')) {
+                this.updateForm.auditStatus = 4 // 暂时不考虑审批
+              } else {
+                this.updateForm.auditStatus = 0
+              }
+              // 公告类型为更正公告
+              this.updateForm.type = 3
+              // 更新标段的流转流程
+              /* this.updateForm.bidSectionList.forEach(item => {
+               item.flowStatus = 6 // 资格预审公告阶段
+               }) */
+              bulletinInfo.save(this.updateForm).then((res) => {
+                this.loading = false
+                if (res.data.resCode === '0000') {
+                  this.close()
+                }
+              })
+            }).catch(() => {
+              this.loading = false
+              return false
+            })
+          } else {
+            return false
+          }
+        })
+      } else if (Object.is(type, 'cancel')) {
+        this.close()
+      }
+    },
+    handleSelectionChange (val) {
+      this.sectionList = val // 选择的标段信息
+    },
+    close () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style scoped>
+</style>

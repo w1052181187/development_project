@@ -1,0 +1,257 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" ref="updateForm" :validate-on-rule-change="true">
+        <el-form-item label="资质来源：" prop="sourceType">
+          <el-radio-group v-model="updateForm.sourceType">
+            <el-radio :label="1">自有</el-radio>
+            <el-radio :label="2">借入</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="资质类别：" prop="categoryId">
+              <el-select v-model="updateForm.categoryId" @change="getLevel(updateForm.categoryId)">
+                <el-option
+                  v-for="item in typeOptions"
+                  :key="item.objectId"
+                  :label="item.name"
+                  :value="item.objectId">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="资质等级：" prop="gradeId">
+              <el-select v-model="updateForm.gradeId">
+                <el-option
+                  v-for="item in gradeOptions"
+                  :key="item.objectId"
+                  :label="item.name"
+                  :value="item.objectId">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="资质编号：">
+              <el-input v-model="updateForm.number"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="发证机关：">
+              <el-input v-model="updateForm.certificationAuthority"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row v-if="updateForm.sourceType === 1" key="subject">
+          <el-col :span="12">
+            <el-form-item label="资质主体：" prop="subject">
+              <el-select v-model="updateForm.subject">
+                <el-option
+                  v-for="item in bodyOptions"
+                  :key="item.code"
+                  :label="item.name"
+                  :value="item.code">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="资质有效期：" prop="time">
+              <el-date-picker
+                v-model="updateForm.time"
+                type="daterange"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                value-format="yyyy-MM-dd HH:mm:ss">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <template v-if="updateForm.sourceType === 2">
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="合作方："  prop="cooperate">
+                <el-input v-model="updateForm.cooperate"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="合作期间：" class="bitianicon" prop="cooperateTime">
+                <el-date-picker
+                  v-model="updateForm.cooperateTime"
+                  type="daterange"
+                  range-separator="-"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  value-format="yyyy-MM-dd HH:mm:ss">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row key="fee">
+            <el-col :span="12">
+              <el-form-item label="费用：">
+                <el-input v-model="updateForm.fee"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </template>
+        <el-form-item label="备注：">
+          <editor ref="ueditor" class="ueditor" :editread="editread"></editor>
+        </el-form-item>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit('updateForm')" :loading="isSubmiting">保存</el-button>
+          <el-button class="cancal" @click="close">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import { qualificationSubject, category } from '@/api/resource'
+import { dataDictionary } from '@/api/system'
+export default {
+  name: '',
+  components: {
+    editor
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      updateForm: {
+        sourceType: 1,
+        categoryId: '',
+        gradeId: '',
+        subject: ''
+      },
+      rules: {
+        sourceType: [
+          { required: true, message: '请选择资质来源', trigger: ['change'] }
+        ],
+        categoryId: [
+          { required: true, message: '请选择资质类别', trigger: ['change'] }
+        ],
+        gradeId: [
+          { required: true, message: '请选择资质等级', trigger: ['change'] }
+        ],
+        subject: [
+          { required: true, message: '主体不能为空', trigger: ['change'] }
+        ],
+        time: [
+          { required: true, message: '请选择资质有效期', trigger: ['change'] }
+        ],
+        cooperate: [
+          { required: true, message: '合作方不能为空', trigger: ['change'] }
+        ],
+        cooperateTime: [
+          { required: true, message: '请选择合作时间', trigger: ['change'] }
+        ]
+      },
+      typeOptions: [],
+      gradeOptions: [],
+      bodyOptions: [],
+      // cooperationOptions: [
+      //   {
+      //     label: '机构合作',
+      //     value: 1
+      //   },
+      //   {
+      //     label: '项目合作',
+      //     value: 2
+      //   },
+      //   {
+      //     label: '个人合作',
+      //     value: 3
+      //   }
+      // ],
+      // 富文本
+      editread: false,
+      dicOpportunityStageId: 10007
+    }
+  },
+  methods: {
+    // 获取资质类别
+    getCategory () {
+      category.getCategoryList().then((res) => {
+        this.typeOptions = res.data.categoryList
+      })
+    },
+    // 获取资质等级
+    getLevel (categoryId) {
+      category.getCategoryLevelList(categoryId).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.$set(this.updateForm, 'gradeId', '')
+          this.gradeOptions = res.data.categoryList
+        }
+      })
+    },
+    // 初始化字典项商机阶段
+    initOpportunityStage () {
+      let query = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        dictionaryDirectoryId: this.dicOpportunityStageId
+      }
+      dataDictionary.getDetailList(query).then(res => {
+        this.bodyOptions = res.data.dictionaryDetails
+      })
+    },
+    // 保存
+    submit (form) {
+      this.$refs[form].validate((valid) => {
+        if (valid) {
+          this.$confirm('确认要提交吗?', '提示', {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            let content = this.$refs.ueditor.getContent()
+            this.isSubmiting = true
+            this.updateForm.content = content
+            this.updateForm.remarks = content
+            this.updateForm.startDate = this.updateForm.time[0]
+            this.updateForm.endDate = this.updateForm.time[1]
+            if (this.updateForm.sourceType === 2) {
+              this.updateForm.subject = this.updateForm.cooperate
+              this.updateForm.startDate = this.updateForm.cooperateTime[0]
+              this.updateForm.endDate = this.updateForm.cooperateTime[1]
+            }
+            let paramObj = Object.assign({}, this.updateForm)
+            delete paramObj.cooperate
+            delete paramObj.time
+            delete paramObj.cooperateTime
+            qualificationSubject.saveOrUpdateQualificationSubject(paramObj).then((res) => {
+              if (res.data.resCode === '0000') {
+                this.isSubmiting = false
+                this.close()
+              }
+            })
+          }).catch(() => {
+            this.isSubmiting = false
+            return false
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    // 取消
+    close () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    }
+  },
+  mounted () {
+    this.getCategory()
+    this.initOpportunityStage()
+  }
+}
+</script>
+
+<style scoped>
+</style>

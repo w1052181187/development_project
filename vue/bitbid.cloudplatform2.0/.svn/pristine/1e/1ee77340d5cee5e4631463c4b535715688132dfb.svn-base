@@ -1,0 +1,90 @@
+<template>
+<span class="tree-expand" id="tree-expandid">
+  <span class="tree-label" v-show="DATA.editFlag">
+    <el-input class="edit" size="mini" autofocus
+      v-model="DATA.label"
+      placeholder="请输入部门名称"
+      :ref="'treeInput'+ DATA.id"
+      @click.stop.native="nodeEditFocus"
+      @blur.stop="nodeEditPass(STORE,DATA,NODE,'blur')"
+      @keyup.enter.stop.native="nodeEditPass(STORE,DATA,NODE,'keyup')">
+       <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+    </el-input>
+  </span>
+  <span v-show="!DATA.editFlag"
+        :class="[DATA.id > maxexpandId ? 'tree-new tree-label' : 'tree-label']">
+    <span v-bind:title="DATA.label">{{DATA.label}}</span>
+  </span>
+  <span class="tree-btn" v-show="!DATA.editFlag">
+    <i class="el-icon-plus" @click.stop="nodeAdd(STORE,DATA,NODE)"></i>
+    <i class="el-icon-edit" v-if="DATA.parentId !== 0" @click.stop="nodeEdit(STORE,DATA,NODE)"></i>
+    <i class="el-icon-delete" v-if="DATA.parentId !== 0" @click.stop="nodeDel(STORE,DATA,NODE)"></i>
+  </span>
+</span>
+</template>
+
+<script>
+export default{
+  name: 'treeExpand',
+  props: ['NODE', 'DATA', 'STORE', 'maxexpandId'],
+  methods: {
+    nodeAdd (s, d, n) { // 新增
+      this.$nextTick(() => {
+        this.$refs[`treeInput${d.id}`].$refs.input.focus()
+      })
+      this.$emit('nodeAdd', s, d, n)
+    },
+    nodeEdit (s, d, n) { // 编辑
+      d.editFlag = true
+      this.$nextTick(() => {
+        this.$refs[`treeInput${d.id}`].$refs.input.focus()
+      })
+      this.$emit('nodeEdit', s, d, n)
+    },
+    nodeDel (s, d, n) { // 删除
+      this.$emit('nodeDel', s, d, n)
+    },
+    nodeEditPass (s, d, n, m) { // 编辑完成
+      if (d.label) {
+        d.editFlag = false
+        this.$emit('nodeEditPass', s, d, n, m)
+      }
+    },
+    nodeEditFocus () {
+      // 阻止点击节点的事件冒泡
+    }
+  }
+}
+</script>
+
+<style lang="less">
+  #tree-expandid{
+    overflow:hidden;
+    width: 100%;
+  .tree-expand .tree-label.tree-new{
+    font-weight:600;
+  }
+  .tree-label .edit{
+    width:80%;
+  }
+  .tree-btn{
+    display:none;
+    width: 25%;
+    margin-left: 5px;
+  }
+  .tree-btn i{
+    color:#8492a6;
+    font-size:0.9em;
+    margin-right:3px;
+  }
+  .tree-label {
+    font-size: 0.9em;
+    display: inline-block;
+    max-width: 50%;
+    vertical-align: top;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+  }
+  }
+</style>

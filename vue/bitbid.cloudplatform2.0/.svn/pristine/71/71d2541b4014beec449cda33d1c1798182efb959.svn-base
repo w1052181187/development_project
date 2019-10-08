@@ -1,0 +1,74 @@
+export default [
+  {
+    path: '/customerMan/business',
+    name: '商机管理',
+    meta: {
+      title: '商机管理',
+      active: '/customerMan/business'
+    },
+    component: () => import(/* webpackChunkName: 'customer' */ '@/pages/customer/business/index')
+  },
+  {
+    path: '/customerMan/business/add',
+    name: '新增商机管理',
+    meta: {
+      title: '新增商机管理',
+      active: '/customerMan/business'
+    },
+    component: () => import(/* webpackChunkName: 'customer' */ '@/pages/customer/business/edit')
+  },
+  {
+    path: '/customerMan/business/update/:objectId',
+    name: '修改商机管理',
+    meta: {
+      title: '修改商机管理',
+      active: '/customerMan/business'
+    },
+    component: () => import(/* webpackChunkName: 'customer' */ '@/pages/customer/business/edit')
+  },
+  {
+    path: '/customerMan/business/follow/:relatedCode/:type',
+    name: '跟进',
+    meta: {
+      title: '跟进',
+      active: '/customerMan/business'
+    },
+    component: () => import(/* webpackChunkName: 'customer' */ '@/pages/customer/followup/index')
+  },
+  {
+    path: '/customerMan/business/analysis/:code',
+    name: '商机分析',
+    meta: {
+      title: '商机分析',
+      active: '/customerMan/business'
+    },
+    component: () => import(/* webpackChunkName: 'customer' */ '@/pages/customer/business/analysis/index')
+  },
+  {
+    path: '/customerMan/business/assess/:code',
+    name: '商机评估',
+    meta: {
+      title: '商机评估',
+      active: '/customerMan/business'
+    },
+    component: () => import(/* webpackChunkName: 'customer' */ '@/pages/customer/business/assess/index')
+  },
+  {
+    path: '/customerMan/business/detail/:code',
+    name: '商机详情',
+    meta: {
+      title: '商机详情',
+      active: '/customerMan/business'
+    },
+    component: () => import(/* webpackChunkName: 'customer' */ '@/pages/customer/business/detail/index')
+  },
+  {
+    path: '/customerMan/business/assess/audit/:code',
+    name: '商机审批',
+    meta: {
+      title: '商机审批',
+      active: '/customerMan/business'
+    },
+    component: () => import(/* webpackChunkName: 'customer' */ '@/pages/customer/business/assess/audit')
+  }
+]

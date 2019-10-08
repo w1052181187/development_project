@@ -1,0 +1,83 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <div class="box">
+      <p>招标邀请书</p>
+      <el-table
+        :data="tableData"
+        border>
+        <el-table-column
+          prop="date"
+          label="邀请公告名称"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="提交状态"
+          width="180">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '1'">已保存</span>
+            <span  v-if="scope.row.status === '2'">已提交</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          label="提交时间">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small">查看</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'">编辑</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'">删除</el-button>
+            <el-button type="text" size="small">投标人确认情况</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+      tableData: [{
+        date: '上海市普陀区金沙江路',
+        status: '1',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '1',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '2',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '2',
+        address: '2016-05-04'
+      }]
+    }
+  },
+  methods: {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_processtype{
+    .box{
+      width: 96%;
+      overflow: hidden;
+    }
+    .box p{
+      line-height: 40px;
+      color: #111111;
+      font-weight: bold;
+    }
+    .box .el-table{
+      width: 100%;
+    }
+  }
+</style>

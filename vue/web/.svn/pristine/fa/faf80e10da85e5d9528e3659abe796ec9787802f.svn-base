@@ -1,0 +1,811 @@
+<template>
+  <div id="bidannoupdate" class="smaincontent">
+    <div class="headertitle">
+      <!--面包屑-->
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/main' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item>公告管理</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/annomanage/bidanno' }">招标公告</el-breadcrumb-item>
+        <el-breadcrumb-item>{{tenderBulletin.noticeNature !== '4' ? '修改招标公告' : '修改废标公告' }}</el-breadcrumb-item>
+      </el-breadcrumb>
+      <!--面包屑-->
+      <div class="returnboxbig">
+        <template>
+          <el-button @click="close">返回</el-button>
+        </template>
+      </div>
+    </div>
+    <div class="contentbigbox">
+      <template>
+        <el-form :model="tenderBulletin" :rules="rules" ref="tenderBulletins">
+          <table class="detailtable">
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td><i class="red">*</i>招标公告编号：</td>
+              <td  colspan="5">
+                <el-form-item prop="tenderExpandsInfo.bulletinCode">
+                  <el-input v-model="tenderBulletin.tenderExpandsInfo.bulletinCode" placeholder="请输入招标公告编号"></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td><i class="red">*</i>项目编号：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderBulletinExpandsInfo.projectCode">
+                  <el-input v-model="tenderBulletin.tenderBulletinExpandsInfo.projectCode" placeholder="请输入项目编号"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>项目名称：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderBulletinExpandsInfo.projectName">
+                  <el-input v-model="tenderBulletin.tenderBulletinExpandsInfo.projectName" placeholder="请输入项目名称"></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>招标项目编号：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderProjectCode">
+                  <el-input v-model="tenderBulletin.tenderProjectCode" placeholder="请输入招标项目编号"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>招标项目名称：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderExpandsInfo.tenderProjectName">
+                  <el-input v-model="tenderBulletin.tenderExpandsInfo.tenderProjectName" placeholder="请输入招标项目名称"></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>项目行业：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderExpandsInfo.industryTypeFirst">
+                  <el-select v-model="tenderBulletin.tenderExpandsInfo.industryTypeFirst" class="select">
+                    <el-option
+                      v-for="item in options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>行政区域：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderExpandsInfo.provinceId">
+                  <el-cascader
+                    :options="addressOptions"
+                    expand-trigger="hover"
+                    v-model="provinceIdArray"
+                    @change="handlerCityChange">
+                  </el-cascader>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td><i class="red">*</i>项目实施地：</td>
+              <td colspan="2">
+                <el-form-item prop="tenderBulletinExpandsInfo.projectImplementationSite">
+                  <el-input v-model="tenderBulletin.tenderBulletinExpandsInfo.projectImplementationSite" placeholder="请输入项目实施地"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>是否接受联合体：</td>
+              <td  colspan="2">
+                <el-form-item prop="syndicatedFlag">
+                  <el-radio v-model="tenderBulletin.syndicatedFlag" label="1">是</el-radio>
+                  <el-radio v-model="tenderBulletin.syndicatedFlag" label="0">否</el-radio>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>标段（包）编号：</td>
+              <td  colspan="2">
+                <el-form-item prop="bidSectionCodes">
+                  <el-input v-model="tenderBulletin.bidSectionCodes" placeholder="请输入标段（包）编号" @focus="handleFocus()"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>标段（包）名称：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderBulletinExpandsInfo.bidSectionNames">
+                  <el-input v-model="tenderBulletin.tenderBulletinExpandsInfo.bidSectionNames" placeholder="标段（包）名称" @focus="handleFocus()"></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td><i class="red">*</i>项目类型：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderExpandsInfo.projectType">
+                  <el-select v-model="tenderBulletin.tenderExpandsInfo.projectType" class="select">
+                    <el-option
+                      v-for="item in bidtypeoptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>资金来源：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderBulletinExpandsInfo.fundSource">
+                  <el-select v-model="tenderBulletin.tenderBulletinExpandsInfo.fundSource" class="select">
+                    <el-option
+                      v-for="item in capitalSourceOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td><i class="red">*</i>项目规模：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderBulletinExpandsInfo.projectScale">
+                  <el-input v-model="tenderBulletin.tenderBulletinExpandsInfo.projectScale" placeholder="请输入项目规模"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>招标项目核准部门：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderBulletinExpandsInfo.approvedDepartme">
+                  <el-input v-model="tenderBulletin.tenderBulletinExpandsInfo.approvedDepartment" placeholder="请输入招标项目核准部门"></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr style="height: 60px;" v-if="tenderBulletin.noticeNature !== '4'">
+              <td><i class="red">*</i>招标项目核准文号：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderBulletinExpandsInfo.approvedNumber">
+                  <el-input v-model="tenderBulletin.tenderBulletinExpandsInfo.approvedNumber" placeholder="请输入招标项目核准文号"></el-input>
+                </el-form-item>
+              </td>
+              <td>招标项目核准文件：</td>
+              <td colspan="2">
+                <el-form-item prop="approveFileInfo">
+                  <commonUpLoadFile @upLoadFile="upLoadApproveFile"
+                                    :oldFileName="oldApproveFileName"
+                                    :relativePath="relativeApprovePath"></commonUpLoadFile>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>公告名称：</td>
+              <td  colspan="2">
+                <el-form-item prop="noticeName">
+                  <el-input v-model="tenderBulletin.noticeName" placeholder="请输入公告名称"></el-input>
+                </el-form-item>
+              </td>
+              <template v-if="tenderBulletin.noticeNature !== '4'">
+                <td><i class="red">*</i>公告类型：</td>
+                <td  colspan="2">
+                  <el-form-item prop="bulletinType">
+                    <el-select  v-model="tenderBulletin.bulletinType" class="select">
+                      <el-option
+                        v-for="item in bulletinTypeoptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </td>
+              </template>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td><i class="red">*</i>招标方式：</td>
+              <td  colspan="2">
+                <el-form-item  prop="tenderExpandsInfo.tenderMode">
+                  <el-select v-model="tenderBulletin.tenderExpandsInfo.tenderMode" class="select">
+                    <el-option
+                      v-for="item in bidmethodoptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>代理机构联系人：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderExpandsInfo.tenderAgencyContacts">
+                  <el-input v-model="tenderBulletin.tenderExpandsInfo.tenderAgencyContacts" placeholder="请输入代理机构联系人"></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td><i class="red">*</i>联系方式：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderExpandsInfo.contactInformation">
+                  <el-input v-model="tenderBulletin.tenderExpandsInfo.contactInformation" placeholder="请输入联系方式"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>业主名称：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderExpandsInfo.ownerName">
+                  <el-input v-model="tenderBulletin.tenderExpandsInfo.ownerName" placeholder="请输入业主名称"></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.tenderExpandsInfo.tenderOrganizeForm !== 1 && tenderBulletin.noticeNature !== '4'" style="height: 60px;">
+              <td><i class="red">*</i>招标代理机构名称：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderExpandsInfo.tenderAgencyName">
+                  <el-input v-model="tenderBulletin.tenderExpandsInfo.tenderAgencyName" placeholder="请输入招标代理机构名称"></el-input>
+                </el-form-item>
+              </td>
+              <td>委托代理协议附件：</td>
+              <td colspan="2">
+                <el-form-item prop="agentFileInfo">
+                  <commonUpLoadFile @upLoadFile="upLoadAgentFile" :fileType="fileType"
+                                    :oldFileName="oldAgentFileName"
+                                    :relativePath="relativeAgentPath"></commonUpLoadFile>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr  v-if="tenderBulletin.noticeNature !== '4'">
+              <td><i class="red">*</i>招标文件获取开始时间：</td>
+              <td colspan="2">
+                <el-form-item prop="docGetStartTime">
+                  <el-date-picker
+                    v-model="tenderBulletin.docGetStartTime"
+                    type="datetime"
+                    value-format="yyyy-MM-dd HH:mm:ss">
+                  </el-date-picker>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>招标文件获取截止时间：</td>
+              <td colspan="2">
+                <el-form-item prop="docGetEndTime">
+                  <el-date-picker
+                    v-model="tenderBulletin.docGetEndTime"
+                    type="datetime"
+                    value-format="yyyy-MM-dd HH:mm:ss">
+                  </el-date-picker>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td><i class="red">*</i>招标文件获取方法：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderDocGetMethod">
+                  <el-input v-model="tenderBulletin.tenderDocGetMethod" placeholder="请输入招标文件获取方法"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>投标文件递交方法：</td>
+              <td  colspan="2">
+                <el-form-item prop="bidDocReferMethod">
+                  <el-input v-model="tenderBulletin.bidDocReferMethod" placeholder="请输入投标文件递交方法"></el-input>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td><i class="red">*</i>投标文件递交截止时间：</td>
+              <td colspan="2">
+                <el-form-item prop="biddocReferEndTime">
+                  <el-date-picker
+                    v-model="tenderBulletin.biddocReferEndTime"
+                    type="datetime"
+                    value-format="yyyy-MM-dd HH:mm:ss">
+                  </el-date-picker>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>公告结束日期：</td>
+              <td colspan="2">
+                <el-form-item prop="tenderBulletinExpandsInfo.bulletinEndDate">
+                  <el-date-picker
+                    v-model="tenderBulletin.tenderBulletinExpandsInfo.bulletinEndDate"
+                    type="datetime"
+                    value-format="yyyy-MM-dd HH:mm:ss">
+                  </el-date-picker>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td><i class="red">*</i>开标时间：</td>
+              <td colspan="2">
+                <el-form-item prop="bidOpenTime">
+                  <el-date-picker
+                    v-model="tenderBulletin.bidOpenTime"
+                    type="datetime"
+                    value-format="yyyy-MM-dd HH:mm:ss">
+                  </el-date-picker>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>项目建立时间：</td>
+              <td colspan="2">
+                <el-form-item prop="tenderBulletinExpandsInfo.projectCreateDate">
+                  <el-date-picker
+                    v-model="tenderBulletin.tenderBulletinExpandsInfo.projectCreateDate"
+                    type="datetime"
+                    value-format="yyyy-MM-dd HH:mm:ss">
+                  </el-date-picker>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td><i class="red">*</i>版本号：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderExpandsInfo.versionNum">
+                  <el-input v-model="tenderBulletin.tenderExpandsInfo.versionNum" placeholder="请输入版本号"></el-input>
+                </el-form-item>
+              </td>
+              <td><i class="red">*</i>招标组织形式：</td>
+              <td  colspan="2">
+                <el-form-item prop="tenderExpandsInfo.tenderOrganizeForm">
+                  <el-select  v-model="tenderBulletin.tenderExpandsInfo.tenderOrganizeForm" class="select">
+                    <el-option
+                      v-for="item in bidxsoptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td><i class="red">*</i>招标项目建立时间：</td>
+              <td colspan="5">
+                <el-form-item prop="tenderBulletinExpandsInfo.tenderProjectCreateDate">
+                  <el-date-picker
+                    v-model="tenderBulletin.tenderBulletinExpandsInfo.tenderProjectCreateDate"
+                    type="datetime"
+                    value-format="yyyy-MM-dd HH:mm:ss">
+                  </el-date-picker>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="red">*</i>公告内容：</td>
+              <td  colspan="5">
+                <el-form-item prop="noticeContent">
+                  <editor ref="ueditor" class="ueditor"></editor>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr style="height: 60px;">
+              <td>公告附件：</td>
+              <td colspan="5">
+                <el-form-item prop="otherFileInfo">
+                  <commonUpLoadFile @upLoadFile="upLoadOtherFile" :fileType="fileType"
+                                    :oldFileName="oldFileName"
+                                    :relativePath="relativePath"></commonUpLoadFile>
+                </el-form-item>
+              </td>
+            </tr>
+          </table>
+          <el-form-item class="submit-radio">
+            <el-button type="primary" @click="submitForm('tenderBulletins', 1)">提交</el-button>
+            <el-button type="primary" class="save" @click="submitForm('tenderBulletins', 0)">保存</el-button>
+            <el-button class="cancel" @click="close">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </template>
+    </div>
+  </div>
+</template>
+<script>
+import * as industry from '../../../assets/js/industry'
+import * as region from '../../../assets/js/region'
+import editor from '@/components/ueditor/ueditor.vue'
+import commonUpLoadFile from '@/components/upload/publicFileUpload'
+import {isvalidFixedPhone} from '@/assets/js/validate'
+import {bidanno} from '@/api'
+export default {
+  components: {
+    editor,
+    commonUpLoadFile
+  },
+  data () {
+    // 电话号码
+    var validPhoneUser = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('请输入联系电话'))
+      } else if (!isvalidFixedPhone(value)) {
+        callback(new Error('请输入正确的11位手机号码'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      // 公告类型
+      bulletinTypeoptions: [
+        {
+          value: '1',
+          label: '招标公告'
+        },
+        {
+          value: '2',
+          label: '资格预审公告'
+        }
+      ],
+      // 交易分类
+      dealOptions: [
+        {
+          value: 1,
+          label: '工程建设项目招标投标'
+        },
+        {
+          value: 2,
+          label: '政府采购'
+        },
+        {
+          value: 3,
+          label: '企业采购'
+        },
+        {
+          value: 4,
+          label: '其他交易'
+        }
+      ],
+      // 项目类型
+      bidtypeoptions: [
+        {
+          value: 1,
+          label: '工程'
+        },
+        {
+          value: 2,
+          label: '货物'
+        },
+        {
+          value: 3,
+          label: '服务'
+        }
+      ],
+      // 招标方式
+      bidmethodoptions: [
+        {
+          value: 1,
+          label: '公开招标'
+        },
+        {
+          value: 2,
+          label: '邀请招标'
+        },
+        {
+          value: 9,
+          label: '其他'
+        }
+      ],
+      // 项目行业
+      options: industry.industry,
+      // 行政区域
+      addressOptions: region.CityInfo,
+      // 行政区域绑定数组
+      provinceIdArray: [],
+      // 招标组织形式
+      bidxsoptions: [
+        {
+          value: 1,
+          label: '自行招标'
+        },
+        {
+          value: 2,
+          label: '委托招标'
+        },
+        {
+          value: 9,
+          label: '其他'
+        }
+      ],
+      // 资金来源
+      capitalSourceOptions: [
+        {
+          value: '1',
+          label: '自有资金'
+        },
+        {
+          value: '2',
+          label: '专项资金'
+        },
+        {
+          value: '3',
+          label: '吸收资金'
+        },
+        {
+          value: '4',
+          label: '其他'
+        }
+      ],
+      value: 1,
+      datetime: '',
+      fileType: '',
+      oldFileName: '',
+      oldApproveFileName: '',
+      oldAgentFileName: '',
+      relativePath: '',
+      relativeApprovePath: '',
+      relativeAgentPath: '',
+      tenderBulletin: {
+        syndicatedFlag: '',
+        biddocReferEndTime: '',
+        docGetStartTime: '',
+        docGetEndTime: '',
+        bidOpenTime: '',
+        noticeSendTime: '',
+        bidSectionCodes: '',
+        noticeName: '',
+        bulletinType: '',
+        tenderProjectCode: '',
+        bidDocReferMethod: '',
+        tenderDocGetMethod: '',
+        tenderExpandsInfo: {
+          versionNum: '',
+          tenderProjectName: '',
+          industryTypeFirst: '',
+          projectType: '',
+          provinceId: '',
+          tenderMode: '',
+          ownerName: '',
+          tenderOrganizeForm: '',
+          tenderAgencyName: '',
+          tenderAgencyContacts: '',
+          contactInformation: '',
+          bulletinCode: ''
+        },
+        tenderBulletinExpandsInfo: {
+          projectCode: '',
+          projectName: '',
+          projectImplementationSite: '',
+          projectScale: '',
+          fundSource: '',
+          approvedDepartment: '',
+          approvedNumber: '',
+          bidSectionNames: '',
+          bulletinEndDate: '',
+          projectCreateDate: '',
+          tenderProjectCreateDate: ''
+        },
+        fileInformations: []
+      },
+      rules: {
+        'tenderBulletinExpandsInfo.projectScale': [
+          {required: true, message: '请输入项目规模', trigger: 'blur'},
+          {min: 1, max: 20, message: '长度在 1~20个字符', trigger: ['blur', 'change']}
+        ],
+        'tenderBulletinExpandsInfo.approvedDepartment': [
+          {required: true, message: '请输入项目核准部门', trigger: 'blur'},
+          {min: 1, max: 20, message: '长度在 1~20个字符', trigger: ['blur', 'change']}
+        ],
+        'tenderBulletinExpandsInfo.approvedNumber': [
+          {required: true, message: '请输入项目核准文号', trigger: 'blur'},
+          {min: 1, max: 20, message: '长度在 1~20个字符', trigger: ['blur', 'change']}
+        ],
+        'tenderBulletinExpandsInfo.projectImplementationSite': [
+          {required: true, message: '请输入项目实施地', trigger: 'blur'},
+          {min: 1, max: 600, message: '长度在 1~600个字符', trigger: ['blur', 'change']}
+        ],
+        noticeName: [
+          {required: true, message: '请输入公告名称', trigger: 'blur'},
+          {min: 1, max: 600, message: '长度在 1~600个字符', trigger: ['blur', 'change']}
+        ],
+        bulletinType: [
+          {required: true, message: '请选择公告类型', trigger: 'change'}
+        ],
+        'tenderBulletinExpandsInfo.projectCode': [
+          {required: true, message: '请输入项目编号', trigger: 'blur'},
+          {min: 1, max: 20, message: '长度在 1~20字符', trigger: ['blur', 'change']}
+        ],
+        'tenderBulletinExpandsInfo.projectName': [
+          {required: true, message: '请输入项目名称', trigger: 'blur'},
+          {min: 1, max: 20, message: '长度在 1~20字符', trigger: ['blur', 'change']}
+        ],
+        tenderProjectCode: [
+          {required: true, message: '请输入招标项目编号', trigger: 'blur'},
+          {min: 1, max: 20, message: '长度在 1~20字符', trigger: ['blur', 'change']}
+        ],
+        'tenderExpandsInfo.bulletinCode': [
+          {required: true, message: '请输入招标公告编号', trigger: 'blur'},
+          {min: 1, max: 20, message: '长度在 1~20字符', trigger: ['blur', 'change']}
+        ],
+        'tenderExpandsInfo.dealClassify': [
+          {required: true, message: '请选择交易分类', trigger: 'change'}
+        ],
+        'tenderExpandsInfo.tenderProjectName': [
+          {required: true, message: '请输入招标项目名称', trigger: 'blur'},
+          {min: 1, max: 256, message: '长度在 1~256个字符', trigger: ['blur', 'change']}
+        ],
+        'tenderExpandsInfo.industryTypeFirst': [
+          {required: true, message: '请选择项目行业', trigger: 'change'}
+        ],
+        'tenderExpandsInfo.projectType': [
+          {required: true, message: '请选择项目类型', trigger: 'change'}
+        ],
+        'tenderExpandsInfo.provinceId': [
+          {required: true, message: '请选择行政区域', trigger: 'change'}
+        ],
+        'tenderExpandsInfo.tenderMode': [
+          {required: true, message: '请选择招标方式', trigger: 'change'}
+        ],
+        'tenderExpandsInfo.ownerName': [
+          {required: true, message: '请输入业主名称', trigger: 'blur'},
+          {min: 1, max: 200, message: '长度在 1~200个字符', trigger: ['blur', 'change']}
+        ],
+        bidSectionCodes: [
+          {required: true, message: '请输入标段编号', trigger: 'blur'},
+          {min: 1, max: 200, message: '长度在 1~200个字符', trigger: ['blur', 'change']}
+        ],
+        'tenderBulletinExpandsInfo.bidSectionNames': [
+          {required: true, message: '请输入标段名称', trigger: 'blur'},
+          {min: 1, max: 200, message: '长度在 1~200个字符', trigger: ['blur', 'change']}
+        ],
+        'tenderExpandsInfo.tenderOrganizeForm': [
+          {required: true, message: '请选择招标组织形式', trigger: 'change'}
+        ],
+        'tenderExpandsInfo.fundsSourceForm': [
+          {required: true, message: '请输入资金来源', trigger: 'blur'}
+        ],
+        'tenderExpandsInfo.tenderAgencyName': [
+          {required: true, message: '请输入招标代理机构名称', trigger: 'blur'},
+          {min: 1, max: 200, message: '长度在 1~200个字符', trigger: ['blur', 'change']}
+        ],
+        'tenderExpandsInfo.tenderAgencyContacts': [
+          {required: true, message: '请输入代理机构联系人', trigger: 'blur'},
+          {min: 1, max: 200, message: '长度在 1~200个字符', trigger: ['blur', 'change']}
+        ],
+        'tenderExpandsInfo.contactInformation': [
+          {required: true, message: '请输入联系方式', trigger: 'blur'},
+          {validator: validPhoneUser, trigger: ['blur', 'change']}
+        ],
+        'tenderExpandsInfo.versionNum': [
+          {required: true, message: '请输入版本号', trigger: 'blur'},
+          {min: 1, max: 200, message: '长度在 1~200个字符', trigger: ['blur', 'change']}
+        ],
+        biddocReferEndTime: [
+          {required: true, message: '请选择日期', trigger: 'change'}
+        ],
+        docGetStartTime: [
+          {required: true, message: '请选择日期', trigger: 'change'}
+        ],
+        docGetEndTime: [
+          {required: true, message: '请选择日期', trigger: 'change'}
+        ],
+        'tenderBulletinExpandsInfo.tenderProjectCreateDate': [
+          {required: true, message: '请选择日期', trigger: 'change'}
+        ],
+        'tenderBulletinExpandsInfo.bulletinEndDate': [
+          {required: true, message: '请选择日期', trigger: 'change'}
+        ],
+        'tenderBulletinExpandsInfo.projectCreateDate': [
+          {required: true, message: '请选择日期', trigger: 'change'}
+        ],
+        noticeSendTime: [
+          {required: true, message: '请选择日期', trigger: 'change'}
+        ],
+        bidOpenTime: [
+          {required: true, message: '请选择日期', trigger: 'change'}
+        ],
+        'tenderBulletinExpandsInfo.fundSource': [
+          {required: true, message: '请选择资金来源', trigger: 'change'}
+        ],
+        tenderDocGetMethod: [
+          {required: true, message: '请输入招标文件获取方法', trigger: 'blur'},
+          {min: 1, max: 20, message: '长度在 1~20个字符', trigger: ['blur', 'change']}
+        ],
+        bidDocReferMethod: [
+          {required: true, message: '请输入投标文件递交方法', trigger: 'blur'},
+          {min: 1, max: 20, message: '长度在 1~20个字符', trigger: ['blur', 'change']}
+        ],
+        syndicatedFlag: [
+          { required: true, message: '请选择是否接受联合体', trigger: 'change' }
+        ]
+      },
+      status: null,
+      fileInfo: {}
+    }
+  },
+
+  methods: {
+    detail () {
+      bidanno.detail(this.$route.query.objectId).then((res) => {
+        this.provinceIdArray.push(res.data.tenderBulletin.tenderExpandsInfo.provinceId)
+        this.provinceIdArray.push(res.data.tenderBulletin.tenderExpandsInfo.cityId)
+        this.tenderBulletin = res.data.tenderBulletin
+        this.tenderBulletin.fileInformations.map((item) => {
+          if (item.businessType === '1') {
+            this.oldApproveFileName = item.fileName
+            this.relativeApprovePath = item.relativePath
+          } else if (item.businessType === '2') {
+            this.oldAgentFileName = item.fileName
+            this.relativeAgentPath = item.relativePath
+          } else if (item.businessType === '9') {
+            this.oldFileName = item.fileName
+            this.relativePath = item.relativePath
+          }
+        })
+        return this.tenderBulletin
+      }).then((result) => {
+        this.$refs.ueditor.setContent(result.noticeContent)
+      })
+    },
+    // 省市两级联动
+    handlerCityChange (value) {
+      this.tenderBulletin.tenderExpandsInfo.provinceId = value[0]
+      this.tenderBulletin.tenderExpandsInfo.cityId = value[1]
+    },
+    upLoadOtherFile (file) {
+      if (file.length !== 0) {
+        file[0].businessType = 9
+        this.tenderBulletin.fileInformations.push(file[0])
+      }
+    },
+    upLoadApproveFile (file) {
+      if (file.length !== 0) {
+        file[0].businessType = 1
+        this.tenderBulletin.fileInformations.push(file[0])
+      }
+    },
+    upLoadAgentFile (file) {
+      if (file.length !== 0) {
+        file[0].businessType = 2
+        this.tenderBulletin.fileInformations.push(file[0])
+      }
+    },
+    submitForm (name, status) {
+      this.$refs[name].validate((valid) => {
+        if (valid) {
+          if (!this.$refs.ueditor.getContent()) {
+            this.$message({
+              type: 'warning',
+              message: '请输入公告内容'
+            })
+            return
+          }
+          this.tenderBulletin.noticeContent = this.$refs.ueditor.getContent()
+          this.tenderBulletin.status = status
+          bidanno.update(this.tenderBulletin).then((res) => {
+            if (res.data.resCode === '0000') {
+              this.$router.push({path: '/annomanage/bidanno', query: {status: this.status}})
+            }
+          })
+        } else {
+          this.$message({
+            type: 'warning',
+            message: '请检查必填项是否填写完毕'
+          })
+          return false
+        }
+      })
+    },
+    close () {
+      this.$router.push({path: '/annomanage/bidanno', query: {status: this.status}})
+    },
+    handleFocus () {
+      this.$message({
+        type: 'info',
+        message: '多个标段名称/编号，请用","隔开'
+      })
+    }
+  },
+  mounted () {
+    this.status = this.$route.query.status ? this.$route.query.status : this.$route.query.status === 0 ? this.$route.query.status : null
+    this.detail()
+  }
+}
+</script>
+<style lang="less">
+  #bidannoupdate{
+    .select {
+      float: left;
+      width: 100%;
+    }
+    .el-cascader{
+      float: left;
+      width: 100%;
+    }
+    .el-date-editor{
+      float: left;
+      width: 100%;
+    }
+    .el-date-editor.el-input, .el-date-editor.el-input__inner{
+      width: 100%;
+    }
+    .el-form-item{
+      margin-bottom: 0px;
+    }
+    .el-radio{
+      float: left;
+    }
+  }
+</style>

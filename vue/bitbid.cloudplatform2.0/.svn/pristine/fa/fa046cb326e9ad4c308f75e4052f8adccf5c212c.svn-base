@@ -1,0 +1,65 @@
+<template>
+  <div class="cloudcontent" id="archives-detail">
+    <div class="main">
+      <div class="detail-title">{{title}}档案</div>
+      <el-tabs class="detail_tab" v-model="activeTab" type="card">
+        <el-tab-pane label="档案信息" name="1" v-if="isShow">
+          <archives-info :info="info"></archives-info>
+        </el-tab-pane>
+        <el-tab-pane label="标段信息" name="2">
+          <section-info :info="info"></section-info>
+        </el-tab-pane>
+        <el-tab-pane label="归档文件" name="3">
+          <file-pack-download :info="info"></file-pack-download>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+  </div>
+</template>
+<script>
+import {archivesInfo} from '@/api/archives'
+export default {
+  components: {
+    archivesInfo: resolve => require(['./archivesInfo.vue'], resolve),
+    sectionInfo: resolve => require(['./sectionInfo.vue'], resolve),
+    filePackDownload: resolve => require(['./filePackDownload.vue'], resolve)
+  },
+  data () {
+    return {
+      title: '山西省国新能源新厂扩建工程施工项目（标段一）',
+      isShow: 1, // 1:已归档 0：未归档 通过列表传过来
+      activeTab: '1',
+      info: {}
+    }
+  },
+  methods: {
+    init () {
+      this.isShow = !!this.$route.query.status
+      this.activeTab = !this.isShow ? '2' : '1'
+      this.getData()
+    },
+    getData () {
+      archivesInfo.detailArchivesInfo(this.$route.params.objectId).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.info = res.data.archivesInfo
+          this.isShow = this.isShow && !!this.info.status
+        }
+      })
+    }
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+
+<style lang="less">
+  #archives-detail{
+    .detail-title{
+      padding: 12px 0;
+      box-sizing: border-box;
+      color: #333;
+      font-weight: 800;
+    }
+  }
+</style>

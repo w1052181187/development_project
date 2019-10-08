@@ -1,0 +1,550 @@
+<template>
+  <div class="cloudcontent" id="cloud_customer">
+    <div class="topmain">
+      <div class="seacher_box advancedsearch_box">
+        <el-form :model="queryModel" ref="queryModel" label-width="85px" :validate-on-rule-change="true">
+          <el-row :gutter="20">
+            <el-col style="width: 320px; float: left;">
+              <el-form-item label="客户名称：" prop="messageLike">
+                <el-input class="search" v-model="queryModel.messageLike" placeholder="请输入客户名称"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col style="width: 300px; float: left;"  v-if="!showSelections">
+              <el-button  type="primary" @click="handlePage(1)">查询</el-button>
+              <el-button  @click="reset('queryModel')">重置</el-button>
+              <span @click="showSelections = true" class="more">展开搜索条件</span>
+            </el-col>
+          </el-row>
+          <div class="advancedsearch" style="padding-top: 0px;" v-if="showSelections">
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="客户价值：" prop="dicValueCodes">
+                  <span :class="isValueSelectAll ? 'all selectall' : 'all'" @click="conditionCancel('客户价值')">不限</span>
+                  <el-checkbox-group v-model="queryModel.dicValueCodes" v-loading="dicCustomerValueLoading">
+                    <el-checkbox v-for="item in dicCustomerValueList" :label="item.name" :key="item.code" >{{item.name}}</el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="所属行业：" prop="dicIndustryCodes">
+                  <span :class="isIndustrySelectAll ? 'all selectall': 'all'" @click="conditionCancel('所属行业')">不限</span>
+                  <el-checkbox-group v-model="queryModel.dicIndustryCodes" v-loading="dicCustomerIndustryLoading">
+                    <el-checkbox v-for="item in dicCustomerIndustryList" :label="item.name" :key="item.code" >{{item.name}}</el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="客户来源：" prop="dicSourceCodes">
+                  <span :class="isSourceSelectAll ? 'all selectall': 'all'" @click="conditionCancel('客户来源')">不限</span>
+                  <el-checkbox-group v-model="queryModel.dicSourceCodes">
+                    <el-checkbox v-for="item in dicCustomerSourceList" :label="item.name" :key="item.code">{{item.name}}</el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="客户状态：" prop="customerStatuses">
+                  <span :class="isStatusSelectAll ? 'all selectall': 'all'" @click="conditionCancel('客户状态')">不限</span>
+                  <el-checkbox-group v-model="queryModel.customerStatuses">
+                    <el-checkbox v-for="item in opportunityStates" :label="item.label" :key="item.label">{{item.name}}</el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="创建时间：" style="float: left; margin-right: 20px;" prop="limitDateType">
+                  <span :class="isCreateTimeSelectAll ? 'all selectall': 'all'" @click="conditionCancel('创建时间')">不限</span>
+                  <el-radio-group v-model="queryModel.limitDateType">
+                    <el-radio v-for="item in createTimeOption" :label="item.code" :key="item.code" :checked="createTimeFlag">{{item.name}}</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-date-picker
+                  v-model="queryModel.dateInterval"
+                  v-if="queryModel.limitDateType === 6"
+                  type="daterange"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期">
+                </el-date-picker>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="9" class="region">
+                <el-form-item label="所在地区：" prop="provinceId">
+                  <el-select v-model="queryModel.provinceId" @change="getCityNode()" placeholder="请选择">
+                    <el-option
+                      v-for="item in regionOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                  <el-select v-model="queryModel.cityId" @change="getCountyNode()" placeholder="请选择">
+                    <el-option
+                      v-for="item in regionTwoOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                  <el-select v-model="queryModel.countyId" placeholder="请选择">
+                    <el-option
+                      v-for="item in regionThreeOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="9" class="bigWidth">
+                <el-form-item label="负责人：" prop="chargePersonId">
+                  <el-input v-model="queryModel.queryUserName" placeholder="请选择负责人" readonly>
+                    <el-button type="primary" slot="append" @click="showUserDialog">选择</el-button>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="9" class="bigWidth">
+                <el-form-item label="所属部门：" prop="departmentId">
+                  <el-input class="deptInput" v-model="queryModel.queryDepartName" auto-complete="off" placeholder="请选择" readonly="readonly" clearable @click.native="showDepartmentTree">
+                    <i slot="suffix" class="el-input__icon el-icon-arrow-down"></i>
+                  </el-input>
+                  <tree-options :initData="queryModel.departmentId" @selectSuccess="selectedDepatment" :isShowOptions="isShowDptTree"></tree-options>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row style="text-align: center;">
+              <el-col>
+                <el-button  type="primary" class="search" @click="handlePage(1)">查询</el-button>
+                <el-button  @click="reset('queryModel')">重置</el-button>
+                <span @click="showSelections = false" class="more">收起搜索条件</span>
+              </el-col>
+            </el-row>
+          </div>
+        </el-form>
+      </div>
+    </div>
+    <div class="main">
+      <!--按钮-->
+      <div class="btnbigbox" v-if="$store.getters.permissions.includes('1040102')">
+          <el-button type="primary" class="addbutton" @click="addBtn">
+            <span> + 新增</span>
+          </el-button>
+      </div>
+      <!--按钮-->
+      <el-table
+        :data="tableData"
+        border
+        v-loading="loading"
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index="computedIndex"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="客户名称"
+          width="500"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="dicIndustryCode"
+          label="所属行业"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="dicValueCode"
+          label="客户价值"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="departmentName"
+          label="所在部门"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="createDate"
+          label="创建时间"
+          :formatter="formatDate"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="chargePersonName"
+          label="负责人"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookBtn(scope)">查看</el-button>
+            <el-button type="text" size="small" @click="updateBtn(scope)" v-if="$store.getters.permissions.includes('1040102')">修改</el-button>
+            <el-button type="text" size="small" @click="followUp(scope)" v-if="$store.getters.permissions.includes('1040102')">跟进</el-button>
+            <el-button type="text" size="small" @click="logoff(scope.row.code)" v-if="$store.getters.permissions.includes('1040102')">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="page.total"
+        :page-size='page.pageSize'
+        :current-page.sync="page.currentPage"
+        @current-change="handlePage"
+        @next-click="handlePage">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <select-user-dialog :showVisible="showUserVisible" @selected="selectedUser" @showDialog="showUserDialog"></select-user-dialog>
+  </div>
+</template>
+<script>
+import { customer } from '@/api/customer'
+import { dataDictionary } from '@/api/system'
+import * as region from '@/assets/js/region'
+import selectUserDialog from '@/pages/system/users/search_user_radio'
+import TreeOptions from '@/pages/system/department/tree/tree_options'
+import {dateFormat} from '@/assets/js/common'
+export default {
+  components: {
+    selectUserDialog,
+    TreeOptions
+  },
+  data () {
+    return {
+      loading: false,
+      page: {
+        pageSize: 10,
+        pageNo: 0,
+        total: 0, // 总条数
+        currentPage: 1
+      },
+      queryModel: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        isDelete: 0,
+        messageLike: '',
+        dicValueCodes: [],
+        dicIndustryCodes: [],
+        dicSourceCodes: [],
+        customerStatuses: [],
+        limitDateType: 0,
+        dateInterval: [], // 自定义时间
+        provinceId: null,
+        cityId: null,
+        countyId: null,
+        chargePersonId: null,
+        departmentId: null
+      },
+      tableData: [],
+      // 客户价值字典项Id
+      dicCustomerValueId: 10001,
+      // 客户行业分类字典项Id
+      dicCustomerIndustryId: 10002,
+      // 客户来源字典项Id
+      dicCustomerSourceId: 10000,
+      // 客户价值集合
+      dicCustomerValueList: [],
+      // 客户行业分类集合
+      dicCustomerIndustryList: [],
+      // 客户来源集合
+      dicCustomerSourceList: [],
+      dicCustomerValueLoading: true,
+      dicCustomerIndustryLoading: true,
+      dicCustomerSourceListLoading: true,
+      // 高级搜索
+      showSelections: false,
+      opportunityStates: [{
+        label: 0,
+        name: '未合作'
+      }, {
+        label: 1,
+        name: '已合作'
+      }],
+      createTimeOption: [
+        {
+          name: '近一周',
+          code: 1
+        },
+        {
+          name: '近一月',
+          code: 2
+        },
+        {
+          name: '近三月',
+          code: 3
+        },
+        {
+          name: '近半年',
+          code: 4
+        },
+        {
+          name: '近一年',
+          code: 5
+        },
+        {
+          name: '自定义',
+          code: 6
+        }
+      ],
+      createTimeFlag: true,
+      // 所在地区
+      regionOptions: region.CityInfo,
+      regionTwoOptions: [],
+      regionThreeOptions: [],
+      // 负责人
+      showUserVisible: false,
+      // 所属部门
+      // 是否展示部门树
+      isShowDptTree: false
+    }
+  },
+  computed: {
+    isValueSelectAll () {
+      return !this.queryModel.dicValueCodes.length
+    },
+    isIndustrySelectAll () {
+      return !this.queryModel.dicIndustryCodes.length
+    },
+    isStatusSelectAll () {
+      return !this.queryModel.customerStatuses.length
+    },
+    isSourceSelectAll () {
+      return !this.queryModel.dicSourceCodes.length
+    },
+    isCreateTimeSelectAll () {
+      return this.queryModel.limitDateType === 0
+    }
+  },
+  watch: {
+    'queryModel.limitDateType' (value) {
+      if (value !== 6) {
+        this.$set(this.queryModel, 'dateInterval', [])
+        this.$set(this.queryModel, 'createDateLowerLimit', null)
+        this.$set(this.queryModel, 'createDateUpperLimit', null)
+      }
+    },
+    'queryModel.departmentId' (value) {
+      if (!value) {
+        this.queryModel.queryDepartName = ''
+      }
+    },
+    'queryModel.chargePersonId' (value) {
+      if (!value) {
+        this.queryModel.queryUserName = ''
+      }
+    },
+    'queryModel.provinceId' (value) {
+      if (!value) {
+        this.$set(this.queryModel, 'cityId', null)
+        this.$set(this.queryModel, 'countyId', null)
+      }
+    }
+  },
+  methods: {
+    // 获取列表数据,稍作延迟
+    getTableData () {
+      this.loading = true
+      this.queryModel.pageNo = this.page.pageNo
+      this.queryModel.pageSize = this.page.pageSize
+      // 获取自定义时间区间
+      if (this.queryModel.limitDateType === 6 && this.queryModel.dateInterval.length) {
+        this.queryModel.createDateLowerLimit = `${dateFormat(this.queryModel.dateInterval[0], 'yyyy-MM-dd')} 00:00:00`
+        this.queryModel.createDateUpperLimit = `${dateFormat(this.queryModel.dateInterval[1], 'yyyy-MM-dd')} 23:59:59`
+      }
+      customer.queryList(this.queryModel).then(res => {
+        this.loading = false
+        this.tableData = res.data.data.list
+        this.page.total = res.data.data.total
+      })
+    },
+    // 客户价值初始化
+    initCustomerValue () {
+      let query = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        dictionaryDirectoryId: this.dicCustomerValueId
+      }
+      dataDictionary.getDetailList(query).then(res => {
+        this.dicCustomerValueLoading = false
+        this.dicCustomerValueList = res.data.dictionaryDetails
+      })
+    },
+    // 客户行业分类集合初始化
+    initCustomerIndustry () {
+      let query = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        dictionaryDirectoryId: this.dicCustomerIndustryId
+      }
+      dataDictionary.getDetailList(query).then(res => {
+        this.dicCustomerIndustryLoading = false
+        this.dicCustomerIndustryList = res.data.dictionaryDetails
+      })
+    },
+    // 客户来源集合初始化
+    initCustomerSource () {
+      let query = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        dictionaryDirectoryId: this.dicCustomerSourceId
+      }
+      dataDictionary.getDetailList(query).then(res => {
+        this.dicCustomerSourceListLoading = false
+        this.dicCustomerSourceList = res.data.dictionaryDetails
+      })
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 格式化时间
+    formatDate (row, col, cellValue) {
+      return cellValue ? dateFormat(cellValue, 'yyyy-MM-dd') : '---'
+    },
+    // 添加
+    addBtn () {
+      this.$router.push({path: `/customerMan/customer/add`})
+    },
+    // 查看
+    lookBtn (scope) {
+      this.$router.push({path: `/customerMan/customer/detail/${scope.row.code}`})
+    },
+    // 修改
+    updateBtn (scope) {
+      this.$router.push({path: `/customerMan/customer/update/${scope.row.objectId}`})
+    },
+    // 跟进
+    followUp (scope) {
+      this.$router.push({path: `/customerMan/customer/follow/${scope.row.code}/customer`})
+    },
+    // 删除
+    logoff (code) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        customer.logoff(code).then(res => {
+          if (res.data.resCode === '0000') {
+            this.getTableData()
+          }
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 序号计算
+    computedIndex (index) {
+      return index + (this.page.currentPage - 1) * this.page.pageSize + 1
+    },
+    // 表单分页
+    handlePage (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = (nowNum - 1) * this.page.pageSize
+      this.getTableData()
+    },
+    // 重置
+    reset (formName) {
+      this.$refs[formName].resetFields()
+      this.handlePage(1)
+    },
+    // 高级搜索-取消条件
+    conditionCancel (label) {
+      switch (label) {
+        case '客户价值':
+          this.queryModel.dicValueCodes = []
+          break
+        case '所属行业':
+          this.queryModel.dicIndustryCodes = []
+          break
+        case '客户来源':
+          this.queryModel.dicSourceCodes = []
+          break
+        case '客户状态':
+          this.queryModel.customerStatuses = []
+          break
+        case '创建时间':
+          this.queryModel.limitDateType = 0
+          this.queryModel.dateInterval = []
+          break
+        default:
+          break
+      }
+    },
+    // 所在地区 3级联动  获取市信息
+    getCityNode () {
+      this.regionTwoOptions = null
+      this.regionThreeOptions = null
+      this.queryModel.cityId = null
+      this.queryModel.countyId = null
+      this.regionOptions.map((item) => {
+        if (item.value === this.queryModel.provinceId) {
+          this.regionTwoOptions = item.children
+        }
+      })
+    },
+    // 所在地区 3级联动  获取区信息
+    getCountyNode () {
+      this.regionThreeOptions = null
+      this.queryModel.countyId = null
+      this.regionTwoOptions.map((ite) => {
+        if (ite.value === this.queryModel.cityId) {
+          this.regionThreeOptions = ite.children
+        }
+      })
+    },
+    // 负责人 - 选择用户
+    selectedUser (obj) {
+      this.queryModel.queryUserName = obj.name
+      this.queryModel.chargePersonId = obj.objectId
+    },
+    // 选择人员弹框打开
+    showUserDialog () {
+      this.showUserVisible = !this.showUserVisible
+    },
+    // 部门树展开/关闭
+    showDepartmentTree () {
+      this.isShowDptTree = !this.isShowDptTree
+    },
+    // 选择部门
+    selectedDepatment (deptTreeNode) {
+      this.queryModel.queryDepartName = deptTreeNode.label
+      this.queryModel.departmentId = deptTreeNode.id
+      this.isShowDptTree = false
+    }
+  },
+  mounted () {
+    // 客户价值初始化
+    this.initCustomerValue()
+    // 客户行业分类初始化
+    this.initCustomerIndustry()
+    // 客户来源初始化
+    this.initCustomerSource()
+    // 列表初始化
+    this.getTableData()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_customer {
+    .tabletitles{
+      background:#f7f8fa!important;
+    }
+    .main{
+      margin: 0px;
+    }
+  }
+</style>

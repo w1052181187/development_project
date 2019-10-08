@@ -1,0 +1,538 @@
+<template>
+  <div class="cloudcontent service-subscription">
+    <div class="clearfix">
+      <h4 class="order-title">订阅流程</h4>
+      <ul class="progress-ul clearfix">
+        <li class="fl li-first-child" :class="orderProgress ? 'first-li-active' : ''">
+          <div class="progress-div"><i class="fl">1</i>提交订单</div>
+        </li>
+        <li class="fl" :class="orderProgress ? 'progress-li-active' : ''">
+          <div class="progress-div"><i class="fl">2</i>客服审核订单</div>
+        </li>
+        <li class="fl" :class="orderProgress ? 'progress-li-active' : ''">
+          <div class="progress-div"><i class="fl">3</i>在线支付</div>
+        </li>
+        <!-- <li class="fl" :class="orderProgress ? 'progress-li-active' : ''">
+          <div><i class="fl">3</i><span>支付费用</span><span>上传支付凭证</span></div>
+        </li> -->
+        <li class="fl">
+          <div class="progress-div"><i class="fl">4</i>服务开通</div>
+        </li>
+      </ul>
+    </div>
+    <div class="main">
+      <h4 class="order-title">服务订阅</h4>
+      <el-row :gutter="20" class="service-row">
+        <el-col :span="6">
+          <div class="service-box" @mouseover="activeList.platformActive = true" @mouseout="activeList.platformActive = false">
+            <div class="clearfix">
+              <h3 class="fl">平台</h3>
+              <el-radio v-model="checkList.platformChecked" class="fr fr-radio" label="1" border>&nbsp;</el-radio>
+            </div>
+            <p>提供日常管理类、项目管理类、销售管理类等相关功能。同时含5个APP用户。</p>
+            <img class="fr service-img" v-if="activeList.platformActive" src="../../../../static/images/service/platform.png" />
+            <img class="fr service-img" v-if="!activeList.platformActive" src="../../../../static/images/service/platformactive.png" />
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div class="service-box" @mouseover="activeList.sourceActive = true" @mouseout="activeList.sourceActive = false">
+            <div class="clearfix">
+              <h3 class="fl">招标寻源</h3>
+              <el-radio v-model="checkList.platformChecked" class="fr fr-radio" label="2" border @change="sourceChanged">&nbsp;</el-radio>
+            </div>
+            <p>提供全国各地比选公告和拟建项目信息。</p>
+            <ul class="new-region-list fl">
+              <li class="fl" v-for="(item,index) in newRegionList" :key="item.value" v-show="index < 4"
+                @click="seeAllRegoin(index)">
+                {{index > 2 ? index > 3 ? '' : '...' : item.text}}
+              </li>
+            </ul>
+            <img class="fr service-img" v-if="activeList.sourceActive" src="../../../../static/images/service/source.png" />
+            <img class="fr service-img" v-if="!activeList.sourceActive" src="../../../../static/images/service/sourceactive.png" />
+          </div>
+        </el-col>
+        <!-- <el-col :span="8">
+          <div class="service-box" @mouseover="activeList.servicesActive = true" @mouseout="activeList.servicesActive = false">
+            <div class="clearfix">
+              <h3 class="fl">定制服务</h3>
+              <el-checkbox class="fr" v-model="checkList.servicesChecked" @change="servicesChanged"></el-checkbox>
+            </div>
+            <p>您可以提出自己的个性需求。</p>
+            <span class="demand-button" v-if="JSON.stringify(contactList) !== '[]'&&checkList.servicesChecked" @click="seeDemand">查看需求</span>
+            <img class="fr service-img" v-if="activeList.servicesActive" src="../../../../static/images/service/services.png" />
+            <img class="fr service-img" v-if="!activeList.servicesActive" src="../../../../static/images/service/servicesactive.png" />
+          </div>
+        </el-col> -->
+      <!-- </el-row>
+      <el-row :gutter="20" class="service-row"> -->
+        <el-col :span="6">
+          <div class="service-box" @mouseover="activeList.appActive = true" @mouseout="activeList.appActive = false">
+            <div class="clearfix">
+              <h3 class="fl">APP</h3>
+              <el-radio v-model="checkList.appChecked" class="fr fr-radio" label="3" border disabled>&nbsp;</el-radio>
+            </div>
+            <p>将平台功能进行移动化，一部分实现手机移动端编写，一部分实现移动端查看</p>
+            <img class="fr service-img" v-if="activeList.appActive" src="../../../../static/images/service/app.png" />
+            <img class="fr service-img" v-if="!activeList.appActive" src="../../../../static/images/service/appactive.png" />
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div class="service-box" @mouseover="activeList.portalActive = true" @mouseout="activeList.portalActive = false">
+            <div class="clearfix">
+              <h3 class="fl">机构门户</h3>
+              <el-radio v-model="checkList.portalChecked" class="fr fr-radio" label="4" border disabled>&nbsp;</el-radio>
+            </div>
+            <p>为客户搭建自有门户，提供两套模板，自由选择，自主管理。</p>
+            <img class="fr service-img" v-if="activeList.portalActive" src="../../../../static/images/service/portal.png" />
+            <img class="fr service-img" v-if="!activeList.portalActive" src="../../../../static/images/service/portalActive.png" />
+          </div>
+        </el-col>
+      </el-row>
+      <el-form>
+        <el-form-item label="服务期限：" prop="serviceTerm">
+          <el-radio-group v-model="serviceTerm" @change="radioChange">
+          <el-radio label="1">一年</el-radio>
+          <el-radio label="2">二年</el-radio>
+          <el-radio label="3">三年</el-radio>
+          <el-radio label="4">四年</el-radio>
+          <el-radio label="5">五年</el-radio>
+          <el-radio label="6">其他<el-input :disabled="serviceTerm !== '6'" class="service-term-input"></el-input>年</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="应交金额：" prop="amountDue">
+          <span class="amount-due fl">{{serviceForm.amountDue}}</span>
+          <!-- <el-input v-model="serviceForm.amountDue" class="amount-due fl"></el-input> -->
+          <a href="javascript:;" @click="chargeExplanationBox = true" class="fl">查看收费说明</a>
+        </el-form-item>
+        <el-form-item label="邀请码：" prop="invitationCode">
+          <el-input v-model="serviceForm.invitationCode" class="invitation-code"></el-input>
+        </el-form-item>
+        <el-form-item label="联系电话：" prop="contactTel">
+          <el-input v-model="serviceForm.contactTel" class="contact-tel"></el-input>
+        </el-form-item>
+        <el-form-item prop="">
+          <el-checkbox>同意并接受《服务条款》</el-checkbox>
+        </el-form-item>
+        <el-form-item >
+          <el-button type="primary">立即提交</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+    <!-- 招标寻源弹框 -->
+    <el-dialog title="选择订阅地区" center :show-close="false" :visible.sync="biddingSourceBox" class="company-choose-box" :width="'720px'">
+      <div class="source-dialog-box">
+        <ul class="region-ul clearfix">
+          <li class="region-li fl" @click="chooseOneRegion()">
+             <!-- {{item.text}} -->
+             <el-checkbox-group @change="checkboxChange" v-model="checkboxList" class="checkGroup">
+              <el-checkbox v-for="(item) in regionList" :key="item.value" :label="item.value">{{item.text}}</el-checkbox>
+            </el-checkbox-group>
+            </li>
+        </ul>
+        <div class="dialog-btn-box clearfix">
+          <el-button class="fr" type="cancel" @click="biddingSourceBox = false">取消</el-button>
+          <el-button class="fr" type="primary" @click="determineChooseSource">确认</el-button>
+        </div>
+      </div>
+    </el-dialog>
+    <!-- 定制服务弹框 -->
+    <el-dialog title="" center :show-close="false" :visible.sync="customizedServicesBox" class="services-choose-box" :width="'570px'">
+      <div class="services-dialog-box">
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
+          <el-form-item label="描述您的定制需求：" prop="demand">
+            <el-input type="textarea" v-model="ruleForm.demand" resize="none" size="medium"></el-input>
+          </el-form-item>
+          <div class="clearfix services-contact-box">
+            <el-form-item label="联系人：" prop="contact" class="fl">
+              <el-input class="services-input" v-model="ruleForm.contact"
+                :disabled="checkList.servicesChecked && JSON.stringify(contactList) !== '[]'"></el-input>
+            </el-form-item>
+            <el-form-item label="联系电话：" prop="telphone" class="fl">
+              <el-input class="services-input" v-model="ruleForm.telphone"
+                :disabled="checkList.servicesChecked && JSON.stringify(contactList) !== '[]'"></el-input>
+            </el-form-item>
+          </div>
+        </el-form>
+        <div class="dialog-btn-box clearfix">
+          <el-button class="fr" type="cancel" v-if="JSON.stringify(contactList) === '[]'" @click="cancelChooseServices">取消</el-button>
+          <el-button class="fr" type="primary" v-if="JSON.stringify(contactList) === '[]'" @click="determineChooseServices('ruleForm')">确认</el-button>
+          <el-button class="fr" type="cancel" v-if="JSON.stringify(contactList) !== '[]'" @click="customizedServicesBox = false">关闭</el-button>
+        </div>
+      </div>
+    </el-dialog>
+    <!-- 查看收费说明 -->
+    <el-dialog title="收费标准" center :show-close="false" :visible.sync="chargeExplanationBox" class="company-choose-box" :width="'570px'">
+      <div class="services-dialog-box">
+        <div>
+          <ul class="services-dialog-ul">
+            <li>（一）平台价格</li>
+            <li>标准价格：19800元/年</li>
+            <li>（二）招标寻源</li>
+            <li>标准服务：3200元/省/年，每增加一个省按照0.5折计算（1600元）</li>
+            <li>（三）APP</li>
+            <li>使用平台含5个APP用户，后续每增加5个880元/年</li>
+            <li>（四）机构门户</li>
+            <li>标准模板：二选一，2900元/年</li>
+          </ul>
+        </div>
+        <div class="dialog-btn-box clearfix">
+          <el-button class="fr" type="cancel" @click="chargeExplanationBox = false">关闭</el-button>
+        </div>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+
+export default {
+  name: '',
+  components: {},
+  data () {
+    return {
+      orderProgress: true, // 判断状态值
+      checkList: {
+        platformChecked: false,
+        sourceChecked: false,
+        servicesChecked: false,
+        appChecked: false,
+        portalChecked: false
+      },
+      activeList: {
+        platformActive: false,
+        sourceActive: false,
+        servicesActive: false,
+        appActive: false,
+        portalActive: false
+      },
+      serviceForm: {
+        amountDue: '',
+        invitationCode: '',
+        contactTel: '400-000-0388'
+      },
+      serviceTerm: 0,
+      biddingSourceBox: false, // 招标寻源弹框
+      checkboxList: [],
+      regionList: [
+        {text: '全国', value: 1},
+        {text: '山西', value: 2},
+        {text: '陕西', value: 3},
+        {text: '河北', value: 4},
+        {text: '内蒙古', value: 5},
+        {text: '山东', value: 6},
+        {text: '河南', value: 7},
+        {text: '湖北', value: 8},
+        {text: '湖南', value: 9},
+        {text: '辽宁', value: 10},
+        {text: '吉林', value: 11},
+        {text: '黑龙江', value: 12},
+        {text: '江苏', value: 13},
+        {text: '浙江', value: 14},
+        {text: '安徽', value: 15},
+        {text: '广东', value: 16},
+        {text: '广西', value: 17},
+        {text: '福建', value: 18},
+        {text: '江西', value: 19},
+        {text: '云南', value: 20},
+        {text: '贵州', value: 21},
+        {text: '四川', value: 22},
+        {text: '新疆', value: 23},
+        {text: '西藏', value: 24},
+        {text: '宁夏', value: 25},
+        {text: '甘肃', value: 26},
+        {text: '青海', value: 27},
+        {text: '北京', value: 28},
+        {text: '天津', value: 29},
+        {text: '上海', value: 30},
+        {text: '重庆', value: 31}
+      ],
+      // chooseRegionList: [],
+      regionActive: [],
+      newRegionList: [],
+      customizedServicesBox: false, // 定制服务弹框
+      ruleForm: {
+        demand: '',
+        contact: '',
+        telphone: ''
+      },
+      rules: {
+        contact: [{ required: true, message: '请输入联系人', trigger: 'change' }],
+        telphone: [{ required: true, message: '请输入联系人电话', trigger: 'change' }]
+      },
+      contactList: [],
+      chargeExplanationBox: false // 收费标准弹框
+    }
+  },
+  mounted () {
+  },
+  methods: {
+    radioChange (val) {
+      console.log(val)
+    },
+    // 选择招标寻源
+    sourceChanged (val) {
+      if (val) {
+        this.biddingSourceBox = true
+      } else {
+        // this.chooseRegionList = []
+        this.checkboxList = []
+        this.newRegionList = []
+      }
+    },
+    seeAllRegoin (val) {
+      if (val === 3) {
+        this.biddingSourceBox = true
+      }
+    },
+    // 选择地址
+    chooseOneRegion () {
+      // if (this.chooseRegionList.indexOf(val) === -1) {
+      //   this.chooseRegionList.push(val)
+      // }
+    },
+    checkboxChange (val) {},
+    // 确认招标寻源地点
+    determineChooseSource () {
+      let _this = this
+      _this.newRegionList = []
+      _this.biddingSourceBox = false
+      _this.regionList.forEach(x => {
+        _this.checkboxList.forEach(y => {
+          if (x.value === y) {
+            _this.newRegionList.push({text: x.text, velue: x.value})
+          }
+        })
+      })
+    },
+    // 选择定制服务
+    servicesChanged (val) {
+      if (val) {
+        this.customizedServicesBox = true
+      } else {
+        this.contactList = []
+        this.ruleForm.contact = ''
+        this.ruleForm.telphone = ''
+      }
+    },
+    // 定制服务查看需求
+    seeDemand () {
+      this.customizedServicesBox = true
+    },
+    // 定制服务确定按钮
+    determineChooseServices (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.customizedServicesBox = false
+          this.contactList = formName
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    // 定制服务取消按钮
+    cancelChooseServices () {
+      this.customizedServicesBox = false
+      this.checkList.servicesChecked = false
+      this.ruleForm.contact = ''
+      this.ruleForm.telphone = ''
+    }
+  }
+}
+</script>
+
+<style scoped lang="less">
+.clearfix:after{
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.clearfix{
+  zoom: 1;
+}
+.order-title{
+  border-left: 4px solid #fe7e00;
+  margin-bottom: 10px;
+  padding-left: 6px;
+}
+.progress-ul{
+  height: 110px;
+  background: #ecf3fd;
+  padding: 30px;
+  box-sizing: border-box;
+  .li-first-child{
+    width: 188px;
+    height: 50px;
+    background: url("../../../../static/images/progress/progress.png") center center no-repeat;
+  }
+  .first-li-active{
+    background: url("../../../../static/images/progress/progressActive.png") center center no-repeat;
+    color: #fff;
+  }
+  li{
+    width: 210px;
+    height: 50px;
+    background: url("../../../../static/images/progress/progress1.png") center center no-repeat;
+    text-align: center;
+  }
+  .progress-li-active{
+    background: url("../../../../static/images/progress/progressActive1.png") center center no-repeat;
+    color: #fff;
+  }
+  .progress-div{
+    line-height: 50px;
+  }
+  i{
+    font-size: 22px;
+    font-weight: bold;
+    line-height: 50px;
+    margin-left: 30px;
+  }
+}
+.service-row{
+  margin: 10px;
+}
+.service-box{
+  height: 210px;
+  border: 1px solid #e5e5e5;
+  // box-shadow: 0px 0px 2px 2px rgba(0,0,0,0.4);
+  padding: 16px;
+  box-sizing: border-box;
+  overflow: hidden;
+  cursor: pointer;
+  p{
+    color: #999999;
+    margin-top: 30px;
+  }
+  .demand-button{
+    display: inline-block;
+    background-color: #fe835e;
+    border-radius: 20px;
+    color: #fff;
+    margin-top: 30px;
+    padding: 4px 10px;
+    cursor: pointer;
+  }
+  .service-img{
+    margin-right: -30px;
+  }
+  .new-region-list{
+    width: 164px;
+    margin-top: 6px;
+    li{
+      width: 50px;
+      background-color: #fe835e;
+      border-radius: 20px;
+      color: #fff;
+      text-align: center;
+      margin: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+    }
+  }
+}
+.service-box:hover{
+  border-bottom: 4px solid #108cee;
+}
+.source-dialog-box{
+  .region-li{
+    line-height: 30px;
+    margin: 0 10px;
+    cursor: pointer;
+  }
+}
+.region-active{
+  border: 1px solid #108cee;
+  border-radius: 16px;
+  padding: 0 10px;
+}
+.services-dialog-ul{
+  li{
+    line-height: 30px;
+  }
+  li:nth-child(2n){
+    margin-left: 42px;
+  }
+}
+</style>
+<style lang="less">
+.service-subscription{
+  .main{
+    .el-form{
+      width: 100%;
+    }
+    .el-form-item__label{
+      width: 70px;
+      // margin-right: 10px;
+    }
+    .el-form-item__content{
+      margin-left: 80px;
+    }
+  }
+  .service-term-input{
+    width: 50px;
+    .el-input__inner{
+      width: 50px;
+      height: 30px;
+    }
+  }
+  .services-choose-box{
+    .el-dialog__header{
+      padding: 0;
+    }
+    .el-button--cancel{
+      margin-left: 10px;
+    }
+  }
+  .company-choose-box{
+    margin-top: 10px;
+    .el-button--cancel{
+      margin-left: 10px;
+    }
+  }
+  .service-box {
+    .el-radio.is-bordered {
+      padding: 12px;
+    }
+    .el-radio .el-radio__label {
+      padding-left: 0;
+    }
+  }
+  .services-contact-box{
+    .el-form-item:last-child{
+      margin-left: 48px;
+    }
+    .el-form-item__label{
+      float: left;
+    }
+    .el-form-item__content{
+      float: left;
+    }
+  }
+  .services-input{
+    .el-input__inner{
+      width: 150px;
+    }
+  }
+  .amount-due{
+    width: 220px;
+    margin-right: 10px;
+   .el-input__inner{
+      width: 220px;
+    }
+  }
+  .invitation-code{
+    .el-input__inner{
+      width: 100px;
+    }
+  }
+  .contact-tel{
+    .el-input__inner{
+      border: none;
+      padding: 0;
+    }
+  }
+}
+</style>

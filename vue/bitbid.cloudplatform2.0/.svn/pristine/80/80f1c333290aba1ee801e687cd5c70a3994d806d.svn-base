@@ -1,0 +1,20 @@
+export default [
+  {
+    path: '/archives/classify',
+    name: '档案分类',
+    meta: {
+      title: '档案分类',
+      active: '/archives/classify'
+    },
+    component: () => import(/* webpackChunkName: 'archives' */ '@/pages/archives/classify/index')
+  },
+  {
+    path: '/archives/classify/file-catalog/:objectId',
+    name: '文件目录',
+    meta: {
+      title: '文件目录',
+      active: '/archives/classify'
+    },
+    component: () => import(/* webpackChunkName: 'archives' */ '@/pages/archives/classify/file-catalog')
+  }
+]

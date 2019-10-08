@@ -1,0 +1,17 @@
+// 招标声明
+import bidstate from './bidstate'
+// 违规公示
+import violation from './violation'
+// 范本大全
+import model from './model'
+// 下载中心
+import download from './download'
+// 行业监督
+import industrySupervision from './industry-supervision'
+export default[
+  ...bidstate,
+  ...violation,
+  ...model,
+  ...download,
+  ...industrySupervision
+]

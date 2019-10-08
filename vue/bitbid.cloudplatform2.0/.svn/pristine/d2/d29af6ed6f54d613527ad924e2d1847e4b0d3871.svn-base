@@ -1,0 +1,241 @@
+<template>
+  <div class="cloudcontent" id="cloud_historyProjectAdd">
+    <div class="main">
+      <div class="basic-info-title">项目基本信息</div>
+      <el-form :model="addForm">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <span>{{addForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{addForm.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标人：">
+              <span>{{addForm.tendererName}}</span>
+            </el-form-item>
+            </el-col>
+          <el-col :span="12">
+            <el-form-item label="代理合同：">
+              <span>{{addForm.agencyContractName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目类型：">
+              <span>{{typeObj[addForm.projectType]}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="招标方式：">
+              <span>{{methodObj[addForm.tenderMethod]}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目地址：">
+              <span>{{addForm.address}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="是否资格预审："  prop="isPre">
+              <span>{{preObj[addForm.isPre]}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="详细地址：">
+              <span>{{addForm.addressDetail}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目预计收入(元)：">
+              <span>{{addForm.projectIncome}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目行业分类：">
+              <span>{{addForm.industry}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="资质主体：">
+              <span>{{addForm.companyMainBody}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <!--          <el-col :span="12">-->
+          <!--            <el-form-item label="招标项目名称："  prop="tenderProjectName">-->
+          <!--              <el-input v-model="addForm.tenderProjectName"></el-input>-->
+          <!--            </el-form-item>-->
+          <!--          </el-col>-->
+          <el-col :span="12">
+            <el-form-item label="项目时间：">
+              <span>{{addForm.projectTime}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div class="basic-info-title">
+        项目组成员
+      </div>
+      <el-table
+        :data="memberData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          width="50"
+          type="index"
+          align="center"
+          label="序号">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="姓名"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="duty"
+          label="职责分工"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+      </el-table>
+      <div class="basic-info-title">
+        标段信息
+      </div>
+      <el-table
+        :data="sectionData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          width="50"
+          type="index"
+          align="center"
+          label="序号">
+        </el-table-column>
+        <el-table-column
+          prop="sectionCode"
+          label="标段编号"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="sectionName"
+          label="标段名称"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="type"
+          label="标段类型"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="price"
+          label="标段文件售价（元）"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="openingTime"
+          label="开标时间"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+      </el-table>
+      <div class="submit-radio">
+        <el-button class="cancal" @click="close">关闭</el-button>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import * as region from '@/assets/js/region'
+import * as industry from '@/assets/js/industry_two'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      loading: false,
+      isSave: false,
+      addForm: {
+      },
+      // 地址三级联动
+      addressOptions: region.CityInfo,
+      // 行业三级联动
+      industryOptions: industry.industry,
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10, // 每页展示条数
+      searchForm: {
+        agencyContractNameLike: ''
+      },
+      typeObj: {
+        1: '工程',
+        2: '货物',
+        3: '服务'
+      },
+      methodObj: {
+        1: '公开招标',
+        2: '邀请招标',
+        3: '竞争性谈判',
+        4: '竞争性磋商',
+        5: '询价',
+        6: '单一来源'
+      },
+      preObj: {
+        1: '是',
+        0: '否'
+      },
+      memberData: [],
+      sectionData: []
+    }
+  },
+  methods: {
+    close () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    }
+  },
+  computed: {
+  },
+  created () {}
+}
+</script>
+<style lang="less">
+  #cloud_historyProjectAdd {
+    .el-cascader, .el-select{
+      width: 100%;
+    }
+    .el-radio__label{
+      display: none;
+    }
+    .member-form {
+      width: 100%;
+    }
+    .addMember {
+      margin-left: 24px;
+      color: #409EFF;
+      cursor: pointer;
+      font-size: 14px;
+    }
+  }
+</style>

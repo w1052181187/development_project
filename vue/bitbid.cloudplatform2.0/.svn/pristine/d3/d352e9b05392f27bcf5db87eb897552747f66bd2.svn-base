@@ -1,0 +1,340 @@
+<template>
+  <div>
+    <el-dialog title="编辑企业关系图谱" :visible.sync="showVisible" :before-close="cancel">
+      <el-tabs v-model="activeTab">
+        <el-tab-pane label="投资方" name="enterShip_type0">
+          <el-form :model="currentEnterShips" ref="enterShip_type0" :validate-on-rule-change="true">
+            <el-table
+              class="addcon"
+              :data="currentEnterShips.enterShip_type0"
+              border
+              style="width: 100%" header-cell-class-name="tableheader">
+              <el-table-column
+                type="index"
+                label="序号"
+                width="60"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                label="投资方"
+                show-overflow-tooltip>
+                <template slot-scope='scope'>
+                  <el-form-item :prop="'enterShip_type0.'+ scope.$index + '.name'" :rules="rules.noRepead">
+                    <el-input v-model="scope.row.name" clearable placeholder="请输入投资方">
+                      <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                    </el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="投资金额（万元）"
+                show-overflow-tooltip>
+                <template slot-scope='scope'>
+                  <el-form-item :prop="'enterShip_type0.'+ scope.$index + '.investmentAmount'" :rules="rules.money">
+                    <el-input v-model="scope.row.investmentAmount" clearable placeholder="请输入投资金额">
+                      <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                    </el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="占比（%）"
+                show-overflow-tooltip>
+                <template slot-scope='scope'>
+                  <el-form-item :prop="'enterShip_type0.'+ scope.$index + '.proportion'" :rules="rules.percentage">
+                    <el-input v-model="scope.row.proportion" clearable placeholder="请输入占比">
+                      <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                    </el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="操作" align="center" width="100">
+                <template slot-scope="scope">
+                  <el-button type="text" size="small" @click="delRow(scope.$index, 0)">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form>
+          <div class="addbutton"><span @click="addRow(0)">+ 新增</span></div>
+        </el-tab-pane>
+        <el-tab-pane label="股东" name="enterShip_type1">
+          <el-form :model="currentEnterShips" ref="enterShip_type1" :validate-on-rule-change="true">
+            <el-table
+              class="addcon"
+              :data="currentEnterShips.enterShip_type1"
+              border
+              style="width: 100%" header-cell-class-name="tableheader">
+              <el-table-column
+                type="index"
+                label="序号"
+                width="60"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                label="股东"
+                show-overflow-tooltip>
+                <template slot-scope='scope'>
+                  <el-form-item :prop="'enterShip_type1.'+ scope.$index + '.name'" :rules="rules.simpleRequiredText">
+                    <el-input v-model="scope.row.name" clearable placeholder="请输入股东">
+                      <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                    </el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="职务"
+                show-overflow-tooltip>
+                <template slot-scope='scope'>
+                  <el-form-item :prop="'enterShip_type1.'+ scope.$index + '.job'" :rules="rules.simpleRequiredText">
+                    <el-input v-model="scope.row.job" clearable placeholder="请输入职务">
+                      <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                    </el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="操作" align="center" width="100">
+                <template slot-scope="scope">
+                  <el-button type="text" size="small" @click="delRow(scope.$index, 1)">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form>
+          <div class="addbutton"><span @click="addRow(1)">+ 新增</span></div>
+        </el-tab-pane>
+        <el-tab-pane label="分支机构" name="enterShip_type2">
+          <el-form :model="currentEnterShips" ref="enterShip_type2" :validate-on-rule-change="true">
+            <el-table
+              class="addcon"
+              :data="currentEnterShips.enterShip_type2"
+              border
+              style="width: 100%" header-cell-class-name="tableheader">
+              <el-table-column
+                type="index"
+                label="序号"
+                width="60"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                label="分支机构"
+                show-overflow-tooltip>
+                <template slot-scope='scope'>
+                  <el-form-item :prop="'enterShip_type2.'+ scope.$index + '.name'" :rules="rules.simple200RequiredText">
+                    <el-input v-model="scope.row.name" clearable placeholder="请输入分支机构">
+                      <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                    </el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="操作" align="center" width="100">
+                <template slot-scope="scope">
+                  <el-button type="text" size="small" @click="delRow(scope.$index, 2)">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form>
+          <div class="addbutton"><span @click="addRow(2)">+ 新增</span></div>
+        </el-tab-pane>
+        <el-tab-pane label="对外投资" name="enterShip_type3">
+          <el-form :model="currentEnterShips" ref="enterShip_type3" :validate-on-rule-change="true">
+            <el-table
+              class="addcon"
+              :data="currentEnterShips.enterShip_type3"
+              border
+              style="width: 100%" header-cell-class-name="tableheader">
+              <el-table-column
+                type="index"
+                label="序号"
+                width="60"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                label="对外投资"
+                show-overflow-tooltip>
+                <template slot-scope='scope'>
+                  <el-form-item :prop="'enterShip_type3.'+ scope.$index + '.name'" :rules="rules.simple200RequiredText">
+                    <el-input v-model="scope.row.name" clearable placeholder="请输入对外投资">
+                      <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                    </el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="操作" align="center" width="100">
+                <template slot-scope="scope">
+                  <el-button type="text" size="small" @click="delRow(scope.$index, 3)">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form>
+          <div class="addbutton"><span @click="addRow(3)">+ 新增</span></div>
+        </el-tab-pane>
+      </el-tabs>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submit">保 存</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import {validMoney, validatePercentage} from '@/assets/js/validate'
+import { Message } from 'element-ui'
+import {trimStr} from '@/assets/js/common'
+export default {
+  data () {
+    // 验证投资方重复
+    let validNoRepead = (rule, value, callback) => {
+      if (value && trimStr(value)) {
+        const name = trimStr(value)
+        if (name.length < 1 || name.length > 100) {
+          callback(new Error('长度在1~100个字符'))
+        } else {
+          let count = 0
+          this.currentEnterShips.enterShip_type0.forEach(item => {
+            if (item.name === name) {
+              count++
+            }
+          })
+          if (count > 1) {
+            callback(new Error('投资方不能重复'))
+          } else {
+            callback()
+          }
+        }
+      } else {
+        callback(new Error('投资方不能为空'))
+      }
+    }
+    let validate100Percent = (rule, value, callback) => {
+      let percent = 0
+      this.currentEnterShips.enterShip_type0.forEach(item => { percent += Number(item.proportion) })
+      if (value) {
+        if (!validatePercentage(value)) {
+          callback(new Error('输入有误，请重新录入！'))
+        } else if (percent > 100) {
+          callback(new Error('占比超过100%，请重新录入！'))
+        } else {
+          callback()
+        }
+      } else {
+        callback(new Error('占比不能为空'))
+      }
+    }
+    return {
+      activeTab: 'enterShip_type0',
+      validateFlag: true,
+      currentEnterShips: {
+        enterShip_type0: [],
+        enterShip_type1: [],
+        enterShip_type2: [],
+        enterShip_type3: [],
+        enterShip_type4: []
+      },
+      rules: {
+        noRepead: [
+          { required: true, message: '输入不能为空', trigger: 'blur' },
+          { validator: validNoRepead, trigger: 'blur' }
+        ],
+        simpleRequiredText: [
+          { required: true, message: '输入不能为空', trigger: 'blur' },
+          { min: 1, max: 100, message: '长度在1~20个字符', trigger: 'blur' }
+        ],
+        simple200RequiredText: [
+          { required: true, message: '输入不能为空', trigger: 'blur' },
+          { min: 1, max: 200, message: '长度在1~200个字符', trigger: 'blur' }
+        ],
+        money: [
+          { required: true, message: '输入不能为空', trigger: 'blur' },
+          { validator: validMoney, trigger: 'blur' },
+          { min: 1, max: 20, message: '长度在1~20个字符', trigger: 'blur' }
+        ],
+        percentage: [
+          { required: true, message: '输入不能为空', trigger: 'blur' },
+          { validator: validate100Percent, trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  props: ['showVisible', 'enterShipMap', 'relatedCode'],
+  watch: {
+    showVisible (value) {
+      if (value) {
+        this.currentEnterShips = {
+          enterShip_type0: [],
+          enterShip_type1: [],
+          enterShip_type2: [],
+          enterShip_type3: [],
+          enterShip_type4: []
+        }
+        for (let i in this.enterShipMap) {
+          this.enterShipMap[i].forEach(item => {
+            this.currentEnterShips[i].push(Object.assign({}, item))
+          })
+        }
+      }
+    }
+  },
+  methods: {
+    // 增加一行
+    addRow (type) {
+      this.$refs[`enterShip_type${type}`].validate((valid) => {
+        if (valid) {
+          let cooperator = {
+            analysisCode: this.relatedCode,
+            name: '',
+            project: '',
+            type: type
+          }
+          this.currentEnterShips[`enterShip_type${type}`].push(cooperator)
+        }
+      })
+    },
+    // 删除一行
+    delRow (index, type) {
+      this.currentEnterShips[`enterShip_type${type}`].splice(index, 1)
+    },
+    // 保存
+    submit () {
+      if (this.currentEnterShips.enterShip_type0.length || this.currentEnterShips.enterShip_type1.length || this.currentEnterShips.enterShip_type2.length || this.currentEnterShips.enterShip_type3.length) {
+        for (let i = 0; i < 4; i++) {
+          this.validate(i)
+          if (!this.validateFlag) {
+            return false
+          }
+        }
+        if (this.validateFlag) {
+          this.$emit('submit', this.currentEnterShips)
+          this.cancel()
+        }
+      } else {
+        Message({
+          message: '请添加数据',
+          type: 'error',
+          duration: 3 * 1000
+        })
+      }
+    },
+    // 验证
+    validate (type) {
+      let mark = `enterShip_type${type}`
+      this.$refs[mark].validate((valid) => {
+        if (valid) {
+          this.validateFlag = true
+        } else {
+          this.validateFlag = false
+          this.activeTab = mark
+        }
+      })
+    },
+    // 关闭
+    cancel () {
+      this.$emit('showDialog')
+    }
+  }
+}
+</script>
+<style scoped>
+</style>

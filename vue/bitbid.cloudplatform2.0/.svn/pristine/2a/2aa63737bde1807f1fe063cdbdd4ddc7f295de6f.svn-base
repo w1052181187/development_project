@@ -1,0 +1,613 @@
+<template>
+  <div class="cloudcontent" id="cloud_projectOverview">
+    <div class="main">
+      <el-row :gutter="20">
+        <el-col :span="14">
+          <div class="lefttop">
+            <div class="Box addBox">
+              <h3>新增
+                <el-date-picker
+                  v-model="value"
+                  @change = "filterTime"
+                  type="monthrange"
+                  range-separator="至"
+                  start-placeholder="开始月份"
+                  end-placeholder="结束月份">
+                </el-date-picker>
+              </h3>
+              <div class="adddata">
+                <ul class="numList" :loading = "projectNumsAndIncomeLoading">
+                  <li>
+                   <img src="../../../../static/images/project/numListicon1.png"/>
+                    <p>项目数量（个）</p>
+                    <span :title="projectNums" @click="clickBtn(1, 'projectNums')">{{projectNums}}</span>
+                  </li>
+                  <li>
+                   <img src="../../../../static/images/project/numListicon2.png"/>
+                    <p>项目收入（万元）</p>
+                    <span :title="projectPlanIncome" @click="clickBtn(1, 'projectPlanIncome')">{{projectPlanIncome}}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="Box processBox">
+              <h3>项目进度</h3>
+              <div class="processdata">
+                <ul class="numList" :loading = "inProcessAndEndProjectNumsLoading">
+                  <li>
+                    <img src="../../../../static/images/project/numListicon3.png"/>
+                    <p>进行中（个）</p>
+                    <span :title="inProcessProjectNums" @click="clickBtn(2, 'inProcessProjectNums')">{{inProcessProjectNums}}</span>
+                  </li>
+                  <li>
+                    <img src="../../../../static/images/project/numListicon4.png"/>
+                    <p>已完成（个）</p>
+                    <span :title="endProjectNums" @click="clickBtn(2, 'endProjectNums')">{{endProjectNums}}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="Box">
+            <h3 style="margin-top: 10px;">标段进度一览表</h3>
+            <div class="echatbox" :loading = "loadBidOverInfoLoading">
+              <div id="bidOver"  style="width:100%; height:450px;"></div>
+            </div>
+          </div>
+        </el-col>
+        <el-col :span="10">
+          <div class="rightBox" style="height: 399px;">
+            <h3>项目分配</h3>
+            <div style="height: 256px;">
+              <el-table
+                :data="projectData"
+                border
+                :loading="projectAllocationLoading"
+                v-if="projectData.length !== 0"
+                header-cell-class-name="tableheader">
+                <el-table-column
+                  prop="userName"
+                  label="项目经理"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  prop="projectNums"
+                  label="项目总数"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  prop="inProgressProjectNums"
+                  label="进行中"
+                  show-overflow-tooltip>
+                </el-table-column>
+              </el-table>
+            </div>
+            <!--分页-->
+            <el-pagination
+              background
+              layout="prev, pager, next"
+              :total="allocationTotal"
+              :page-size='allocationPageSize'
+              :current-page.sync="allocationCurrentPage"
+              @current-change="allocationHandleCurrentChange"
+              @next-click="allocationHandleCurrentNext"
+              v-if="projectData.length !== 0">
+            </el-pagination>
+            <!--分页-->
+            <div class="nodata"  v-if="projectData.length === 0">
+              <img src="../../../../static/images/newindex/nodata3.png"/>
+              <p>暂无数据</p>
+            </div>
+          </div>
+          <div class="rightBox" style="height: 239px;">
+            <h3>项目资料完整度</h3>
+            <ul v-if="integrityList.length !== 0" :loading="integrityLoading">
+              <li v-for="item in integrityList" :key="item.index">
+                <el-progress type="circle" :percentage='item.num' :class="(item.num <= 25) ? 'red': (item.num <= 50)  ?  'yellow': (item.num <= 75) ?  'blue': 'green'"></el-progress>
+                <span :title="item.name">{{item.name}}</span>
+              </li>
+            </ul>
+            <!--分页-->
+            <el-pagination
+              background
+              layout="prev, pager, next"
+              :total="total"
+              :page-size='pageSize'
+              :current-page.sync="currentPage"
+              @current-change="handleCurrentChange"
+              @next-click="handleCurrentNext"
+              v-if="integrityList.length !== 0">
+            </el-pagination>
+            <!--分页-->
+            <div class="nodata"  v-if="integrityList.length === 0">
+              <img src="../../../../static/images/newindex/nodata3.png"/>
+              <p>暂无数据</p>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+  </div>
+</template>
+<script>
+import echarts from 'echarts'
+import {dateFormat} from '@/assets/js/common'
+import {tenderProject, projectLeader, bidSection} from '@/api/project'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      value: '',
+      projectNums: 0, // 项目数量
+      projectPlanIncome: 0, // 预计收入
+      projectNumsAndIncomeLoading: false,
+      inProcessProjectNums: 0, // 该企业下进行中的项目数量
+      endProjectNums: 0, // 该企业下已完成的项目数量
+      inProcessAndEndProjectNumsLoading: false,
+      loadBidOverCharts: '',
+      bidOverList: ['未开始', '公告阶段', '资格预审', '招标文件', '响应阶段', '开/评标', '结果公示', '废标'],
+      bidOverData: [],
+      loadBidOverInfoLoading: false,
+      projectData: [],
+      projectAllocationLoading: false,
+      allocationCurrentPage: 1,
+      allocationPageNo: 0,
+      allocationTotal: 0,
+      allocationPageSize: 5,
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 4, // 每页展示条数
+      dataIndex: 1,
+      integrityLoading: false,
+      integrityList: [],
+      lowerLimit: null,
+      upperLimit: null
+    }
+  },
+  watch: {
+    // '$route': 'getTableData'
+  },
+  mounted () {
+    this.init()
+  },
+  methods: {
+    /** 路由跳转 */
+    clickBtn (from, val) {
+      if (from === 1) { // 跳转到历史项目列表
+        let queryCondition = {
+          lowerLimit: this.lowerLimit,
+          upperLimit: this.upperLimit,
+          statusList: '3,4,5,6,7,8,10,11,12,14'
+        }
+        this.$router.push({path: '/archives/transfer/historyList', query: {queryCondition: queryCondition}})
+      } else if (from === 2) { // 跳转到项目进度列表
+        if (val === 'inProcessProjectNums') {
+          this.$router.push({path: `/project/projectProcess`, query: {status: 11}})
+        } else if (val === 'endProjectNums') {
+          this.$router.push({path: `/project/projectProcess`, query: {status: 12}})
+        }
+      }
+    },
+    init () {
+      // 初始化新增时间
+      this.initDate()
+      // 项目数量+项目收入
+      this.getProjectNumsAndIncome()
+      // 项目进度
+      this.getInProcessAndEndProjectNums()
+      // 项目分配
+      this.getProjectAllocationInfo()
+      // 标段进度一览表
+      this.loadBidOverInfo()
+      // 项目资料完整度
+      this.getProjectIntegrityInfo()
+    },
+    /** 初始化新增时间 */
+    initDate () {
+      let nowDateYear = new Date().getFullYear()
+      this.value = [new Date(nowDateYear, 0), new Date(nowDateYear, 11)]
+      this.lowerLimit = dateFormat(this.value[0], 'yyyy-MM')
+      this.upperLimit = dateFormat(this.value[1], 'yyyy-MM')
+    },
+    /** 项目数量+项目收入 */
+    getProjectNumsAndIncome () {
+      tenderProject.getList({
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        lowerLimit: this.lowerLimit,
+        upperLimit: this.upperLimit,
+        statusList: '3,4,5,6,7,8,10,11,12,14' // 概况提交后则显示其预计收入
+      }).then((res) => {
+        this.projectNumsAndIncomeLoading = true
+        this.projectNums = 0 // 项目数量
+        this.projectPlanIncome = 0 // 预计收入
+        if (res.data.tenderProjectList && res.data.tenderProjectList.list) {
+          let list = res.data.tenderProjectList.list
+          this.projectNums = list.length
+          list.forEach(item => {
+            this.projectPlanIncome += Number(item.projectIncome)
+          })
+          this.projectPlanIncome = (Number(this.projectPlanIncome) / 10000).toFixed(2)
+        }
+        this.projectNumsAndIncomeLoading = false
+      })
+    },
+    /** 项目进度 */
+    getInProcessAndEndProjectNums () {
+      tenderProject.getList({
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        statusList: '11,12'
+      }).then((res) => {
+        this.inProcessAndEndProjectNumsLoading = true
+        this.inProcessProjectNums = 0 // 该企业下进行中的项目数量
+        this.endProjectNums = 0 // 该企业下已完成的项目数量
+        if (res.data.tenderProjectList && res.data.tenderProjectList.list) {
+          let list = res.data.tenderProjectList.list
+          list.forEach(item => {
+            if (Number(item.status) === 11) {
+              this.inProcessProjectNums++
+            } else if (Number(item.status) === 12) {
+              this.endProjectNums++
+            }
+          })
+        }
+        this.inProcessAndEndProjectNumsLoading = false
+      })
+    },
+    /** 项目分配 */
+    getProjectAllocationInfo () {
+      projectLeader.getProjectViewList({
+        pageNo: this.allocationPageNo,
+        pageSize: this.allocationPageSize,
+        enterpriseId: this.$store.getters.authUser.enterpriseId
+      }).then((res) => {
+        this.projectData = []
+        this.projectAllocationLoading = true
+        if (res.data.projectLeaderList && res.data.projectLeaderList.length > 0) {
+          this.allocationTotal = res.data.projectLeaderList[0].projectNums
+          this.projectData = res.data.projectLeaderList.filter(item => item.userName !== null)
+        }
+        this.projectAllocationLoading = false
+      })
+    },
+    allocationHandleCurrentChange (nowNum) {
+      this.allocationCurrentPage = nowNum
+      this.allocationPageNo = (nowNum - 1) * this.allocationPageSize
+      this.getProjectAllocationInfo(parseInt(this.allocationPageNo), parseInt(this.allocationPageSize))
+    },
+    allocationHandleCurrentNext (nowNum) {
+      this.allocationCurrentPage = nowNum
+      this.allocationPageNo = (nowNum - 1) * this.allocationPageSize
+      this.getProjectAllocationInfo(parseInt(this.allocationPageNo), parseInt(this.allocationPageSize))
+    },
+    /** 标段进度一览表 */
+    loadBidOverInfo () {
+      this.loadBidOverInfoLoading = true
+      bidSection.getProjectViewList(this.$store.getters.authUser.enterpriseId).then((res) => {
+        this.bidOverData = []
+        let bidSectionMap = res.data.bidSectionMap
+        if (bidSectionMap && Object.keys(bidSectionMap).length > 0) {
+          this.bidOverList.forEach(item => {
+            this.bidOverData.push(bidSectionMap[item][0])
+          })
+        }
+        this.loadBidOver(bidSectionMap)
+        this.loadBidOverInfoLoading = false
+      })
+    },
+    /** 项目信息完整度 */
+    getProjectIntegrityInfo () {
+      bidSection.getProjectViewInfoList({
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        enterpriseId: this.$store.getters.authUser.enterpriseId
+      }).then((res) => {
+        this.integrityList = []
+        this.integrityLoading = true
+        let bidSectionList = res.data.bidSectionList
+        if (bidSectionList.length > 0) {
+          bidSectionList.forEach((item, index) => {
+            if (index !== 0) {
+              this.integrityList.push({num: Number(item[Object.keys(item)[0]]), name: Object.keys(item)[0]})
+            } else {
+              this.total = Number(item[Object.keys(item)[0]])
+            }
+          })
+        }
+        /* if (mapInfo && Object.keys(mapInfo).length > 0) {
+          let keys = Object.keys(mapInfo)
+          keys.map(key => {
+            this.integrityList.push({num: Number(mapInfo[key]), name: key})
+          })
+        } */
+        this.integrityLoading = false
+      })
+    },
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getProjectIntegrityInfo(parseInt(this.pageNo), parseInt(this.pageSize))
+    },
+    handleCurrentNext (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getProjectIntegrityInfo(parseInt(this.pageNo), parseInt(this.pageSize))
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 标段进度一览表
+    loadBidOver (bidSectionMap) {
+      this.loadBidOverCharts = echarts.init(document.getElementById('bidOver'))
+      var option = {
+        tooltip: {
+          trigger: 'item'
+        },
+        grid: { // 图标距离
+          top: '5%', // 距离上边的距离
+          bottom: '10%', // 距离下边的距离
+          left: '5%', // 距离左边的距离
+          right: '5%' // 距离右边的距离
+        },
+        legend: {
+          type: 'scroll',
+          data: ['未开始', '公告阶段', '资格预审', '招标文件', '响应阶段', '开/评标', '结果公示', '废标'],
+          bottom: 0
+        },
+        xAxis: [
+          {
+            type: 'category',
+            axisLine: {show: true}, // 是否显示坐标轴轴线
+            axisTick: {show: false}, // 是否显示坐标轴刻度
+            data: this.bidOverList,
+            show: true,
+            axisLabel: {
+              interval: 0,
+              rotate: 0
+            }
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            axisLine: {show: true}, // 是否显示坐标轴轴线
+            axisTick: {show: false} // 是否显示坐标轴刻度
+          }
+        ],
+        series: [
+          {
+            type: 'bar',
+            barWidth: 30, // 柱图宽度
+            itemStyle: {
+              normal: {
+                color: function (params) {
+                  var colorList = [
+                    '#7dc745', '#3fa5ee', '#3fa5ee', '#3fa5ee',
+                    '#3fa5ee', '#3fa5ee', '#3fa5ee', '#ff6384'
+                  ]
+                  return colorList[params.dataIndex]
+                },
+                label: {
+                  show: true,
+                  position: 'top',
+                  textStyle: { // 数值样式
+                    color: '#333',
+                    fontSize: 12
+                  }
+                }
+              }
+            },
+            data: this.bidOverData
+          }
+        ]
+      }
+      this.loadBidOverCharts.setOption(option)
+      let that = this
+      this.loadBidOverCharts.on('click', function (params) {
+        that.$router.push({path: `/project/proOverview/bid`, query: {flowStatusList: bidSectionMap[params.name][1]}})
+      })
+    },
+    filterTime (value) {
+      if (value) {
+        this.lowerLimit = dateFormat(value[0], 'yyyy-MM')
+        this.upperLimit = dateFormat(value[1], 'yyyy-MM')
+      } else {
+        this.lowerLimit = null
+        this.upperLimit = null
+      }
+      this.getProjectNumsAndIncome()
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_projectOverview {
+    .lefttop{
+      width: 100%;
+      height: 164px;
+      overflow: hidden;
+    }
+    .Box h3{
+      height: 40px;
+      line-height: 40px;
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+    .Box h3 .el-date-editor--monthrange{
+      font-weight: normal;
+      margin-left: 10px;
+      width: 78%;
+      max-width: 280px;
+    }
+    .addBox{
+      width: 53%;
+      float: left;
+    }
+    .addBox .el-input__inner{
+      height: 30px;
+      line-height: 30px;
+    }
+    .addBox .el-date-editor .el-range__icon{
+      line-height: 23px;
+    }
+    .addBox .el-date-editor .el-range-separator{
+      line-height: 21px;
+    }
+    .addBox .el-date-editor .el-range__close-icon{
+      line-height: 23px;
+    }
+    .adddata{
+      width: 100%;
+      height: 113px;
+      position: relative;
+      border: 1px solid #dcdfe6;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .processBox{
+      width: 45%;
+      float: right;
+    }
+    .processdata{
+      width: 100%;
+      height: 113px;
+      position: relative;
+      border: 1px solid #dcdfe6;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    ul.numList {
+      width: 100%;
+      overflow: hidden;
+    }
+    ul.numList li{
+      width: 40%;
+      float: left;
+      text-align: center;
+    }
+    ul.numList li img{
+      width: 36px;
+      height: 38px;
+      margin: 12px 0 0 0;
+    }
+    ul.numList li p{
+      color: #666666;
+      font-size: 12px;
+      line-height: 26px;
+    }
+    ul.numList li span{
+      height: 20px;
+      line-height: 20px;
+      display: inline-block;
+      padding: 0 10px;
+      overflow: hidden;
+      -ms-text-overflow: ellipsis;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #fc7fac;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    ul.numList li:nth-child(2) {
+      width: 60%;
+    }
+    ul.numList li:nth-child(2) span{
+      color: #f4ac4f;
+    }
+    .processdata ul.numList li{
+      width: 50% !important;
+    }
+    .processdata ul.numList li span{
+      color: #89a1fa;
+    }
+    .processdata ul.numList li:nth-child(2) span{
+      color: #ff3b14;
+    }
+    .rightBox{
+      width: 100%;
+      min-height: 100px;
+      border: 1px solid #dcdfe6;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .rightBox h3{
+      padding: 0 10px;
+      font-size: 15px;
+      height: 32px;
+      line-height: 32px;
+      border-bottom: 1px solid #dcdfe6;
+    }
+    .rightBox .el-table{
+      width: 96%;
+      margin: 10px auto;
+    }
+    .rightBox>ul{
+      margin: 20px 0 0 0;
+      overflow: hidden;
+    }
+    .rightBox>ul li{
+      width: 25%;
+      text-align: center;
+      overflow: hidden;
+      float: left;
+    }
+    .rightBox>ul li .el-progress .el-progress-circle{
+      width: 60px!important;
+      height: 60px!important;
+      margin: 0 auto;
+    }
+    .red path:nth-child(1){
+      stroke: #f4bab1
+    }
+    .red path:nth-child(2){
+      stroke: #f56c6c
+    }
+    .yellow path:nth-child(1){
+      stroke: #efce9e
+    }
+    .yellow path:nth-child(2){
+      stroke: #e6a23c
+    }
+    .blue path:nth-child(1){
+      stroke: #b0c7e7
+    }
+    .blue path:nth-child(2){
+      stroke: #409eff
+    }
+    .green path:nth-child(1){
+      stroke: #bddca0
+    }
+    .green path:nth-child(2){
+      stroke: #67c23a
+    }
+    .rightBox>ul li span{
+      display: inline-block;
+      width: 90%;
+      padding: 0 5%;
+      height: 32px;
+      overflow: hidden;
+      white-space: nowrap;
+      -ms-text-overflow: ellipsis;
+      text-overflow: ellipsis;
+      line-height: 32px;
+      text-align: center;
+    }
+    .nodata{
+      width: 100%;
+      height: 130px;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      margin-top: -55px;
+      text-align: center;
+    }
+  }
+</style>

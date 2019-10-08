@@ -1,0 +1,183 @@
+<template>
+  <div class="cloudcontent" id="cloud_prosettlement">
+    <div class="main">
+      <!--搜索 & 添加按钮-->
+      <div class="topmain">
+        <el-row>
+          <div class="seacher_box">
+            <span>结算情况：</span>
+            <el-select v-model="sourceType" class="select">
+              <el-option
+                v-for="item in sourceOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+            <span>项目名称/招标人：</span>
+            <el-input class="search left" placeholder="请输入项目名称/招标人关键字" v-model="messageLike">
+              <el-button  slot="append" icon="el-icon-search" type="" @click="search"></el-button>
+            </el-input>
+          </div>
+          <!--按钮-->
+          <div class="fr">
+            <em>找不到符合条件的项目？</em>
+            <el-button class="addbutton" @click="addBtn">
+              <span> + 新增项目</span>
+            </el-button>
+          </div>
+
+          <!--按钮-->
+        </el-row>
+      </div>
+      <!--搜索 & 添加按钮-->
+      <el-table
+        :data="tableData"
+        border
+        tooltip-effect="dark"
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='indexMethod'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="tenderProjectCode"
+          label="项目编号"
+          width="300"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="tenderProjectName"
+          label="项目名称"
+          width="430"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="tendererName"
+          label="招标人"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="项目经理"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="结算情况"
+          width="120">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" v-if="scope.row.status === 0">未结算</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === 1">已结算</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="firstProjectLeaderName"
+          label="结算时间"
+          width="160"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookBtn(scope)">收支管理</el-button>
+            <el-button type="text" size="small" @click="totalBtn(scope)">统计</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === 0">结算完成</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === 1">撤销</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+      // 搜索
+      messageLike: '',
+      sourceType: null,
+      // 业务来源
+      sourceOptions: [{
+        value: null,
+        label: '全部'
+      }, {
+        value: 1,
+        label: '未结算'
+      }, {
+        value: 2,
+        label: '已结算'
+      }],
+      searchForm: {},
+      tableData: [
+        {
+          status: 0
+        },
+        {
+          status: 1
+        }
+      ],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      dataIndex: 1
+    }
+  },
+  watch: {
+  },
+  created () {
+  },
+  methods: {
+    // 搜索
+    search () {},
+    addBtn () {},
+    // 序号
+    indexMethod () {},
+    // 收支管理
+    lookBtn (scope) {
+      this.$router.push({path: `/project/proSettlement/paymentTerm`})
+    },
+    // 统计
+    totalBtn (scope) {
+      this.$router.push({path: `/project/proSettlement/payTotal`})
+    },
+    // 分页
+    handleCurrentChange () {},
+    handleCurrentNext () {}
+  }
+}
+</script>
+<style lang="less">
+  #cloud_prosettlement {
+    .seacher_box{
+      width: 700px;
+    }
+    .seacher_box .search{
+      width: 44%;
+    }
+    .fr>em{
+      font-size: 14px;
+      font-style: normal;
+      line-height: 40px;
+      margin: 0 10px;
+    }
+  }
+</style>

@@ -1,0 +1,25 @@
+import request from '@/utils/axios/up-axios'
+
+export const enterprise = {
+  /**
+   * 完善企业信息
+   * @param data
+   */
+  updateEnterprise (data) {
+    return request({
+      url: '/enterprises',
+      method: 'post',
+      data: data
+    })
+  },
+  /**
+   * 查看企业信息
+   * @param id
+   */
+  detailEterprise (id) {
+    return request({
+      url: '/enterprises/enterpriseId/' + id,
+      method: 'get'
+    })
+  }
+}

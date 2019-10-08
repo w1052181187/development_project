@@ -1,0 +1,221 @@
+<template>
+  <div class="cloudcontent">
+    <!--面包屑-->
+    <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb_box">
+      <el-breadcrumb-item :to="{ path: '/index' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/projectProcess' }">项目进度管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/projectProcess/project' }">项目管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/projectProcess/project/process' }">流程管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/projectProcess/project/process', query: {type: 'invite'} }">招标邀请</el-breadcrumb-item>
+      <el-breadcrumb-item class="active_bread">投标人确认情况</el-breadcrumb-item>
+    </el-breadcrumb>
+    <div class="main tender_confirm">
+      <el-button class="addbtn btn_right" @click="handleAdd">+ 新增</el-button>
+      <el-table
+        :data="noticeList"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="50">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="标段编号"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="tenderProjectName"
+          label="标段名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="time"
+          label="供应商名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="time"
+          label="联系人"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="time"
+          label="移动电话"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="time"
+          label="固定电话"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="time"
+          label="邮箱"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="time"
+          label="状态"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="160">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetail(scope)">查看</el-button>
+            <el-button type="text" size="small" @click="handleEdit(scope)">编辑</el-button>
+            <el-button type="text" size="small" @click="handleDel(scope)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+    </div>
+    <el-dialog :title="titileName" :visible.sync="dialogVisible" width="40%" :before-close="handleClose">
+      <el-form :model="supplierForm" :rules="supplierRules" ref="supplierForm">
+        <el-form-item label="标段编号：" prop="userAccount" :label-width="formLabelWidth">
+          <el-input v-model="supplierForm.userAccount" :disabled="!flag"></el-input>
+        </el-form-item>
+        <el-form-item label="标段名称：" prop="userName" :label-width="formLabelWidth">
+          <el-input v-model="supplierForm.userName" :disabled="!flag"></el-input>
+        </el-form-item>
+        <el-form-item label="供应商名称：" prop="userPassword" :label-width="formLabelWidth">
+          <el-input v-model.trim="supplierForm.userPassword" :disabled="!flag"></el-input>
+        </el-form-item>
+        <el-form-item label="联系人：" prop="companyName" :label-width="formLabelWidth">
+          <el-input v-model.trim="supplierForm.companyName" :disabled="!flag"></el-input>
+        </el-form-item>
+        <el-form-item label="联系人固定电话：" prop="userDuty" :label-width="formLabelWidth">
+          <el-input v-model.trim="supplierForm.userDuty" :disabled="!flag"></el-input>
+        </el-form-item>
+        <el-form-item label="联系人移动电话：" prop="telephone" :label-width="formLabelWidth">
+          <el-input v-model.trim="supplierForm.telephone" :disabled="!flag"></el-input>
+        </el-form-item>
+        <el-form-item label="联系人电子邮件：" prop="telephone" :label-width="formLabelWidth">
+          <el-input v-model.trim="supplierForm.telephone" :disabled="!flag"></el-input>
+        </el-form-item>
+        <el-form-item label="确认状态：" prop="telephone" :label-width="formLabelWidth">
+          <el-input v-model.trim="supplierForm.telephone" :disabled="!flag"></el-input>
+        </el-form-item>
+        <el-form-item label="说明：" prop="telephone" :label-width="formLabelWidth">
+          <el-input v-model.trim="supplierForm.telephone" :disabled="!flag"
+                    type="textarea"
+                    autosize>
+          </el-input>
+        </el-form-item>
+        <el-form-item class="submit-radio submit_btn">
+          <el-button type="primary" @click="submit('inspectForm', flag)" :loading="isSubmiting">提交</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+export default {
+  components: {
+    editor
+  },
+  name: '',
+  data () {
+    return {
+      isSubmiting: false,
+      updateForm: {},
+      rules: {},
+      // 富文本
+      editread: false,
+      content: '',
+      noticeList: [
+        {
+          name: 1,
+          status: 1
+        },
+        {
+          name: 1,
+          status: 0
+        }
+      ],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10, // 每页展示条数
+      supplierForm: {},
+      supplierRules: {},
+      // 弹框lable宽度
+      formLabelWidth: '140px',
+      flag: true, // 自定义增加跟详情状态
+      titileName: '增加',
+      dialogVisible: false
+    }
+  },
+  methods: {
+    handleCurrentChange () {},
+    // 关闭弹窗
+    handleClose () {
+      this.dialogVisible = false
+      if (this.flag) {
+        this.$refs['supplierForm'].resetFields()
+      }
+    },
+    handleAdd (scope) {
+      this.dialogVisible = true
+      this.titileName = '增加'
+      this.flag = true
+    },
+    handleEdit (scope) {
+      this.dialogVisible = true
+      this.titileName = '编辑'
+      this.flag = true
+    },
+    handleDetail (scope) {
+      this.dialogVisible = true
+      this.titileName = '详情'
+      this.flag = false
+    },
+    handleDel (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        // **
+      }).catch(() => {
+        return false
+      })
+    },
+    submit (form, flag) {
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style scoped>
+  .tender_confirm {
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  .addbtn{
+    border: 1px solid #3f63f6;
+    height: 32px;
+    padding: 7px 12px;
+    margin-bottom: 12px;
+  }
+  .btn_right{
+    float: right;
+  }
+  .submit_btn {
+    text-align: center;
+  }
+</style>

@@ -1,0 +1,115 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <div class="box">
+      <div class="topmain">
+        招标公告/资格预审公告
+        <!--按钮-->
+        <el-button class="addbutton" @click="handleAdd">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="tableData"
+        border>
+        <el-table-column
+          prop="date"
+          label="公告名称"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="提交状态"
+          width="180">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '1'">已保存</span>
+            <span  v-if="scope.row.status === '2'">已提交</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          label="提交时间">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetail(scope)">查看</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'" @click="handleEdit(scope)">编辑</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'" @click="handleDel(scope)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+      tableData: [{
+        date: '上海市普陀区金沙江路',
+        status: '1',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '1',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '2',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '2',
+        address: '2016-05-04'
+      }],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10 // 每页展示条数
+    }
+  },
+  methods: {
+    // 编辑
+    handleEdit (scope) {
+      this.$router.push({path: `/processManage/projectProcess/announcement/update`, query: {objectId: scope.row.objectId}})
+    },
+    handleAdd () {
+      this.$router.push({path: `/processManage/projectProcess/announcement/add`})
+    },
+    handleDetail (scope) {
+      this.$router.push({path: `/processManage/projectProcess/announcement/detail/${scope.row.objectId}`})
+    },
+    handleDel (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        // **
+      }).catch(() => {
+        return false
+      })
+    },
+    handleCurrentChange () {
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_processtype{
+  }
+</style>

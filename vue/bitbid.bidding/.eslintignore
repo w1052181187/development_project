@@ -1,0 +1,7 @@
+/build/
+/config/
+/dist/
+/src/mock/
+/src/assets/
+/*.js
+/src/components/organization/

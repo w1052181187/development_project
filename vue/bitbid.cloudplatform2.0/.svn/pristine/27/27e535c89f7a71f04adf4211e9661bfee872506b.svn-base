@@ -1,0 +1,33 @@
+/**
+ * Created by Administrator on 2019-3-7.
+ * 招标文件
+ */
+export default [
+  {
+    path: '/project/projectProcess/biddocument/add',
+    name: '流程管理-招标文件-添加',
+    meta: {
+      title: '流程管理-招标文件-添加',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidDocument/add'], resolve)
+  },
+  {
+    path: '/project/projectProcess/biddocument/update',
+    name: '流程管理-招标文件-编辑',
+    meta: {
+      title: '流程管理-招标文件-编辑',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidDocument/update'], resolve)
+  },
+  {
+    path: '/project/projectProcess/biddocument/detail/:objectId',
+    name: '流程管理-招标文件-查看',
+    meta: {
+      title: '流程管理-招标文件-查看',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidDocument/detail'], resolve)
+  }
+]

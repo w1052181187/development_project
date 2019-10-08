@@ -1,0 +1,476 @@
+<template>
+  <div class="menu" id="menu">
+    <div class="logo">
+      <img src="../../static/images/logo.png"/>
+    </div>
+    <div class="menu_box">
+      <el-menu
+        :default-active="activeNav"
+        class="slider"
+        text-color="#fff"
+        :router="true"
+      >
+        <!-- 线上使用 -->
+        <!--<el-menu-item index="/main" v-if="$store.getters.modules.includes(200)">-->
+          <!--<span slot="title"><img src="../../static/images/leftico_home.png"/> 首页</span>-->
+        <!--</el-menu-item>-->
+        <!--<el-submenu v-for="(item,index) in menuList" :key="index" :index='item.id' v-if="!item.moduleId || $store.getters.modules.includes(item.moduleId)">-->
+          <!--<template slot="title">-->
+            <!--<span :class="item.picname">{{item.title}}</span>-->
+          <!--</template>-->
+          <!--<el-menu-item-group >-->
+            <!--<el-menu-item v-for="child in item.children" :key="child.id" :index='child.index' v-if="!child.moduleId || $store.getters.modules.includes(child.moduleId)">-->
+              <!--{{child.childtitle}}-->
+            <!--</el-menu-item>-->
+          <!--</el-menu-item-group>-->
+        <!--</el-submenu>-->
+        <!-- 开发使用 -->
+        <el-menu-item index="/main" >
+          <span slot="title"><img src="../../static/images/leftico_home.png"/> 首页</span>
+        </el-menu-item>
+        <el-submenu v-for="(item,index) in menuList" :key="index" :index='item.id'>
+          <template slot="title">
+            <span :class="item.picname">{{item.title}}</span>
+          </template>
+          <el-menu-item-group >
+            <el-menu-item v-for="child in item.children" :key="child.id" :index='child.index'>
+              {{child.childtitle}}
+            </el-menu-item>
+          </el-menu-item-group>
+        </el-submenu>
+      </el-menu>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'Slider',
+  data () {
+    return {
+      activeNav: '',
+      menuList: [
+        {
+          id: '1',
+          title: '待办事项',
+          picname: 'leftico_td',
+          moduleId: 201,
+          children: [
+            {
+              index: '/todoList/need',
+              childtitle: '待我审批',
+              moduleId: 201
+            },
+            {
+              index: '/todoList/approved',
+              childtitle: '我已审批',
+              moduleId: 201
+            },
+            {
+              index: '/todoList/initiate',
+              childtitle: '我发起的',
+              moduleId: 201
+            }
+          ]
+        },
+        {
+          id: '2',
+          title: '客户管理',
+          picname: 'leftico_cus',
+          moduleId: 104,
+          children: [
+            {
+              index: '/customerMan/customer',
+              childtitle: '客户管理',
+              moduleId: 10401
+            },
+            {
+              index: '/customerMan/business',
+              childtitle: '商机管理',
+              moduleId: 10402
+            },
+            {
+              index: '/customer/template',
+              childtitle: '评估模板',
+              moduleId: 10403
+            }
+          ]
+        },
+        {
+          id: '3',
+          title: '招标寻源',
+          picname: 'leftico_bid',
+          moduleId: 103,
+          children: [
+            {
+              index: '/biddingSources/announcement',
+              childtitle: '比选公告',
+              moduleId: 10301
+            },
+            {
+              index: '/biddingSources/buildProject',
+              childtitle: '拟在建项目',
+              moduleId: 10302
+            }
+          ]
+        },
+        {
+          id: '4',
+          title: '项目管理',
+          picname: 'leftico_pro',
+          moduleId: 101,
+          children: [
+            {
+              index: '/project/proOverview',
+              childtitle: '项目全貌',
+              moduleId: 10101
+            },
+            {
+              index: '/project/registProject',
+              childtitle: '登记项目',
+              moduleId: 10102
+            },
+            {
+              index: '/project/agentProject',
+              childtitle: '分配项目',
+              moduleId: 10103
+            },
+            {
+              index: '/project/projectProcess',
+              childtitle: '项目进度',
+              moduleId: 10104
+            },
+            {
+              index: '/project/projectSum',
+              childtitle: ' 项目总结',
+              moduleId: 10105
+            }
+          ]
+        },
+        {
+          id: '5',
+          title: '项目核算',
+          picname: 'leftico_kno',
+          moduleId: 105,
+          children: [
+            {
+              index: '/knowledge/agencyContract',
+              childtitle: '委托协议',
+              moduleId: 10501
+            },
+            {
+              index: '/project/proSettlement',
+              childtitle: '项目结算',
+              moduleId: 10502
+            }
+          ]
+        },
+        {
+          id: '6',
+          title: '资源管理',
+          picname: 'leftico_res',
+          moduleId: 102,
+          children: [
+            {
+              index: '/resource/biddingRoom',
+              childtitle: '开评标室管理',
+              moduleId: 10201
+            },
+            {
+              index: '/resource/aptitude',
+              childtitle: '资质管理',
+              moduleId: 10202
+            },
+            {
+              index: '/resource/expert',
+              childtitle: '专家管理',
+              moduleId: 10203
+            }
+          ]
+        },
+        {
+          id: '7',
+          title: '档案管理',
+          picname: 'leftico_arc',
+          moduleId: 107,
+          children: [
+            {
+              index: '/archives/classify',
+              childtitle: '档案分类',
+              moduleId: 10701
+            },
+            {
+              index: '/archives/management',
+              childtitle: '档案管理',
+              moduleId: 10702
+            },
+            {
+              index: '/archives/query',
+              childtitle: '档案查询',
+              moduleId: 10703
+            }
+          ]
+        },
+        {
+          id: '8',
+          title: '统计分析',
+          picname: 'leftico_sta',
+          moduleId: 106,
+          children: [
+            {
+              index: '/agency/customerAnalysis',
+              childtitle: '客户分析',
+              moduleId: 10601
+            },
+            {
+              index: '/agency/projectAnalysis',
+              childtitle: '项目分析',
+              moduleId: 10602
+            },
+            {
+              index: '/agency/financialAnalysis',
+              childtitle: '财务分析',
+              moduleId: 10603
+            }
+          ]
+        },
+        {
+          id: '9',
+          title: '系统管理',
+          picname: 'leftico_sys',
+          moduleId: 100,
+          children: [
+            {
+              index: '/system/enterprise',
+              childtitle: '企业信息',
+              moduleId: 100
+            },
+            {
+              index: '/system/department',
+              childtitle: '部门管理',
+              moduleId: 100
+            },
+            {
+              index: '/system/users',
+              childtitle: '用户管理',
+              moduleId: 100
+            },
+            {
+              index: '/system/roles',
+              childtitle: '角色管理',
+              moduleId: 100
+            },
+            {
+              index: '/system/proProcessSet',
+              childtitle: '项目流程配置',
+              moduleId: 100
+            },
+            {
+              index: '/system/approveConfig',
+              childtitle: '审批配置',
+              moduleId: 100
+            },
+            {
+              index: '/system/dataDict',
+              childtitle: '数据字典',
+              moduleId: 100
+            },
+            {
+              index: '/system/serviceSubscription',
+              childtitle: '服务订阅',
+              moduleId: 100
+            }
+          ]
+        }
+        // {
+        //   id: '10',
+        //   title: '企业网站',
+        //   picname: 'leftico_ent',
+        //   children: [
+        //     {
+        //       index: '/websiteManage/home',
+        //       childtitle: '网站首页'
+        //     },
+        //     {
+        //       index: '/websiteManage/company',
+        //       childtitle: '公司概况'
+        //     },
+        //     {
+        //       index: '/websiteManage/notice',
+        //       childtitle: '信息公告'
+        //     },
+        //     {
+        //       index: '/websiteManage/information',
+        //       childtitle: '综合信息'
+        //     }
+        //   ]
+        // }
+      ]
+    }
+  },
+  methods: {
+    setActiveNav () {
+      document.getElementById('content-wrap').scrollTop = 0
+      if (this.$route.meta) {
+        this.activeNav = this.$route.meta.active
+      }
+    },
+    setHeight () {
+      // 获得屏幕的高度
+      let screenH = document.body.clientHeight
+      // 获得右侧内容区
+      let navWrap = document.getElementsByClassName('menu_box')
+      // 设置右侧内容区的高度
+      navWrap[0].style.height = (screenH - 95) + 'px'
+    }
+  },
+  watch: {
+    '$route': 'setActiveNav'
+  },
+  mounted () {
+    this.setActiveNav()
+    this.setHeight()
+  }
+}
+</script>
+<style lang='less'>
+  #menu{
+    width: 100%;
+    background: #001529;
+    overflow: hidden;
+    .logo{
+      width: 100%;
+      height: 95px;
+      line-height: 95px;
+      overflow: hidden;
+      text-align: center;
+    }
+    .logo img{
+      vertical-align: middle;
+      max-width: 100%;
+    }
+    .menu_box{
+      overflow-x: hidden;
+      overflow-y: auto;
+      width: 105%;
+      position: relative;
+    }
+    .slider{
+      background: #001529;
+      color: #b3b9bf;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+    }
+    /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+    .slider::-webkit-scrollbar
+    {
+      width: 8px;
+      height: 8px;
+      background-color: #F5F5F5;
+    }
+
+    /*定义滚动条轨道 内阴影+圆角*/
+    .slider::-webkit-scrollbar-track
+    {
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+      border-radius: 10px;
+      background-color: #F5F5F5;
+    }
+
+    /*定义滑块 内阴影+圆角*/
+    .slider::-webkit-scrollbar-thumb
+    {
+      border-radius: 10px;
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+      background-color: #cccccc}
+    .el-menu{
+      background: #001529;
+    }
+    .el-submenu{
+      background: #001529;
+    }
+    .el-submenu__title, .el-menu-item{
+      color: #b3b9bf!important;
+    }
+    .el-submenu__title:hover{
+      color: #ffffff!important;
+      background: #001529;
+    }
+    .el-menu-item:hover{
+      color: #ffffff!important;
+      background: transparent!important;
+    }
+    .el-menu-item.is-active{
+      background: #000c17;
+      color: #ffffff!important;
+    }
+    .el-menu-item.is-active:hover{
+      background: #000c17!important;
+    }
+    .el-menu-item, .el-submenu__title{
+      height: 45px;
+      line-height: 45px;
+      background: none;
+    }
+    .el-menu--inline{
+      background: #000c17!important;
+    }
+    .el-menu--inline .el-menu-item.is-active{
+      background: #108cee!important;
+      color: #ffffff!important;
+    }
+    .el-submenu.is-active .el-submenu__title{
+      color: #ffffff!important;
+      background: none;
+    }
+    .el-menu-item-group__title{
+      padding: 0px;
+    }
+    .leftico_td{
+      background: url("../../static/images/leftico_td.png") left center no-repeat;
+      padding-left: 17px;
+    }
+    .leftico_pro{
+      background: url("../../static/images/leftico_pro.png") left center no-repeat;
+      padding-left: 17px;
+    }
+    .leftico_res{
+      background: url("../../static/images/leftico_res.png") left center no-repeat;
+      padding-left: 17px;
+    }
+    .leftico_bid{
+      background: url("../../static/images/leftico_bid.png") left center no-repeat;
+      padding-left: 17px;
+    }
+    .leftico_cus{
+      background: url("../../static/images/leftico_cus.png") left center no-repeat;
+      padding-left: 17px;
+    }
+    .leftico_arc{
+      background: url("../../static/images/leftico_kno.png") left center no-repeat;
+      padding-left: 17px;
+    }
+    .leftico_kno{
+      background: url("../../static/images/leftico_kno.png") left center no-repeat;
+      padding-left: 17px;
+    }
+    .leftico_sta{
+      background: url("../../static/images/leftico_sta.png") left center no-repeat;
+      padding-left: 17px;
+    }
+    .leftico_sys{
+      background: url("../../static/images/leftico_sys.png") left center no-repeat;
+      padding-left: 17px;
+    }
+    .leftico_ent{
+      background: url("../../static/images/leftico_ent.png") left center no-repeat;
+      padding-left: 17px;
+    }
+    .leftico_order {
+      background: url("../../static/images/leftico_order.png") left center no-repeat;
+      padding-left: 17px;
+    }
+  }
+</style>

@@ -1,0 +1,195 @@
+<template>
+  <el-dialog title="跟进记录" :before-close="cancel" :visible.sync="showVisible">
+    <el-form :model="submitForm" :rules="rules" v-loading="loading" ref="submitForm">
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="跟进时间：" :label-width="formLabelWidth" prop="followUpDate">
+            <el-date-picker
+              type="date"
+              v-model="submitForm.followUpDate"
+              value-format="yyyy-MM-dd"
+              style="width: 100%;"></el-date-picker>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="跟进人：" :label-width="formLabelWidth" prop="followUpPerson">
+            <el-input v-model="submitForm.followUpPerson" placeholder="请输入跟进人" clearable>
+              <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="跟进方式：" :label-width="formLabelWidth" prop="dicFollowUpTypeCode">
+            <el-select v-model="submitForm.dicFollowUpTypeCode" placeholder="请选择跟进方式">
+              <el-option
+                v-for="item in followUpTypes"
+                :key="item.code"
+                :label="item.name"
+                :value="item.code">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="联系人：" :label-width="formLabelWidth" prop="contacts">
+            <el-input v-model="submitForm.contacts" placeholder="请输入联系人" clearable>
+              <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <el-form-item label="跟进内容：" :label-width="formLabelWidth" prop="content">
+            <el-input type="textarea" v-model="submitForm.content" placeholder="请输入跟进内容" clearable>
+              <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12" v-if="opportunityStages.length">
+          <el-form-item label="跟进商机阶段：" :label-width="formLabelWidth" prop="dicOpportunityStageCode">
+            <el-select v-model="submitForm.dicOpportunityStageCode" placeholder="请选择跟进方式">
+              <el-option
+                v-for="item in opportunityStages"
+                :key="item.code"
+                :label="item.name"
+                :value="item.code">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="下次跟进时间：" :label-width="formLabelWidth" prop="nextFollowUpDate">
+            <el-date-picker
+              type="date"
+              placeholder="选择日期"
+              v-model="submitForm.nextFollowUpDate"
+              value-format="yyyy-MM-dd"
+              style="width: 100%;"></el-date-picker>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <el-form-item label="附件：" :label-width="formLabelWidth" prop="fileInformations">
+            <uploadl-file @uploadSuccess="uploadSuccess" @deleteSuccess="deleteSuccess"
+                          :fileArrays="submitForm.fileInformations"
+                          fileType="9"
+                          isImage="0"
+                          fileMaxNum="1"></uploadl-file>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button type="primary" @click="submit" :loading="loading">保 存</el-button>
+      <el-button @click="cancel">取 消</el-button>
+    </div>
+  </el-dialog>
+</template>
+<script>
+import uploadlFile from '../../../components/upload/publicFileUpload'
+import { followup } from '@/api/customer'
+import {dateFormat} from '@/assets/js/common'
+
+export default {
+  components: {
+    uploadlFile
+  },
+  data () {
+    return {
+      loading: false,
+      submitForm: {
+        relatedCode: this.relatedCode,
+        followUpDate: '',
+        nextFollowUpDate: '',
+        fileInformations: []
+      },
+      formLabelWidth: '120px',
+      rules: {
+        followUpDate: [
+          { required: true, message: '跟进时间不能为空', trigger: 'blur' }
+        ],
+        followUpPerson: [
+          { required: true, message: '跟进人不能为空', trigger: 'blur' },
+          { min: 1, max: 100, message: '长度在1~100个字符', trigger: 'blur' }
+        ],
+        dicFollowUpTypeCode: [
+          { required: true, message: '跟进方式不能为空', trigger: 'change' }
+        ],
+        dicOpportunityStageCode: [
+          { required: true, message: '跟进商机阶段不能为空', trigger: 'change' }
+        ],
+        contacts: [
+          { required: true, message: '联系人不能为空', trigger: 'blur' },
+          { min: 1, max: 100, message: '长度在1~100个字符', trigger: 'blur' }
+        ],
+        content: [
+          { required: true, message: '跟进内容不能为空', trigger: 'blur' },
+          { min: 1, max: 1000, message: '长度在1~1000个字符', trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  props: ['isEdit', 'editObjectId', 'showVisible', 'relatedCode', 'followUpTypes', 'opportunityStages'],
+  watch: {
+    showVisible (value) {
+      if (value) {
+        if (this.isEdit) {
+          this.initData()
+        }
+      } else {
+        this.$refs['submitForm'].resetFields()
+      }
+    }
+  },
+  methods: {
+    // 初始化
+    initData () {
+      this.loading = true
+      followup.queryOne(this.editObjectId).then(res => {
+        this.loading = false
+        this.submitForm = res.data.data
+      })
+    },
+    // 上传文件成功
+    uploadSuccess (file) {
+      this.submitForm.fileInformations = [file]
+    },
+    // 删除文件成功
+    deleteSuccess () {
+      this.submitForm.fileInformations = []
+    },
+    // 保存
+    submit () {
+      this.$refs['submitForm'].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          // 格式化时间为yyyy-MM-dd HH:mm:ss
+          this.submitForm.followUpDate = dateFormat(this.submitForm.followUpDate, 'yyyy-MM-dd hh:mm:ss')
+          this.submitForm.nextFollowUpDate = this.submitForm.nextFollowUpDate ? dateFormat(this.submitForm.nextFollowUpDate, 'yyyy-MM-dd hh:mm:ss') : null
+          followup.update(this.submitForm).then(res => {
+            this.loading = false
+            if (res.data.resCode === '0000') {
+              this.cancel()
+              this.$emit('saveSuccess')
+            }
+          })
+        }
+      })
+    },
+    // 关闭
+    cancel () {
+      this.submitForm.objectId = null
+      this.$emit('showEditDialog', false)
+    }
+  }
+}
+</script>
+<style scoped>
+
+</style>

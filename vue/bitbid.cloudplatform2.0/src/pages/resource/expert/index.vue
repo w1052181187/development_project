@@ -1,0 +1,485 @@
+<template>
+  <div class="cloudcontent" id="expert_management">
+    <div class="topmain">
+      <div class="selectbox advancedsearch_box advancedsearch ">
+        <el-form :model="queryModel" ref="searchForm" label-width="85px" :validate-on-rule-change="true">
+          <el-row>
+            <el-col class="professional">
+              <el-form-item label="专业类别：" prop="professionalFirst">
+                <el-select v-model="queryModel.professionalFirst" @change="getProfessionaSecondNodes" placeholder="请选择">
+                  <el-option
+                    v-for="item in professionalFirstOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+                <el-select v-model="queryModel.professionalSecond" class="two" @change="getProfessionalThirdNodes" placeholder="请选择">
+                  <el-option
+                    v-for="item in professionalSecondOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+                <el-select v-model="queryModel.professionalThird" class="three" @change="getProfessionalFourthNodes" placeholder="请选择">
+                  <el-option
+                    v-for="item in professionalThirdOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+                <el-select v-model="queryModel.professionalFourth" class="four" placeholder="请选择">
+                  <el-option
+                    v-for="item in professionalFourthOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="6">
+              <el-form-item label="专家姓名：" prop="messageLike">
+                <el-input class="search" v-model="queryModel.messageLike" placeholder="请输入专家姓名"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="身份证号：" prop="idNumberLike">
+                <el-input class="search" v-model="queryModel.idNumberLike" placeholder="请输入身份证号"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6" v-if="!showselect">
+              <el-button type="primary" @click="handlePage(1)">查询</el-button>
+              <el-button @click="reset('searchForm')">重置</el-button>
+              <span @click="showselect = true" class="more">展开搜索条件</span>
+            </el-col>
+          </el-row>
+          <template v-if="showselect">
+            <el-row>
+              <el-col :span="9" class="region">
+                <el-form-item label="所在地区：" prop="provinceId">
+                  <el-select v-model="queryModel.provinceId"  @change="getCityNode()" placeholder="请选择">
+                    <el-option
+                      v-for="item in regionOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                  <el-select v-model="queryModel.cityId" @change="getCountyNode()" placeholder="请选择">
+                    <el-option
+                      v-for="item in regionTwoOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                  <el-select v-model="queryModel.countyId" placeholder="请选择">
+                    <el-option
+                      v-for="item in regionThreeOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="专家分类：" prop="dicExpertClassifies">
+                  <span :class="isExpertClassifySelectAll ? 'all selectall': 'all'" @click="conditionCancel">不限</span>
+                  <el-checkbox-group v-model="queryModel.dicExpertClassifies" v-loading="dicExpertClassifyLoading">
+                    <el-checkbox v-for="item in dicExpertClassifyList" :label="item.name" :key="item.code">{{item.name}}</el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <div class="handBtn">
+              <el-button type="primary" class="search" @click="handlePage(1)">查询</el-button>
+              <el-button @click="reset('searchForm')">重置</el-button>
+              <span @click="showselect = false" class="more">收起搜索条件</span>
+            </div>
+          </template>
+        </el-form>
+      </div>
+    </div>
+    <div class="main">
+      <!--按钮-->
+      <div class="btnbigbox" v-if="$store.getters.permissions.includes('1020302')">
+        <el-button type="primary" class="addbutton" @click="handleTableBtn('add')">
+          <span> + 新增</span>
+        </el-button>
+      </div>
+      <!--按钮-->
+      <div class="table-box">
+        <el-table
+          :data="tableData"
+          @cell-click="cellClick"
+          border
+          style="width: 100%"
+          header-cell-class-name="tableheader">
+          <el-table-column
+            type="index"
+            label="序号"
+            width="80"
+            :index="computedIndex"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="专家姓名"
+            class-name="pointer"
+            align="center"
+            :formatter="simpleFormatData"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="mobileNum"
+            label="联系方式"
+            align="center"
+            :formatter="simpleFormatData"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="regionText"
+            label="所在地区"
+            align="center"
+            :formatter="simpleFormatData"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="dicExpertClassify"
+            label="专家分类"
+            align="center"
+            :formatter="simpleFormatData"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            label="操作"
+            align="center">
+            <template slot-scope="scope">
+              <el-button
+                size="mini"
+                type="text"
+                @click="handleTableBtn('look', scope.row)">查看
+              </el-button>
+              <el-button
+                size="mini"
+                type="text"
+                v-if="$store.getters.permissions.includes('1020302')"
+                @click="handleTableBtn('edit', scope.row)">编辑
+              </el-button>
+              <el-button
+                size="mini"
+                type="text"
+                v-if="$store.getters.permissions.includes('1020302')"
+                @click="handleTableBtn('cooper', scope.row)">合作项目
+              </el-button>
+              <el-button
+                size="mini"
+                type="text"
+                v-if="$store.getters.permissions.includes('1020302')"
+                @click="handleTableBtn('del', scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="page.total"
+          :page-size='page.pageSize'
+          :current-page.sync="page.currentPage"
+          @current-change="handlePage"
+          @next-click="handlePage">
+        </el-pagination>
+        <!--分页-->
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { expert } from '@/api/resource'
+import { dataDictionary } from '@/api/system'
+import * as region from '@/assets/js/region'
+import {expertClassify} from '@/assets/js/expertClassify'
+export default {
+  name: 'expert',
+  data () {
+    return {
+      loading: false,
+      page: {
+        pageSize: 10,
+        pageNo: 0,
+        total: 0, // 总条数
+        currentPage: 1
+      },
+      queryModel: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        isDelete: 0,
+        messageLike: '',
+        idNumberLike: '',
+        expertCategoryRegex: '',
+        dicExpertClassifies: [],
+        professionalFirst: '',
+        professionalSecond: '',
+        professionalThird: '',
+        professionalFourth: '',
+        provinceId: null,
+        cityId: null,
+        countyId: null
+      },
+      // 专家分类字典项Id
+      dicExpertClassifyId: 10003,
+      // 专家分类集合
+      dicExpertClassifyList: [],
+      dicExpertClassifyLoading: false,
+      // 地址三级联动
+      addressOptions: region.CityInfo,
+      tableData: [],
+      // 专业类别
+      professionalFirstOptions: expertClassify,
+      professionalSecondOptions: [],
+      professionalThirdOptions: [],
+      professionalFourthOptions: [],
+      // 所在地区
+      regionOptions: region.CityInfo,
+      regionTwoOptions: [],
+      regionThreeOptions: [],
+      expertClassifyFlag: true,
+      showselect: false
+    }
+  },
+  computed: {
+    // 专家分类
+    isExpertClassifySelectAll () {
+      return !this.queryModel.dicExpertClassifies.length
+    }
+  },
+  watch: {
+    'queryModel.professionalFirst' (value) {
+      if (!value) {
+        this.$set(this.queryModel, 'professionalSecond', '')
+        this.$set(this.queryModel, 'professionalThird', '')
+        this.$set(this.queryModel, 'professionalFourth', '')
+        this.$set(this.queryModel, 'expertCategoryRegex', '')
+      }
+    },
+    'queryModel.provinceId' (value) {
+      if (!value) {
+        this.$set(this.queryModel, 'cityId', null)
+        this.$set(this.queryModel, 'countyId', null)
+      }
+    }
+  },
+  methods: {
+    cellClick (row, column, cell, event) {
+      if (column.label === '专家姓名') {
+        this.$router.push({path: `/resource/expert/details/${row.objectId}`})
+      }
+    },
+    /** 获取列表数据,稍作延迟 */
+    getTableData () {
+      this.loading = true
+      this.queryModel.pageNo = this.page.pageNo
+      this.queryModel.pageSize = this.page.pageSize
+      if (this.queryModel.professionalFirst) {
+        this.queryModel.expertCategoryRegex = this.queryModel.professionalFirst
+        if (this.queryModel.professionalSecond) {
+          this.queryModel.expertCategoryRegex += ('-')
+          this.queryModel.expertCategoryRegex += this.queryModel.professionalSecond
+          if (this.queryModel.professionalThird) {
+            this.queryModel.expertCategoryRegex += ('-')
+            this.queryModel.expertCategoryRegex += this.queryModel.professionalThird
+            if (this.queryModel.professionalFourth) {
+              this.queryModel.expertCategoryRegex += ('-')
+              this.queryModel.expertCategoryRegex += this.queryModel.professionalFourth
+            }
+          }
+        }
+      }
+      expert.queryList(this.queryModel).then(res => {
+        this.loading = false
+        this.tableData = res.data.data.list
+        this.page.total = res.data.data.total
+        // 包装地区信息
+        this.tableData.forEach(item => {
+          this.wrapRegionText(item)
+        })
+      })
+    },
+    /** 初始化专家分类 */
+    initExpertClassify () {
+      let query = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        dictionaryDirectoryId: this.dicExpertClassifyId
+      }
+      dataDictionary.getDetailList(query).then(res => {
+        this.dicExpertClassifyLoading = false
+        this.dicExpertClassifyList = res.data.dictionaryDetails
+      })
+    },
+    /** 包装三级联动地址信息 */
+    wrapRegionText (obj) {
+      // 初始化省市县数据
+      obj.regionText = ''
+      this.addressOptions.map((item) => {
+        if (item.value === obj.provinceId) {
+          obj.regionText += item.label + '/'
+          item.children.map((ite) => {
+            if (ite.value === obj.cityId) {
+              obj.regionText += ite.label + '/'
+              ite.children.map((countyItem) => {
+                if (countyItem.value === obj.countyId) {
+                  obj.regionText += countyItem.label
+                }
+              })
+            }
+          })
+        }
+      })
+    },
+    /** 表格操作 */
+    handleTableBtn (type, row) {
+      switch (type) {
+        case 'add':
+          this.$router.push({path: `/resource/expert/add`})
+          break
+        case 'look':
+          this.$router.push({path: `/resource/expert/details/${row.objectId}`})
+          break
+        case 'edit':
+          this.$router.push({path: `/resource/expert/update/${row.objectId}`})
+          break
+        case 'cooper':
+          this.$router.push({path: `/resource/expert/cooperate/${row.code}`})
+          break
+        case 'del':
+          this.logoff(row)
+          break
+      }
+    },
+    /** 删除 */
+    logoff (obj) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        expert.logoff(obj.objectId).then(res => {
+          if (res.data.resCode === '0000') {
+            this.getTableData()
+          }
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 序号计算
+    computedIndex (index) {
+      return index + (this.page.currentPage - 1) * this.page.pageSize + 1
+    },
+    /** 表单分页 */
+    handlePage (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = (nowNum - 1) * this.page.pageSize
+      this.getTableData()
+    },
+    // 高级搜索-取消条件
+    conditionCancel () {
+      this.queryModel.dicExpertClassifies = []
+    },
+    reset (formName) {
+      this.$refs[formName].resetFields()
+      this.handlePage(1)
+    },
+    // 专业类别 4级联动  获取二级
+    getProfessionaSecondNodes () {
+      this.queryModel.professionalSecond = null
+      this.queryModel.professionalThird = null
+      this.queryModel.professionalFourth = null
+      this.professionalFirstOptions.map((item) => {
+        if (item.value === this.queryModel.professionalFirst) {
+          this.professionalSecondOptions = item.children
+        }
+      })
+    },
+    // 专业类别 4级联动  获取三级
+    getProfessionalThirdNodes () {
+      this.queryModel.professionalThird = null
+      this.queryModel.professionalFourth = null
+      this.professionalSecondOptions.map((ite) => {
+        if (ite.value === this.queryModel.professionalSecond) {
+          this.professionalThirdOptions = ite.children
+        }
+      })
+    },
+    // 专业类别 4级联动  获取四级
+    getProfessionalFourthNodes () {
+      this.queryModel.professionalFourth = null
+      this.professionalThirdOptions.map((ite) => {
+        if (ite.value === this.queryModel.professionalThird) {
+          this.professionalFourthOptions = ite.children
+        }
+      })
+    },
+    // 所在地区 3级联动  获取市信息
+    getCityNode () {
+      this.regionTwoOptions = null
+      this.regionThreeOptions = null
+      this.queryModel.cityId = null
+      this.queryModel.countyId = null
+      this.regionOptions.map((item) => {
+        if (item.value === this.queryModel.provinceId) {
+          this.regionTwoOptions = item.children
+        }
+      })
+    },
+    // 所在地区 3级联动  获取区信息
+    getCountyNode () {
+      this.regionThreeOptions = null
+      this.queryModel.countyId = null
+      this.regionTwoOptions.map((ite) => {
+        if (ite.value === this.queryModel.cityId) {
+          this.regionThreeOptions = ite.children
+        }
+      })
+    }
+  },
+  mounted () {
+    // 专家分类初始化
+    this.initExpertClassify()
+    // 列表初始化
+    this.getTableData()
+  }
+}
+</script>
+<style lang="less">
+  #expert_management {
+    .tabletitles{
+      background:#f7f8fa!important;
+    }
+    .main{
+      margin: 0px;
+    }
+    .el-form-item__label{
+      color: #333333;
+      text-align: left;
+    }
+    .el-form-item{
+      margin-bottom: 5px;
+    }
+    /*.search{*/
+    /*width: 400px;*/
+    /*}*/
+  }
+</style>

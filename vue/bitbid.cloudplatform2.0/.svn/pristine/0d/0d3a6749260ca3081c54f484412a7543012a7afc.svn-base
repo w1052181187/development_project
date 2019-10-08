@@ -1,0 +1,260 @@
+<template>
+  <div class="cloudcontent" id="cloud_processedit">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules"  ref="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <el-input v-model="updateForm.tenderProjectCode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <el-input v-model="updateForm.tenderProjectName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段编号：">
+              <el-input v-model="updateForm.bidSectionCode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段名称：">
+              <el-input v-model="updateForm.bidSectionName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="公示名称："  prop="title">
+              <el-input v-model="updateForm.title"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="中标候选人："  prop="candidateList">
+              <el-button class="addbtn" @click="addCandidateBtn">+ 新增</el-button>
+              <el-table
+                :data="updateForm.candidateList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  prop="name"
+                  label="中标候选人名称"
+                  show-overflow-tooltip>
+                  <template slot-scope='scope'>
+                    <el-input v-model="scope.row.name"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="操作" align="center" width="100">
+                  <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="delCandidateBtn(scope.$index)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="公示内容：" class="bitianicon">
+              <editor ref="notice_ueditor" class="ueditor" :editread="editread"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="其他内容：">
+              <editor ref="other_ueditor" class="ueditor" :editread="editread"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="附件：">
+              <upload-file @uploadSuccess="uploadOtherSuccess" @deleteSuccess="deleteSuccess"
+                           :fileArrays="updateForm.fileInformationList"
+                           fileType="9"
+                           isImage="0">
+              </upload-file>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit('updateForm', 1)" :loading="isSubmiting">提交</el-button>
+          <el-button type="primary" @click="submit('updateForm', 0)" :loading="isSubmiting">保存</el-button>
+          <el-button class="cancal" @click="close">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import uploadFile from '@/components/upload/publicFileUpload'
+import {bulletinInfo, bidSection} from '@/api/project/index'
+export default {
+  components: {
+    editor,
+    uploadFile
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      updateForm: {
+        tenderProjectCode: '',
+        fileInformationList: [],
+        candidateList: [],
+        bidSectionList: []
+      },
+      rules: {
+        title: [
+          { required: true, message: '公告名称不能为空', trigger: ['blur', 'change'] }
+        ],
+        candidateList: [
+          { required: true, message: '中标候选人不能为空', trigger: ['blur', 'change'] }
+        ]
+      },
+      // 富文本
+      editread: false
+    }
+  },
+  methods: {
+    /**
+     * 增加中标候选人
+     */
+    addCandidateBtn () {
+      this.updateForm.candidateList.push({})
+    },
+    delCandidateBtn (index) {
+      this.updateForm.candidateList.splice(index, 1)
+    },
+    // 上传附件
+    uploadOtherSuccess (file) {
+      this.updateForm.fileInformationList.push(file)
+    },
+    deleteSuccess (fileId) {
+      this.updateForm.fileInformationList = this.updateForm.fileInformationList.filter(item => item.relativePath !== fileId)
+    },
+    /** 获取当前选择的标段信息 */
+    getChooseBidSectionInfo () {
+      bidSection.getOne(this.$route.query.sectionSystemCode).then((res) => {
+        if (res.data.bidSection) {
+          // 页面展示
+          this.updateForm.tenderProjectName = res.data.bidSection.tenderProjectName
+          this.updateForm.tenderProjectCode = res.data.bidSection.tenderProjectCode
+          this.updateForm.bidSectionName = res.data.bidSection.bidSectionName
+          this.updateForm.bidSectionCode = res.data.bidSection.bidSectionCode
+          // 用于保存关联关系
+          this.updateForm.currentBidSectionName = res.data.bidSection.bidSectionName
+          this.updateForm.currentBidSectionCode = res.data.bidSection.bidSectionCode
+          this.updateForm.tenderSystemCode = res.data.bidSection.tenderSystemCode
+          this.updateForm.sectionSystemCode = res.data.bidSection.code
+          this.updateForm.enterpriseId = res.data.bidSection.enterpriseId
+          this.updateForm.departmentId = res.data.bidSection.departmentId
+          this.updateForm.bidSectionList.push(res.data.bidSection)
+        }
+      })
+    },
+    // 提交/保存
+    submit (form, status) {
+      this.$refs[form].validate((valid) => {
+        if (valid) {
+          let content = this.$refs.notice_ueditor.getContent()
+          let otherContent = this.$refs.other_ueditor.getContent()
+          if (!content) {
+            this.$message({
+              type: 'warning',
+              message: '请输入公告内容'
+            })
+            return false
+          }
+          // 判断候选人名称是否有重复
+          if (this.checkCandidateName(this.updateForm.candidateList)) {
+            this.$message({
+              type: 'warning',
+              message: '候选人名称有重复'
+            })
+            return false
+          }
+          this.isSubmiting = true
+          // 根据type设置当前招标项目的状态
+          if (Object.is(status, 1)) {
+            this.updateForm.auditStatus = 4 // 暂时不考虑审批
+            this.updateForm.currentBidSectionSystemCode = this.$route.query.sectionSystemCode
+          } else {
+            this.updateForm.auditStatus = 0
+          }
+          this.updateForm.type = 6
+          this.updateForm.content = content
+          if (otherContent) {
+            this.updateForm.otherContent = otherContent
+          }
+          this.updateForm.candidateName = this.mergeCandidateName(this.updateForm.candidateList)
+          // 路由地址的设定
+          this.updateForm.routingPath = '/project/projectProcess/project/process/calibrationResult/winbidpublic/detail/'
+          bulletinInfo.save(this.updateForm).then((res) => {
+            this.isSubmiting = false
+            if (res.data.resCode === '0000') {
+              this.close()
+            }
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    /** 判断候选人名称是否有重复 */
+    checkCandidateName (candidateList) {
+      let flag = false
+      for (let i = 0; i < candidateList.length; i++) {
+        for (let j = i + 1; j < candidateList.length; j++) {
+          if (candidateList[i].name === candidateList[j].name) {
+            flag = true
+            break
+          }
+        }
+      }
+      return flag
+    },
+    /** 拼接候选人名称 */
+    mergeCandidateName (candidateList) {
+      let str = ''
+      for (let i = 0; i < candidateList.length; i++) {
+        if (i !== candidateList.length - 1) {
+          str += candidateList[i].name
+          str += ','
+        } else {
+          str += candidateList[i].name
+        }
+      }
+      return str
+    },
+    // 取消
+    close () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    },
+    init () {
+      this.getChooseBidSectionInfo()
+    }
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_processedit{
+    .addbtn{
+      border: 1px solid #3f63f6;
+      height: 32px;
+      padding: 7px 12px;
+      margin-bottom: 12px;
+    }
+  }
+</style>

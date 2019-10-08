@@ -1,0 +1,71 @@
+import request from '@/utils/axios/projectflow-axios'
+
+export const approvalTask = {
+  // 我发起的审批任务
+  launchedByMe (query) {
+    return request({
+      url: '/approvalTasks/launchedByMe',
+      method: 'get',
+      params: query
+    })
+  },
+  // 我发起的审批任务详情
+  detail (objectId) {
+    return request({
+      url: '/approvalTasks/' + objectId,
+      method: 'get'
+    })
+  },
+  // 撤回我的审批任务
+  recallMyTask (query) {
+    return request({
+      url: '/approvalTasks/' + query,
+      method: 'put'
+    })
+  },
+  // 待我审批的审批任务
+  needMeApproval (query) {
+    return request({
+      url: '/approvalTasks/needMeApproval',
+      method: 'get',
+      params: query
+    })
+  },
+  // 待我审批的审批任务详情
+  needMeApprovalOne (objectId) {
+    return request({
+      url: '/approvalTasks/needMeApproval/' + objectId,
+      method: 'get'
+    })
+  },
+  // 获取当前任务的所有审批人
+  getApprovalFlowExecutorList (relatedCode) {
+    return request({
+      url: '/approvalTasks/getApprovalFlowExecutorList/' + relatedCode,
+      method: 'get'
+    })
+  },
+  // 获取当前任务的所有审批人通过主体code
+  getApprovalFlowExecutorListBySubjectCode (params) {
+    return request({
+      url: '/approvalTasks/getApprovalFlowExecutorListBySubjectCode',
+      method: 'get',
+      params: params
+    })
+  },
+  // 转交审批
+  deliverTask (userId, taskCode) {
+    return request({
+      url: '/approvalTasks/deliverTask/' + userId + '/' + taskCode,
+      method: 'put'
+    })
+  },
+  // 获取知会人
+  getNotifyPeopleList (params) {
+    return request({
+      url: '/approvalTasks/getNotifyPeopleList',
+      method: 'get',
+      params: params
+    })
+  }
+}

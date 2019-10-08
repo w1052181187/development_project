@@ -1,0 +1,11 @@
+import request from '@/utils/axios/projectflow-axios'
+export const approvalRecord = {
+  // 查询当前企业所对应的审批节点
+  approvalRecordList (query) {
+    return request({
+      url: '/recordOfApprovals',
+      method: 'get',
+      params: query
+    })
+  }
+}

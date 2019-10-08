@@ -1,0 +1,312 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-row :gutter="20">
+        <el-col :span="4">
+          <div class="top_bg">业务模块：</div>
+          <el-table
+            ref="moduleTable"
+            :data="moduleList"
+            highlight-current-row
+            border
+            :row-class-name="tableRowClassName"
+            :row-style="handleRowStyle"
+            :cell-style="handleCellStyle"
+            @current-change="handleCurrentChange"
+            header-cell-class-name="tableheader">
+            <el-table-column
+              type="index"
+              label="序号"
+              width="50">
+            </el-table-column>
+            <el-table-column
+              prop="title"
+              label="名称">
+            </el-table-column>
+          </el-table>
+        </el-col>
+        <el-col :span="4">
+          <div class="top_bg">字典目录：</div>
+          <el-table
+            ref="catalogTable"
+            :data="catalogList"
+            highlight-current-row
+            border
+            :row-class-name="tableRowClassName"
+            :row-style="handleCatalogRowStyle"
+            :cell-style="handleCatalogCellStyle"
+            @current-change="handleCatalogCurChange">
+            <el-table-column
+              type="index"
+              label="序号"
+              width="50">
+            </el-table-column>
+            <el-table-column
+              prop="title"
+              label="名称">
+            </el-table-column>
+          </el-table>
+        </el-col>
+        <el-col :span="16">
+          <div class="top_bg">字典详情：<span class="top_addbtn" @click="addBtn">+ 新增</span></div>
+          <el-table
+            ref="detailTable"
+            :data="detailList"
+            highlight-current-row
+            border
+            :row-class-name="tableRowClassName"
+            :row-style="handleDetailRowStyle"
+            :cell-style="handleDetailCellStyle"
+            @current-change="handleDetailCurChange">
+            <el-table-column
+              type="index"
+              label="序号"
+              width="50">
+            </el-table-column>
+            <el-table-column
+              prop="title"
+              label="名称">
+            </el-table-column>
+            <el-table-column
+              label="操作" align="center" width="260">
+              <template slot-scope="scope">
+                <el-button type="text" size="small" @click="updateBtn(scope)">修改</el-button>
+                <el-button type="text" size="small" @click="delBtn(scope)">删除</el-button>
+                <el-button type="text" size="small" @click="moveBtn(scope.$index, scope.row, 1)"
+                           :disabled="scope.$index === 0"
+                           :class="scope.$index === 0 ? 'move_btn' : ''">上移</el-button>
+                <el-button type="text" size="small" @click="moveBtn(scope.$index, scope.row, 2)"
+                           :disabled="scope.$index === detailList.length - 1"
+                           :class="scope.$index === detailList.length - 1 ? 'move_btn' : ''">下移</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+      </el-row>
+    </div>
+    <el-dialog title="新增" :visible.sync="dialogVisible" width="30%" :before-close="close">
+      <el-form :model="form" :rules="rules" ref="form">
+        <el-form-item label="字典目录：" :label-width="formLabelWidth">
+          <span>{{catalogList[curCatalogIndex].title}}</span>
+        </el-form-item>
+        <el-form-item label="名称：" prop="name" :label-width="formLabelWidth">
+          <el-input v-model="form.name"></el-input>
+        </el-form-item>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit" :loading="isSubmiting">提交</el-button>
+          <el-button class="cancal" @click="close">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+export default {
+  name: '',
+  data () {
+    return {
+      moduleList: [
+        {
+          title: '客户管理'
+        },
+        {
+          title: '客户管理'
+        },
+        {
+          title: '客户管理'
+        },
+        {
+          title: '客户管理'
+        }
+      ],
+      catalogList: [
+        {
+          title: '客户管理'
+        },
+        {
+          title: '客户管理'
+        },
+        {
+          title: '客户管理'
+        },
+        {
+          title: '客户管理'
+        }
+      ],
+      detailList: [
+        {
+          title: '客户管理',
+          order: 1
+        },
+        {
+          title: '客户管理2',
+          order: 2
+        },
+        {
+          title: '客户管理3',
+          order: 3
+        },
+        {
+          title: '客户管理4',
+          order: 4
+        }
+      ],
+      orderList: [],
+      curIndex: 0,
+      curCatalogIndex: 0,
+      curDetailIndex: 0,
+      isSubmiting: false,
+      dialogVisible: false,
+      form: {},
+      formLabelWidth: '120px',
+      rules: {
+        name: [
+          { required: true, message: '请输入名称', trigger: ['blur', 'change'] }
+        ]
+      }
+    }
+  },
+  methods: {
+    init () {
+      // 默认选择第一行
+      this.$refs.moduleTable.setCurrentRow(this.moduleList[0])
+      this.$refs.catalogTable.setCurrentRow(this.catalogList[0])
+      this.$refs.detailTable.setCurrentRow(this.detailList[0])
+    },
+    tableRowClassName ({row, rowIndex}) {
+      row.index = rowIndex
+    },
+    handleRowStyle ({row, rowIndex}) {
+      if (this.curIndex === rowIndex) {
+        return 'background-color: #ecf3fd'
+      }
+    },
+    handleCellStyle ({row, column, rowIndex, columnIndex}) {
+      if (this.curIndex === rowIndex && columnIndex === 1) {
+        return 'color: #5592eb'
+      }
+    },
+    handleCurrentChange (row) {
+      // 切换模块
+      this.curIndex = row.index
+    },
+    handleCatalogRowStyle ({row, rowIndex}) {
+      if (this.curCatalogIndex === rowIndex) {
+        return 'background-color: #ecf3fd'
+      }
+    },
+    handleCatalogCellStyle ({row, column, rowIndex, columnIndex}) {
+      if (this.curCatalogIndex === rowIndex && columnIndex === 1) {
+        return 'color: #5592eb'
+      }
+    },
+    handleCatalogCurChange (row) {
+      // 切换目录
+      this.curCatalogIndex = row.index
+    },
+    handleDetailRowStyle ({row, rowIndex}) {
+      if (this.curDetailIndex === rowIndex) {
+        return 'background-color: #ecf3fd'
+      }
+    },
+    handleDetailCellStyle ({row, column, rowIndex, columnIndex}) {
+      if (this.curDetailIndex === rowIndex && columnIndex === 1) {
+        return 'color: #5592eb'
+      }
+    },
+    handleDetailCurChange (row) {
+      // 切换详情
+      this.curDetailIndex = row.index
+    },
+    addBtn () {
+      this.dialogVisible = true
+    },
+    updateBtn (scope) {
+      this.form.name = scope.row.title
+      this.dialogVisible = true
+    },
+    // 删除
+    delBtn (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        // **
+      }).catch(() => {
+        return false
+      })
+    },
+    moveBtn (index, row, status) {
+      this.orderList = []
+      this.detailList.map((item) => {
+        this.orderList.push(item)
+      })
+      switch (status) {
+        case 1:
+          // 上移
+          let lastOrder = this.orderList[index - 1].order
+          this.orderList[index - 1].order = this.orderList[index].order
+          this.orderList[index].order = lastOrder
+          break
+        case 2:
+          // 下移
+          let nextOrder = this.orderList[index + 1].order
+          this.orderList[index + 1].order = this.orderList[index].order
+          this.orderList[index].order = nextOrder
+          break
+      }
+      console.log(this.orderList)
+    },
+    close () {
+      this.dialogVisible = false
+      this.$refs['form'].resetFields()
+    },
+    submit () {
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          this.isSubmiting = true
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+
+<style scoped>
+  .top_bg {
+    background-color: #4a8cea;
+    font-size: 14px;
+    color: white;
+    height: 38px;
+    line-height: 38px;
+    box-sizing: border-box;
+    padding: 0 10px;
+    font-weight: 800;
+  }
+  .top_addbtn{
+    float: right;
+    height: 26px;
+    line-height: 26px;
+    font-size: 14px;
+    color: #4a8cea;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 0 10px;
+    border-radius: 3px;
+    background-color: white;
+    margin-top: 6px;
+  }
+  .submit-radio{
+    text-align: center;
+  }
+  .move_btn {
+    color: #999!important;
+  }
+</style>

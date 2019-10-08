@@ -1,0 +1,243 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" ref="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <el-input v-model="bidSection.tenderProjectCode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <el-input v-model="bidSection.tenderProjectName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段编号：">
+              <el-input v-model="bidSection.bidSectionCode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段名称：">
+              <el-input v-model="bidSection.bidSectionName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="踏勘时间：">
+              <el-date-picker
+                v-model="updateForm.reconnaissanceTime"
+                type="datetime"
+                value-format="yyyy-MM-dd HH:mm:ss">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="踏勘地点：">
+              <el-input v-model="updateForm.reconnaissanceSite"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="参与踏勘人员："  prop="reconnaissancePersonnels">
+              <el-button class="addbtn" @click="addExplorationBtn">+ 新增</el-button>
+              <el-table
+                :data="updateForm.reconnaissancePersonnels"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  prop="supplierName"
+                  label="踏勘人员"
+                  show-overflow-tooltip>
+                  <template slot-scope='scope'>
+                    <el-input v-model="scope.row.reconnaissancePersonnel"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="操作" align="center" width="100">
+                  <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="delExplorationBtn(scope.$index)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="疑义内容：" class="bitianicon">
+              <editor ref="objectionUeditor" class="ueditor" :editread="editread" :content="content"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="澄清内容：" class="bitianicon">
+              <editor ref="clarifyUeditor" class="ueditor" :editread="editread" :content="content"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="附件：">
+              <upload-file @uploadSuccess="uploadSuccess" @deleteSuccess="deleteSuccess"
+                           :fileArrays="updateForm.fileInformationList"
+                           fileType="9"
+                           isImage="0">
+              </upload-file>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit('updateForm', 1)" :loading="isSubmiting">提交</el-button>
+          <el-button type="primary" @click="submit('updateForm', 0)" :loading="isSaving">保存</el-button>
+          <el-button class="cancal" @click="close">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import {questionAndAnswerInfo} from '@/api/project'
+import uploadFile from '@/components/upload/publicFileUpload'
+export default {
+  components: {
+    editor,
+    uploadFile
+  },
+  data () {
+    return {
+      isSaving: false,
+      isSubmiting: false,
+      updateForm: {
+        reconnaissancePersonnels: []
+      },
+      rules: {
+        reconnaissancePersonnels: [
+          { required: true, message: '参与踏勘人员不能为空', trigger: ['blur', 'change'] }
+        ]
+      },
+      // 富文本
+      editread: false,
+      content: '',
+      bidSection: {}
+    }
+  },
+  methods: {
+    // 上传澄清附件
+    uploadSuccess (file) {
+      this.updateForm.fileInformationList.push(file)
+    },
+    deleteSuccess (fileId) {
+      this.updateForm.fileInformationList = this.updateForm.fileInformationList.filter(item => item.relativePath !== fileId)
+    },
+    /**
+     * 增加踏勘人员
+     */
+    addExplorationBtn () {
+      this.updateForm.reconnaissancePersonnels.push({})
+    },
+    delExplorationBtn (index) {
+      this.updateForm.reconnaissancePersonnels.splice(index, 1)
+    },
+    // 提交/保存
+    submit (form, status) {
+      if (this.updateForm.reconnaissancePersonnels && this.updateForm.reconnaissancePersonnels.length > 0) {
+        let continueFlag = true
+        this.updateForm.reconnaissancePersonnels.map(item => {
+          if (!item.reconnaissancePersonnel) {
+            continueFlag = false
+            return false
+          }
+        })
+        if (!continueFlag) {
+          this.$message({
+            message: '请填写参与踏勘人员！',
+            type: 'warning'
+          })
+          return
+        }
+      }
+      if (!this.$refs.objectionUeditor.getContent() || !this.$refs.clarifyUeditor.getContent()) {
+        this.$message({
+          message: '请填写疑义内容及澄清内容！',
+          type: 'warning'
+        })
+        return
+      }
+      this.$refs[form].validate((vaild) => {
+        if (vaild) {
+          if (Object.is(status, 0)) {
+            this.isSaving = true
+          } else if (Object.is(status, 1)) {
+            this.isSubmiting = true
+            this.updateForm.auditStatus = 4
+            this.updateForm.submitTime = new Date().getTime()
+          }
+          this.updateForm.fileInformationList.map(item => {
+            item.objectId = null
+          })
+          this.updateForm.objectionContent = this.$refs.objectionUeditor.getContent()
+          this.updateForm.clarifyContent = this.$refs.clarifyUeditor.getContent()
+          let reconnaissancePersonnel = ''
+          this.updateForm.reconnaissancePersonnels.map(item => {
+            reconnaissancePersonnel = reconnaissancePersonnel + item.reconnaissancePersonnel + ';'
+          })
+          this.updateForm.reconnaissancePersonnel = reconnaissancePersonnel.substring(0, reconnaissancePersonnel.length - 1)
+          questionAndAnswerInfo.update(this.updateForm).then((res) => {
+            this.isSaving = false
+            this.isSubmiting = false
+            if (res.data.resCode === '0000') {
+              this.close()
+            }
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    // 取消
+    close () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    },
+    getQuesAndAnsInfo () {
+      questionAndAnswerInfo.getById(this.$route.query.objectId).then(res => {
+        this.updateForm = res.data.questionAndAnswerInfo
+        if (this.updateForm.bidSection) {
+          this.bidSection = this.updateForm.bidSection
+        }
+        if (this.updateForm.objectionContent) {
+          this.$refs.objectionUeditor.setContent(this.updateForm.objectionContent)
+        }
+        if (this.updateForm.clarifyContent) {
+          this.$refs.clarifyUeditor.setContent(this.updateForm.clarifyContent)
+        }
+        let reconnaissancePersonnels = this.updateForm.reconnaissancePersonnel.split(';')
+        this.updateForm.reconnaissancePersonnels = []
+        for (let i = 0; i < reconnaissancePersonnels.length; i++) {
+          let result = {}
+          result.reconnaissancePersonnel = reconnaissancePersonnels[i]
+          this.updateForm.reconnaissancePersonnels.push(result)
+        }
+      })
+    }
+  },
+  watch: {
+    '$route': 'getQuesAndAnsInfo'
+  },
+  mounted () {
+    this.getQuesAndAnsInfo()
+  }
+}
+</script>
+
+<style scoped>
+</style>

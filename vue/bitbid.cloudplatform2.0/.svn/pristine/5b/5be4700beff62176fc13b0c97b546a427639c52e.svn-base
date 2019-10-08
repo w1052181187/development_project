@@ -1,0 +1,735 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <div class="box">
+      <div class="topmain">
+        评标专家
+        <!--按钮-->
+        <el-button class="addbutton" @click="addBidexpertBtn()" v-if="operationFlag">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="tableData"
+        border
+        header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='dataIndex'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="expertName"
+          label="专家姓名"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="mobilePhone"
+          label="联系方式"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="auditStatus"
+          label="提交状态"
+          width="120">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.auditStatus === 0">已保存</span>
+            <span  v-if="scope.row.auditStatus === 1">待审批</span>
+            <span  v-if="scope.row.auditStatus === 2">已审批</span>
+            <span  v-if="scope.row.auditStatus === 3">已驳回</span>
+            <span  v-if="scope.row.auditStatus === 4">已提交</span>
+            <span  v-if="scope.row.auditStatus === 5">已撤回</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="submitter"
+          label="提交人"
+          :formatter="simpleFormatData"
+          width="140">
+        </el-table-column>
+        <el-table-column
+          prop="submitTime"
+          label="提交时间"
+          :formatter="formatDate"
+          width="160px">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookBidexpertBtn(scope)">查看</el-button>
+            <el-button type="text" size="small" v-if="(scope.row.auditStatus === 0 || scope.row.auditStatus === 3 || scope.row.auditStatus === 5) && operationFlag" @click="updateBidexpertBtn(scope)">编辑</el-button>
+            <el-button type="text" size="small" v-if="(scope.row.auditStatus === 0) && operationFlag" @click="delBidexpertBtn(scope)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <div class="box">
+      <div class="topmain">
+        投标文件疑义及澄清
+        <!--按钮-->
+        <el-button class="addbutton" @click="addDocclearBtn()" v-if="operationFlag">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="docClearData"
+        border
+        header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='docCleardataIndex'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="objectionTitle"
+          label="疑义标题"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="bidderName"
+          label="投标人"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="auditStatus"
+          width="120px"
+          label="提交状态">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.auditStatus === 0">已保存</span>
+            <span  v-if="scope.row.auditStatus === 1">待审批</span>
+            <span  v-if="scope.row.auditStatus === 2">已审批</span>
+            <span  v-if="scope.row.auditStatus === 3">已驳回</span>
+            <span  v-if="scope.row.auditStatus === 4">已提交</span>
+            <span  v-if="scope.row.auditStatus === 5">已撤回</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="submitter"
+          label="提交人"
+          :formatter="simpleFormatData"
+          width="140">
+        </el-table-column>
+        <el-table-column
+          prop="submitTime"
+          label="提交时间"
+          :formatter="formatDate"
+          width="160px">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookDocclearBtn(scope)">查看</el-button>
+            <el-button type="text" size="small" v-if="(scope.row.auditStatus === 0 || scope.row.auditStatus === 3 || scope.row.auditStatus === 5) && operationFlag"  @click="updateDocclearBtn(scope)">编辑</el-button>
+            <el-button type="text" size="small" v-if="(scope.row.auditStatus === 0) && operationFlag"  @click="delDocclearBtn(scope)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="docCleartotal"
+        :page-size='docClearpageSize'
+        :current-page.sync="docClearcurrentPage"
+        @current-change="handledocClearChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <div class="box">
+      <div class="topmain">
+        开标记录
+        <!--按钮-->
+        <el-button class="addbutton" @click="addBidrecordBtn()" v-if="operationFlag">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="bidRecordData"
+        border
+        header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='bidRecorddataIndex'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="bidOpeningTime"
+          label="开标时间"
+          :formatter="formatDate"
+          width="160px">
+        </el-table-column>
+        <el-table-column
+          prop="bidOpeningAddress"
+          label="开标地点"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="auditStatus"
+          label="提交状态"
+          width="120px">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.auditStatus === 0">已保存</span>
+            <span  v-if="scope.row.auditStatus === 1">待审批</span>
+            <span  v-if="scope.row.auditStatus === 2">已审批</span>
+            <span  v-if="scope.row.auditStatus === 3">已驳回</span>
+            <span  v-if="scope.row.auditStatus === 4">已提交</span>
+            <span  v-if="scope.row.auditStatus === 5">已撤回</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="submitter"
+          label="提交人"
+          :formatter="simpleFormatData"
+          width="140">
+        </el-table-column>
+        <el-table-column
+          prop="submitTime"
+          label="提交时间"
+          :formatter="formatDate"
+          width="160px">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookBidrecordBtn(scope)">查看</el-button>
+            <el-button type="text" size="small" v-if="(scope.row.auditStatus === 0 || scope.row.auditStatus === 3 || scope.row.auditStatus === 5) && operationFlag" @click="updateBidrecordBtn(scope)">编辑</el-button>
+            <el-button type="text" size="small" v-if="(scope.row.auditStatus === 0) && operationFlag" @click="delBidrecordBtn(scope)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="bidRecordtotal"
+        :page-size='bidRecordpageSize'
+        :current-page.sync="bidRecordcurrentPage"
+        @current-change="handlebidRecordChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <div class="box">
+      <div class="topmain">
+        开标记录表疑义及澄清
+        <!--按钮-->
+        <el-button class="addbutton"  @click="addRecordclearBtn()" v-if="operationFlag">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="recordClearData"
+        border
+        header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='recordCleardataIndex'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="objectionTitle"
+          label="疑义标题"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="bidderName"
+          label="投标人"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="auditStatus"
+          width="120px"
+          label="提交状态">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.auditStatus === 0">已保存</span>
+            <span  v-if="scope.row.auditStatus === 1">待审批</span>
+            <span  v-if="scope.row.auditStatus === 2">已审批</span>
+            <span  v-if="scope.row.auditStatus === 3">已驳回</span>
+            <span  v-if="scope.row.auditStatus === 4">已提交</span>
+            <span  v-if="scope.row.auditStatus === 5">已撤回</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="submitter"
+          label="提交人"
+          :formatter="simpleFormatData"
+          width="140">
+        </el-table-column>
+        <el-table-column
+          prop="submitTime"
+          label="提交时间"
+          :formatter="formatDate"
+          width="160px">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookRecordclearBtn(scope)">查看</el-button>
+            <el-button type="text" size="small" v-if="(scope.row.auditStatus === 0 || scope.row.auditStatus === 3 || scope.row.auditStatus === 5) && operationFlag"  @click="updateRecordclearBtn(scope)">编辑</el-button>
+            <el-button type="text" size="small" v-if="(scope.row.auditStatus === 0) && operationFlag"  @click="delRecordclearBtn(scope)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="recordCleartotal"
+        :page-size='recordClearpageSize'
+        :current-page.sync="recordClearcurrentPage"
+        @current-change="handlerecordClearChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <div class="box">
+      <div class="topmain">
+        评标报告
+        <!--按钮-->
+        <el-button class="addbutton" @click="addBidreportBtn()" v-if="operationFlag">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="bidReportData"
+        border
+        header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='bidReportdataIndex'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="fileName"
+          label="评标报告附件名称"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <p v-for="(item, index) in scope.row.fileInformationList" :key="index">{{item.fileName}}</p>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="auditStatus"
+          label="提交状态"
+          width="120">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.auditStatus === 0">已保存</span>
+            <span  v-if="scope.row.auditStatus === 1">待审批</span>
+            <span  v-if="scope.row.auditStatus === 2">已审批</span>
+            <span  v-if="scope.row.auditStatus === 3">已驳回</span>
+            <span  v-if="scope.row.auditStatus === 4">已提交</span>
+            <span  v-if="scope.row.auditStatus === 5">已撤回</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="submitter"
+          label="提交人"
+          :formatter="simpleFormatData"
+          width="140">
+        </el-table-column>
+        <el-table-column
+          prop="submitTime"
+          label="提交时间"
+          :formatter="formatDate"
+          width="160">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookBidreportBtn(scope)">查看</el-button>
+            <el-button type="text" size="small" v-if="(scope.row.auditStatus === 0 || scope.row.auditStatus === 3 || scope.row.auditStatus === 5) && operationFlag"  @click="updateBidreportBtn(scope)">编辑</el-button>
+            <el-button type="text" size="small" v-if="(scope.row.auditStatus === 0) && operationFlag"  @click="delBidreportBtn(scope)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="bidReporttotal"
+        :page-size='bidReportpageSize'
+        :current-page.sync="bidReportcurrentPage"
+        @current-change="handlebidReportChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+import {questionAndAnswerInfo, documentInfo, expert} from '@/api/project'
+import {dateFormat} from '@/assets/js/common'
+export default {
+  components: {
+  },
+  props: ['tenderSystemCode', 'sectionSystemCode', 'operationFlag', 'type'],
+  data () {
+    return {
+      // 评标专家
+      tableData: [],
+      // 评标专家  分页
+      currentPage: 1,
+      pageNo: 0,
+      total: null, // 总条数
+      pageSize: 10, // 每页展示条数
+      dataIndex: 1,
+
+      // 投标文件疑义及澄清
+      docClearData: [],
+      docClearcurrentPage: 1,
+      docClearPageNo: 0,
+      docCleartotal: null, // 总条数
+      docClearpageSize: 10, // 每页展示条数
+      docCleardataIndex: 1,
+
+      // 开标记录
+      bidRecordData: [],
+      // 开标记录  分页
+      bidRecordcurrentPage: 1,
+      bidRecordpageNo: 0,
+      bidRecordtotal: null, // 总条数
+      bidRecordpageSize: 10, // 每页展示条数
+      bidRecorddataIndex: 1,
+
+      // 开标记录表疑义及澄清
+      recordClearData: [],
+      recordClearcurrentPage: 1,
+      recordClearpageNo: 0,
+      recordCleartotal: null, // 总条数
+      recordClearpageSize: 10, // 每页展示条数
+      recordCleardataIndex: 1,
+
+      // 评标报告
+      bidReportData: [],
+      // 评标报告  分页
+      bidReportcurrentPage: 1,
+      bidReportpageNo: 0,
+      bidReporttotal: null, // 总条数
+      bidReportpageSize: 10, // 每页展示条数
+      bidReportdataIndex: 1
+    }
+  },
+  watch: {
+    $route: 'resetView'
+  },
+  methods: {
+    resetView () {
+      this.getDocClearList()
+      this.getRecordclearList()
+      this.getbidRecordList()
+      this.getbidReportList()
+      this.getExpertList()
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 格式化时间
+    formatDate (row, col, cellValue) {
+      return cellValue ? dateFormat(cellValue, 'yyyy-MM-dd') : '---'
+    },
+    // 评标专家
+    // 查看
+    lookBidexpertBtn (scope) {
+      this.$router.push({path: `/project/projectProcess/project/process/bidOpening/bidexpert/detail/${scope.row.objectId}`,
+        query: {sectionSystemCode: this.sectionSystemCode}})
+    },
+    // 添加
+    addBidexpertBtn () {
+      this.$router.push({path: `/project/projectProcess/project/process/bidOpening/bidexpert/add`,
+        query: {sectionSystemCode: this.sectionSystemCode,
+          tenderSystemCode: this.tenderSystemCode}})
+    },
+    // 编辑
+    updateBidexpertBtn (scope) {
+      this.$router.push({path: `/project/projectProcess/project/process/bidOpening/bidexpert/update`,
+        query: {objectId: scope.row.objectId,
+          sectionSystemCode: this.sectionSystemCode,
+          tenderSystemCode: this.tenderSystemCode}})
+    },
+    // 删除
+    delBidexpertBtn (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        expert.deleteByIdAndSectionSystemCode(scope.row.objectId,
+          this.sectionSystemCode).then(res => {
+          this.getExpertList()
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.dataIndex = (nowNum - 1) * this.pageSize + 1
+      this.getExpertList()
+    },
+    getExpertList () {
+      let query = {
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        tenderSystemCode: this.tenderSystemCode,
+        sectionSystemCode: this.sectionSystemCode,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        type: 2
+      }
+      expert.getByRelaSection(query).then(res => {
+        let data = res.data.expertList
+        if (data) {
+          this.tableData = data.list
+          this.total = data.total
+        }
+        this.$emit('checkFlowStatusFlag', this.type)
+      })
+    },
+
+    // 投标文件疑义及澄清
+    getDocClearList () {
+      let query = {
+        pageNo: this.docClearPageNo,
+        pageSize: this.docClearpageSize,
+        tenderSystemCode: this.tenderSystemCode,
+        sectionSystemCode: this.sectionSystemCode,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        type: 5
+      }
+      questionAndAnswerInfo.getList(query).then(res => {
+        let data = res.data.questionAndAnswerInfoList
+        if (data) {
+          this.docClearData = data.list
+          this.docCleartotal = data.total
+        }
+      })
+    },
+    // 查看
+    lookDocclearBtn (scope) {
+      this.$router.push({path: `/project/projectProcess/project/process/bidOpening/docclear/detail/${scope.row.objectId}`})
+    },
+    // 添加
+    addDocclearBtn () {
+      this.$router.push({path: `/project/projectProcess/project/process/bidOpening/docclear/add`,
+        query: {sectionSystemCode: this.sectionSystemCode, tenderSystemCode: this.tenderSystemCode}})
+    },
+    // 编辑
+    updateDocclearBtn (scope) {
+      this.$router.push({path: `/project/projectProcess/project/process/bidOpening/docclear/update`,
+        query: {objectId: scope.row.objectId, tenderSystemCode: this.tenderSystemCode}})
+    },
+    // 删除
+    delDocclearBtn (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        questionAndAnswerInfo.deleteById(scope.row.objectId).then(() => {
+          this.getDocClearList()
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 分页
+    handledocClearChange (nowNum) {
+      this.docClearcurrentPage = nowNum
+      this.docClearPageNo = (nowNum - 1) * this.docClearpageSize
+      this.docCleardataIndex = (nowNum - 1) * this.docClearpageSize + 1
+      this.getDocClearList()
+    },
+
+    // 开标记录
+    getbidRecordList () {
+      let query = {
+        pageNo: this.bidRecordpageNo,
+        pageSize: this.bidRecordpageSize,
+        tenderSystemCode: this.tenderSystemCode,
+        sectionSystemCode: this.chooseSectionSystemCode ? this.chooseSectionSystemCode : this.sectionSystemCode,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        type: 5
+      }
+      documentInfo.getList(query).then(res => {
+        let data = res.data.documentInfoList
+        if (data) {
+          this.bidRecordData = data.list
+          this.bidRecordtotal = data.total
+        }
+      })
+    },
+    // 查看
+    lookBidrecordBtn (scope) {
+      this.$router.push({path: `/project/projectProcess/project/process/bidOpening/bidrecord/detail/${scope.row.objectId}`})
+    },
+    // 添加
+    addBidrecordBtn () {
+      this.$router.push({path: `/project/projectProcess/project/process/bidOpening/bidrecord/add`,
+        query: {sectionSystemCode: this.sectionSystemCode, tenderSystemCode: this.tenderSystemCode}})
+    },
+    // 编辑
+    updateBidrecordBtn (scope) {
+      this.$router.push({path: `/project/projectProcess/project/process/bidOpening/bidrecord/update`, query: {objectId: scope.row.objectId}})
+    },
+    // 删除
+    delBidrecordBtn (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        documentInfo.deleteById(scope.row.objectId).then(() => {
+          this.getbidRecordList()
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    handlebidRecordChange (nowNum) {
+      this.bidRecordcurrentPage = nowNum
+      this.bidRecordpageNo = (nowNum - 1) * this.bidRecordpageSize
+      this.bidRecorddataIndex = (nowNum - 1) * this.bidRecordpageSize + 1
+      this.getbidRecordList()
+    },
+
+    // 开标记录表疑义及澄清
+    getRecordclearList () {
+      let query = {
+        pageNo: this.recordClearpageNo,
+        pageSize: this.recordClearpageSize,
+        tenderSystemCode: this.tenderSystemCode,
+        sectionSystemCode: this.sectionSystemCode,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        type: 3
+      }
+      questionAndAnswerInfo.getList(query).then(res => {
+        let data = res.data.questionAndAnswerInfoList
+        if (data) {
+          this.recordClearData = data.list
+          this.recordCleartotal = data.total
+        }
+        this.$emit('checkFlowStatusFlag', this.type)
+      })
+    },
+    // 查看
+    lookRecordclearBtn (scope) {
+      this.$router.push({path: `/project/projectProcess/project/process/bidOpening/recordclear/detail/${scope.row.objectId}`})
+    },
+    // 添加
+    addRecordclearBtn () {
+      this.$router.push({path: `/project/projectProcess/project/process/bidOpening/recordclear/add`,
+        query: {sectionSystemCode: this.sectionSystemCode, tenderSystemCode: this.tenderSystemCode}})
+    },
+    // 编辑
+    updateRecordclearBtn (scope) {
+      this.$router.push({path: `/project/projectProcess/project/process/bidOpening/recordclear/update`,
+        query: {objectId: scope.row.objectId, tenderSystemCode: this.tenderSystemCode}})
+    },
+    // 删除
+    delRecordclearBtn (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        questionAndAnswerInfo.deleteById(scope.row.objectId).then(() => {
+          this.getRecordclearList()
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    handlerecordClearChange (nowNum) {
+      this.recordClearcurrentPage = nowNum
+      this.recordClearpageNo = (nowNum - 1) * this.recordClearpageSize
+      this.recordCleardataIndex = (nowNum - 1) * this.recordClearpageSize + 1
+      this.getRecordclearList()
+    },
+
+    // 评标报告
+    getbidReportList () {
+      let query = {
+        pageNo: this.bidReportpageNo,
+        pageSize: this.bidReportpageSize,
+        tenderSystemCode: this.tenderSystemCode,
+        sectionSystemCode: this.sectionSystemCode,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        type: 6
+      }
+      documentInfo.getList(query).then(res => {
+        let data = res.data.documentInfoList
+        if (data) {
+          this.bidReportData = data.list
+          this.bidReporttotal = data.total
+        }
+      })
+    },
+    // 查看
+    lookBidreportBtn (scope) {
+      this.$router.push({path: `/project/projectProcess/project/process/bidOpening/bidreport/detail/${scope.row.objectId}`})
+    },
+    // 添加
+    addBidreportBtn () {
+      this.$router.push({path: `/project/projectProcess/project/process/bidOpening/bidreport/add`,
+        query: {sectionSystemCode: this.sectionSystemCode, tenderSystemCode: this.tenderSystemCode}})
+    },
+    // 编辑
+    updateBidreportBtn (scope) {
+      this.$router.push({path: `/project/projectProcess/project/process/bidOpening/bidreport/update`, query: {objectId: scope.row.objectId}})
+    },
+    // 删除
+    delBidreportBtn (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        documentInfo.deleteById(scope.row.objectId).then(() => {
+          this.getbidReportList()
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    handlebidReportChange (nowNum) {
+      this.bidReportcurrentPage = nowNum
+      this.bidReportpageNo = (nowNum - 1) * this.bidReportpageSize
+      this.bidReportdataIndex = (nowNum - 1) * this.bidReportpageSize + 1
+      this.getbidRecordList()
+    }
+  },
+  mounted () {
+    this.getDocClearList()
+    this.getRecordclearList()
+    this.getbidRecordList()
+    this.getbidReportList()
+    this.getExpertList()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_processtype{
+  }
+</style>

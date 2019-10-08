@@ -1,0 +1,210 @@
+<template>
+  <div class="announcement-index cloudcontent" id="tenderFeeList">
+   <div class="main">
+      <el-select v-model="addressValue" placeholder="请选择" class="province-select" @change="selectRegion">
+        <el-option v-for="item in addressOptions" :key="item.value" :label="item.label" :value="item.value">
+        </el-option>
+      </el-select>
+      <calendar-list
+        ref="calendar"
+        :events="calendar.events"
+        :lunar="calendar.lunar"
+        :value="calendar.value"
+        :begin="calendar.begin"
+        :end="calendar.end"
+        :weeks="calendar.weeks"
+        :months="calendar.months"
+        @select="selectDay"
+        @selectMonth="selectMonth"
+        @selectYear="selectYear">
+        <!-- @operate="handleIconBtn" -->
+      </calendar-list>
+       <!--选择时弹框提示-->
+       <el-dialog
+         title="温馨提示"
+         :visible.sync="promptDialog"
+         width="25%">
+         <div class="prompt-box">{{promptTitle}}</div>
+         <div slot="footer" class="dialog-footer prompt-btn-box">
+             <el-button type="primary" @click="subscribeBtn" class="prompt-btn">立即订阅</el-button>
+         </div>
+       </el-dialog>
+     <!--选择时弹框提示-->
+   </div>
+  </div>
+</template>
+<script>
+import calendarList from '@/components/calendar/calendar.vue'
+import {dateFormat} from '@/assets/js/common'
+import { comparison } from '@/api/biddingSources'
+import * as region from '@/assets/js/region'
+import {serviceSubscription} from '@/api/system'
+export default {
+  components: {
+    calendarList
+  },
+  data () {
+    return {
+      calendarTime: null,
+      calendar: {
+        value: [], // 默认日期
+        lunar: false, // 显示农历
+        // weeks:['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], // 显示英文周
+        // months:['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], // 显示英文月份
+        events: {},
+        timestamp: Date.now()
+      },
+      eventsData: [],
+      // 地址三级联动
+      addressOptions: region.CityInfo,
+      addressValue: 110000,
+      promptTitle: '此功能需要订阅后才能使用',
+      promptDialog: false // 弹框
+    }
+  },
+  created () {
+  },
+  methods: {
+    // 点击跳转列表页
+    selectDay (data, checkFlag) {
+      // let str = data.join('-')
+      // let time = new Date(Date.parse(str.replace(/-/g, '/')))
+      // let query = {
+      //   enterpriseId: this.$store.getters.authUser.enterpriseId,
+      //   orderStatusList: '3,4',
+      //   areaNumber: this.addressValue,
+      //   selectDate: time
+      // }
+      // serviceSubscription.getServiceScene(query).then(res => {
+      //   let scene = res.data.scene
+      //   if (scene) {
+      //     if (scene === 1) {
+      //       // 未订阅
+      //       this.promptDialog = true
+      //       this.promptTitle = '此功能需要订阅后才能使用'
+      //     } else if (scene === 2) {
+      //       // 服务到期
+      //       this.promptDialog = true
+      //       this.promptTitle = '服务已到期'
+      //     } else if (scene === 3) {
+      //       // 已订阅，服务未到期
+      //       let newDay = dateFormat(new Date(data[0], data[1] - 1, data[2]), 'yyyy-MM-dd')
+      //       this.$router.push({path: `/biddingSources/announcementList`, query: {day: newDay, provinceId: this.addressValue}})
+      //     }
+      //   }
+      // })
+      if (!checkFlag) {
+        this.$message.warning('公告数量为空！不能进行查看')
+        return false
+      }
+      let newDay = dateFormat(new Date(data[0], data[1] - 1, data[2]), 'yyyy-MM-dd')
+      this.$router.push({path: `/biddingSources/announcementList`, query: {day: newDay, provinceId: this.addressValue}})
+    },
+    selectMonth (month, year) {
+      this.calendarTime = `${year}-${month}`
+      this.queryCalendarData()
+    },
+    selectYear (year, month) {
+      this.calendarTime = `${year}-${month}`
+      this.queryCalendarData()
+    },
+    // 获取日历数据
+    queryCalendarData () {
+      let params = {
+        monthRange: this.calendarTime,
+        indexType: 2,
+        aggType: 1,
+        provinceId: this.addressValue
+      }
+      comparison.calendars(params).then((res) => {
+        this.calendar.events = res.data.result
+      })
+    },
+    selectRegion (value) {
+      this.addressValue = value
+      this.queryCalendarData()
+    },
+    getSubscriptionAreas () {
+      let query = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        serviceContent: 2,
+        orderStatusList: '3,4'
+      }
+      serviceSubscription.getSubscriptionArea(query).then(res => {
+        if (res.data.subscriptionAreas && res.data.subscriptionAreas.length) {
+          this.addressOptions = res.data.subscriptionAreas
+          this.addressOptions.map((item, index) => {
+            item.value = item.areaNumber
+            item.label = item.areaName
+            if (index === 0) {
+              this.addressValue = item.value
+            }
+          })
+        } else {
+          this.addressOptions = region.CityInfo
+          this.addressValue = 110000 // 默认展示企业所在省份
+        }
+      })
+    },
+    // 立即订阅
+    subscribeBtn () {
+      this.$router.push({path: `/system/serviceSubscription`})
+    }
+  },
+  mounted () {
+    this.calendarTime = dateFormat(new Date(), 'yyyy-MM')
+    this.queryCalendarData()
+    // this.getSubscriptionAreas()
+  }
+}
+</script>
+<style lang="less" scoped>
+@import url('./../../../components/calendar/calendar.less');
+
+</style>
+<style lang="less">
+.announcement-index{
+  .province-select{
+    position: absolute;
+    width: 200px;
+    margin-bottom: 10px;
+    z-index: 10;
+  }
+  .el-dialog__header{
+    border-bottom: 1px solid #eeeeee;
+  }
+  .el-dialog__title{
+    font-size: 16px;
+    color: #111111;
+  }
+  .el-icon-close:before {
+    color: #666666;
+  }
+  .prompt-box{
+    width: 100%;
+    font-size: 16px;
+    color: #111111;
+    text-align: center;
+  }
+  .prompt-btn-box{
+    text-align: center;
+  }
+  .prompt-btn{
+    padding: 0;
+    width: 80px;
+    height: 36px;
+    background: #0e8dee;
+    border-radius: 0;
+    border: 1px solid #0e8dee;
+    color: #fff;
+  }
+  .prompt-btn:focus, .prompt-btn:hover {
+    background: #0e8dee;
+    border-color: #0e8dee;
+    color: #fff;
+  }
+  .el-dialog__footer{
+    padding-bottom: 30px;
+  }
+}
+</style>

@@ -1,0 +1,196 @@
+<template>
+  <div id="role-page" class="cont-view">
+    <!-- 面包屑区域start -->
+    <div class="bread-box">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/">系统管理</a></el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/">角色管理</a></el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <!-- 面包屑区域end -->
+    <!-- 搜索区域start -->
+    <div class="search-box">
+      <el-row :gutter="20">
+        <el-col :span="8">
+          <el-input placeholder="请输入角色名称关键字" v-model="searchForm.messageLike" class="input-with-select">
+            <el-button slot="append" icon="el-icon-search" @click="getTableData"></el-button>
+          </el-input>
+        </el-col>
+        <el-col :span="16" class="add-btn">
+          <el-button type="primary" size="small" @click="addRoleBtn" style="float:right;">新增角色</el-button>
+        </el-col>
+      </el-row>
+    </div>
+    <!-- 搜索区域end -->
+    <div class="table-box">
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%">
+        <el-table-column
+          label="序号"
+          type="index"
+          width="50"
+          :computedIndex="computedIndex"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="角色名称"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="description"
+          label="角色描述"
+          :formatter="simpleFormatData"
+          align="center">
+        </el-table-column>
+        <el-table-column label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleTableBtn(scope.row, 'edit')">
+              修改
+            </el-button>
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleTableBtn(scope.row, 'assign')">
+              分配权限
+            </el-button>
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleTableBtn(scope.row, 'del')">
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="pagination-box">
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="page.total"
+          :page-size='page.pageSize'
+          :current-page.sync="page.currentPage"
+          @current-change="handlePage"
+          @next-click="handlePage">
+        </el-pagination>
+        <!--分页-->
+      </div>
+    </div>
+    <!-- 弹窗区域start -->
+    <div class="dialog-box">
+      <!-- 新增、修改角色弹窗start -->
+      <el-dialog
+        :title="`${titleName}角色`"
+        :visible.sync="showVisible"
+        width="30%"
+        center>
+        <el-form :model="submitForm" :rules="rules" ref="submitForm" label-width="110px" class="demo-ruleForm">
+          <el-form-item label="角色名称:" prop="name">
+            <el-input v-model="submitForm.name" :readonly="isEdit"></el-input>
+          </el-form-item>
+          <el-form-item label="角色描述:" prop="description">
+            <el-input
+              placeholder="请输入角色描述"
+              type="textarea"
+              :autosize="{ minRows: 3, maxRows: 5}"
+              v-model.trim="submitForm.description">
+            </el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="showVisible=false">取 消</el-button>
+          <el-button type="primary" @click="submit">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 新增、修改角色弹窗end -->
+    </div>
+    <!-- 弹窗区域end -->
+  </div>
+</template>
+<script>
+export default {
+  name: 'role',
+  data () {
+    return {
+      loading: false,
+      tableData: [{name: 'wqr'}, {name: 'wqr'}, {name: 'wqr'}, {name: 'wqr'}, {name: 'wqr'}, {name: 'wqr'}, {name: 'wqr'}, {name: 'wqr'}, {name: 'wqr'}, {name: 'wqr'}, {name: 'wqr'}, {name: 'wqr'}, {name: 'wqr'}, {name: 'wqr'}, {name: 'wqr'}],
+      searchForm: {
+      },
+      page: {
+        pageSize: 10,
+        pageNo: 0,
+        total: 0, // 总条数
+        currentPage: 1
+      },
+      isEdit: false,
+      editObjectId: null,
+      showVisible: false,
+      titleName: '新增',
+      submitForm: {},
+      rules: {}
+    }
+  },
+  methods: {
+    /** 自增角色 */
+    addRoleBtn () {
+      this.showVisible = true
+      this.titleName = '新增'
+      this.isEdit = false
+    },
+    /** 搜索-查询列表 */
+    getTableData () {
+    },
+    submit () {},
+    /** 编辑用户弹框 */
+    handleTableBtn (row, type) {
+      if (Object.is(type, 'edit')) {
+        this.showVisible = true
+        this.titleName = '编辑'
+        this.isEdit = true
+      } else if (Object.is(type, 'assign')) {
+        this.$router.push({path: '/index/assign-power'})
+      } else if (Object.is(type, 'del')) {
+        this.deleteMethod()
+      }
+    },
+    /** 普通格式化数据，空的时候展示"---" */
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '-----'
+    },
+    /** 序号计算 */
+    computedIndex (index) {
+      return index + (this.page.currentPage - 1) * this.page.pageSize + 1
+    },
+    /** 表单分页 */
+    handlePage (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = (nowNum - 1) * this.page.pageSize
+      this.getTableData()
+    },
+    /** 删除 */
+    deleteMethod () {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        // 执行
+      }).catch(() => {
+        return false
+      })
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+</style>

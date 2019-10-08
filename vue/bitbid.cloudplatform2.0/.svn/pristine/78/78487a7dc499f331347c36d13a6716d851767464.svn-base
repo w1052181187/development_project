@@ -1,0 +1,97 @@
+<template>
+  <div class="cloudcontent" id="file-end">
+    <div class="main">
+      <el-form :model="form">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="档案名称：">
+              <span>{{form.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="档案编码：">
+              <span>{{form.archivesCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="文件数量：">
+              <span>{{form.filesCount}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="归档部门：">
+              <span>{{form.archivingDepartmentName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="归档人：">
+              <span>{{form.archivingPersonName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="归档时间：">
+              <span>{{form.filingTime}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="档案状态：">
+              <span>{{form.fileStatus}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+  </div>
+  <!--    <el-form-item label="档案名称：">-->
+  <!--      <span>{{form.winningBidder}}档案名称</span>-->
+  <!--    </el-form-item>-->
+  <!--    <el-form-item label="档案编码：">-->
+  <!--      <span>{{form.winningAmount}}</span>-->
+  <!--    </el-form-item>-->
+  <!--    <el-form-item label="文件数量：">-->
+  <!--      <span>{{form.agencyServiceFee}}</span>-->
+  <!--    </el-form-item>-->
+  <!--    <el-form-item label="归档部门：">-->
+  <!--      <span>{{form.candidatePublicAddr}}</span>-->
+  <!--    </el-form-item>-->
+  <!--    <el-form-item label="归档人：">-->
+  <!--      <span>{{form.agencyServiceFee}}</span>-->
+  <!--    </el-form-item>-->
+  <!--    <el-form-item label="归档时间：">-->
+  <!--      <span>{{form.candidatePublicAddr}}</span>-->
+  <!--    </el-form-item>-->
+  <!--    <el-form-item label="档案状态：">-->
+  <!--      <span>{{form.addrWinningBid}}</span>-->
+  <!--    </el-form-item>-->
+</template>
+<script>
+export default {
+  props: ['info'],
+  components: {
+  },
+  watch: {
+    info (value) {
+      this.form = value
+    }
+  },
+  data () {
+    return {
+      form: {}
+    }
+  },
+  methods: {
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #file-end {
+  }
+</style>

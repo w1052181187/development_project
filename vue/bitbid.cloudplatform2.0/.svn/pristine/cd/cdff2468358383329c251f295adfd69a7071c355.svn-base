@@ -1,0 +1,50 @@
+import request from '@/utils/axios/up-axios'
+
+export const user = {
+  /** 查询列表 */
+  queryList (params) {
+    return request({
+      url: `/users`,
+      method: 'get',
+      params
+    })
+  },
+  /** 根据主键查询 */
+  queryOne (params) {
+    return request({
+      url: `/users/${params}`,
+      method: 'get'
+    })
+  },
+  /** 保存用户 */
+  update (data) {
+    return request({
+      url: '/users',
+      method: 'post',
+      data
+    })
+  },
+  /** 判断用户名是否重复 */
+  isNoRepeated (params) {
+    return request({
+      url: '/users/isNoRepeated',
+      method: 'get',
+      params
+    })
+  },
+  /** 删除用户 */
+  logoff (params) {
+    return request({
+      url: `/users/${params}`,
+      method: 'delete'
+    })
+  },
+  /** 重置密码 */
+  restPwd (data) {
+    return request({
+      url: '/users/restPwd',
+      method: 'post',
+      data
+    })
+  }
+}

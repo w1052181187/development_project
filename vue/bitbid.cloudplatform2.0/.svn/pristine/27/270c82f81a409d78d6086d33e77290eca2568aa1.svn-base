@@ -1,0 +1,21 @@
+<template>
+  <div class="cloudcontent" id="home">
+    <router-link :to="{path: 'page1/page5'}">
+      业内路由跳转
+    </router-link>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+    }
+  },
+  created () {
+  },
+  methods: {
+  }
+}
+</script>

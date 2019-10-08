@@ -1,0 +1,9 @@
+import classify from './classify'
+import management from './management'
+import query from './query'
+
+export default[
+  ...classify,
+  ...management,
+  ...query
+]

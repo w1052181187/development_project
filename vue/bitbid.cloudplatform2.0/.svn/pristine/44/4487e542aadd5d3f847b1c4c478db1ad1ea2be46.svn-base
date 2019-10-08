@@ -1,0 +1,281 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <div class="selectbox">
+        <el-form :model="searchForm" ref="searchForm" label-width="100px"
+                 style="width: 100%">
+          <el-row>
+            <el-col :span="6">
+              <el-form-item label="开评标室名称：">
+                <el-input
+                  v-model="searchForm.name"
+                  placeholder="请输入开评标室名称">
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6.5">
+              <el-form-item label="适用业务：" label-width="80px">
+                <el-checkbox-group v-model="searchForm.businessType" @change="handleCheckChange">
+                  <el-checkbox :label="1">开标</el-checkbox>
+                  <el-checkbox :label="2">评标</el-checkbox>
+                  <el-checkbox :label="3">开标/评标</el-checkbox>
+                </el-checkbox-group>
+              </el-form-item>
+            </el-col>
+            <el-col :span="5">
+              <el-form-item label="类型：" label-width="50px">
+                <el-radio-group v-model="searchForm.roomType">
+                  <el-radio :label="1">内部</el-radio>
+                  <el-radio :label="2">外部</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+            <el-col :span="2">
+                <el-button class="search" icon="el-icon-search" @click="search"></el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+      <div class="topmain">
+        <!--按钮-->
+        <el-button class="addbutton" @click="handleAdd">
+          <span> + 新增</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="projectData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="80"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="开评标室"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="roomType"
+          label="类型"
+          align="center"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span  v-if="scope.row.roomType === 1">内部</span>
+            <span  v-if="scope.row.roomType === 2">外部</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="businessType"
+          label="适用业务"
+          align="center"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span  v-if="scope.row.businessType === 1">开标</span>
+            <span  v-if="scope.row.businessType === 2">评标</span>
+            <span  v-if="scope.row.businessType === 3">开标/评标</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="accommodation"
+          label="容纳人数"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          label="地点"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="creatorName"
+          label="管理员"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleUpdate(scope)">修改</el-button>
+            <el-button type="text" size="small" @click="handleDel(scope)">删除</el-button>
+            <el-button type="text" size="small" @click="handleBan(scope)">禁用设置</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="50%"
+               :before-close="close">
+      <el-form :model="form" :rules="rules" ref="form"
+               :label-width="formLabelWidth" :validate-on-rule-change="true">
+        <el-form-item label="开评标室名称：" prop="name" >
+          <el-input v-model="form.name" :disabled="isUpdated">
+          </el-input>
+        </el-form-item>
+        <el-form-item label="类型：" prop="roomType" >
+         <el-radio-group v-model="form.roomType">
+           <el-radio :label="1">内部</el-radio>
+           <el-radio :label="2">外部</el-radio>
+         </el-radio-group>
+        </el-form-item>
+        <el-form-item label="适用业务：" prop="businessType" >
+          <el-radio-group v-model="form.businessType">
+            <el-radio :label="1">开标</el-radio>
+            <el-radio :label="2">评标</el-radio>
+            <el-radio :label="3">开标/评标</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="容纳人数：">
+          <el-input v-model="form.accommodation">
+          </el-input>
+        </el-form-item>
+        <el-form-item label="地点：">
+          <el-input v-model="form.address">
+          </el-input>
+        </el-form-item>
+        <el-form-item label="管理员：">
+          <el-input v-model="form.admin">
+          </el-input>
+        </el-form-item>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit" :loading="isSubmiting">保存</el-button>
+          <el-button class="cancal" @click="close">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import {bidOpeningRoom} from '@/api/resource'
+
+export default {
+  name: '',
+  data () {
+    return {
+      searchForm: {
+        checkList: []
+      },
+      projectData: [],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      isSubmiting: false,
+      dialogVisible: false,
+      isUpdated: false,
+      form: {},
+      formLabelWidth: '120px',
+      dialogTitle: '新增开评标室',
+      rules: {
+        name: [
+          { required: true, message: '请输入开评标室名称', trigger: ['blur', 'change'] }
+        ],
+        roomType: [
+          { required: true, message: '请选择类型', trigger: ['change'] }
+        ],
+        businessType: [
+          { required: true, message: '请选择一项业务', trigger: ['change'] }
+        ]
+      }
+    }
+  },
+  methods: {
+    search () {
+      this.currentPage = 1
+      this.pageNo = 0
+    },
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData()
+    },
+    handleCheckChange (value) {
+      console.log(value)
+    },
+    handleAdd () {
+      this.dialogTitle = '新增开评标室'
+      this.isUpdated = false
+      this.dialogVisible = true
+    },
+    handleUpdate (scope) {
+      this.form = scope.row
+      this.dialogTitle = '修改开评标室'
+      this.dialogVisible = true
+      this.isUpdated = true
+    },
+    handleDel (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        bidOpeningRoom.deleteBidOpeningRoom(scope.row.objectId)
+      }).catch(() => {
+        return false
+      })
+    },
+    handleBan () {
+    },
+    getTableData () {
+      bidOpeningRoom.getBidOpeningRoomList({
+        pageNo: this.pageNo,
+        pageSize: this.pageSize
+      }).then(res => {
+        this.projectData = res.data.bidOpeningRoomList.list
+        this.total = res.data.bidOpeningRoomList.total
+      })
+    },
+    close () {
+      this.dialogVisible = false
+      this.$refs['form'].resetFields()
+    },
+    submit () {
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          this.isSubmiting = true
+          console.log(this.form)
+          bidOpeningRoom.saveOrUpdateBidOpeningRoom(this.form)
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  mounted () {
+    this.getTableData()
+  }
+}
+</script>
+
+<style scoped>
+  .topmain{
+    line-height: 40px;
+    color: #111111;
+    font-weight: bold;
+    padding: 0px;
+    margin: 10px auto;
+  }
+  .topmain .addbutton{
+    float: right;
+  }
+  .search{
+    height: 40px;
+    margin-left: 40px;
+  }
+</style>

@@ -1,0 +1,214 @@
+<template>
+  <div>
+    <!--资格预审结果通知书-->
+    <div class="file-type-name">
+      <span>合格申请人信息</span>
+    </div>
+    <el-table
+      :data="item.bidderInfoList"
+      style="width:100%"
+      border
+      header-cell-class-name="tableheader-filetype">
+      <el-table-column
+        type="index"
+        :index="1"
+        label="序号"
+        width="80"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        prop="bidderName"
+        label="投标单位"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        prop="contactName"
+        label="联系人"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        prop="contactNumber"
+        label="联系电话"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        prop="contactEmail"
+        label="邮箱"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        v-if="canEdit"
+        label="操作"
+        align="center">
+        <template slot-scope="scope">
+          <el-button
+            @click="handleEdit(scope)"
+            type="text"
+            size="small">
+            修改
+          </el-button>
+          <el-button
+            @click="deleteRow(scope)"
+            type="text"
+            size="small">
+            删除
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!--添加/修改弹框-->
+    <el-dialog :before-close='cancle' title="资格预审结果通知书" :visible.sync="dialogFormVisible" width="50%">
+      <el-form :model="form" :rules="rules"  ref="form" label-width="120px">
+        <el-form-item label="投标单位：" prop="bidderName">
+          <el-input v-model="form.bidderName" readonly placeholder="请选择">
+            <el-button slot="append" icon="el-icon-search" @click="showBidderDialog"></el-button>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="联系人：" prop="contactName">
+          <el-input v-model="form.contactName"></el-input>
+        </el-form-item>
+        <el-form-item label="联系电话：" prop="contactNumber">
+          <el-input v-model="form.contactNumber"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱：" prop="contactEmail">
+          <el-input v-model="form.contactEmail"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button class="cancal" @click="cancle">取消</el-button>
+        <el-button type="primary" @click="submitForm('form')" :loading="isLoading">确认</el-button>
+      </div>
+    </el-dialog>
+    <bidder-dialog :tenderSystemCode="tenderSystemCode" :showVisible="showBidderVisible" @selected="selectedBidder" @showDialog="showBidderDialog"></bidder-dialog>
+    <!--添加/修改弹框-->
+    <div class="file-type-add" @click="handleAdd" v-if="canEdit">
+      <span>+ 添加合格申请人</span>
+    </div>
+    <!--资格预审结果通知书-->
+    <fileUpload class="file-type-enclosure" :canEdit="canEdit"
+                :file-list="item.refArchivesFileInformationList"
+                :object-id="item.objectId" :file-type='9' file-name='其他'></fileUpload>
+  </div>
+</template>
+<script>
+import {validateMobilePhone} from '@/assets/js/validate'
+import {archivesFile} from '@/api/archives'
+import bidderDialog from '@/pages/project/projectProcess/common/bidder_dialog.vue'
+const validPhone = (rule, value, callback) => {
+  if (!value) {
+    callback(new Error('请输入电话号码'))
+  } else if (!validateMobilePhone(value)) {
+    callback(new Error('请输入正确的11位手机号码'))
+  } else {
+    callback()
+  }
+}
+export default {
+  components: {
+    fileUpload: resolve => require(['./fileUpload'], resolve),
+    bidderDialog
+  },
+  data () {
+    return {
+      // 判断
+      rules: {
+        bidderName: [
+          {required: true, message: '投标单位不能为空', trigger: 'blur'},
+          { min: 1, max: 200, message: '请输入1~200个字符', trigger: ['blur', 'change'] }
+        ],
+        contactNumber: [
+          { required: true, trigger: ['blur', 'change'], validator: validPhone },
+          {required: true, message: '电话不能为空', trigger: 'blur'}
+        ],
+        contactName: [
+          {required: true, message: '联系人不能为空', trigger: 'blur'},
+          { min: 1, max: 100, message: '请输入1~100个字符', trigger: ['blur', 'change'] }
+        ],
+        contactEmail: [
+          {type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur'}
+        ]
+      },
+      dialogFormVisible: false,
+      form: {
+        bidderName: '',
+        contactName: '',
+        contactNumber: '',
+        contactEmail: ''
+      },
+      isLoading: false,
+      isUpdate: false,
+      // 是否展示客户
+      showBidderVisible: false,
+      dataIndex: this.item.bidderInfoList.length
+    }
+  },
+  props: ['item', 'canEdit', 'tenderSystemCode'],
+  watch: {
+  },
+  methods: {
+    // 选择投标人
+    selectedBidder (obj) {
+      this.form.bidderName = obj.name
+    },
+    showBidderDialog () {
+      this.showBidderVisible = !this.showBidderVisible
+    },
+    // 修改后保存
+    submitForm (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.isLoading = true
+          this.form.archivesFileId = this.item.objectId
+          archivesFile.savaOrUpdateBidder(this.form).then((res) => {
+            this.isLoading = false
+            if (res.data.resCode === '0000') {
+              if (!this.isUpdate) {
+                this.item.bidderInfoList.push(res.data.bidderInfo)
+              } else {
+                this.$set(this.item.bidderInfoList, this.dataIndex, res.data.bidderInfo)
+                this.isUpdate = false
+              }
+              this.cancle()
+            }
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    cancle () {
+      this.dialogFormVisible = false
+      this.form = {}
+      this.$refs.form.resetFields()
+    },
+    handleAdd () {
+      this.dialogFormVisible = true
+    },
+    handleEdit (scope) {
+      this.form = Object.assign({}, scope.row)
+      this.dialogFormVisible = true
+      this.isUpdate = true
+      this.dataIndex = scope.$index
+    },
+    // 删除
+    deleteRow (scope) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        archivesFile.deleteBidder(scope.row.objectId).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.item.bidderInfoList.splice(scope.$index, 1)
+          }
+        })
+      }).catch(() => {
+      })
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+</style>

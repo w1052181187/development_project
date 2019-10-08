@@ -1,0 +1,228 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <div class="box">
+      <div class="topmain">
+        招标公告/资格预审公告
+        <!--按钮-->
+        <el-button type="primary" class="addbutton" @click="handleAdd" v-if="operationFlag">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="tableData"
+        header-cell-class-name="tableheader"
+        border>
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='indexMethod'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="title"
+          label="公告名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="type"
+          label="公告类型"
+          width="160"
+          :formatter="filterType"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="auditStatus"
+          label="提交状态"
+          width="120"
+          :formatter="filterAuditStatus">
+        </el-table-column>
+        <el-table-column
+          prop="submitterName"
+          label="提交人"
+          width="140">
+        </el-table-column>
+        <el-table-column
+          prop="submitTime"
+          label="提交时间"
+          :formatter="formatDate"
+          width="160">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetail(scope)">查看</el-button>
+            <el-button type="text" size="small" v-if="(scope.row.auditStatus === 0 || scope.row.auditStatus === 3 || scope.row.auditStatus === 5) && operationFlag" @click="handleEdit(scope)">编辑</el-button>
+            <el-button type="text" size="small" v-if="scope.row.auditStatus === 0  && operationFlag" @click="handleDel(scope)">删除</el-button>
+            <el-button type="text" size="small" v-if="(scope.row.auditStatus === 2 || scope.row.auditStatus === 4) && scope.row.type !== 3 && changeBullinFlag" @click="addNoticeBtn(scope)">添加更正公告</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+import {bulletinInfo} from '@/api/project/index'
+import {dateFormat} from '@/assets/js/common'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      tableData: [],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10, // 每页展示条数
+      dataIndex: 1,
+      changeBullinFlag: false // 判断是否允许添加更正公告
+    }
+  },
+  props: ['tenderSystemCode', 'sectionSystemCode', 'operationFlag', 'type'],
+  watch: {
+    '$route': 'getTableData'
+  },
+  created () {
+    this.getTableData()
+  },
+  methods: {
+    // 格式化时间
+    formatDate (row, col, cellValue) {
+      return cellValue ? dateFormat(cellValue, 'yyyy-MM-dd') : ''
+    },
+    /** 公告信息：1.招标公告；2.资格预审公告；3.更正公告；4.投标邀请书；5.废标公告；6.中标候选人公示；7.中标公告 */
+    filterType (row) {
+      if (row.type === 3) {
+        return '更正公告'
+      } else {
+        return '原始公告'
+      }
+    },
+    /** 审批状态(0.未提交；1.待审批；2.已审批；3.已驳回；4.已提交（不需要审批）；5.已撤回)  */
+    filterAuditStatus (row) {
+      if (row.auditStatus === 0) {
+        return '已保存'
+      } else if (row.auditStatus === 1) {
+        return '待审批'
+      } else if (row.auditStatus === 2) {
+        return '已审批'
+      } else if (row.auditStatus === 3) {
+        return '已驳回'
+      } else if (row.auditStatus === 4) {
+        return '已提交'
+      } else if (row.auditStatus === 5) {
+        return '已撤回'
+      }
+    },
+    /** 获取列表数据 */
+    getTableData () {
+      bulletinInfo.getByRelaSection({
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        tenderSystemCode: this.tenderSystemCode,
+        sectionSystemCode: this.sectionSystemCode,
+        typeList: '1,2,3'
+      }).then((res) => {
+        this.changeBullinFlag = false
+        if (res.data.bulletinInfoList && res.data.bulletinInfoList.list) {
+          this.tableData = res.data.bulletinInfoList.list
+          this.total = res.data.bulletinInfoList.total
+        }
+        if (res.data.bidSection) {
+          if (sessionStorage.getItem('isOverview') === 'true') { // 从项目管理中进入
+            if (res.data.bidSection.flowStatus !== 15 && res.data.bidSection.flowStatus !== 17) {
+              this.changeBullinFlag = true
+            } else {
+              this.changeBullinFlag = false
+            }
+          } else {
+            this.changeBullinFlag = false
+          }
+        }
+        this.$emit('checkFlowStatusFlag', this.type)
+      })
+    },
+    /** 添加更正公告 */
+    addNoticeBtn (scope) {
+      this.$router.push({path: `/project/projectProcess/announcement/add_notice`, query: {bulletinCode: scope.row.code, sectionSystemCode: this.sectionSystemCode}})
+    },
+    handleNoticeEdit (scope) {
+      this.$router.push({path: `/project/projectProcess/announcement/update_notice`, query: {code: scope.row.code, sectionSystemCode: this.sectionSystemCode}})
+    },
+    handleNoticeDetail (scope) {
+      this.$router.push({path: `/project/projectProcess/announcement/notice_detail/${scope.row.code}`, query: {sectionSystemCode: this.sectionSystemCode}})
+    },
+    // 编辑
+    handleEdit (scope) {
+      let type = scope.row.type
+      switch (type) {
+        case 3:
+          this.handleNoticeEdit(scope)
+          break
+        default:
+          this.$router.push({path: `/project/projectProcess/announcement/update`, query: {code: scope.row.code, sectionSystemCode: this.sectionSystemCode}})
+          break
+      }
+    },
+    handleAdd () {
+      this.$router.push({path: `/project/projectProcess/announcement/add`, query: {tenderSystemCode: this.tenderSystemCode, sectionSystemCode: this.sectionSystemCode}})
+    },
+    handleDetail (scope) {
+      let type = scope.row.type
+      switch (type) {
+        case 3:
+          this.handleNoticeDetail(scope)
+          break
+        default:
+          this.$router.push({path: `/project/projectProcess/announcement/detail/${scope.row.code}`, query: {sectionSystemCode: this.sectionSystemCode}})
+          break
+      }
+    },
+    handleDel (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        bulletinInfo.delete(scope.row.objectId).then(() => {
+          this.getTableData()
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 表单分页
+    indexMethod (index) {
+      return index + (this.currentPage - 1) * 10 + 1
+    },
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData(parseInt(this.pageNo), parseInt(this.pageSize))
+    },
+    handleCurrentNext (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData(parseInt(this.pageNo), parseInt(this.pageSize))
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_processtype{
+  }
+</style>

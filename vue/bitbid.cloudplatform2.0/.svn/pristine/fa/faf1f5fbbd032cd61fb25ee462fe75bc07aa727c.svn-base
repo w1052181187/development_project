@@ -1,0 +1,20 @@
+export default[
+  {
+    path: '/system/users',
+    name: '用户管理',
+    meta: {
+      title: '用户管理',
+      active: '/system/users'
+    },
+    component: resolve => require(['@/pages/system/users/index'], resolve)
+  },
+  {
+    path: '/system/users/assignroles',
+    name: '用户管理-分配角色',
+    meta: {
+      title: '用户管理-分配角色',
+      active: '/system/users'
+    },
+    component: resolve => require(['@/pages/system/users/assignroles'], resolve)
+  }
+]

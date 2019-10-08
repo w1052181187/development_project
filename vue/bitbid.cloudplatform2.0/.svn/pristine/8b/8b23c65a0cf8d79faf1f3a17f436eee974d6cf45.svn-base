@@ -1,0 +1,688 @@
+<template>
+  <div class="cloudcontent" id="cloud_index">
+    <el-row :gutter="20">
+      <el-col :span="leftnum" class="leftcontent">
+        <div class="message">
+          <div class="fl">
+            <h3 class="mestitle">待开标 <img src="../../static/images/newindex/ico_tit1.png"/></h3>
+            <ul class="meslist">
+              <li>
+                <router-link to="">
+                  <img src="../../static/images/newindex/topicon1.png">
+                  <em>本周</em>
+                  <span>123</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link to="">
+                  <img src="../../static/images/newindex/topicon2.png">
+                  <em>下周</em>
+                  <span>3</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link to="">
+                  <img src="../../static/images/newindex/topicon3.png">
+                  <em>本月</em>
+                  <span>23</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link to="">
+                  <img src="../../static/images/newindex/topicon4.png">
+                  <em>下月</em>
+                  <span>435</span>
+                </router-link>
+              </li>
+            </ul>
+          </div>
+          <div class="fr">
+            <h3 class="mestitle">提醒 <img src="../../static/images/newindex/ico_tit2.png"/></h3>
+            <ul class="meslist">
+              <li>
+                <router-link to="">
+                  <img src="../../static/images/newindex/topicon5.png">
+                  <em>待我审批</em>
+                  <span>3</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link to="">
+                  <img src="../../static/images/newindex/topicon6.png">
+                  <em>我发起的</em>
+                  <span>3</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link to="">
+                  <img src="../../static/images/newindex/topicon7.png">
+                  <em>通知公告</em>
+                  <span>{{noticeCount}}</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link to="">
+                  <img src="../../static/images/newindex/topicon8.png">
+                  <em>知会与我</em>
+                  <span>435</span>
+                </router-link>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <el-row :gutter="10">
+          <el-col :span="14">
+            <div class="box" style="height: 438px;">
+              <div class="title">本周开标日程安排 <a href="">>></a> </div>
+              <template v-if="weekData.length !== 0">
+                <el-table
+                  :data="weekData"
+                  stripe
+                  style="width: 98%; margin: 0 auto;">
+                  <el-table-column
+                    type="index"
+                    label="序号"
+                    width="50">
+                  </el-table-column>
+                  <el-table-column
+                    prop="name"
+                    label="项目名称（标段）"
+                    show-overflow-tooltip
+                    >
+                    <template slot-scope="scope">
+                      <a href="javascript:;" :title="scope.row.name">{{scope.row.name}}</a>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="date"
+                    label="开标时间"
+                    width="100">
+                  </el-table-column>
+                  <el-table-column
+                    prop="countdown"
+                    label="倒计时"
+                    width="120"
+                    align="right">
+                  </el-table-column>
+                </el-table>
+              </template>
+              <div class="nodata"  v-if="weekData.length === 0">
+                <img src="../../static/images/newindex/nodata1.png"/>
+                <p>暂无开标安排</p>
+              </div>
+            </div>
+            <div class="box" style="height: 342px;">
+              <div class="title">进行中的项目 <a href="">>></a> </div>
+              <template v-if="underwayData.length !== 0">
+                <el-table
+                  :data="underwayData"
+                  stripe
+                  style="width: 98%; margin: 0 auto;">
+                  <el-table-column
+                    type="index"
+                    label="序号"
+                    width="50">
+                  </el-table-column>
+                  <el-table-column
+                    prop="name"
+                    label="项目名称"
+                    show-overflow-tooltip
+                  >
+                    <template slot-scope="scope">
+                      <a href="javascript:;" :title="scope.row.name">{{scope.row.name}}</a>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="manager"
+                    label="项目经理"
+                    width="160"
+                    align="right">
+                  </el-table-column>
+                </el-table>
+              </template>
+              <div class="nodata"  v-if="underwayData.length === 0">
+                <img src="../../static/images/newindex/nodata2.png"/>
+                <p>暂无项目</p>
+              </div>
+            </div>
+            <div class="box" style="height: 217px;">
+              <div class="title">待我审批 <a href="">>></a> </div>
+              <ul class="approval" v-if="approvalList.length !== 0">
+                <li v-for="item in approvalList" :key="item.index">
+                  <span><em>{{item.type}}</em><i>{{item.time}}</i></span>
+                  <a :href="item.link">{{item.name}}</a>
+                  <a :href="item.link" class="btn">立即处理</a>
+                  <span class="manager">{{item.manager}}</span>
+                </li>
+              </ul>
+              <div class="nodata"  v-if="approvalList.length === 0">
+                <img src="../../static/images/newindex/nodata4.png"/>
+                <p>您的效率很高，暂无待办事项！</p>
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="10">
+            <calendar
+                ref="calendar"
+                :events="calendar.events"
+                :lunar="calendar.lunar"
+                :value="calendar.value"
+                :begin="calendar.begin"
+                :end="calendar.end"
+                :weeks="calendar.weeks"
+                :months="calendar.months"
+                @select="select"
+                @selectMonth="selectMonth"
+                @selectYear="selectYear"
+                @operate="handleIconBtn"
+            >
+              </calendar>
+            <div class="box"  style="height: 342px;">
+              <div class="title">通知公告 <a href="javascript:void(0);" @click="handleNoticeClick">>></a> </div>
+              <ul class="noticeList" v-if="noticeList.length !== 0">
+                <li v-for="item in noticeList" :key="item.index">
+                  <a :href="item.link">{{item.name}}</a>
+                  <span>{{item.time}}</span>
+                </li>
+              </ul>
+              <div class="nodata"  v-if="noticeList.length === 0">
+                <img src="../../static/images/newindex/nodata3.png"/>
+                <p>暂无数据</p>
+              </div>
+            </div>
+            <div class="box"  style="height: 217px;">
+            <div class="title">公司动态 <a href="javascript:void(0);" @click="handleNewsClick">>></a> </div>
+              <ul class="newsList" v-if="newsList.length !== 0">
+                <li v-for="item in newsList" :key="item.index">
+                  <a :href="item.link">{{item.name}}</a>
+                  <span>{{item.time}}</span>
+                </li>
+              </ul>
+              <div class="nodata"  v-if="newsList.length === 0">
+                <img src="../../static/images/newindex/nodata3.png"/>
+                <p>暂无数据</p>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+      </el-col>
+      <el-col :span="rightnum" class="rightmenu">
+        <h4>功能快捷入口</h4>
+        <ul>
+          <li>
+            <router-link to="">
+              <img src="../../static/images/newindex/rightico1.png"/>
+              <span>项目登记</span>
+            </router-link>
+          </li>
+          <li>
+            <router-link to="">
+              <img src="../../static/images/newindex/rightico2.png"/>
+              <span>商机登记</span>
+            </router-link>
+          </li>
+          <li>
+            <router-link to="">
+              <img src="../../static/images/newindex/rightico3.png"/>
+              <span>项目全貌</span>
+            </router-link>
+          </li>
+          <li>
+            <router-link to="">
+              <img src="../../static/images/newindex/rightico4.png"/>
+              <span>客户管理</span>
+            </router-link>
+          </li>
+          <li>
+            <router-link to="">
+              <img src="../../static/images/newindex/rightico5.png"/>
+              <span>开评标室预约</span>
+            </router-link>
+          </li>
+          <li>
+            <router-link to="">
+              <img src="../../static/images/newindex/rightico6.png"/>
+              <span>档案查询</span>
+            </router-link>
+          </li>
+          <li>
+            <router-link to="">
+              <img src="../../static/images/newindex/rightico7.png"/>
+              <span>比选公告</span>
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/quickMenu">
+              <img src="../../static/images/newindex/rightico8.png"/>
+              <span>自定义</span>
+            </router-link>
+          </li>
+        </ul>
+        <em @click="toggle" class="toggle">收起</em>
+      </el-col>
+    </el-row>
+    <div class="showmenu" v-show="menuBtn" @click="showMenu"><img src="../../static/images/newindex/show.png"/> </div>
+  </div>
+</template>
+<script>
+import calendar from '@/components/bidCalendar/calendar.vue'
+import { notice } from '@/api/notice/notice'
+
+export default {
+  components: {
+    calendar
+  },
+  data () {
+    return {
+      leftnum: 22,
+      rightnum: 2,
+      menuBtn: false,
+      weekData: [
+        // {
+        //   date: '2016-05-02',
+        //   name: '山西省国新能源新厂扩建施工总承包项目（一标段）',
+        //   countdown: '2时 50分'
+        // }, {
+        //   date: '2016-05-02',
+        //   name: '山西省国新能源新厂扩建施工总承包项目（一标段）',
+        //   countdown: '2时 50分'
+        // }, {
+        //   date: '2016-05-02',
+        //   name: '山西省国新能源新厂扩建施工总承包项目（一标段）',
+        //   countdown: '2时 50分'
+        // }, {
+        //   date: '2016-05-02',
+        //   name: '山西省国新能源新厂扩建施工总承包项目（一标段）',
+        //   countdown: '2时 50分'
+        // }, {
+        //   date: '2016-05-02',
+        //   name: '山西省国新能源新厂扩建施工总承包项目（一标段）',
+        //   countdown: '2时 50分'
+        // }, {
+        //   date: '2016-05-02',
+        //   name: '山西省国新能源新厂扩建施工总承包项目（一标段）',
+        //   countdown: '2时 50分'
+        // }, {
+        //   date: '2016-05-02',
+        //   name: '山西省国新能源新厂扩建施工总承包项目（一标段）',
+        //   countdown: '2时 50分'
+        // }
+      ],
+      underwayData: [
+        // {
+        //   name: '山西省国新能源新厂扩建施工总承包项目（一标段）',
+        //   manager: '张三'
+        // }, {
+        //   name: '山西省国新能源新厂扩建施工总承包项目（一标段）',
+        //   manager: '张三'
+        // }, {
+        //   name: '山西省国新能源新厂扩建施工总承包项目（一标段）',
+        //   manager: '张三'
+        // }, {
+        //   name: '山西省国新能源新厂扩建施工总承包项目（一标段）',
+        //   manager: '张三'
+        // }, {
+        //   name: '山西省国新能源新厂扩建施工总承包项目（一标段）',
+        //   manager: '张三'
+        // }
+      ],
+      approvalList: [
+        // {
+        //   type: '项目管理',
+        //   time: '2019-05-20  14:00:02',
+        //   name: '沧州港务集团及沧州临港开发区与我司谈合',
+        //   manager: '李云',
+        //   link: 'http://www.baidu.com'
+        // },
+        // {
+        //   type: '项目管理',
+        //   time: '2012-05-20  14:00:02',
+        //   name: '沧州港务集团及沧州临港开发区与我司谈合',
+        //   manager: '李云',
+        //   link: 'http://www.baidu.com'
+        // },
+        // {
+        //   type: '项目管理',
+        //   time: '2020-05-20  14:00:02',
+        //   name: '沧州港务集团及沧州临港开发区与我司谈合沧州港务集团及沧州临港开发区与我司谈合沧州港务集团及沧州临港开发区与我司谈合沧州港务集团及沧州临港开发区与我司谈合',
+        //   manager: '李云',
+        //   link: 'http://www.baidu.com'
+        // }
+      ],
+      calendar: {
+        value: [], // 默认日期
+        lunar: false, // 显示农历
+        // weeks:['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], // 显示英文周
+        // months:['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], // 显示英文月份
+        events: {},
+        timestamp: Date.now()
+      },
+      // 通知公告数量
+      noticeCount: 0,
+      noticeList: [],
+      newsList: []
+    }
+  },
+  created () {
+  },
+  methods: {
+    toggle () {
+      this.leftnum = 24
+      this.rightnum = 0
+      this.menuBtn = true
+    },
+    showMenu () {
+      this.leftnum = 22
+      this.rightnum = 2
+      this.menuBtn = false
+    },
+    select () {},
+    selectDay () {},
+    selectYear () {},
+    selectMonth () {},
+    handleIconBtn () {},
+    // 获取通知公告
+    getNoticeList () {
+      notice.getNoticeList({
+        pageNo: 1,
+        pageSize: 5,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        type: 1 // 通知公告
+      }).then((res) => {
+        this.noticeList = res.data.noticeList.list
+      })
+    },
+    // 获取通知公告
+    getNewsList () {
+      notice.getNoticeList({
+        pageNo: 1,
+        pageSize: 5,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        type: 1 // 通知公告
+      }).then((res) => {
+        this.noticeList = res.data.noticeList.list
+      })
+    },
+    // 获取未读公告
+    getUnReadCount () {
+      notice.getUnReadCount({
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        userId: this.$store.getters.authUser.userId,
+        type: 1 // 通知公告
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.noticeCount = res.data.unReadCount
+        }
+      })
+    },
+    // 通知公告点击
+    handleNoticeClick () {
+      this.$router.push({path: `/dailyManagement/homeNoticeAnnouncement`})
+    },
+    // 公司动态点击
+    handleNewsClick () {
+      this.$router.push({path: `/dailyManagement/homeCompanyNews`})
+    }
+  },
+  mounted () {
+    this.getNoticeList()
+    this.getNewsList()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_index{
+    position: relative;
+    a {
+      text-decoration: none;
+    }
+    .leftcontent .message{
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid #dcdfe6;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+    .leftcontent .message .fl,.leftcontent .message .fr{
+      width: 50%;
+    }
+    .leftcontent .message .fl{
+      border-right: 1px solid #dcdfe6;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .mestitle{
+      height: 34px;
+      line-height: 34px;
+      border-bottom: 1px solid #dcdfe6;
+      padding: 0 12px;
+      font-size: 15px;
+    }
+    .mestitle img{
+      float: left;
+      margin: 5px 8px 0 0;
+    }
+    .meslist{
+      width: 100%;
+    }
+    .meslist li{
+      width: 25%;
+      float: left;
+      text-align: center;
+      padding: 20px 0 12px 0;
+    }
+    .meslist li span,.meslist li em{
+      width: 100%;
+      display: inline-block;
+      text-align: center;
+      font-style: normal;
+    }
+    .meslist li em{
+      color: #666666;
+      font-size: 14px;
+      line-height: 24px;
+    }
+    .meslist li span{
+      font-size: 26px;
+    }
+    .meslist li:nth-child(1) span{
+      color: #fc7fac;
+    }
+    .meslist li:nth-child(2) span{
+      color: #f4ac4f;
+    }
+    .meslist li:nth-child(3) span{
+      color: #c087f5;
+    }
+    .meslist li:nth-child(4) span{
+      color: #fcb87c;
+    }
+    .meslist li:nth-child(5) span{
+      color: #89a1fa;
+    }
+    .meslist li:nth-child(6) span{
+      color: #fd8375;
+    }
+    .meslist li:nth-child(7) span{
+      color: #f68ae5;
+    }
+    .meslist li:nth-child(8) span{
+      color: #fd78af;
+    }
+    .box{
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid #dcdfe6;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      margin: 10px 0;
+      float: left;
+      position: relative;
+    }
+    .box .nodata{
+      width: 100%;
+      height: 130px;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      margin-top: -55px;
+      text-align: center;
+    }
+    .box .title{
+      width: 98%;
+      height: 50px;
+      line-height: 50px;
+      background: #dbe8fb;
+      padding: 0 1%;
+      font-size: 15px;
+      font-weight: bold;
+    }
+    .box .title a{
+      float: right;
+    }
+    .cell{
+      color: #333333;
+    }
+    .cell a{
+      color: #333333;
+    }
+    .rightmenu{
+      border: 1px solid #dcdfe6;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .rightmenu h4{
+      font-size: 12px;
+      height: 50px;
+      line-height: 50px;
+      border-bottom: 1px solid #dcdfe6;
+      text-align: center;
+    }
+    .rightmenu ul{
+      text-align: center;
+      margin: 10px 0;
+    }
+    .rightmenu ul li{
+      width: 100%;
+      float: left;
+      text-align: center;
+      margin: 10px 0;
+    }
+    .rightmenu ul li span{
+      width: 100%;
+      display: inline-block;
+      line-height: 32px;
+      color: #111111;
+    }
+    .rightmenu em.toggle{
+      background: url("../../static/images/newindex/hidden.png") top center no-repeat;
+      padding: 12px 0 7px 0;
+      display: inline-block;
+      width: 100%;
+      font-style: normal;
+      text-align: center;
+      cursor: pointer;
+    }
+    .showmenu{
+      position: absolute;
+      right: -17px;
+      top: -17px;
+      width: 86px;
+      height: 50px;
+      line-height: 50px;
+      background: #498ce9;
+      text-align: center;
+    }
+    .showmenu img{
+      vertical-align: middle;
+    }
+    // 待我审批
+    ul.approval,ul.noticeList,ul.newsList{
+      width: 100%;
+      overflow: hidden;
+    }
+    ul.approval li,ul.noticeList li,ul.newsList li{
+      padding: 0 2%;
+      width: 96%;
+      height: 47px;
+      line-height: 47px;
+      float: left;
+      border-bottom: 1px solid #dcdfe6;
+    }
+    ul.approval li a,ul.noticeList li a,ul.newsList li a{
+      color: #333333;
+      max-width: 70%;
+      overflow: hidden;
+      -ms-text-overflow: ellipsis;
+      text-overflow: ellipsis;
+      display: inline-block;
+      white-space: nowrap;
+    }
+    ul.approval li:hover a,ul.noticeList li:hover a,ul.newsList li:hover a{
+      color: #498ce9;
+    }
+    ul.noticeList li:last-child{
+      border-bottom: 0px;
+      padding-bottom: 3px;
+    }
+    ul.noticeList li span,ul.newsList li span{
+      color: #666666;
+      float: right;
+    }
+    ul.approval li,ul.newsList li{
+      height: 54px;
+      line-height: 54px;
+    }
+    ul.approval li span:nth-child(1){
+      width: 140px;
+      overflow: hidden;
+      float: left;
+      line-height: 20px;
+      margin-top: 5px;
+    }
+    ul.approval li span:nth-child(1) em,ul.approval li span:nth-child(1) i{
+      width: 100%;
+      display: inline-block;
+      line-height: 19px;
+      font-style: normal;
+      font-size: 14px;
+    }
+    ul.approval li span:nth-child(1) i{
+      color: #666666;
+      font-size: 12px;
+    }
+    ul.approval li a{
+      max-width: 40%;
+      float: left;
+    }
+    ul.approval li a.btn{
+      float: right;
+      width: 78px;
+      height: 28px;
+      line-height: 28px;
+      border: 1px solid #498ce9;
+      background: #e9f5ff;
+      color: #498ce9;
+      text-align: center;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+      display: inline-block;
+      margin-top: 12px;
+    }
+    ul.approval li a.btn:hover{
+      background: #498ce9;
+      color: #fff;
+    }
+    ul.approval li span.manager{
+      float: right;
+      width: 10%;
+      margin: 0 2%;
+    }
+  }
+</style>

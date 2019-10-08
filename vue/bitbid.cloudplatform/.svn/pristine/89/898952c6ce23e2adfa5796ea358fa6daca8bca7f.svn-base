@@ -1,0 +1,61 @@
+<template>
+  <div class="cloudcontent" id="cloud_process">
+    <!--面包屑-->
+    <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb_box">
+      <el-breadcrumb-item :to="{ path: '/index' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/projectProcess' }">项目进度管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/projectProcess/project' }">项目管理</el-breadcrumb-item>
+      <el-breadcrumb-item class="active_bread">流程管理</el-breadcrumb-item>
+    </el-breadcrumb>
+    <!--面包屑-->
+    <div class="main">
+      <div class="process_title">
+        <p>项目流程名称：<strong>资格预审流程</strong><span>（请点击下面流程中的节点，按流程顺序分别添加对应节点中的记录内容。）</span></p>
+      </div>
+      <div class="process">
+        <ul>
+          <li>
+            <a href="">资格预审公告</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+    }
+  },
+  methods: {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_process{
+    .process_title{
+      padding: 0 20px;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+    .process_title p{
+      color: #666666;
+      font-weight: bold;
+    }
+    .process_title p strong{
+      font-size: 16px;
+      color: #333;
+    }
+    .process_title p span{
+      font-weight: normal;
+    }
+    .process{
+      padding: 0 20px;
+      overflow: hidden;
+      margin: 20px auto;
+    }
+  }
+</style>

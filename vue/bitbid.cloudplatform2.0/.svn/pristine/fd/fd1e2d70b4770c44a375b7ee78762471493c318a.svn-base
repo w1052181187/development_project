@@ -1,0 +1,363 @@
+<template>
+  <div class="cloudcontent" id="cloud_registProject">
+    <div class="topmain">
+      <div class="seacher_box">
+        <span>项目名称：</span>
+        <el-input class="search" placeholder="请输入项目名称关键字" style="vertical-align: top"  v-model="searchForm.tenderProjectNameLike"></el-input>
+        <span>招标人：</span>
+        <el-input class="search" placeholder="请输入招标人名称" style="vertical-align: top"  v-model="searchForm.tendererNameLike"></el-input>
+        <div class="handBtn">
+          <el-button  type="primary" class="search" @click="search">查询</el-button>
+          <el-button  @click="reset">重置</el-button>
+        </div>
+      </div>
+    </div>
+    <div class="main">
+      <el-table
+        :data="registProjectData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='indexMethod'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="projectCode"
+          label="项目编号"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <div class="tender-project-name">
+              <img src="../../../assets/lishi_b.png" v-if="Number(scope.row.dataSource) === 1" title="历史项目">{{scope.row.projectCode}}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="tenderProjectName"
+          label="项目名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="tendererName"
+          label="招标人"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="tenderMode"
+          label="招标方式"
+          :formatter="filterTenderMode"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="firstProjectLeaderName"
+          label="项目经理"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="项目状态"
+          width="100"
+          :formatter="filterStatus"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="lastUpdaterName"
+          label="最近操作人"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="lastUpdateDate"
+          label="最近操作时间"
+          :formatter="formatDate"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" v-if="(scope.row.status === 5 || scope.row.status === 6 || scope.row.status === 9 || scope.row.status === 14) && $store.getters.permissions.includes('1010402')" @click="replenishBtn(scope)">补充详情</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === 8 || scope.row.status === 10 || scope.row.status === 11 || scope.row.status === 12" @click="lookBtn(scope)">查看</el-button>
+            <!--<el-button type="text" size="small" v-if="(scope.row.status === 6 || scope.row.status === 9 || scope.row.status === 14) && $store.getters.permissions.includes('1010402')" @click="updateBtn(scope)">编辑</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === 6 && $store.getters.permissions.includes('1010402')" @click="delBtn(scope)">删除</el-button>-->
+            <!--<el-button type="text" size="small" v-if="(scope.row.status === 8 || scope.row.status === 10 || scope.row.status === 11 || scope.row.status === 12) && $store.getters.permissions.includes('1010402')" @click="projectBtn(scope)">标段管理</el-button>-->
+            <el-button type="text" size="small" v-if="(scope.row.status === 8 || scope.row.status === 10 || scope.row.status === 11 || scope.row.status === 12)" @click="projectBtn(scope)">项目进度</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+import * as region from '@/assets/js/region'
+import * as industry from '@/assets/js/industry_two'
+import {tenderProject, bidSection} from '@/api/project'
+import {dateFormat} from '@/assets/js/common'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      searchForm: {},
+      registProjectData: [],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      dataIndex: 1,
+      sectionIndex: 'currentBidSection',
+      sectionFlowStatusIndex: 'currentBidSectionFlowStatus',
+      queryCondition: this.$route.query.status
+    }
+  },
+  watch: {
+    '$route': 'getTableData'
+  },
+  created () {
+    this.getTableData()
+  },
+  methods: {
+    filterTenderMode (row) {
+      if (Number(row.tenderMode) === 1) {
+        return '公开招标'
+      } else if (Number(row.tenderMode) === 2) {
+        return '邀请招标'
+      } else if (Number(row.tenderMode) === 3) {
+        return '竞争性谈判'
+      } else if (Number(row.tenderMode) === 4) {
+        return '单一来源采购'
+      } else if (Number(row.tenderMode) === 5) {
+        return '竞争性磋商'
+      } else if (Number(row.tenderMode) === 9) {
+        return '其他'
+      }
+    },
+    // 格式化时间
+    formatDate (row, col, cellValue) {
+      return cellValue ? dateFormat(cellValue, 'yyyy-MM-dd') : '---'
+    },
+    /** 项目状态的展示：0.概况未提交；1.概况待审批；2.概况已驳回；3.未提交项目负责人（概况已审批); 4.概况已提交（概况不需要审批）；5.详情未保存；6.详情未提交；7.详情待审批；8.详情已审批；9.详情已驳回；10.详情已提交（详情不需要审批）；11.项目进行中；12.项目已完成；13.概况已撤回；14.详情已撤回   */
+    filterStatus (row) {
+      if (row.status === 5) {
+        return '待编辑'
+      } else if (row.status === 6) {
+        return '已保存'
+      } else if (row.status === 7) {
+        return '待审批'
+      } else if (row.status === 8) {
+        return '已审批'
+      } else if (row.status === 9) {
+        return '已驳回'
+      } else if (row.status === 10) {
+        return '已提交'
+      } else if (row.status === 11) {
+        return '进行中'
+      } else if (row.status === 12) {
+        return '已完成'
+      } else if (row.status === 14) {
+        return '已撤回'
+      }
+    },
+    /** 获取列表数据 */
+    getTableData () {
+      tenderProject.getList({
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        statusList: this.queryCondition ? this.queryCondition : '5,6,7,8,9,10,11,12,14',
+        querySource: 1,
+        messageLike: this.searchForm.tenderProjectNameLike || null,
+        tendererNameLike: this.searchForm.tendererNameLike || null
+      }).then((res) => {
+        if (res.data.tenderProjectList && res.data.tenderProjectList.list) {
+          this.registProjectData = res.data.tenderProjectList.list
+          this.total = res.data.tenderProjectList.total
+          // 获取项目地址信息
+          this.registProjectData.forEach(item => {
+            item.tenderProjectAddress = this.getTenderExpandsInfo(item.tenderExpandsInfo, 'address')
+          })
+        }
+      })
+    },
+    getTenderExpandsInfo (tenderExpandsInfo, type) {
+      let str = ''
+      if (Object.is(type, 'address')) {
+        let provinceId = this.getLabelName(region.CityInfo, tenderExpandsInfo.provinceId)
+        let cityId = this.getLabelName(region.CityInfo, tenderExpandsInfo.cityId)
+        let countyId = this.getLabelName(region.CityInfo, tenderExpandsInfo.countyId)
+        if (provinceId.node) {
+          str += `${provinceId.node.label}`
+          str += `/`
+        }
+        if (cityId.node) {
+          str += `${cityId.node.label}`
+          str += `/`
+        }
+        if (countyId.node) {
+          str += `${countyId.node.label}`
+        }
+      } else if (Object.is(type, 'industry')) {
+        let industryTypeFirst = this.getLabelName(industry.industry, tenderExpandsInfo.provinceId)
+        let industryTypeSecond = this.getLabelName(industry.industry, tenderExpandsInfo.cityId)
+        if (industryTypeFirst.node) {
+          str += `${industryTypeFirst.node.label}`
+          str += `/`
+        }
+        if (industryTypeSecond.node) {
+          str += `${industryTypeSecond.node.label}`
+        }
+      }
+      return str
+    },
+    /** treeData [原始数据集]， key 传入的key值 */
+    getLabelName (treeData, key) {
+      let parentNode = null
+      let node = null
+      function getTreeDeepArr (treeData, key) {
+        for (let i = 0; i < treeData.length; i++) {
+          // 1.如果没有子节点 beark
+          if (node) {
+            break
+          }
+          // 定义需要操作的数据
+          let obj = treeData[i]
+          // 没有节点就下一个
+          if (!obj || !obj.value) {
+            continue
+          }
+          // 2.有节点就继续找，一直递归
+          if (obj.value === key) {
+            node = obj
+            break
+          } else {
+            // 3.如果有子节点就继续找
+            if (obj.children) {
+              // 4.递归前，记录当前节点，作为parentNode
+              parentNode = obj
+              // 递归
+              getTreeDeepArr(obj.children, key)
+            } else {
+              // 跳出当前递归
+              continue
+            }
+          }
+        }
+        // 如果没有找到父节点，置为null
+        if (!node) {
+          parentNode = null
+        }
+        // 返回结果
+        return {
+          node: node,
+          parentNode: parentNode
+        }
+      }
+      return getTreeDeepArr(treeData, key)
+    },
+    /** 模糊查询方法 */
+    search () {
+      this.getTableData()
+    },
+    reset () {
+      this.searchForm.tenderProjectNameLike = ''
+      this.searchForm.tendererNameLike = ''
+      this.getTableData()
+    },
+    // 项目管理
+    projectBtn (scope) {
+      // this.$router.push({path: `/project/projectProcess/project/${scope.row.code}`})
+      // this.$router.push({path: `/project/projectProcess/project`, query: {code: scope.row.code}})
+      bidSection.getList({
+        tenderSystemCode: scope.row.code,
+        enterpriseId: this.$store.getters.authUser.enterpriseId
+      }).then((res) => {
+        if (res.data.bidSectionList.list.length > 0) {
+          sessionStorage.setItem('isOverview', this.$store.getters.permissions.includes('1010402')) // 根据正常流程展示操作按钮
+          this.$router.push({path: `/project/projectProcess/project/process/${scope.row.code}`})
+          this.clearCurProjectSession(scope.row.code)
+        } else {
+          this.$confirm('该项目下还未创建标段，是否立即创建标段？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.$router.push({path: `/project/projectProcess/project/add`, query: {code: scope.row.code}})
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消创建标段'
+            })
+          })
+        }
+      })
+    },
+    clearCurProjectSession (code) {
+      let progressTemp = sessionStorage.getItem(code)
+      if (progressTemp) {
+        let curProject = JSON.parse(progressTemp)
+        if (curProject.hasOwnProperty(this.sectionIndex)) {
+          delete curProject[this.sectionIndex]
+        }
+        if (curProject.hasOwnProperty(this.sectionFlowStatusIndex)) {
+          delete curProject[this.sectionFlowStatusIndex]
+        }
+        sessionStorage.setItem(code, JSON.stringify(curProject))
+      } else {
+        sessionStorage.setItem(code, JSON.stringify({}))
+      }
+    },
+    // 补充详情
+    replenishBtn (scope) {
+      this.$router.push({path: `/project/projectProcess/update`, query: {code: scope.row.code}})
+    },
+    // 查看
+    lookBtn (scope) {
+      this.$router.push({path: `/project/projectProcess/detail/${scope.row.code}`})
+    },
+    // 修改
+    updateBtn (scope) {
+      this.$router.push({path: `/project/projectProcess/update`, query: {code: scope.row.code, operation: 'edit'}})
+    },
+    // 删除
+    delBtn (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        tenderProject.delete(scope.row.objectId).then(() => {
+          this.getTableData()
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 表单分页
+    indexMethod (index) {
+      return index + (this.currentPage - 1) * 10 + 1
+    },
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData(parseInt(this.pageNo), parseInt(this.pageSize))
+    },
+    handleCurrentNext (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData(parseInt(this.pageNo), parseInt(this.pageSize))
+    }
+  }
+}
+</script>

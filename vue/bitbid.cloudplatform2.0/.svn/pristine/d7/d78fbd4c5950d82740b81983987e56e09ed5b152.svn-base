@@ -1,0 +1,409 @@
+<template>
+  <div class="cloudcontent" id="cloud_projectOverview">
+    <div class="main">
+      <el-row :gutter="20">
+        <el-col :span="14">
+          <div class="lefttop">
+            <div class="Box addBox">
+              <h3>新增
+                <el-date-picker
+                  v-model="value"
+                  type="monthrange"
+                  range-separator="至"
+                  start-placeholder="开始月份"
+                  end-placeholder="结束月份">
+                </el-date-picker>
+              </h3>
+              <div class="adddata">
+                <div class="left"></div>
+                <div class="content">
+                  <p>新增</p>
+                  <div class="countdata">
+                    <span>项目数量：<i>6</i>个</span>
+                    <span>项目收入：<i>29</i>个</span>
+                  </div>
+                </div>
+                <div class="right"></div>
+              </div>
+            </div>
+            <div class="Box processBox">
+              <h3>项目进度</h3>
+              <div class="processdata">
+                <div class="left"></div>
+                <div class="content">
+                  <p>项目进度</p>
+                  <div class="countdata">
+                    <span>项目数量：<i>6</i>个</span>
+                    <span>项目收入：<i>29</i>个</span>
+                  </div>
+                </div>
+                <div class="right"></div>
+              </div>
+            </div>
+          </div>
+          <div class="Box">
+            <h3 style="margin-top: 10px;">标段进度一览表</h3>
+            <div class="echatbox">
+              <div id="bidOver"  style="width:100%; height:450px;"></div>
+            </div>
+          </div>
+        </el-col>
+        <el-col :span="10">
+          <div class="rightBox">
+            <h3>项目分配</h3>
+            <el-table
+              :data="projectData"
+              border
+              header-cell-class-name="tableheader">
+              <el-table-column
+                prop="tenderProjectCode"
+                label="项目经理"
+                :formatter="simpleFormatData"
+                show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column
+                prop="tenderProjectName"
+                label="项目总数"
+                :formatter="simpleFormatData"
+                show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column
+                prop="tenderProjectAddress"
+                label="进行中"
+                :formatter="simpleFormatData"
+                show-overflow-tooltip>
+              </el-table-column>
+            </el-table>
+            <!--分页-->
+            <el-pagination
+              background
+              layout="prev, pager, next"
+              :total="total"
+              :page-size='pageSize'
+              :current-page.sync="currentPage"
+              @current-change="handleCurrentChange"
+              @next-click="handleCurrentNext">
+            </el-pagination>
+            <!--分页-->
+          </div>
+          <div class="rightBox">
+            <h3>项目资料完整度</h3>
+            <ul>
+              <li v-for="item in integrityList" :key="item.index">
+                <el-progress type="circle" :percentage='item.num' :class="(item.num <= 25) ? 'red': (item.num <= 50)  ?  'yellow': (item.num <= 75) ?  'blue': 'green'"></el-progress>
+                <span>{{item.name}}</span>
+              </li>
+            </ul>
+            <!--分页-->
+            <el-pagination
+              background
+              layout="prev, pager, next"
+              :total="total"
+              :page-size='pageSize'
+              :current-page.sync="currentPage"
+              @current-change="handleCurrentChange"
+              @next-click="handleCurrentNext">
+            </el-pagination>
+            <!--分页-->
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+  </div>
+</template>
+<script>
+import echarts from 'echarts'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      value: '1',
+      loadBidOverCharts: '',
+      BidOverList: ['未开始', '公告阶段', '资格预审', '招标文件', '响应阶段', '开/评标', '结果公示', '废标'],
+      BidOverData: [65, 210, 102, 56, 112, 544, 64, 26],
+      projectData: [
+        {},
+        {},
+        {},
+        {},
+        {}
+      ],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      dataIndex: 1,
+      integrityList: [
+        {
+          num: 5,
+          name: '张三'
+        },
+        {
+          num: 45,
+          name: '李四'
+        },
+        {
+          num: 70,
+          name: '王麻子'
+        },
+        {
+          num: 90,
+          name: '杨二小'
+        }
+      ]
+    }
+  },
+  watch: {
+    // '$route': 'getTableData'
+  },
+  mounted () {
+    this.loadBidOver()
+  },
+  methods: {
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 标段进度一览表
+    loadBidOver () {
+      this.loadBidOverCharts = echarts.init(document.getElementById('bidOver'))
+      var option = {
+        tooltip: {
+          trigger: 'item'
+        },
+        grid: { // 图标距离
+          top: '5%', // 距离上边的距离
+          bottom: '10%', // 距离下边的距离
+          left: '5%', // 距离左边的距离
+          right: '5%' // 距离右边的距离
+        },
+        legend: {
+          type: 'scroll',
+          data: ['未开始', '公告阶段', '资格预审', '招标文件', '响应阶段', '开/评标', '结果公示', '废标'],
+          bottom: 0
+        },
+        xAxis: [
+          {
+            type: 'category',
+            axisLine: {show: true}, // 是否显示坐标轴轴线
+            axisTick: {show: false}, // 是否显示坐标轴刻度
+            data: this.BidOverList,
+            show: true,
+            axisLabel: {
+              interval: 0,
+              rotate: 0
+            }
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            axisLine: {show: true}, // 是否显示坐标轴轴线
+            axisTick: {show: false} // 是否显示坐标轴刻度
+          }
+        ],
+        series: [
+          {
+            type: 'bar',
+            barWidth: 30, // 柱图宽度
+            itemStyle: {
+              normal: {
+                color: function (params) {
+                  var colorList = [
+                    '#7dc745', '#3fa5ee', '#3fa5ee', '#3fa5ee',
+                    '#3fa5ee', '#3fa5ee', '#3fa5ee', '#ff6384'
+                  ]
+                  return colorList[params.dataIndex]
+                },
+                label: {
+                  show: true,
+                  position: 'top',
+                  textStyle: { // 数值样式
+                    color: '#333',
+                    fontSize: 12
+                  }
+                }
+              }
+            },
+            data: this.BidOverData
+          }
+        ]
+      }
+      this.loadBidOverCharts.setOption(option)
+      let that = this
+      this.loadBidOverCharts.on('click', function (params) {
+        console.log(params)
+        that.$router.push({path: `/project/proOverview/bid`, query: {params: params}})
+      })
+    },
+    handleCurrentChange () {},
+    handleCurrentNext () {}
+  }
+}
+</script>
+<style lang="less">
+  #cloud_projectOverview {
+    .lefttop{
+      width: 100%;
+      height: 164px;
+      overflow: hidden;
+    }
+    .Box h3{
+      height: 40px;
+      line-height: 40px;
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+    .Box h3 .el-date-editor--monthrange{
+      font-weight: normal;
+      margin-left: 10px;
+      width: 78%;
+      max-width: 280px;
+    }
+    .addBox{
+      width: 53%;
+      float: left;
+    }
+    .adddata{
+      width: 100%;
+      height: 110px;
+      -webkit-border-radius: 10px;
+      -moz-border-radius: 10px;
+      border-radius: 10px;
+      background: #0092eb url("../../../../static/images/project/bg_blue.png") left no-repeat;
+      position: relative;
+    }
+    .adddata .left{
+      width: 56px;
+      height: 73px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: url("../../../../static/images/project/blueleftbg.png") left no-repeat;
+    }
+    .adddata .right{
+      width: 73px;
+      height: 92px;
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      background: url("../../../../static/images/project/bluerightbg.png") left no-repeat;
+    }
+    .processBox{
+      width: 45%;
+      float: right;
+    }
+    .processdata{
+      width: 100%;
+      height: 110px;
+      -webkit-border-radius: 10px;
+      -moz-border-radius: 10px;
+      border-radius: 10px;
+      background: #ff6186 url("../../../../static/images/project/bg_pink.png") left no-repeat;
+      position: relative;
+    }
+    .processdata .left{
+      width: 56px;
+      height: 73px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: url("../../../../static/images/project/pinkleftbg.png") left no-repeat;
+    }
+    .processdata .right{
+      width: 73px;
+      height: 92px;
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      background: url("../../../../static/images/project/pinkrightbg.png") left no-repeat;
+    }
+    .Box .content{
+      overflow: hidden;
+    }
+    .Box .content p{
+      line-height: 40px;
+      padding: 0 20px 0 40px;
+      color: #fff;
+      background: url("../../../../static/images/project/icon1.png") 10px center no-repeat;
+    }
+    .processdata .content p{
+      background: url("../../../../static/images/project/icon2.png") 10px center no-repeat;
+    }
+    .countdata{
+      padding: 0 3%;
+      overflow: hidden;
+    }
+    .countdata span{
+      margin-top: 15px;
+      display: inline-block;
+      float: left;
+      color: #fff;
+      font-size: 15px;
+      width: 50%;
+      text-align: center;
+    }
+    .countdata span i{
+      font-size: 18px;
+      font-style: normal;
+      font-weight: bold;
+      margin: 0 3px;
+      display: inline-block;
+    }
+    .rightBox{
+      width: 100%;
+      min-height: 100px;
+      border: 1px solid #dcdfe6;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+    .rightBox h3{
+      padding: 0 10px;
+      font-size: 15px;
+      height: 32px;
+      line-height: 32px;
+      border-bottom: 1px solid #dcdfe6;
+    }
+    .rightBox .el-table{
+      width: 96%;
+      margin: 10px auto;
+    }
+    .rightBox>ul{
+      margin: 20px 0 0 0;
+      overflow: hidden;
+    }
+    .rightBox>ul li{
+      width: 25%;
+      text-align: center;
+      overflow: hidden;
+      float: left;
+    }
+    .rightBox>ul li .el-progress .el-progress-circle{
+      width: 60px!important;
+      height: 60px!important;
+      margin: 0 auto;
+    }
+    .red path:nth-child(2){
+      stroke: #f56c6c
+    }
+    .yellow path:nth-child(2){
+      stroke: #e6a23c
+    }
+    .blue path:nth-child(2){
+      stroke: #409eff
+    }
+    .green path:nth-child(2){
+      stroke: #67c23a
+    }
+    .rightBox>ul li span{
+      display: inline-block;
+      width: 100%;
+      line-height: 32px;
+      text-align: center;
+    }
+  }
+</style>

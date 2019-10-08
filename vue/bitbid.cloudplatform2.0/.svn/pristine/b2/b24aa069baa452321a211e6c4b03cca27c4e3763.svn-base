@@ -1,0 +1,132 @@
+<template>
+  <div>
+    <el-dialog title="分配角色" width="30%" :before-close="cancel" :visible.sync="showVisible">
+      <el-form :model="limitsJurisdictionForm" :rules="rules" ref="limitsJurisdictionForm" v-loading="loading">
+        <el-form-item label="角色：" prop="roleIds" :label-width="formLabelWidth">
+          <el-select v-model="limitsJurisdictionForm.roleIds" multiple placeholder="请选择角色" :multiple-limit="selectedRolesLimit">
+            <el-option
+              v-for="item in roles"
+              :key="item.objectId"
+              :label="item.name"
+              :value="item.objectId">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="管辖范围：" prop="jurisdictionType" :label-width="formLabelWidth">
+          <el-radio-group v-model="limitsJurisdictionForm.jurisdictionType">
+            <el-radio :label="1">个人</el-radio>
+            <el-radio :label="2">多个部门</el-radio>
+            <el-radio :label="3">整个企业</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="管辖的部门：" prop="departmentIds" :label-width="formLabelWidth" v-if="limitsJurisdictionForm.jurisdictionType === 2">
+          <tree-checkbox :initData="limitsJurisdictionForm.departmentIds" @changeChecked="selectedDepatments" :isShow="isShowDptTree"></tree-checkbox>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer operationbtn">
+        <el-button type="info" @click="cancel()">取 消</el-button>
+        <el-button type="primary" @click="save()">确 定</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import TreeCheckbox from '../department/tree/tree_checkbox'
+import {role, limitJurisdiction} from '@/api/system'
+export default {
+  components: {
+    TreeCheckbox
+  },
+  data () {
+    let validJurisdiction = (rule, value, callback) => {
+      if (this.limitsJurisdictionForm.jurisdictionType === 2) {
+        if (value) {
+          callback()
+        } else {
+          callback(new Error('请选择管辖的部门'))
+        }
+      } else {
+        callback()
+      }
+    }
+    return {
+      limitsJurisdictionForm: {
+        jurisdictionType: 1
+      },
+      selectedRolesLimit: 5,
+      loading: false,
+      formLabelWidth: '120px',
+      roles: [],
+      isShowDptTree: true,
+      rules: {
+        jurisdictionType: [
+          { required: true, message: '管辖范围不能为空', trigger: 'change' }
+        ],
+        departmentIds: [
+          { required: true, message: '管辖的部门不能为空', trigger: 'change' },
+          {validator: validJurisdiction, trigger: 'change'}
+        ],
+        roleIds: [
+          { required: true, message: '角色不能为空', trigger: 'change' }
+        ]
+      }
+    }
+  },
+  props: ['userId', 'showVisible'],
+  watch: {
+    userId (value) {
+      if (value) {
+        this.initData()
+      }
+    }
+  },
+  methods: {
+    initRoles () {
+      role.queryAll(this.$store.getters.authUser.enterpriseId).then(res => {
+        this.roles = res.data.roleList
+      })
+    },
+    initData () {
+      limitJurisdiction.queryByUserId(this.userId).then(res => {
+        this.limitsJurisdictionForm = res.data.data
+        this.limitsJurisdictionForm.jurisdictionType = this.limitsJurisdictionForm.jurisdictionType || 1
+        this.limitsJurisdictionForm.departmentIds = this.limitsJurisdictionForm.jurisdiction ? this.limitsJurisdictionForm.jurisdiction.split(',') : []
+      })
+    },
+    selectedDepatments (departmengIds) {
+      this.limitsJurisdictionForm.departmentIds = departmengIds
+    },
+    save () {
+      this.$refs['limitsJurisdictionForm'].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          this.limitsJurisdictionForm.userId = this.userId
+          if (this.limitsJurisdictionForm.jurisdictionType !== 2) {
+            this.limitsJurisdictionForm.jurisdiction = null
+          } else {
+            this.limitsJurisdictionForm.jurisdiction = this.limitsJurisdictionForm.departmentIds.join(',')
+          }
+          limitJurisdiction.update(this.limitsJurisdictionForm).then(res => {
+            this.loading = false
+            if (res.data.resCode === '0000') {
+              this.cancel()
+            }
+          }).catch(() => {
+            this.loading = false
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    cancel () {
+      this.$emit('showAssignRolesDialog', null, false)
+    }
+  },
+  mounted () {
+    this.initRoles()
+  }
+}
+</script>
+<style>
+</style>

@@ -1,0 +1,11 @@
+export default[
+  {
+    path: '/system/users',
+    name: '用户管理',
+    meta: {
+      title: '用户管理',
+      active: '/system/users'
+    },
+    component: () => import(/* webpackChunkName: 'system' */ '@/pages/system/users/index')
+  }
+]

@@ -1,0 +1,129 @@
+<template>
+  <div>
+    <el-table
+      :data="tableData"
+      border
+      style="width: 100%"
+      header-cell-class-name="tableheader">
+      <el-table-column
+        type="index"
+        label="序号"
+        width="60"
+        :index="computedIndex"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        prop="agencyContractCode"
+        label="合同编号"
+        :formatter="simpleFormatData"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="agencyContractName"
+        label="合同名称"
+        :formatter="simpleFormatData"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="contractSigningDate"
+        label="签订日期"
+        :formatter="formatDate"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="entrustEnterpriseContacts"
+        label="联系人"
+        :formatter="simpleFormatData"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="entrustEnterpriseContactsPhone"
+        label="联系电话"
+        :formatter="simpleFormatData"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="name"
+        label="合同文件"
+        width="80">
+        <template slot-scope="scope">
+          <el-button type="text" v-if="scope.row.fileInformationList.length" @click="downloadFile(scope.row.fileInformationList[0])" size="small">下载</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!--分页-->
+    <el-pagination
+      background
+      layout="prev, pager, next"
+      :total="page.total"
+      :page-size='page.pageSize'
+      :current-page.sync="page.currentPage"
+      @current-change="handlePage"
+      @next-click="handlePage">
+    </el-pagination>
+    <!--分页-->
+  </div>
+</template>
+<script>
+import {agencyContract} from '@/api/knowledge'
+import {dateFormat, downloadFile} from '@/assets/js/common'
+export default {
+  data () {
+    return {
+      loading: false,
+      tableData: [],
+      page: {
+        pageSize: 10,
+        pageNo: 0,
+        total: 0, // 总条数
+        currentPage: 1
+      },
+      queryModel: {
+        customerManagementCode: this.relatedCode,
+        isDelete: 0
+      }
+    }
+  },
+  props: ['relatedCode'],
+  methods: {
+    getTableData () {
+      this.loading = true
+      this.queryModel.pageNo = this.page.pageNo
+      this.queryModel.pageSize = this.page.pageSize
+      agencyContract.getList(this.queryModel).then(res => {
+        this.loading = false
+        this.tableData = res.data.agencyContractList.list
+        this.page.total = res.data.agencyContractList.total
+      })
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 格式化时间
+    formatDate (row, col, cellValue) {
+      return dateFormat(cellValue, 'yyyy-MM-dd')
+    },
+    // 下载文件
+    downloadFile (file) {
+      downloadFile(file.fileName, file.relativePath)
+    },
+    // 序号计算
+    computedIndex (index) {
+      return index + (this.page.currentPage - 1) * this.page.pageSize + 1
+    },
+    // 表单分页
+    handlePage (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = (nowNum - 1) * this.page.pageSize
+      this.getTableData()
+    }
+  },
+  mounted () {
+    // 初始化
+    this.getTableData()
+  }
+}
+</script>
+<style lang="less">
+</style>

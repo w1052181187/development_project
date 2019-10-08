@@ -1,0 +1,118 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <span>{{updateForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{updateForm.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标人：">
+              <span>{{updateForm.bidSectionCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目经理：">
+              <span>{{updateForm.bidSectionName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-tabs v-model="activeTab">
+            <el-tab-pane label="项目情况总结" name="1">
+              <el-form-item label="项目背景与要求：">
+                <el-input
+                  type="textarea"
+                  :autosize="{ minRows: 4}"
+                  v-model="updateForm.projectSum"
+                  disabled>
+                </el-input>
+              </el-form-item>
+              <el-form-item label="项目情况说明：">
+                <el-input
+                  type="textarea"
+                  :autosize="{ minRows: 4}"
+                  v-model="updateForm.explain"
+                  disabled>
+                </el-input>
+              </el-form-item>
+            </el-tab-pane>
+            <el-tab-pane label="专家评价" name="2">
+              <el-table
+                :data="updateForm.expertEvaluateList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  prop="expertName"
+                  label="专家姓名"
+                  show-overflow-tooltip>
+                  <template slot-scope='scope'>
+                    <span>{{scope.row.expertName}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="content"
+                  label="评价内容"
+                  show-overflow-tooltip>
+                  <template slot-scope='scope'>
+                    <el-input
+                      type="textarea"
+                      autosize
+                      v-model="scope.row.content"
+                      disabled>
+                    </el-input>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-tab-pane>
+            <el-tab-pane label="招标人评价" name="3">
+              <el-form-item label="评价内容：">
+                <el-input
+                  type="textarea"
+                  :autosize="{ minRows: 4}"
+                  v-model="updateForm.evaluate"
+                  disabled>
+                </el-input>
+              </el-form-item>
+            </el-tab-pane>
+          </el-tabs>
+        </el-row>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'detail',
+  data () {
+    return {
+      activeTab: '1',
+      updateForm: {
+        explain: '',
+        expertEvaluateList: []
+      }
+    }
+  },
+  methods: {
+    detail () {
+    }
+  },
+  mounted () {
+    this.detail()
+  }
+}
+</script>
+
+<style scoped>
+
+</style>

@@ -1,0 +1,288 @@
+<template>
+  <div class="cloudcontent"  id="cloud_templateCenter">
+    <div class="topmain">
+      <div class="seacher_box advancedsearch_box">
+        <el-form :model="searchForm" ref="searchForm" label-width="85px" :validate-on-rule-change="true">
+          <el-row :gutter="20">
+            <el-col :span="24">
+              <el-form-item label="模板类型：">
+                <span :class="isTemTypeSelectAll ? 'all selectall' : 'all'" @click="conditionCancel('模板类型')">不限</span>
+                <el-checkbox-group v-model="searchForm.temType">
+                  <el-checkbox v-for="item in temTypeList" :label="item.label" :key="item.value" >{{item.label}}</el-checkbox>
+                </el-checkbox-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col style="width: 320px; float: left;">
+              <el-form-item label="模板名称：" prop="messageLike">
+                <el-input class="search" v-model="searchForm.messageLike" placeholder="请输入模板名称"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col style="width: 160px; float: left;">
+              <el-button  type="primary" @click="search('searchForm')">查询</el-button>
+              <el-button  @click="reset('searchForm')">重置</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+    </div>
+    <div class="main">
+      <ul class="templateList">
+        <li v-for="(item,index) in templateList" :key="index">
+          <img :src="item.imgSrc">
+          <span>{{item.name}}</span>
+          <small>选用{{item.count}}次</small>
+          <p>
+            <em>预览</em>
+            <em>选用</em>
+          </p>
+        </li>
+      </ul>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+
+export default {
+  components: {
+  },
+  data () {
+    return {
+      searchForm: {
+        temType: ''
+      },
+      temTypeList: [
+        {
+          value: '1',
+          label: '审批模板'
+        },
+        {
+          value: '2',
+          label: '工作日志模板'
+        },
+        {
+          value: '3',
+          label: '计划总结模板'
+        }
+      ],
+      temStatusOptions: [
+        {
+          value: '1',
+          label: '待发布'
+        },
+        {
+          value: '2',
+          label: '已发布'
+        },
+        {
+          value: '3',
+          label: '取消发布'
+        }
+      ],
+      templateList: [
+        {
+          imgSrc: '../../static/images/office/icon1.png',
+          name: '用章申请',
+          count: '6'
+        },
+        {
+          imgSrc: '../../static/images/office/icon2.png',
+          name: '物品领用',
+          count: '15'
+        },
+        {
+          imgSrc: '../../static/images/office/icon3.png',
+          name: '用车申请',
+          count: '13'
+        },
+        {
+          imgSrc: '../../static/images/office/icon4.png',
+          name: '费用报销',
+          count: '156'
+        },
+        {
+          imgSrc: '../../static/images/office/icon5.png',
+          name: '付款申请',
+          count: '1'
+        },
+        {
+          imgSrc: '../../static/images/office/icon6.png',
+          name: '立项申请',
+          count: '0'
+        },
+        {
+          imgSrc: '../../static/images/office/icon7.png',
+          name: '物品采用',
+          count: '125'
+        },
+        {
+          imgSrc: '../../static/images/office/icon8.png',
+          name: '合同审批',
+          count: '15'
+        },
+        {
+          imgSrc: '../../static/images/office/icon9.png',
+          name: '出差审批',
+          count: '15'
+        },
+        {
+          imgSrc: '../../static/images/office/icon10.png',
+          name: '转正申请',
+          count: '15'
+        },
+        {
+          imgSrc: '../../static/images/office/icon11.png',
+          name: '加班申请',
+          count: '15'
+        },
+        {
+          imgSrc: '../../static/images/office/icon12.png',
+          name: '离职申请',
+          count: '156'
+        },
+        {
+          imgSrc: '../../static/images/office/icon13.png',
+          name: '请假申请',
+          count: '1365'
+        },
+        {
+          imgSrc: '../../static/images/office/icon14.png',
+          name: '人员录用',
+          count: '15'
+        },
+        {
+          imgSrc: '../../static/images/office/icon15.png',
+          name: '人员异动',
+          count: '15'
+        },
+        {
+          imgSrc: '../../static/images/office/icon16.png',
+          name: '档案借阅',
+          count: '15'
+        },
+        {
+          imgSrc: '../../static/images/office/icon17.png',
+          name: '车辆维修保养申请',
+          count: '15'
+        },
+        {
+          imgSrc: '../../static/images/office/icon18.png',
+          name: '文件资料资质使用',
+          count: '15'
+        },
+        {
+          imgSrc: '../../static/images/office/icon19.png',
+          name: '招聘需求',
+          count: '15'
+        },
+        {
+          imgSrc: '../../static/images/office/icon20.png',
+          name: '其他',
+          count: '15'
+        }
+      ],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10 // 每页展示条数
+    }
+  },
+  methods: {
+    // 查询
+    search () {},
+    // 重置
+    reset () {},
+    // 搜索条件 点击不限
+    conditionCancel (label) {
+      switch (label) {
+        case '模板类型':
+          this.searchForm.temType = []
+          break
+        default:
+          break
+      }
+    },
+    // 表格分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+    },
+    handleCurrentNext (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+    }
+  },
+  computed: {
+    isTemTypeSelectAll () {
+      return !this.searchForm.temType.length
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_templateCenter{
+    ul.templateList{
+      overflow: hidden;
+    }
+    ul.templateList li{
+      float: left;
+      width: 14.5%;
+      margin: 1%;
+      border: 1px solid #dddddd;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    ul.templateList li img{
+      margin-top: 13px;
+    }
+    ul.templateList li span{
+      width: 100%;
+      display: inline-block;
+      padding: 10px 0 5px 0;
+    }
+    ul.templateList li small{
+      color: #999999;
+      padding-bottom: 10px;
+      display: inline-block;
+    }
+    ul.templateList li p{
+      height: 28px;
+      line-height: 28px;
+      border-top: 1px solid #dddddd;
+    }
+    ul.templateList li p em{
+      width: 50%;
+      float: left;
+      display: inline-block;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      font-size: 12px;
+      font-style: normal;
+      cursor: pointer;
+    }
+    ul.templateList li p em:hover{
+      color: #498ce9;
+    }
+    ul.templateList li p em:nth-child(1){
+      border-right: 1px solid #dddddd;
+    }
+  }
+</style>

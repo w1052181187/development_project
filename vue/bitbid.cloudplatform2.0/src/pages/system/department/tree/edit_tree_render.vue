@@ -1,0 +1,124 @@
+<template>
+  <span class="tree-expand" id="tree-expandid">
+    <!--<span class="tree-label" v-show="DATA.editFlag">-->
+      <!--<el-input class="edit" size="mini" autofocus-->
+        <!--v-model="DATA.label"-->
+        <!--placeholder="请输入部门名称"-->
+        <!--:ref="'treeInput'+ DATA.id"-->
+        <!--@click.stop.native="nodeEditFocus"-->
+        <!--@blur.stop="nodeEditPass(STORE,DATA,NODE,'blur')"-->
+        <!--@keyup.enter.stop.native="nodeEditPass(STORE,DATA,NODE,'keyup')">-->
+         <!--<i class="el-icon-edit el-input__icon" slot="suffix"></i>-->
+      <!--</el-input>-->
+    <!--</span>-->
+    <span v-show="!DATA.editFlag"
+          :class="[DATA.id > maxexpandId ? 'tree-new tree-label' : 'tree-label']">
+      <span v-bind:title="DATA.label">{{DATA.label}}</span>
+    </span>
+    <span class="tree-btn" v-show="!DATA.editFlag">
+      <i class="el-icon-plus" @click.stop="showDialog(null, DATA.id, DATA.type, DATA.type, DATA.children)"></i>
+      <i class="el-icon-edit" v-if="DATA.parentId !== 0" @click.stop="showDialog(DATA.id, DATA.parentId, DATA.type, DATA.parentType, DATA.children)"></i>
+      <i class="el-icon-delete" v-if="DATA.parentId !== 0" @click.stop="nodeDel(STORE,DATA,NODE)"></i>
+    </span>
+    <edit-tree-dialog :showVisible="showVisible" :parentId="parentId" :type="type" :parentType="parentType" :editObjectId="editObjectId" :canChangeType="canChangeType" @showDialog="showDialog" @submitSuccess="submitSuccess"/>
+  </span>
+</template>
+<script>
+import EditTreeDialog from './edit_tree_dialog'
+export default{
+  name: 'treeExpand',
+  props: ['NODE', 'DATA', 'STORE', 'maxexpandId'],
+  components: {
+    EditTreeDialog
+  },
+  data () {
+    return {
+      showVisible: false,
+      editObjectId: null,
+      parentId: null,
+      type: null,
+      parentType: null,
+      canChangeType: true
+    }
+  },
+  methods: {
+    showDialog (editObjectId, parentId, type, parentType, children) {
+      if (!editObjectId && this.NODE.level >= 6) {
+        this.$message.error('最多只支持6级！')
+        return false
+      }
+      this.showVisible = !this.showVisible
+      this.editObjectId = editObjectId
+      this.parentId = parentId
+      this.type = type
+      this.parentType = parentType
+      // 判断是否可跟换type
+      if (editObjectId) {
+        children = children || []
+        if (children.length !== 0 && !!children.find(item => item.type === 2)) {
+          this.canChangeType = false
+        } else {
+          this.type = parentType === 1 ? 1 : 2
+        }
+      } else {
+        this.canChangeType = true
+      }
+    },
+    submitSuccess (obj, editFalg) {
+      this.showDialog()
+      let treeData = this.wrapTreeData(obj)
+      this.$emit(editFalg ? 'nodeEdit' : 'nodeAdd', this.DATA, treeData, this.NODE)
+    },
+    // 包装实体数据
+    wrapTreeData (obj) {
+      let data = {}
+      data.id = obj.objectId
+      data.label = obj.type === 2 ? `${obj.name}【公司】` : obj.name
+      data.enterpriseId = this.$store.getters.authUser.enterpriseId
+      data.type = obj.type
+      data.parentType = obj.parentType
+      data.parentId = obj.parentDepartmentId
+      data.children = obj.children || []
+      return data
+    },
+    nodeDel (s, d, n) { // 删除
+      this.$emit('nodeDel', s, d, n)
+    },
+    nodeEditFocus () {
+      // 阻止点击节点的事件冒泡
+    }
+  }
+}
+</script>
+
+<style lang="less">
+  #tree-expandid{
+    overflow:hidden;
+    width: 100%;
+  .tree-expand .tree-label.tree-new{
+    font-weight:600;
+  }
+  .tree-label .edit{
+    width:80%;
+  }
+  .tree-btn{
+    display:none;
+    width: 25%;
+    margin-left: 5px;
+  }
+  .tree-btn i{
+    color:#8492a6;
+    font-size:0.9em;
+    margin-right:3px;
+  }
+  .tree-label {
+    font-size: 0.9em;
+    display: inline-block;
+    max-width: 50%;
+    vertical-align: top;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+  }
+  }
+</style>

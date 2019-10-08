@@ -1,0 +1,256 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <!--搜索 & 添加按钮-->
+    <div class="topmain">
+      <el-row>
+        <div class="seacher_box">
+          <span>项目名称：</span>
+          <el-input class="input" style="vertical-align: top"  placeholder="请输入关键字" v-model="search_input"></el-input>
+          <span>移交状态：</span>
+          <el-select class="select" v-model="status" placeholder="请选择">
+            <el-option
+              v-for="item in statusOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <div class="handBtn">
+            <el-button  type="primary" @click="search">查询</el-button>
+            <el-button  @click="reset">重置</el-button>
+          </div>
+        </div>
+      </el-row>
+    </div>
+    <!--搜索 & 添加按钮-->
+    <div class="main">
+      <el-button class="listbutton" @click="handleHistoryList" v-if="$store.getters.authUser.historyDataFlag"><img src="../../../assets/liebiao_b.png"/><span>项目列表</span></el-button>
+      <el-button class="addbutton" @click="handleAddHistory" v-if="$store.getters.authUser.historyDataFlag">+&nbsp;&nbsp;新增项目</el-button>
+      <span class="hint" v-if="$store.getters.authUser.historyDataFlag">找不到符合条件的项目？</span>
+      <el-table
+        :data="tableData"
+        border
+        header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          align="center"
+          :index="indexMethod"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="tenderProjectName"
+          label="项目名称"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <div class="tender-project-name">
+              <img src="../../../assets/lishi_b.png" v-if="Number(scope.row.tenderProject.dataSource) === 1" title="历史项目">{{scope.row.tenderProjectName}}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="bidSectionCode"
+          label="标段编号"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="bidSectionName"
+          label="标段名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="lastkTransferTime"
+          label="最新移交时间"
+          width="160"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="lastTransferName"
+          label="最新移交人"
+          width="120"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="transferStatus"
+          label="移交状态"
+          width="120">
+          <template slot-scope="scope">
+            <span v-if="scope.row.transferStatus === 0">待移交</span>
+            <span v-if="scope.row.transferStatus === 1">部分移交</span>
+            <span v-if="scope.row.transferStatus === 3">已退回</span>
+            <span v-if="scope.row.transferStatus === 2">全部移交</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="移交进度"
+          align="center"
+          width="80"
+          prop="transferSchedule">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="100">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleTransfer(scope)" v-if="$store.getters.permissions.includes('1070102') && scope.row.transferStatus !== 2">移交</el-button>
+            <el-button type="text" size="small" @click="handleDetail(scope)">查看</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+
+<script>
+import {archivesInfo} from '@/api/archives'
+
+export default {
+  name: '',
+  data () {
+    return {
+      search_input: '',
+      status: '',
+      type: '',
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      tableData: [],
+      statusOptions: [
+        {
+          value: 0,
+          label: '待移交'
+        }, {
+          value: 1,
+          label: '部分移交'
+        },
+        {
+          value: 3,
+          label: '已退回'
+        }, {
+          value: 2,
+          label: '全部移交'
+        }
+      ]
+    }
+  },
+  methods: {
+    indexMethod (index) {
+      return index + (this.currentPage - 1) * 10 + 1
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 重置
+    reset () {
+      this.pageNo = 0
+      this.currentPage = 1
+      this.search_input = ''
+      this.status = ''
+      this.getData()
+    },
+    // 搜索
+    search () {
+      this.pageNo = 0
+      this.currentPage = 1
+      this.getData()
+    },
+    // 获取列表数据
+    getData () {
+      archivesInfo.getArchivesInfoList({
+        pageSize: this.pageSize,
+        pageNo: this.pageNo,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        projectNameLike: this.search_input,
+        transferStatus: this.status
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.tableData = res.data.archivesInfoList.list
+          this.total = res.data.archivesInfoList.total
+        }
+      })
+    },
+    // 分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getData(parseInt(this.pageNo), parseInt(this.pageSize))
+    },
+    // 新增历史项目
+    handleAddHistory () {
+      this.$router.push({path: '/archives/transfer/addHistory'})
+    },
+    // 项目列表
+    handleHistoryList () {
+      this.$router.push({path: '/archives/transfer/historyList'})
+    },
+    handleDetail (scope) {
+      this.$router.push({path: `/archives/transfer/detail/${scope.row.objectId}`})
+    },
+    handleTransfer (scope) {
+      this.$router.push({path: `/archives/transfer/add/${scope.row.objectId}`})
+    },
+    init () {
+      this.getData()
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+
+<style scoped>
+  .addbutton{
+    color: #fff;
+    background-color: #409EFF;
+    border-color: #409EFF;
+    float: right;
+    margin-left: 26px;
+  }
+  .listbutton{
+    color: #fff;
+    background-color: #fe8d24;
+    border-color: #fe8d24;
+    float: right;
+    margin-left: 10px;
+  }
+  .listbutton img {
+    width: 13px;
+    height: 12px;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  .listbutton span{
+    vertical-align: middle;
+  }
+  .hint {
+    float: right;
+    height: 40px;
+    line-height: 40px;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  .input{
+    width: 200px;
+    margin-right: 24px;
+  }
+  .select {
+    width: 200px;
+  }
+</style>

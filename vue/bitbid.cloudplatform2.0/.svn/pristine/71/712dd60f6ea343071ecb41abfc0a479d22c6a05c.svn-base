@@ -1,0 +1,42 @@
+<template>
+  <div>
+    <el-form :model="addForm" label-width="100px" :validate-on-rule-change="true">
+      <el-row>
+        <el-col :span="24">
+          <el-form-item label="附件：">
+            <download-file :fileArrays="addForm.fileInformationList" fileType="9"></download-file>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+  </div>
+</template>
+<script>
+import downloadFile from '@/components/download/file-download'
+import {documentInfo} from '@/api/project'
+export default {
+  components: {
+    downloadFile
+  },
+  data () {
+    return {
+      addForm: {
+        fileInformationList: ''
+      }
+    }
+  },
+  props: [],
+  methods: {
+    getDocumentInfo () {
+      documentInfo.getById(this.$route.params.objectId).then(res => {
+        this.addForm = res.data.documentInfo
+      })
+    }
+  },
+  mounted () {
+    this.getDocumentInfo()
+  }
+}
+</script>
+<style scoped>
+</style>

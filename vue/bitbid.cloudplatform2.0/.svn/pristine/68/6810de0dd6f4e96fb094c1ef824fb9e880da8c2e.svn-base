@@ -1,0 +1,10 @@
+// 客户管理
+export { customer } from './customer'
+// 跟进记录
+export { followup } from './followup'
+// 商机管理
+export { business } from './business'
+// 评估模板
+export {template} from './template'
+// 评估模板项
+export {templateItem} from './template/templateItem'

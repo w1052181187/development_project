@@ -1,0 +1,633 @@
+<template>
+  <div class="cloudcontent" id="cloud_registProjectAdd">
+    <div class="main">
+      <el-form :model="addForm" :rules="rulesList" ref="addForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目名称："  prop="tenderProjectName">
+              <el-input v-model="addForm.tenderProjectName"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+             <!-- <span>{{addForm.projectCode}}</span>-->
+              <el-input v-model="addForm.projectCode"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标项目编号："  prop="tenderProjectCode">
+              <el-input v-model="addForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目预计收入(元)："  prop="projectIncome">
+              <el-input v-model="addForm.projectIncome"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目行业分类："  prop="selectedIndustryOptions">
+              <el-cascader class=""
+                           expand-trigger="hover"
+                           :options="industryOptions"
+                           v-model="addForm.selectedIndustryOptions"
+                           @change="handleIndustryChange">
+              </el-cascader>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="代理合同：">
+              <el-input v-model="addForm.agencyContractName" readonly placeholder="请选择">
+                <el-button slot="append" icon="el-icon-search" @click="getAgencyContractData"></el-button>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目地址："  prop="selectedCityOptions">
+              <el-cascader class=""
+                           expand-trigger="hover"
+                           :options="addressOptions"
+                           v-model="addForm.selectedCityOptions"
+                           @change="handleCityChange">
+              </el-cascader>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="详细地址："  prop="tenderExpandsInfo.address">
+              <el-input v-model="addForm.tenderExpandsInfo.address"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标人："  prop="tendererName">
+              <el-input v-model="addForm.tendererName" readonly placeholder="请选择">
+                <el-button slot="append" icon="el-icon-search" @click="showCustomerDialog"></el-button>
+              </el-input>
+            </el-form-item>
+            <customer-radio-dialog :showVisible="showCustomerVisible" @selected="selectedCustomer" @showDialog="showCustomerDialog"></customer-radio-dialog>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="招标人单位地址："  prop="tendererUnitAddress">
+              <el-input v-model="addForm.tendererUnitAddress" readonly></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="联系人："  prop="tenderExpandsInfo.contactName">
+              <el-input v-model="addForm.tenderExpandsInfo.contactName"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="联系方式："  prop="tenderExpandsInfo.contactNumber">
+              <el-input v-model="addForm.tenderExpandsInfo.contactNumber"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="邮箱：" prop="tenderExpandsInfo.contactEmail">
+              <el-input v-model="addForm.tenderExpandsInfo.contactEmail"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="资质主体：" prop="companyMainBody">
+              <el-select v-model="addForm.companyMainBody" placeholder="请选择"  readonly clearable @click.native="initOpportunityStage">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目所属部门：" prop="departmentName">
+              <el-input class="deptInput" v-model="addForm.departmentName" auto-complete="off" placeholder="请选择" readonly="readonly" clearable @click.native="showDepartmentTree">
+                <i slot="suffix" class="el-input__icon el-icon-arrow-down"></i>
+              </el-input>
+              <tree-options :initData="addForm.departmentId" @selectSuccess="selectedDepatment" :isShowOptions="isShowDptTree"></tree-options>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="项目说明：">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content" @contentChange="handleContentChange"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="handleClickEvent('addForm','save')" :loading="loading">保存</el-button>
+          <el-button type="primary" class="submitBtn" @click="handleClickEvent('addForm','submit')" :loading="loading">提交</el-button>
+          <el-button class="cancal" @click="handleClickEvent('addForm','del')">取消</el-button>
+        </el-form-item>
+      </el-form>
+      <el-dialog title="选择代理合同" :visible.sync="dialogTableVisible">
+        <div class="topmain">
+          <el-form>
+            <el-row>
+              <el-col :span="20">
+                <el-form-item label="合同名称：">
+                  <el-input class="search" placeholder="请输入合同名称关键字" style="vertical-align: top"  v-model="searchForm.agencyContractNameLike">
+                    <el-button  slot="append" icon="el-icon-search" type="" @click="search"></el-button>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="4">
+                <el-button type="primary" @click="toAdd">+ 新增</el-button>
+              </el-col>
+            </el-row>
+          </el-form>
+         <!-- <div class="seacher_box">
+            <span>合同名称：</span>
+            <el-input class="search" placeholder="请输入合同名称关键字" style="vertical-align: top"  v-model="searchForm.agencyContractNameLike">
+              <el-button  slot="append" icon="el-icon-search" type="" @click="search"></el-button>
+            </el-input>
+          </div>-->
+        </div>
+        <el-table
+          :data="contractData"
+          border
+          style="width: 100%" header-cell-class-name="tableheader">
+          <el-table-column
+            width="50"
+            align="center"
+            prop="name">
+            <template slot-scope="scope">
+              <el-radio v-model="radio" :label="scope.row.objectId" @change="select(scope)">&nbsp;</el-radio>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="agencyContractCode"
+            label="代理合同编号"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="agencyContractName"
+            label="代理合同名称"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="entrustEnterpriseName"
+            label="委托单位"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="createDate"
+            label="创建时间"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            label="操作" align="center" width="100">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" @click="lookBtn(scope)">查看</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="total"
+          :page-size='pageSize'
+          :current-page.sync="currentPage"
+          @current-change="handleCurrentChange"
+          @next-click="handleCurrentNext">
+        </el-pagination>
+        <!--分页-->
+      </el-dialog>
+    </div>
+  </div>
+</template>
+<script>
+import * as region from '@/assets/js/region'
+import * as industry from '@/assets/js/industry_two'
+import editor from '@/components/ueditor/ueditor.vue'
+import {validateFixedPhone, validateWhoInteger} from '@/assets/js/validate'
+import {tenderProject} from '@/api/project'
+import {agencyContract} from '@/api/knowledge'
+import { dataDictionary } from '@/api/system'
+import CustomerRadioDialog from '@/pages/customer/customer/dialog/radio_dialog.vue'
+import TreeOptions from '@/pages/system/department/tree/tree_options'
+export default {
+  components: {
+    editor,
+    CustomerRadioDialog,
+    TreeOptions
+  },
+  data () {
+    // 电话号码
+    let validPhoneUser = (rule, value, callback) => {
+      if (!value) {
+        callback()
+      } else if (!validateFixedPhone(value)) {
+        callback(new Error('请输入正确的11位手机号码或带区号的固话'))
+      } else {
+        callback()
+      }
+    }
+    let validWhoInteger = (rule, value, callback) => {
+      if (value === '0' || !value) {
+        callback()
+      } else if (!validateWhoInteger(value)) {
+        callback(new Error('输入有误，请重新录入！'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      loading: false,
+      isSave: false,
+      addForm: {
+        tendererName: '',
+        tenderProjectCode: null,
+        tendererUnitAddress: '',
+        departmentName: '',
+        companyMainBody: null,
+        projectIncome: null,
+        tenderExpandsInfo: {}
+      },
+      rules: {
+        tenderProjectName: [
+          { required: true, message: '项目名称不能为空', trigger: ['blur', 'change'] }
+        ],
+        tenderProjectCode: [
+          { required: true, message: '项目编号不能为空', trigger: ['blur', 'change'] }
+        ],
+        projectIncome: [
+          { required: true, message: '项目预计收入不能为空', trigger: ['blur', 'change'] },
+          {validator: validWhoInteger, trigger: ['blur', 'change']}
+        ],
+        selectedIndustryOptions: [
+          { required: true, message: '请选择项目行业分类', trigger: ['blur', 'change'] }
+        ],
+        selectedCityOptions: [
+          { required: true, message: '请选择项目地址', trigger: ['blur', 'change'] }
+        ],
+        tendererName: [
+          { required: true, message: '招标人名称不能为空', trigger: ['blur', 'change'] }
+        ],
+        tendererUnitAddress: [
+          {required: true, message: '招标人单位地址不能为空', trigger: ['blur', 'change']}
+        ],
+        'tenderExpandsInfo.contactName': [
+          { required: true, message: '联系人名称不能为空', trigger: 'blur' }
+        ],
+        'tenderExpandsInfo.contactNumber': [
+          { required: true, message: '联系方式不能为空', trigger: 'blur' },
+          {validator: validPhoneUser, trigger: 'blur'}
+        ],
+        'tenderExpandsInfo.contactEmail': [
+          { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+        ],
+        companyMainBody: [
+          {required: true, message: '请选择项目主体', trigger: ['blur', 'change']}
+        ],
+        departmentName: [
+          { required: true, message: '请选择项目所属部门', trigger: ['blur', 'change'] }
+        ]
+      },
+      saveRules: {
+        tenderProjectName: [
+          { required: true, message: '项目名称不能为空', trigger: ['blur', 'change'] }
+        ],
+        tenderProjectCode: [
+          { required: false, message: '项目编号不能为空', trigger: ['blur', 'change'] }
+        ],
+        projectIncome: [
+          { required: false, message: '项目预计收入不能为空', trigger: ['blur', 'change'] },
+          {validator: validWhoInteger, trigger: ['blur', 'change']}
+        ],
+        selectedIndustryOptions: [
+          { required: false, message: '请选择项目行业分类', trigger: ['blur', 'change'] }
+        ],
+        selectedCityOptions: [
+          { required: false, message: '请选择项目地址', trigger: ['blur', 'change'] }
+        ],
+        tendererName: [
+          { required: false, message: '招标人名称不能为空', trigger: ['blur', 'change'] }
+        ],
+        tendererUnitAddress: [
+          { required: false, message: '招标人单位地址不能为空', trigger: ['blur', 'change'] }
+        ],
+        'tenderExpandsInfo.contactName': [
+          { required: false, message: '联系人名称不能为空', trigger: ['blur', 'change'] }
+        ],
+        'tenderExpandsInfo.contactNumber': [
+          { required: false, message: '联系方式不能为空', trigger: ['blur', 'change'] },
+          {validator: validPhoneUser, trigger: ['blur', 'change']}
+        ],
+        'tenderExpandsInfo.contactEmail': [
+          { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+        ],
+        companyMainBody: [
+          { required: false, message: '请选择项目主体', trigger: ['blur', 'change'] }
+        ],
+        departmentName: [
+          { required: false, message: '请选择项目所属部门', trigger: 'change' }
+        ]
+      },
+      // 地址三级联动
+      addressOptions: region.CityInfo,
+      selectedCityOptions: [],
+      // 行业三级联动
+      industryOptions: industry.industry,
+      selectedIndustryOptions: [],
+      // 富文本
+      editread: false,
+      content: '',
+      dialogTableVisible: false,
+      contractData: [],
+      radio: '',
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10, // 每页展示条数
+      searchForm: {
+        agencyContractNameLike: ''
+      }, // 代理合同对象
+      // 公司主体
+      options: [],
+      value: '',
+      // 项目所属部门
+      partoptions: [{
+        value: 1,
+        label: '比比'
+      }, {
+        value: 2,
+        label: '远东'
+      }],
+      partvalue: '',
+      // 是否展示客户
+      showCustomerVisible: false,
+      dicOpportunityStageId: 10007,
+      // 是否展示部门树
+      isShowDptTree: false
+    }
+  },
+  computed: {
+    rulesList: function () {
+      if (this.isSave) {
+        return this.saveRules
+      } else {
+        return this.rules
+      }
+    }
+  },
+  created () {
+    this.init()
+    // this.getlocalStorageInfo()
+  },
+  methods: {
+    toAdd () {
+      this.$router.push({path: `/knowledge/agencyContract/add`})
+    },
+    // 选择部门
+    selectedDepatment (deptTreeNode) {
+      this.addForm.departmentName = deptTreeNode.label
+      this.addForm.departmentId = deptTreeNode.id
+      this.isShowDptTree = false
+    },
+    // 部门树展开/关闭
+    showDepartmentTree () {
+      this.isShowDptTree = !this.isShowDptTree
+    },
+    // 资质主体信息
+    initOpportunityStage () {
+      this.options = []
+      let query = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        dictionaryDirectoryId: this.dicOpportunityStageId
+      }
+      dataDictionary.getDetailList(query).then(res => {
+        if (res && res.data.dictionaryDetails.length > 0) {
+          res.data.dictionaryDetails.forEach(item => {
+            let obj = {
+              value: item.objectId,
+              label: item.name
+            }
+            this.options.push(obj)
+          })
+        }
+      })
+    },
+    // 客户弹框打开
+    showCustomerDialog () {
+      this.showCustomerVisible = !this.showCustomerVisible
+    },
+    // 选择客户
+    selectedCustomer (obj) {
+      this.addForm.tendererCode = obj.code
+      this.addForm.tendererName = obj.name
+      this.addForm.customerManagementCode = obj.code
+      this.addForm.tendererUnitAddress = this.wrapRegionText(obj)
+    },
+    // 包装三级联动地址信息
+    wrapRegionText (obj) {
+      let str = ''
+      // 初始化省市县数据
+      this.addressOptions.map((item) => {
+        if (item.value === obj.provinceId) {
+          str += item.label + '/'
+          item.children.map((ite) => {
+            if (ite.value === obj.cityId) {
+              str += ite.label + '/'
+              ite.children.map((countyItem) => {
+                if (countyItem.value === obj.countyId) {
+                  str += countyItem.label
+                }
+              })
+            }
+          })
+        }
+      })
+      // 加入详细地址
+      if (obj.address) {
+        if (str !== '') {
+          str += '/'
+        }
+        str += obj.address
+      }
+      return str
+    },
+    // 所属行业三级联动赋值
+    handleIndustryChange (value) {
+      this.addForm.tenderExpandsInfo.industryTypeFirst = value[0]
+      this.addForm.tenderExpandsInfo.industryTypeSecond = value[1]
+    },
+    // 所在地区三级联动赋值
+    handleCityChange (value) {
+      this.addForm.tenderExpandsInfo.provinceId = value[0]
+      this.addForm.tenderExpandsInfo.cityId = value[1]
+      this.addForm.tenderExpandsInfo.countyId = value[2]
+    },
+    // 表单分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getAgencyContractData(parseInt(this.pageNo), parseInt(this.pageSize))
+    },
+    handleCurrentNext (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getAgencyContractData(parseInt(this.pageNo), parseInt(this.pageSize))
+    },
+    getAgencyContractData () {
+      agencyContract.getList({
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        statusList: '2,4',
+        messageLike: this.searchForm.agencyContractNameLike || null
+      }).then((res) => {
+        if (res.data.agencyContractList && res.data.agencyContractList.list) {
+          this.contractData = res.data.agencyContractList.list
+          this.total = res.data.agencyContractList.total
+          this.dialogTableVisible = true
+        }
+      })
+    },
+    // select
+    select (scope) {
+      this.addForm.agencyContractCode = scope.row.code
+      this.addForm.agencyContractName = scope.row.agencyContractName
+      this.dialogTableVisible = false
+      // this.radio = ''
+    },
+    /** 查看代理合同信息 */
+    lookBtn (scope) {
+      this.$router.push({path: `/knowledge/agencyContract/detail/${scope.row.objectId}`, query: {code: scope.row.code}})
+    },
+    /** 获取当前招标项目信息 */
+    getChooseTenderProjectInfo () {
+      tenderProject.getOne(this.$route.params.code).then((res) => {
+        if (res.data.tenderProject) {
+          this.addForm = res.data.tenderProject
+          // 获取项目扩展信息
+          /* this.addForm.contactName = this.addForm.tenderExpandsInfo.contactName
+          this.addForm.contactNumber = this.addForm.tenderExpandsInfo.contactNumber
+          this.addForm.address = this.addForm.tenderExpandsInfo.address
+          this.addForm.contactEmail = this.addForm.tenderExpandsInfo.contactEmail
+          this.addForm.contactAddress = this.addForm.tenderExpandsInfo.contactAddress */
+          this.addForm.selectedCityOptions = [this.addForm.tenderExpandsInfo.provinceId, this.addForm.tenderExpandsInfo.cityId, this.addForm.tenderExpandsInfo.countyId]
+          this.addForm.selectedIndustryOptions = [this.addForm.tenderExpandsInfo.industryTypeFirst, this.addForm.tenderExpandsInfo.industryTypeSecond]
+          if (localStorage.getItem(this.$route.fullPath)) {
+            this.addForm = JSON.parse(localStorage.getItem(this.$route.fullPath))
+          }
+          // 获取文本编辑器的内容
+          this.$refs.ueditor.setContent(this.content = this.addForm.projectContent)
+        }
+      })
+    },
+    /* 按钮点击事件：提交、保存、取消 */
+    handleClickEvent (formName, type) {
+      if (Object.is(type, 'submit') || Object.is(type, 'save')) {
+        if (Object.is(type, 'save')) {
+          this.isSave = true
+        } else {
+          this.isSave = false
+        }
+        this.$nextTick(() => {
+          this.$refs[formName].validate((valid) => {
+            if (valid) {
+              let msg = Object.is(type, 'submit') ? '提交后数据将锁定，不允许修改，确认要提交吗?' : '确认要保存吗?'
+              this.$confirm(msg, '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                beforeClose: (action, instance, done) => {
+                  done()
+                }
+              }).then(() => {
+                this.loading = true
+                // 获取文本编辑器中的内容
+                if (this.$refs.ueditor) {
+                  this.addForm.projectContent = this.$refs.ueditor.getContent()
+                }
+                // 根据type设置当前招标项目的状态
+                if (Object.is(type, 'submit')) {
+                  this.addForm.status = 4
+                } else {
+                  this.addForm.status = 0
+                }
+                // 设置项目所属信息
+                if (this.options.length > 0 && this.addForm.companyMainBody) {
+                  let arr = this.options
+                  this.addForm.companyMainBodyName = arr.filter(item => item.value === this.addForm.companyMainBody)[0].label
+                }
+                this.addForm.tenderExpandsInfo.objectId = null
+                // 路由地址的设定(商机模块过来的项目)
+                if (!this.addForm.routingPath) {
+                  this.addForm.routingPath = '/project/registProject/detail/'
+                }
+                tenderProject.save(this.addForm).then((res) => {
+                  this.loading = false
+                  if (res.data.resCode === '0000') {
+                    localStorage.clear()
+                    this.$store.commit('delete_tabs', this.$route.fullPath)
+                    this.$router.push({path: '/project/registProject'})
+                  }
+                })
+              }).catch(() => {
+                this.loading = false
+                return false
+              })
+            } else {
+              return false
+            }
+          })
+        })
+      } else if (Object.is(type, 'del')) {
+        localStorage.clear()
+        this.$store.commit('delete_tabs', this.$route.fullPath)
+        this.$router.push({path: '/project/registProject'})
+      }
+    },
+    /** 代理合同名称模糊查询方法 */
+    search () {
+      this.getAgencyContractData()
+    },
+    init () {
+      this.getChooseTenderProjectInfo()
+      this.initOpportunityStage()
+    },
+    // 监控编辑器内容
+    handleContentChange () {
+      if (this.$refs.ueditor) {
+        this.addForm.projectContent = this.$refs.ueditor.getContent()
+        localStorage.setItem(this.$route.fullPath, JSON.stringify(this.addForm))
+      }
+    }
+  },
+  watch: {
+    '$route': 'init',
+    'addForm': {
+      handler (val) {
+        localStorage.setItem(this.$route.fullPath, JSON.stringify(val))
+      },
+      deep: true
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_registProjectAdd {
+    .el-cascader, .el-select{
+      width: 100%;
+    }
+    .el-radio__label{
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,33 @@
+/**
+ * Created by Administrator on 2019-3-7.
+ * 废标结果
+ */
+export default [
+  {
+    path: '/project/projectProcess/project/process/wasteBidResult/add',
+    name: '流程管理-废标结果公告-添加',
+    meta: {
+      title: '流程管理-废标结果公告-添加',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/wasteBidResult/add.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/wasteBidResult/update',
+    name: '流程管理-废标结果公告-修改',
+    meta: {
+      title: '流程管理-废标结果公告-修改',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/wasteBidResult/update.vue')
+  },
+  {
+    path: '/project/projectProcess/project/process/wasteBidResult/detail/:code',
+    name: '流程管理-废标结果公告-查看',
+    meta: {
+      title: '流程管理-废标结果公告-查看',
+      active: '/project/projectProcess'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/projectProcess/wasteBidResult/detail.vue')
+  }
+]

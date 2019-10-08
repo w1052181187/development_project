@@ -1,0 +1,193 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <div class="selectbox">
+        <el-form :model="queryModel" ref="queryModel" label-width="70px" style="width: 100%">
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="分组名称：" prop="messageLike">
+                <el-input v-model="queryModel.messageLike" placeholder="请输入分组名称">
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-button type="primary" @click="handlePage(1)">查询</el-button>
+              <el-button @click="reset('queryModel')">重置</el-button>
+            </el-col>
+            <el-col :span="12" v-if="$store.getters.permissions.includes('1040302')">
+              <el-button type="primary" class="addbutton" @click="showEditDialog(true, false)">
+                <span> + 新增</span>
+              </el-button>
+              <item-edit :showVisible="showVisible" :isEdit="isEdit" :editObjectId="editObjectId" @showEditDialog="showEditDialog" @saveSuccess="getTableData"></item-edit>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+    <!--</div>:cell-style="handleCellStyle" :span-method="handleMerge"-->
+    <el-table :data="tableData" border header-cell-class-name="tableheader" :span-method="objectSpanMethod" v-loading="loading">
+        <el-table-column
+          prop="index"
+          label="序号"
+          width="80"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="parentName"
+          label="分组名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="评估项"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column label="操作" align="center" width="120">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="showEditDialog(true, true, scope.row.objectId)" v-if="$store.getters.permissions.includes('1040302')">编辑</el-button>
+            <el-button type="text" size="small" @click="logoff(scope.row)" v-if="$store.getters.permissions.includes('1040302')">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="page.total"
+        :page-size='page.pageSize'
+        :current-page.sync="page.currentPage"
+        @current-change="handlePage"
+        @next-click="handlePage">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+import {templateItem} from '@/api/customer'
+import ItemEdit from './edit'
+export default {
+  name: 'templateItem',
+  components: {
+    ItemEdit
+  },
+  data () {
+    return {
+      loading: false,
+      page: {
+        pageSize: 10,
+        pageNo: 0,
+        total: 0, // 总条数
+        currentPage: 1
+      },
+      queryModel: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        isDelete: 0,
+        parentId: 0,
+        messageLike: ''
+      },
+      tableData: [],
+      rowspanInfos: [],
+      // 新增/修改Dialog
+      showVisible: false,
+      // 是否修改
+      isEdit: false,
+      editObjectId: null,
+      dialogVisible: false
+    }
+  },
+  watch: {
+    '$route': 'getTableData'
+  },
+  methods: {
+    // 获取列表数据,稍作延迟
+    getTableData () {
+      this.loading = true
+      this.queryModel.pageNo = this.page.pageNo
+      this.queryModel.pageSize = this.page.pageSize
+      templateItem.queryList(this.queryModel).then(res => {
+        this.loading = false
+        this.page.total = res.data.data.total
+        this.wrapTableData(res.data.data.list)
+      })
+    },
+    // 包装数据
+    wrapTableData (list) {
+      this.tableData = []
+      this.rowspanInfos = []
+      if (list && list.length) {
+        let index = 0
+        let listIndex = 0
+        list.forEach(item => {
+          if (item.children.length) {
+            this.rowspanInfos[index] = item.children.length
+            item.children.forEach(child => {
+              child.index = listIndex + 1
+              child.parentName = item.name
+              this.tableData.push(child)
+              index++
+            })
+            listIndex++
+          }
+        })
+      }
+    },
+    // 计算合并项
+    objectSpanMethod ({ row, column, rowIndex, columnIndex }) {
+      if (this.rowspanInfos.length) {
+        if (columnIndex === 0 || columnIndex === 1) {
+          if (this.rowspanInfos[rowIndex]) {
+            return {
+              rowspan: this.rowspanInfos[rowIndex],
+              colspan: 1
+            }
+          } else {
+            return {
+              rowspan: 0,
+              colspan: 0
+            }
+          }
+        }
+      }
+    },
+    // 编辑弹框
+    showEditDialog (isShow, isEdit, objectId) {
+      this.showVisible = isShow
+      this.isEdit = isEdit
+      this.editObjectId = objectId || null
+    },
+    // 删除
+    logoff (obj) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        templateItem.logoff(obj.objectId, obj.parentId).then(() => {
+          this.getTableData()
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 表单分页
+    handlePage (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = (nowNum - 1) * this.page.pageSize
+      this.getTableData()
+    },
+    // 重置
+    reset (formName) {
+      this.$refs[formName].resetFields()
+      this.page.currentPage = 1
+      this.page.pageNo = 0
+      this.getTableData()
+    }
+  },
+  mounted () {
+    this.getTableData()
+  }
+}
+</script>
+
+<style scoped>
+</style>

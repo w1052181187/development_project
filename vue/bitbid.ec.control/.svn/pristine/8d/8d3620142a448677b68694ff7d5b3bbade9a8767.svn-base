@@ -1,0 +1,117 @@
+<template>
+<div id="main">
+  <img src="../../static/images/user/home-bg.png" alt="" style="width:100%;height:100%;vertical-align:middle;" v-if="roles.userType==3">
+  <img src="../../static/images/user/welcome.png" alt="" style="width:100%;height:100%;vertical-align:middle;" v-if="roles.userType!==3">
+  <div class="contentbigbox" v-if="roles.userType==3">
+    <el-row :gutter="20">
+      <el-col :span="8" style="padding-bottom: 20px;" v-for="(item, index) in platFormList" :key="index">
+        <a class="ec-link"  target="_blank" @click="jumpToUrl(item)">
+          <img :src="`${fileUrlPre}?filePath=${item.logoUrl}`" alt="">
+          <span class="ec-title">{{item.userName}}</span>
+        </a>
+      </el-col>
+    </el-row>
+  </div>
+</div>
+</template>
+<script>
+import {user} from '@/api'
+import {fileReviw} from '@/assets/js/common'
+export default {
+  data () {
+    return {
+      roles: this.$store.getters.authUser,
+      platFormList: [],
+      fileUrlPre: fileReviw
+    }
+  },
+  methods: {
+    setMain () {
+      // 获得屏幕的高度
+      let screenH = window.innerHeight
+      // 获得主要内容区
+      let topUl = document.getElementsByClassName('contentbigbox')
+      // 设置主要内容区的高度
+      topUl[0].style.height = (screenH - 130) + 'px'
+    },
+    ecPlatUsers () {
+      user.ecPlatUsers().then(res => {
+        // console.log(res)
+        this.platFormList = res.data.platUsers
+      })
+    },
+    jumpToUrl (obj) {
+      user.jumpToUrl(obj.id).then(res => {
+        console.log(res)
+        let obj = res.data.buyer
+        window.open(`${obj.websiteUrl}?account=${obj.account}&password=${obj.password}`)
+      })
+    }
+  },
+  mounted () {
+    this.ecPlatUsers()
+  }
+}
+</script>
+<style lang="less">
+  #main {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    background-size: 100% auto;
+    .contentbigbox{
+      width: 710px;
+      padding-top: 100px;
+      padding-left: 20px;
+      padding-right: 20px;
+      box-sizing: border-box;
+      text-align: center;
+      position:absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin:auto;
+      .ec-link {
+        display: block;
+        text-decoration: none;
+        width: 214px;
+        height: 127px;
+        border-radius: 5px;
+        border: 1px solid #eee;
+        img {
+          width: 214px;
+          height: 108px;
+        }
+      }
+      .ec-link:hover {
+        -webkit-box-shadow: #3390FF 0px 0px 18px;
+        -moz-box-shadow: #3390FF 0px 0px 18px;
+        box-shadow: #3390FF 0px 0px 18px;
+        border: 1px solid #3390FF;
+      }
+      .ec-title {
+        display: block;
+        position: relative;
+        height: 30px;
+        line-height: 30px;
+        background: #D6E9FF;
+        width: 212px;
+        top: -16px;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-bottom-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+        color: #333;
+      }
+    }
+    .contentbigbox .bg {
+      width: 100%;
+    }
+    .contentbigbox p{
+      font-size: 40px;
+      line-height: 60px;
+      margin-top: 100px;
+    }
+  }
+</style>

@@ -1,0 +1,188 @@
+<template>
+  <div class="cloudcontent" id="cloud_quickMenu">
+    <div class="main">
+      <div class="selectBox selected">
+        <h3>已选功能</h3>
+        <p>最多添加7个常用功能</p>
+        <ul class="shortcut-ul clearfix">
+          <li v-for="(item,index) in selectedList" :key="index" class="shortcut-li fl">
+            <img :src="item.imgSrc" class="shortcut-img" />
+            <span class="shortcut-span">{{item.functionName}}</span>
+            <em @click="unSelected(index, item.functionName)"></em>
+          </li>
+        </ul>
+        <div class="submit-radio">
+          <el-button type="primary" @click="confirm">确定</el-button>
+          <el-button class="cancal" @click="cancel">取消</el-button>
+        </div>
+      </div>
+      <div class="selectBox unselected">
+        <h3>待选功能</h3>
+        <ul class="shortcut-ul clearfix">
+          <li v-for="(item,index) in unSelectedList" :key="index" class="shortcut-li fl">
+            <img :src="item.imgSrc" class="shortcut-img" />
+            <span class="shortcut-span">{{item.functionName}}</span>
+            <em @click="selected(index, item.functionName)"></em>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import {fastFunction} from '@/api/home/fastFunction'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      selectedList: [
+        {functionName: '项目登记', imgSrc: '../../static/images/newindex/rightico1.png', path: 'project/registProject/add', permissionId: '1010202'},
+        {functionName: '商机登记', imgSrc: '../../static/images/newindex/rightico2.png', path: '/customerMan/business/add', permissionId: '1040202'},
+        {functionName: '项目全貌', imgSrc: '../../static/images/newindex/rightico3.png', path: '/project/proOverview', permissionId: '1010101'},
+        {functionName: '客户管理', imgSrc: '../../static/images/newindex/rightico4.png', path: '/customerMan/customer', permissionId: '1040101'},
+        {functionName: '开评标室预约', imgSrc: '../../static/images/newindex/rightico5.png', path: '/resource/biddingRoom', permissionId: '1020101'},
+        {functionName: '档案查询', imgSrc: '../../static/images/newindex/rightico6.png', path: '/archives/query', permissionId: '1070301'},
+        {functionName: '比选公告', imgSrc: '../../static/images/newindex/rightico7.png', path: '/biddingSources/announcement', permissionId: '1030101'}
+      ], // 默认已选功能列表
+      unSelectedList: [
+        {functionName: '项目进度', imgSrc: '../../static/images/newindex/rightico9.png', path: '/project/projectProcess', permissionId: '1010401'}
+      ], // 默认待选功能列表
+      shortcutList: [
+        {functionName: '项目登记', imgSrc: '../../static/images/newindex/rightico1.png', path: 'project/registProject/add', permissionId: '1010202'},
+        {functionName: '商机登记', imgSrc: '../../static/images/newindex/rightico2.png', path: '/customerMan/business/add', permissionId: '1040202'},
+        {functionName: '项目全貌', imgSrc: '../../static/images/newindex/rightico3.png', path: '/project/proOverview', permissionId: '1010101'},
+        {functionName: '客户管理', imgSrc: '../../static/images/newindex/rightico4.png', path: '/customerMan/customer', permissionId: '1040101'},
+        {functionName: '开评标室预约', imgSrc: '../../static/images/newindex/rightico5.png', path: '/resource/biddingRoom', permissionId: '1020101'},
+        {functionName: '档案查询', imgSrc: '../../static/images/newindex/rightico6.png', path: '/archives/query', permissionId: '1070301'},
+        {functionName: '比选公告', imgSrc: '../../static/images/newindex/rightico7.png', path: '/biddingSources/announcement', permissionId: '1030101'},
+        {functionName: '项目进度', imgSrc: '../../static/images/newindex/rightico9.png', path: '/project/projectProcess', permissionId: '1010401'}
+      ], // 所有快捷功能
+      shortcutMap: {
+        '项目登记': {functionName: '项目登记', imgSrc: '../../static/images/newindex/rightico1.png', path: 'project/registProject/add', permissionId: '1010202'},
+        '商机登记': {functionName: '商机登记', imgSrc: '../../static/images/newindex/rightico2.png', path: '/customerMan/business/add', permissionId: '1040202'},
+        '项目全貌': {functionName: '项目全貌', imgSrc: '../../static/images/newindex/rightico3.png', path: '/project/proOverview', permissionId: '1010101'},
+        '客户管理': {functionName: '客户管理', imgSrc: '../../static/images/newindex/rightico4.png', path: '/customerMan/customer', permissionId: '1040101'},
+        '开评标室预约': {functionName: '开评标室预约', imgSrc: '../../static/images/newindex/rightico5.png', path: '/resource/biddingRoom', permissionId: '1020101'},
+        '档案查询': {functionName: '档案查询', imgSrc: '../../static/images/newindex/rightico6.png', path: '/archives/query', permissionId: '1070301'},
+        '比选公告': {functionName: '比选公告', imgSrc: '../../static/images/newindex/rightico7.png', path: '/biddingSources/announcement', permissionId: '1030101'},
+        '项目进度': {functionName: '项目进度', imgSrc: '../../static/images/newindex/rightico9.png', path: '/project/projectProcess', permissionId: '1010401'}
+      } // 所有快捷功能
+    }
+  },
+  created () {
+  },
+  methods: {
+    unSelected (index, functionName) {
+      this.unSelectedList.push(this.shortcutMap[functionName])
+      this.selectedList.splice(index, 1)
+    },
+    selected (index, functionName) {
+      if (this.selectedList.length < 7) {
+        this.selectedList.push(this.shortcutMap[functionName])
+        this.unSelectedList.splice(index, 1)
+      } else {
+        this.$message.warning('最多添加7个常用功能')
+      }
+    },
+    // 查询快捷功能
+    getFastFunctions () {
+      let params = {
+        userId: this.$store.getters.authUser.userId
+      }
+      fastFunction.getList(params).then(res => {
+        let fastFunctionList = res.data.fastFunctionList
+        if (fastFunctionList && fastFunctionList.length > 0) {
+          this.selectedList = []
+          this.unSelectedList = []
+          fastFunctionList.map(item => {
+            this.selectedList.push(this.shortcutMap[item.functionName])
+            this.shortcutList = this.shortcutList.filter(shortcut => !Object.is(shortcut.functionName, item.functionName))
+          })
+          this.unSelectedList = this.shortcutList
+        }
+      })
+    },
+    confirm () {
+      fastFunction.saveBatch(this.selectedList).then(res => {
+        if (res.data.resCode === '0000') {
+          this.$store.commit('delete_tabs', this.$route.fullPath)
+          this.$router.go(-1)
+        }
+      })
+    },
+    cancel () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    }
+  },
+  mounted () {
+    this.getFastFunctions()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_quickMenu{
+    .selectBox{
+      width: 100%;
+      min-height: 200px;
+      overflow: hidden;
+      border: 1px dashed #dcdcdc;
+      position: relative;
+    }
+    .selectBox h3{
+      line-height: 24px;
+      padding:16px;
+    }
+    .selectBox p{
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      color: #ff0000;
+      left: 0;
+      top: 12px;
+    }
+    .selectBox ul{
+      text-align: center;
+      margin: 30px 0 0 0;
+      overflow: hidden;
+    }
+    .selectBox ul li{
+      width: 100px;
+      height: 100px;
+      float: left;
+      text-align: center;
+      margin: 10px 20px;
+      position: relative;
+    }
+    .selectBox ul li span{
+      width: 100%;
+      display: inline-block;
+      line-height: 32px;
+      color: #111111;
+    }
+    .selectBox ul li em{
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+      cursor: pointer;
+      position: absolute;
+      right: 10px;
+      top: -10px;
+      background: url("../../../static/images/newindex/jian.png") no-repeat;
+    }
+    .submit-radio{
+      margin: 0 10px 10px 0;
+      text-align: right;
+    }
+    .submit-radio .el-button{
+      padding: 7px 20px;
+    }
+    .unselected{
+      border: 0;
+    }
+    .unselected ul li em{
+      background: url("../../../static/images/newindex/jia.png") no-repeat;
+    }
+  }
+</style>

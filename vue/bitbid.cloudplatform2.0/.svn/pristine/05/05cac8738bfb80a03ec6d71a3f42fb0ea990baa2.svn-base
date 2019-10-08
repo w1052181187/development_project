@@ -1,0 +1,120 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="info">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段编号：">
+              <span>{{info.bidSectionCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="招标项目编号：">
+              <span>{{info.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段名称：">
+              <span>{{info.bidSectionName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="招标项目名称：">
+              <span>{{info.bidSectionName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标方式：">
+              <span v-if="info.tenderProject">{{info.tenderProject.tenderMode | filterTenderMode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="资审方式：">
+              <span v-if="info.tenderProject && info.tenderProject.isPreBid === 1">资格预审</span>
+              <span v-if="info.tenderProject && info.tenderProject.isPreBid === 0">资格后审</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="招标人：">
+              <span>{{info.tenderProject ? info.tenderProject.tendererName : ''}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目经理：">
+              <span>{{info.projectLeader ? info.projectLeader.split(',')[0] : ''}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="所属部门：">
+              <span>{{info.projectLeader ? info.projectLeader.split(',')[1] : ''}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="标段内容：">
+              <editor ref="sectionEditor" class="ueditor" :editread="editread"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+export default {
+  props: ['info'],
+  components: {
+    editor
+  },
+  watch: {
+  },
+  name: 'basicInfo',
+  data () {
+    return {
+      editread: true
+    }
+  },
+  filters: {
+    filterTenderMode (value) {
+      if (Number(value) === 1) {
+        return '公开招标'
+      } else if (Number(value) === 2) {
+        return '邀请招标'
+      } else if (Number(value) === 3) {
+        return '竞争性谈判'
+      } else if (Number(value) === 4) {
+        return '单一来源采购'
+      } else if (Number(value) === 5) {
+        return '竞争性磋商'
+      } else if (Number(value) === 9) {
+        return '其他'
+      }
+    }
+  },
+  methods: {
+    setContent () {
+      if (this.info.tenderProject) {
+        this.$refs.sectionEditor.setContent(this.info.tenderProject.tenderContent)
+      }
+    }
+  },
+  mounted () {
+    this.setContent()
+  }
+}
+</script>
+
+<style lang="less">
+
+</style>

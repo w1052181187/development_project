@@ -1,0 +1,241 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-button class="addbutton" @click="handleAdd">
+        <span>+ 新增目录</span>
+      </el-button>
+      <el-table
+        :data="tableData"
+        border
+        header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          align="center"
+          :index="indexMethod"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          align="center"
+          label="目录名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="type"
+          align="center"
+          label="目录类型"
+          width="160">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.type === 1">预设</span>
+            <span  v-if="scope.row.type === 2">自定义</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="isOnlyPhysical"
+          label="仅保存实物（不上传电子版）"
+          align="center"
+          width="240"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span>{{scope.row.isOnlyPhysical | isOnlyPhysicalFliter}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope" >
+            <el-button type="text" size="small" v-if="scope.row.type === 1" @click="handleFileBtn(scope)">文件目录</el-button>
+            <template>
+              <el-button type="text" size="small" v-if="scope.row.type === 2" @click="handleEdit(scope)">编辑</el-button>
+              <el-button type="text" size="small" v-if="scope.row.type === 2" @click="handleDel(scope)">删除</el-button>
+            </template>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+      <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="50%"
+                 :before-close="close">
+        <el-form :model="form" :rules="rules" ref="form"
+                 :label-width="formLabelWidth" :validate-on-rule-change="true">
+          <el-form-item label="目录名称：" prop="name">
+            <el-input v-model="form.name"></el-input>
+          </el-form-item>
+          <el-form-item label="仅保存实物（不上传电子版）" prop="isOnlyPhysical">
+            <el-select v-model="form.isOnlyPhysical" placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item class="submit-radio">
+            <el-button type="primary" @click="submit" :loading="isSubmiting">保存</el-button>
+            <el-button class="cancal" @click="close">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+    </div>
+  </div>
+</template>
+
+<script>
+import {archivesClassify} from '@/api/archives'
+
+export default {
+  name: 'catalog',
+  data () {
+    return {
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      tableData: [],
+      dialogTitle: '',
+      isSubmiting: false,
+      dialogVisible: false,
+      form: {},
+      formLabelWidth: '140px',
+      rules: {
+        name: [
+          { required: true, message: '目录名称不能为空', trigger: ['blur', 'change'] }
+        ],
+        isOnlyPhysical: [
+          { required: true, message: '请选择仅保存实物（不上传电子版）', trigger: ['blur', 'change'] }
+        ]
+      },
+      options: [{
+        value: 1,
+        label: '是'
+      }, {
+        value: 0,
+        label: '否'
+      }],
+      isAdded: true
+    }
+  },
+  filters: {
+    isOnlyPhysicalFliter (value) {
+      if (Number(value) === 1) {
+        return '是'
+      } else if (value === 0) {
+        return '否'
+      } else {
+        return '---'
+      }
+    }
+  },
+  methods: {
+    indexMethod (index) {
+      return index + (this.currentPage - 1) * 10 + 1
+    },
+    getData () {
+      archivesClassify.getArchivesClassifyList({
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        isStart: 1 // 只展示初始目录
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.tableData = res.data.archivesClassifyList.list
+          this.total = res.data.archivesClassifyList.total
+        }
+      })
+    },
+    // 表单分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getData(parseInt(this.pageNo), parseInt(this.pageSize))
+    },
+    handleDel (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        archivesClassify.deleteClassify(scope.row.objectId).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.getData()
+          }
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    handleAdd () {
+      this.form = {}
+      this.isAdded = true
+      this.dialogVisible = true
+      this.dialogTitle = '新增档案目录'
+    },
+    handleEdit (scope) {
+      this.isAdded = false
+      this.dialogVisible = true
+      this.dialogTitle = '编辑档案目录'
+      this.form = Object.assign({}, scope.row)
+    },
+    // 文件目录
+    handleFileBtn (scope) {
+      this.$router.push({path: `/archives/setting/file-catalog`})
+    },
+    close () {
+      this.dialogVisible = false
+      this.form = {}
+      this.$refs['form'].resetFields()
+    },
+    submit () {
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          this.$confirm('确定要保存吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.isSubmiting = true
+            archivesClassify.saveOrUpdateArchivesClassify(this.form).then((res) => {
+              if (res.data.resCode === '0000') {
+                this.getData()
+                this.dialogVisible = false
+                this.isSubmiting = false
+              }
+            })
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    init () {
+      this.getData()
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+
+<style scoped>
+  .addbutton{
+    margin-bottom: 12px;
+    color: #fff;
+    background-color: #409EFF;
+    border-color: #409EFF;
+    float: right;
+  }
+</style>

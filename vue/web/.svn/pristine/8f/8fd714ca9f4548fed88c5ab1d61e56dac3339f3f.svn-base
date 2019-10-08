@@ -1,0 +1,125 @@
+<template>
+  <div id="rotate-detail" class="smaincontent">
+    <div class="headertitle">
+      <!--面包屑-->
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/main' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item>首页管理</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/index/home-manage/dynamic-info' }">动态信息</el-breadcrumb-item>
+        <el-breadcrumb-item>查看动态</el-breadcrumb-item>
+      </el-breadcrumb>
+      <div class="returnboxbig">
+        <template>
+          <el-button @click="$router.go(-1)">返回</el-button>
+        </template>
+      </div>
+      <!--面包屑-->
+    </div>
+    <div class="contentbigbox">
+        <el-form :model="ruleForm" label-width="100px" class="demo-ruleForm">
+          <table class="detailtable">
+            <tr>
+              <td>标题：</td>
+              <td colspan="2">
+                <span>{{ruleForm.title}}</span>
+              </td>
+              <td>关键字：</td>
+              <td colspan="2">
+                <span>{{ruleForm.keywords}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>类型：</td>
+              <td colspan="2">
+                <span v-if="scope.row.type === 1">省内动态</span>
+                <span v-if="scope.row.type === 1">省外动态</span>
+              </td>
+              <td>是否显示：</td>
+              <td  colspan="2">
+                <span v-if="scope.row.status === 1">是</span>
+                <span v-if="scope.row.status === 1">否</span>
+              </td>
+            </tr>
+            <tr>
+              <td>地区：</td>
+              <td colspan="2">
+                <span>{{regionStr}}</span>
+              </td>
+              <td>行业：</td>
+              <td colspan="2">
+                <span>{{industryStr}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>内容：</td>
+              <td  colspan="2">
+                <editor ref="ueditor" class="ueditor" :editread="true"></editor>
+              </td>
+            </tr>
+          </table>
+        </el-form>
+      </div>
+  </div>
+</template>
+<script>
+import filedown from '@/components/file-download'
+import editor from '@/components/ueditor/ueditor.vue'
+import * as industry from '../../../assets/js/industry'
+import * as region from '../../../assets/js/region'
+import { homeManage } from '@/api'
+export default {
+  data () {
+    return {
+      // 行业
+      industryStr: '',
+      // 地区
+      regionStr: '',
+      industryList: industry.industry,
+      regionList: region.CityInfo,
+      ruleForm: {},
+      fileObject: {}
+    }
+  },
+  components: {
+    filedown,
+    editor
+  },
+  methods: {
+    // 数据
+    detail () {
+      homeManage.detail(this.$route.params.objectId).then((res) => {
+        this.industryList.map((item) => {
+          if (item.value === res.data.purchaseBulletin.tenderExpandsInfo.industryTypeFirst) {
+            this.industryStr += item.label
+          }
+        })
+        this.regionList.map((item) => {
+          if (item.value === res.data.purchaseBulletin.tenderExpandsInfo.provinceId) {
+            this.regionStr += item.label
+            item.children.map((ite) => {
+              if (ite.value === res.data.purchaseBulletin.tenderExpandsInfo.cityId) {
+                this.regionStr += ite.label
+              }
+            })
+          }
+        })
+        this.ruleForm = res.data.pictureInfo
+        this.fileObject = res.data.pictureInfo.fileInformations[0]
+        this.$refs.ueditor.setContent(this.ruleForm.noticeContent)
+      })
+    }
+  },
+  mounted () {
+    this.detail()
+  }
+}
+</script>
+<style lang="less">
+  #rotate-detail {
+    .contentbigbox .demo-ruleForm {
+      .el-form-item__content {
+        text-align: left;
+      }
+    }
+  }
+</style>

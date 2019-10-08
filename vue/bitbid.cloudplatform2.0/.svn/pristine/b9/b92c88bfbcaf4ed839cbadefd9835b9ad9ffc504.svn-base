@@ -1,0 +1,250 @@
+<template>
+  <div class="cloudcontent" id="cloud_archives_man">
+    <div class="main">
+      <div class="topmain">
+        <!--按钮-->
+        <div class="btnbigbox">
+          <div class="addrole">
+            <el-button class="addbutton" @click="dialogTableVisible = true">
+              <span> + 新增归档</span>
+            </el-button>
+          </div>
+        </div>
+        <!--按钮-->
+        <div class="seacher_box">
+          <span>归档情况：</span>
+          <el-select class="select" v-model="searchField" placeholder="请选择" >
+            <el-option
+              v-for="item in searchClassify"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <span>项目名称：</span>
+          <el-input class="search" placeholder="请输入项目名称" style="vertical-align: top"  v-model="searchContent">
+            <el-button slot="append" icon="el-icon-search" type="" @click="search"></el-button>
+          </el-input>
+        </div>
+      </div>
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='dataIndex'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="招标项目"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="标段编号"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="标段名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="项目经理"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="归档时间"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="归档情况"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === 0">待归档</span>
+            <span  v-if="scope.row.status === 1">已归档</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleLookBtn(scope)">查阅</el-button>
+            <el-button type="text" size="small" @click="handleEditBtn(scope)">编辑</el-button>
+            <el-button type="text" size="small" @click="handleDelBtn(scope)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+      <el-dialog title="选择归档标段" :visible.sync="dialogTableVisible">
+        <div class="topmain">
+          <div class="seacher_box">
+            <span>项目名称：</span>
+            <el-input class="search" placeholder="请输入项目名称" style="vertical-align: top"  v-model="searchContent">
+              <el-button slot="append" icon="el-icon-search" type="" @click="search"></el-button>
+            </el-input>
+          </div>
+        </div>
+        <el-table :data="dialogTableData"
+                  border
+                  style="width: 100%" header-cell-class-name="tableheader">
+          <el-table-column
+            prop="radio"
+            label=""
+            width="50"
+            align="center"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <el-radio v-model="isChecked" style="vertical-align: top" :label="scope.row.radio" >&nbsp;</el-radio>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="标段编号"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="partName"
+            label="标段名称"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="partName"
+            label="所属招标项目"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="bidStatus"
+            label="标段状态"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <span>{{scope.row.bidStatus === 1 ? '已结束' : '未结束'}}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="total"
+          :page-size='pageSize'
+          :current-page.sync="currentPage"
+          @current-change="handleCurrentChange"
+          @next-click="handleCurrentNext">
+        </el-pagination>
+        <!--分页-->
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="handleConfirm">确 定</el-button>
+          <el-button @click="dialogTableVisible = false">取 消</el-button>
+        </div>
+      </el-dialog>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+      searchField: '',
+      searchClassify: [{
+        value: '1',
+        label: '待归档'
+      }, {
+        value: '2',
+        label: '已归档'
+      }],
+      searchContent: '',
+      tableData: [{
+        name: '项目档案',
+        status: 0
+      }],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: null, // 总条数
+      pageSize: 10, // 每页展示条数
+      dialogTableVisible: false,
+      dialogTableData: [
+        {
+          bidStatus: 1
+        }
+      ],
+      isChecked: ''
+    }
+  },
+  watch: {
+    $route: 'resetView'
+  },
+  methods: {
+    // 搜索
+    search () {},
+    // 分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+    },
+    dataIndex (index) {
+      return index + (this.currentPage - 1) * this.pageSize + 1
+    },
+    handleLookBtn (scope) {
+    },
+    handleEditBtn (scope) {
+    },
+    handleDelBtn (scope) {
+    },
+    handleCurrentNext () {},
+    handleConfirm () {
+      this.dialogTableVisible = false
+      let bidInfo = this.dialogTableData.filter(item => item.radio === this.isChecked)
+      console.log(bidInfo)
+      if (bidInfo.length <= 0) {
+        this.$message({
+          message: '请先选择标段',
+          type: 'warning'
+        })
+        return false
+      }
+      if (bidInfo[0].bidStatus) {
+        // 已结束
+        this.$router.push({path: `/archives/management/add`})
+      } else {
+        // 未结束
+        this.$alert('该标段流程未结束，不允许归档', '提示:', {
+          confirmButtonText: '关闭',
+          type: 'warning'
+        })
+      }
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_archives_man {
+    .seacher_box{
+      width: 700px;
+      height: 41px;
+    }
+    .search{
+      width: 50%;
+    }
+  }
+</style>

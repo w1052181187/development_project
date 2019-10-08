@@ -1,0 +1,355 @@
+<template>
+  <div class="cloudcontent" id="cloud_buildProject_detail">
+    <div class="main">
+      <p>信息来自比比网（比比网不对信息内容的真实性和准确性负责，也不提供验证服务）</p>
+      <div class="detail">
+        <div class="title">
+          <h3>{{ruleForm.project_name}}</h3>
+          <el-button type="primary" @click="joinBusinessOpportunities" v-loading="loading"> + 加入到我的商机</el-button>
+        </div>
+        <div class="part">
+          <span>项目跟进</span>
+          <div class="tablebox">
+            <el-table
+              :data="tableData"
+              border
+              style="width: 100%" header-cell-class-name="tableheader">
+              <el-table-column
+                prop="follow_time"
+                label="日期"
+                width="200"
+                :formatter="dateFormat"
+                show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column
+                prop="follow"
+                label="跟进"
+                width="130"
+                :formatter="followFormat"
+                show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column
+                prop="general_project_stage"
+                label="进展阶段"
+                width="200"
+                :formatter="stageFormat"
+                show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column
+                prop="record"
+                label="进展备注"
+                show-overflow-tooltip>
+              </el-table-column>
+            </el-table>
+          </div>
+        </div>
+        <div class="part">
+          <span>项目基本情况</span>
+          <div class="tablebox">
+            <table>
+              <tr>
+                <td class="gray">项目名称</td>
+                <td colspan="3">{{ruleForm.project_name}}</td>
+              </tr>
+              <tr>
+                <td class="gray">更新时间</td>
+                <td>{{dateFormat('','',ruleForm.publish_date)}}</td>
+                <td class="gray">跟进记录</td>
+                <td v-if="tableData.length">跟进{{tableData.length}}</td>
+                <td v-if="!tableData.length">暂无跟进</td>
+              </tr>
+              <tr>
+                <td class="gray">项目阶段</td>
+                <td v-if="ruleForm.project_stage === 1">可行性研究</td>
+                <td v-if="ruleForm.project_stage === 2">设计阶段</td>
+                <td v-if="ruleForm.project_stage === 3">审批/核准/备案</td>
+                <td v-if="ruleForm.project_stage === 4">项目立项</td>
+                <td v-if="ruleForm.project_stage === 5">环境影响评价</td>
+                <td v-if="ruleForm.project_stage === 6">施工准备</td>
+                <td v-if="ruleForm.project_stage === 7">施工在建</td>
+                <td v-if="ruleForm.project_stage === 8">项目竣工</td>
+                <td v-if="!ruleForm.project_stage"></td>
+                <td class="gray">项目地区</td>
+                <td>{{ruleForm.region}}</td>
+              </tr>
+              <tr>
+                <td class="gray">项目性质</td>
+                <td>{{ruleForm.project_nature}}</td>
+                <td class="gray">业主类型</td>
+                <td v-if="ruleForm.owner_type === 1">商业</td>
+                <td v-if="ruleForm.owner_type === 2">政府</td>
+                <td v-if="!ruleForm.owner_type"></td>
+              </tr>
+              <tr>
+                <td class="gray">投资总额</td>
+                <td>{{ruleForm.total_investment ? ruleForm.total_investment : 0}}{{ruleForm.total_investment_company === 1 ? '万元' : '亿元'}}</td>
+                <td class="gray">项目规模</td>
+                <td v-if="ruleForm.project_scale === 1">大型项目</td>
+                <td v-if="ruleForm.project_scale === 2">中型项目</td>
+                <td v-if="ruleForm.project_scale === 3">小型项目</td>
+                <td v-if="!ruleForm.project_scale"></td>
+              </tr>
+              <tr>
+                <td class="gray">资金来源</td>
+                <td>{{ruleForm.sources_of_funds}}</td>
+                <td class="gray">建设地点</td>
+                <td>{{ruleForm.enterprise_address}}</td>
+              </tr>
+              <tr>
+                <td class="gray">开工时间</td>
+                <td>{{ruleForm.plan_start_time}}</td>
+                <td class="gray">竣工时间</td>
+                <td>{{ruleForm.plan_end_time}}</td>
+              </tr>
+              <tr>
+                <td class="gray">占地面积</td>
+                <td>{{ruleForm.floor_space}}</td>
+                <td class="gray">建筑面积</td>
+                <td>{{ruleForm.covered_area}}</td>
+              </tr>
+              <tr>
+                <td class="gray">项目概述</td>
+                <td colspan="3">
+                  <editor ref="ueditor" class="ueditor" :editread="editread" :content="content"></editor>
+                  <!--<el-input type="textarea" v-model="ruleForm.content" readonly></el-input>-->
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="part">
+          <span>项目联系人</span>
+          <div class="tablebox">
+            <table>
+              <tr v-for="item in contactTableData" :key="item.code">
+                <td class="gray">{{item.type === 1 ? '业主单位' : (item.type === 2 ? '设计单位' : '施工单位')}}</td>
+                <td>
+                  <el-row>
+                    <el-col :span="24">
+                      <label>单位名称：</label>
+                      <span>{{item.enterprise_name}}</span>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <label>联系人：</label>
+                      <span>{{item.contact}}</span>
+                    </el-col>
+                    <el-col :span="12">
+                      <label>联系电话：</label>
+                      <span>{{item.phone}}</span>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <label>手机：</label>
+                      <span>{{item.mobile_phone}}</span>
+                    </el-col>
+                    <el-col :span="12">
+                      <label>传真：</label>
+                      <span>{{item.fax}}</span>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="12">
+                      <label>地址：</label>
+                      <span>{{item.address}}</span>
+                    </el-col>
+                  </el-row>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import {proposedProject} from '@/api/biddingSources'
+import * as region from '@/assets/js/region'
+import {dateFormat} from '@/assets/js/common'
+import editor from '@/components/ueditor/ueditor.vue'
+export default {
+  components: {
+    editor
+  },
+  data () {
+    return {
+      tableData: [],
+      ruleForm: {},
+      fileInformations: [],
+      contactTableData: [],
+      // 所在地区
+      regionOption: region.CityInfo,
+      isJoinBusiness: false,
+      opportunitiesForm: {
+        comparisonCode: '',
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        content: '',
+        status: 0,
+        chargePersonId: this.$store.getters.authUser.userId,
+        chargePersonName: this.$store.getters.authUser.userName,
+        departmentId: this.$store.getters.authUser.departmentId,
+        departmentName: this.$store.getters.authUser.departmentName,
+        projectName: '',
+        projectCode: '',
+        provinceId: '',
+        cityId: '',
+        countyId: '',
+        address: '',
+        publishTime: '',
+        projectScale: '',
+        projectAmount: '',
+        contacts: '',
+        contactNum: ''
+      },
+      loading: false,
+      // 富文本
+      editread: true,
+      content: ''
+    }
+  },
+  methods: {
+    detail () {
+      proposedProject.detail(this.$route.params.code).then(res => {
+        // 项目基本情况
+        this.ruleForm = res.data.data.detail
+        // 获取文本编辑器的内容
+        this.$refs.ueditor.setContent(this.content = this.ruleForm.content)
+        this.ruleForm.region = this.regionOption.filter(item => item.value === Number(this.ruleForm.province_id))[0].label
+        // 项目跟进情况
+        this.tableData = res.data.data.trackings
+        // 联系人信息
+        this.contactTableData = res.data.data.contacts
+        // 文件信息
+        this.fileInformations = res.data.data.fileInformations
+      })
+    },
+    stageFormat (row, col, cellValue) {
+      if (!cellValue) {
+        return '---'
+      }
+      switch (cellValue) {
+        case 1:
+          return '可行性研究'
+        case 2:
+          return '设计阶段'
+        case 3:
+          return '审批/核准/备案'
+        case 4:
+          return '项目立项'
+        case 5:
+          return '环境影响评价'
+        case 6:
+          return '施工准备'
+        case 7:
+          return '施工在建'
+        case 8:
+          return '项目竣工'
+        default:break
+      }
+    },
+    dateFormat (row, col, cellValue) {
+      if (!cellValue) {
+        return '------'
+      }
+      return dateFormat(cellValue, 'yyyy-MM-dd hh:mm:ss')
+    },
+    followFormat (row, col, cellValue, index) {
+      return '跟进' + (this.tableData.length - index)
+    },
+    // 加入我的商机
+    joinBusinessOpportunities () {
+      if (!this.isJoinBusiness) {
+        this.loading = true
+        this.isJoinBusiness = true
+        this.opportunitiesForm.comparisonCode = this.ruleForm.code
+        this.opportunitiesForm.content = this.ruleForm.content
+        this.opportunitiesForm.projectName = this.ruleForm.project_name
+        this.opportunitiesForm.projectCode = this.ruleForm.project_code
+        this.opportunitiesForm.dicSourceCode = '拟在建项目'
+        this.opportunitiesForm.provinceId = this.ruleForm.province_id
+        this.opportunitiesForm.cityId = this.ruleForm.city_id
+        this.opportunitiesForm.countyId = this.ruleForm.county_id
+        this.opportunitiesForm.address = this.ruleForm.address
+        this.opportunitiesForm.publishTime = this.ruleForm.publish_date ? dateFormat(new Date(this.ruleForm.publish_date), 'yyyy-MM-dd hh:mm:ss') : null
+        this.opportunitiesForm.projectScale = this.ruleForm.project_scale === 1 ? '大型项目' : (this.ruleForm.project_scale === 2 ? '中型项目' : '小型项目')
+        this.opportunitiesForm.projectAmount = this.ruleForm.total_investment ? (this.ruleForm.total_investment_companythis === 1 ? (this.ruleForm.total_investment + '0000') : (this.ruleForm.total_investment_companythis === 2 ? (this.ruleForm.total_investment + '00000000') : '0')) : '0'
+        this.opportunitiesForm.contacts = this.contactTableData.filter(item => item.type === 1)[0].contact
+        this.opportunitiesForm.contactNum = this.contactTableData.filter(item => item.type === 1)[0].phone
+        this.opportunitiesForm.fileInformations = this.fileInformations.length ? this.fileInformations : null
+        proposedProject.joinBusinessOpportunities(this.opportunitiesForm).then((res) => {
+          this.loading = false
+          if (res.data.resCode !== '0000') {
+            this.isJoinBusiness = false
+          }
+        })
+      } else {
+        this.$message.error('该项目已加入商机，请勿重复添加！')
+      }
+    }
+  },
+  mounted () {
+    this.detail()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_buildProject_detail{
+    .main{
+      margin-top: 0;
+    }
+    .main>p{
+      font-size: 14px;
+      line-height: 32px;
+      color: #666666;
+    }
+    .detail{
+      border: 1px solid #dddddd;
+    }
+    .detail .title{
+      text-align: center;
+      padding: 10px;
+      border-bottom: 1px solid #dddddd;
+    }
+    .detail .title h3{
+      padding: 12px 0;
+      line-height: 24px;
+    }
+    .part{
+      margin: 10px auto;
+    }
+    .part>span{
+      border-left: 2px solid #40a3f1;
+      padding-left: 12px;
+      font-weight: bold;
+    }
+    .part .tablebox{
+      margin: 12px;
+      overflow: hidden;
+    }
+    .part .tablebox table{
+      border: 1px solid #dcdfe6;
+      border-collapse: collapse;
+      width: 100%;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .part .tablebox table td{
+      padding: 10px;
+      line-height: 24px;
+      border: 1px solid #dcdfe6;
+    }
+    .part .tablebox table td.gray{
+      background: #e4eefc;
+      width: 160px;
+    }
+    .el-col label{
+      width: 80px;
+      text-align: right;
+      display: inline-block;
+    }
+  }
+</style>

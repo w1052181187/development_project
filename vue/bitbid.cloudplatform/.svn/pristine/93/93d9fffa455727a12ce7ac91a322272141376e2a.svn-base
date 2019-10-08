@@ -1,0 +1,159 @@
+<template>
+  <div class="cloudcontent">
+    <!--面包屑-->
+    <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb_box">
+      <el-breadcrumb-item :to="{ path: '/index' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/projectProcess' }">项目进度管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/projectProcess/project' }">项目管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/projectProcess/project/process' }">流程管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/projectProcess/project/process', query: {type: 'anno'} }">响应资格预审</el-breadcrumb-item>
+      <el-breadcrumb-item class="active_bread">修改投标报名信息</el-breadcrumb-item>
+    </el-breadcrumb>
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段编号："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段名称："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="投标人："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="联系人："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="联系方式："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="投标人报名时间："  prop="tenderProjectCode">
+              <el-date-picker
+                v-model="updateForm.tenderProjectCode"
+                type="datetime"
+                placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="电子邮箱："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="附件：">
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit('updateForm', 1)" :loading="isSubmiting">提交</el-button>
+          <el-button type="primary" @click="submit('updateForm', 0)" :loading="isSubmiting">保存</el-button>
+          <el-button class="cancal" @click="close">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      updateForm: {},
+      rules: {},
+      noticeList: [
+        {
+          name: 1,
+          status: 1
+        },
+        {
+          name: 1,
+          status: 0
+        }
+      ]
+    }
+  },
+  methods: {
+    handleSelectionChange (val) {
+      this.sectionList = val
+    },
+    /**
+     * 增加供应商
+     */
+    addSupplierBtn () {
+      this.supplierList.push({name: 2})
+    },
+    delSupplierBtn (index) {
+      this.supplierList.splice(index, 1)
+    },
+    /**
+     * 增加邀请公告
+     */
+    addNoticeBtn () {
+      this.$router.push({path: `/processManage/projectProcess/announcement/add_notice`})
+    },
+    handleNoticeEdit (scope) {
+      this.$router.push({path: `/processManage/projectProcess/announcement/update_notice`, query: {objectId: scope.row.objectId}})
+    },
+    handleNoticeDetail (scope) {
+      this.$router.push({path: `/processManage/projectProcess/announcement/notice_detail/${scope.row.objectId}`})
+    },
+    handleNoticeDel (scop) {
+    },
+    // 提交/保存
+    submit (form, status) {
+    },
+    // 取消
+    close () {
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style scoped>
+  .addbtn{
+    border: 1px solid #3f63f6;
+    height: 32px;
+    padding: 7px 12px;
+    margin-bottom: 12px;
+  }
+  .btn_right{
+    float: right;
+  }
+</style>

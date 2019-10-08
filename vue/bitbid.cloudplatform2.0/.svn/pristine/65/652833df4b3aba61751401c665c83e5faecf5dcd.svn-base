@@ -1,0 +1,245 @@
+<template>
+  <div class="cloudcontent" id="cloud_users">
+    <div class="main">
+      <div class="topmain">
+        <!--按钮-->
+        <div class="btnbigbox">
+          <!--添加角色-->
+          <div class="addrole">
+            <el-button class="addbutton" @click="showEditUser(true, false)">
+              <span> + 新增用户</span>
+            </el-button>
+          </div>
+          <edit-user :showVisible="showVisible" :isEdit="isUserEdit" :userId="editUserId" @showEditUser="showEditUser" @saveSuccess="queryUserList"></edit-user>
+          <!--添加角色-->
+        </div>
+        <!--按钮-->
+        <div class="seacher_box">
+          <el-select class="select" v-model="searchField" placeholder="请选择" >
+            <el-option
+              v-for="item in searchClassify"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <el-input class="search" placeholder="请输入内容" style="vertical-align: top"  v-model="searchContent">
+            <el-button  slot="append" icon="el-icon-search" type="" @click="search"></el-button>
+          </el-input>
+        </div>
+      </div>
+      <!--表格-->
+      <div class="content_tablebox">
+        <template>
+          <el-table
+            :data="users"
+            border
+            style="width: 100%" header-cell-class-name="tableheader">
+            <el-table-column
+              type="index"
+              label="序号"
+              align="center">
+            </el-table-column>
+            <el-table-column
+              prop="account"
+              :formatter="simpleFormatData"
+              label="用户名">
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              :formatter="simpleFormatData"
+              label="姓名">
+            </el-table-column>
+            <el-table-column
+              prop="cellPhone"
+              :formatter="simpleFormatData"
+              label="联系电话">
+            </el-table-column>
+            <el-table-column
+              prop="department.name"
+              :formatter="simpleFormatData"
+              label="所属部门">
+            </el-table-column>
+            <el-table-column
+              label="操作" align="center">
+              <template slot-scope="scope">
+                <el-button type="text" size="small" @click="queryDetail(scope.row.objectId)">查看</el-button>
+                <el-button type="text" size="small" @click="showEditUser(true, true, scope.row.objectId)">编辑</el-button>
+                <el-button type="text" size="small" @click="forbiddenUser(scope.row, 2)" v-if="scope.row.status === 1">禁用</el-button>
+                <el-button type="text" size="small" @click="forbiddenUser(scope.row, 1)" v-else>启用</el-button>
+                <el-button type="text" size="small" @click="distributionRoles(scope)">分配角色</el-button>
+                <el-button type="text" size="small" @click="restPwd(scope.row)">重置密码</el-button>
+                <el-button type="text" size="small" @click="logoffUser(scope.row.objectId)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </template>
+      </div>
+      <!--表格-->
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="page.total"
+        :page-size='page.pageSize'
+        :current-page.sync="page.currentPage"
+        @current-change="handlePage"
+        @next-click="handlePage">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+import {addtitle} from '../../../assets/js/common'
+import {user} from '@/api/system'
+import editUser from './edit_user'
+
+export default {
+  components: {
+    editUser
+  },
+  data () {
+    return {
+      page: {
+        pageSize: 10,
+        pageNo: 1,
+        total: 0, // 总条数
+        currentPage: 1
+      },
+      queryModel: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        isDelete: 0,
+        type: 2,
+        nameLike: '',
+        account: ''
+      },
+      // 表格数据
+      users: [],
+      searchField: '',
+      searchClassify: [{
+        value: 'account',
+        label: '用户名'
+      }, {
+        value: 'nameLike',
+        label: '姓名'
+      }],
+      searchContent: '',
+      // 新增用户数据
+      userForm: {
+        account: '',
+        name: '',
+        departmentId: '',
+        phone: '',
+        remark: ''
+      },
+      showVisible: false,
+      isUserEdit: false,
+      editUserId: null
+    }
+  },
+  watch: {
+    searchField (newValue, oldValue) {
+      if (this.searchField) {
+        this.queryModel[oldValue] = ''
+        this.queryModel[newValue] = this.searchContent
+      }
+    },
+    searchContent (newValue) {
+      if (this.searchField) {
+        this.queryModel[this.searchField] = newValue
+      }
+    }
+  },
+  methods: {
+    // 搜索
+    search () {
+      if (!this.searchField) {
+        this.$message({
+          type: 'warning',
+          message: '请选择查询方式'
+        })
+        return false
+      }
+      this.queryUserList()
+    },
+    // 用户列表数据
+    queryUserList () {
+      this.queryModel.pageNum = this.page.pageNo
+      this.queryModel.pageSize = this.page.pageSize
+      user.queryList(this.queryModel).then((res) => {
+        this.users = res.data.data
+        this.page.total = res.data.page.totalRows
+        addtitle(this)
+      })
+    },
+    // 表单分页
+    handlePage (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = (nowNum - 1) * this.page.pageSize
+      this.queryUserList()
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 编辑用户弹框
+    showEditUser (isShow, isEdit, userId) {
+      this.showVisible = isShow
+      this.isUserEdit = isEdit
+      this.editUserId = userId || null
+    },
+    // 禁用用户
+    forbiddenUser (obj, status) {
+      this.$confirm('确认进行该操作吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        obj.status = status
+        user.update(obj).then(res => {
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 重置密码
+    restPwd (obj) {
+      this.$confirm('确认进行该操作吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$store.dispatch('RestPwd', obj.account).then(res => {
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 删除用户
+    logoffUser (userId) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        user.logoff(userId).then(() => {
+          this.queryUserList()
+        })
+      }).catch(() => {
+        return false
+      })
+    }
+  },
+  mounted () {
+    this.queryUserList()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_users {
+    .main .el-form-item__label{
+      padding: 0 12px 0 0;
+    }
+  }
+</style>

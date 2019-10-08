@@ -1,0 +1,221 @@
+<template>
+  <div class="cloudcontent" id="add_template">
+    <div class="main">
+      <el-form :model="submitForm" :rules="rules" ref="submitForm"
+               label-width="120px" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="评估模板名称：" prop="name">
+              <el-input v-model="submitForm.name" clearable placeholder="请输入模板名称">
+                <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-radio-group v-model="submitForm.status" class="status">
+              <el-radio :label="1">启用</el-radio>
+              <el-radio :label="0">禁用</el-radio>
+            </el-radio-group>
+          </el-col>
+        </el-row>
+        <el-form-item label="评估项维护：">
+          <span class="addItem" @click="showSelectDialog">添加评估项</span>
+        </el-form-item>
+        <checkbox-dialog :showVisible="showSelectVisible" :selectedIds="submitForm.itemIds" @submitSelected="submitSelected" @showEditDialog="showSelectDialog"></checkbox-dialog>
+        <el-table
+          :data="itemGroup"
+          border
+          v-loading="itemsLoading"
+          header-cell-class-name="tableheader">
+          <el-table-column
+            type="index"
+            label="序号"
+            width="80"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="评估项分组"
+            align="center"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="children"
+            label="评估项"
+            align="center"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <el-table :data="scope.row.children" :show-header="false">
+                <el-table-column
+                  prop="name"
+                  align="center"
+                  show-overflow-tooltip>
+                </el-table-column>
+              </el-table>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" align="center" width="120">
+            <template slot-scope="scope">
+              <el-table :data="scope.row.children" :show-header="false">
+                <el-table-column align="center" show-overflow-tooltip>
+                  <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="deleteItem(scope.row)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit" v-loading="loading">保存</el-button>
+          <el-button class="cancal" @click="cancel">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import CheckboxDialog from '../item/checkbox_dialog'
+import {template} from '@/api/customer/template'
+
+export default {
+  components: {
+    CheckboxDialog
+  },
+  data () {
+    return {
+      submitForm: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        status: 1,
+        itemIds: []
+      },
+      itemGroup: [],
+      loading: false,
+      itemsLoading: false,
+      showSelectVisible: false,
+      selectItemsList: [],
+      rules: {
+        name: [
+          {required: true, message: '评估模板名称不能为空', trigger: 'blur'},
+          { min: 1, max: 20, message: '长度在1~20个字符', trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  watch: {
+    selectItemsList (value) {
+      if (value && value.length) {
+        this.submitForm.itemIds = value.map(item => item.objectId)
+      }
+    }
+  },
+  methods: {
+    // 初始化
+    initData () {
+      this.itemsLoading = true
+      template.queryOne(this.$route.query.objectId).then(res => {
+        this.itemsLoading = false
+        this.submitForm = res.data.data
+        // 包装评估项
+        this.selectItemsList = this.submitForm.evaluationItems || []
+        this.wrapParentList(this.submitForm.evaluationItems)
+      })
+    },
+    // 删除已选中的评估项
+    deleteItem (obj) {
+      this.selectItemsList = this.selectItemsList.filter(item => Number(item.objectId) !== Number(obj.objectId))
+      this.itemGroup = []
+      this.wrapParentList(this.selectItemsList)
+    },
+    // 选择评估项弹框
+    showSelectDialog () {
+      this.showSelectVisible = !this.showSelectVisible
+    },
+    // 保存选中的值
+    submitSelected (selectItemsList) {
+      this.selectItemsList = this.selectItemsList.concat(selectItemsList)
+      this.wrapParentList(selectItemsList)
+      this.showSelectVisible = false
+    },
+    // 包装提交的评估项，父为主体
+    wrapParentList (selectItemsList) {
+      if (selectItemsList && selectItemsList.length) {
+        selectItemsList.forEach(item => {
+          let childFlag = false
+          if (this.itemGroup.length) {
+            this.itemGroup.forEach(parent => {
+              if (parent.objectId === item.parentId) {
+                parent.children.push(item)
+                childFlag = true
+              }
+            })
+          }
+          if (!childFlag) {
+            this.itemGroup.push({
+              objectId: item.parentId,
+              name: item.parent.name,
+              children: [item]
+            })
+          }
+        })
+      }
+    },
+    // 保存数据
+    submit () {
+      this.$refs['submitForm'].validate((valid) => {
+        if (valid) {
+          this.$confirm('确认要提交吗?', '提示', {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.loading = true
+            template.update(this.submitForm).then(res => {
+              this.loading = false
+              if (res.data.resCode === '0000') {
+                this.cancel()
+              }
+            })
+          }).catch(() => {
+            this.loading = false
+            return false
+          })
+        }
+      })
+    },
+    // 取消
+    cancel () {
+      this.$store.commit('delete_tabs', this.$route.path)
+      this.$router.push({path: '/customer/template'})
+    }
+  },
+  mounted () {
+    // 初始化数据
+    if (this.$route.query.objectId) {
+      this.initData()
+    }
+  }
+}
+</script>
+
+<style lang="less">
+  .addItem{
+    font-size: 12px;
+    color: #108cee;
+    cursor: pointer;
+  }
+  .status{
+    line-height: 50px;
+  }
+  .bottom_sel{
+    height: 88px;
+    line-height: 88px;
+  }
+  .bottom_sel span{
+    margin-right: 12px;
+    cursor: pointer;
+  }
+  .bottom_sel .page{
+    float: right;
+  }
+</style>

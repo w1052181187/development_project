@@ -1,0 +1,36 @@
+.title-box {
+  text-align: left;
+  border-left: 2px solid #FF8A00;
+  padding-left: 15px;
+}
+.btn-blue-bg {
+  background: #2C972F !important;
+  color: #fff !important;
+  border-color: #2C972F !important;
+}
+.btn-blue-bg:focus, .btn-blue-bg:hover {
+  background:#2C972F !important;
+  border-color: #2C972F !important;
+  color: #fff !important;
+}
+.btn-warning-bg {
+  background: #FE8A00 !important;
+  color: #fff !important;
+  border-color: #FE8A00 !important;
+}
+.btn-warning-bg:focus, .btn-warning-bg:hover {
+  background:#FE8A00 !important;
+  border-color: #FE8A00 !important;
+  color: #fff !important;
+}
+/*提交按钮*/
+.btn-sub-bg{
+  background: #2d76ed !important;
+  color: #fff !important;
+  border-color: #2d76ed !important;
+}
+.btn-sub-bg:focus, .btn-sub-bg:hover {
+  background:#2d76ed !important;
+  border-color: #2d76ed !important;
+  color: #fff !important;
+}

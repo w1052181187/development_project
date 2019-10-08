@@ -1,0 +1,154 @@
+<template>
+  <div class="cloudcontent"  id="cloud_journalSummaryDetail">
+    <div class="main viewdetails collaborationDetail">
+      <div class="tit">
+        <span>业务部张涛的每日简报</span>
+        <i>填报人：李玉</i>
+        <i>填报日期：2019-06-20</i>
+      </div>
+    </div>
+    <div class="main recordcontent">
+      <span>阅读记录：</span>
+      <p class="read">已读：<span>李阳、马化腾</span></p>
+      <p class="unread">未读: <span>张三</span></p>
+    </div>
+    <div class="main recordcontent">
+      <span>评论(3)：</span>
+      <el-form :model="reviewForm" ref="reviewForm" label-width="80px" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="我要点评：" >
+              <el-input type="textarea" v-model="reviewForm.desc" class="reviewContent"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item style="text-align: left">
+          <el-button type="primary" class="submitBtn" @click="handleClickEvent('submitForm','submit')" :loading="loading">提交</el-button>
+        </el-form-item>
+      </el-form>
+      <div class="historyReview">
+        <span>历史评论：</span>
+        <ul>
+          <li v-for="item in this.historyReviewList" :key="item.index">
+            <span>{{item.userName}}&nbsp;&nbsp;&nbsp;&nbsp;{{item.time}}</span>
+            <div>{{item.content}}</div>
+          </li>
+        </ul>
+      </div>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+      <!--分页-->
+      <div class="submit-radio">
+        <el-button class="cancal" @click="handleCancle">返回</el-button>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+export default {
+  components: {
+    editor
+  },
+  data () {
+    return {
+      submitForm: {
+        fileInformations: []
+      },
+      reviewForm: {},
+      // 富文本
+      editread: false,
+      content: '',
+      loading: false,
+      historyReviewList: [
+        {
+          userName: '李阳',
+          time: '2019-06-20 15:06:10',
+          content: '评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容！'
+        },
+        {
+          userName: '李阳',
+          time: '2019-06-20 15:06:10',
+          content: '评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容！'
+        },
+        {
+          userName: '李阳',
+          time: '2019-06-20 15:06:10',
+          content: '评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容！'
+        }
+      ],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10 // 每页展示条数
+    }
+  },
+  methods: {
+    handleCancle () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    },
+    handleContentChange () {
+      if (this.$refs.ueditor) {
+      }
+    },
+    // 分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+    },
+    handleCurrentNext (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_journalSummaryDetail{
+    .reviewContent{
+      height: 100px;
+    }
+    .reviewContent .el-textarea__inner{
+      height: 100px;
+    }
+    .historyReview{
+      overflow: hidden;
+      border-top: 1px solid #dcdfe6;
+    }
+    .historyReview > span{
+      padding: 0 2%;
+      width: 80px;
+      text-align: right;
+      line-height: 32px;
+    }
+    .historyReview ul{
+      overflow: hidden;
+    }
+    .historyReview ul li{
+      width: 96%;
+      float: left;
+      padding: 10px 2%;
+      border-bottom: 1px solid #dcdfe6;
+    }
+    .historyReview ul li span{
+      font-weight: bold;
+      line-height: 32px;
+    }
+    .historyReview ul li div{
+      line-height: 24px;
+      margin-top: 10px;
+    }
+  }
+</style>

@@ -1,0 +1,38 @@
+import request from '@/utils/axios/components-axios'
+
+export const comparison = {
+  /** 聚合查询列表 */
+  aggQueryList (params) {
+    return request({
+      url: `/comparison-info/calendars`,
+      method: 'get',
+      params
+    })
+  },
+  annoQueryList (params) {
+    return request({
+      url: `/comparison-info/announcements`,
+      method: 'get',
+      params
+    })
+  },
+  annoDetail (relatedCode) {
+    return request({
+      url: `/comparison-info/` + relatedCode,
+      method: 'get'
+    })
+  },
+  ownerDetailByEnterpriseName (enterpriseName) {
+    return request({
+      url: `/owner-database-info/` + enterpriseName,
+      method: 'get'
+    })
+  },
+  annoPublicProjectByTender (tender) {
+    return request({
+      url: `/comparison-info/statistics-project`,
+      method: 'get',
+      tender
+    })
+  }
+}

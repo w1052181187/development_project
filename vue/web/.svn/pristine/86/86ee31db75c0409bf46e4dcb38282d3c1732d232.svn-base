@@ -1,0 +1,14 @@
+import {titleName} from '@/assets/js/common'
+
+export default[
+  {
+    path: '/index/commonuser',
+    name: 'commonuser',
+    meta: {
+      permissions: [1, 2],
+      title: '会员管理' + titleName,
+      active: '/index/commonuser'
+    },
+    component: resolve => require(['@/pages/commonuser/index'], resolve)
+  }
+]

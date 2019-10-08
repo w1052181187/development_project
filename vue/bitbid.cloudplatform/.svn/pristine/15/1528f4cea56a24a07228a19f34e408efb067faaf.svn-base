@@ -1,0 +1,10 @@
+export default [
+  {
+    path: '/websiteManage/company',
+    name: 'websiteManage-company-list',
+    meta: {
+      title: '企业网站-公司概况'
+    },
+    component: resolve => require(['@/pages/websiteManage/company/index'], resolve)
+  }
+]

@@ -1,0 +1,175 @@
+﻿.cloudcontent{
+  overflow: hidden;
+}
+.cloudcontent .main{
+  width: 100%;
+  overflow: hidden;
+  margin: 20px auto 30px auto;
+}
+.cloudcontent .main .el-form{
+  width: 96%;
+  margin: 0 auto;
+}
+.cloudcontent .main .el-form-item{
+  padding-right: 30px;
+}
+.cloudcontent  .main .el-form-item__label{
+  width: 140px;
+  padding: 0;
+}
+.cloudcontent  .main .el-form-item__content{
+  margin-left: 140px;
+}
+.cloudcontent .main  .submit-radio{
+  text-align: center;
+  margin-top: 30px;
+}
+.cloudcontent .main  .submit-radio .el-form-item__content{
+  margin-left: 0px;
+  margin-bottom: 50px;
+}
+.cloudcontent .main  .submit-radio .el-form-item__content .el-button{
+  width: 128px;
+  height: 40px;
+}
+
+/* 表格上面添加按钮+搜索*/
+.topmain{
+  margin-bottom: 20px;
+  overflow: hidden;
+  /*height: 40px;*/
+}
+.topmain .addbutton{
+  float: right;
+  background: #108cee;
+  border-color: #108cee;
+}
+.topmain .addbutton:hover{
+  background: #108cee;
+  border-color: #108cee;
+}
+.topmain .addbutton span{
+  color: #ffffff;
+}
+/*搜索*/
+.cloudcontent .main .seacher_box {
+  width: 540px;
+  height: 40px;
+  min-width: 50px;
+  float: left;
+}
+.cloudcontent .main .seacher_box>span{
+  display: inline-block;
+  line-height: 40px;
+  font-size: 14px;
+}
+.cloudcontent .main .select{
+  width: 20%;
+}
+.cloudcontent .main .search{
+  width: 79%;
+}
+
+.cloudcontent .main .searchselect_box{
+  width: 700px;
+}
+.cloudcontent .main .searchselect_box .search{
+  width: 58%;
+}
+.cloudcontent .main .searchselect_box  .el-select{
+  width: 30%;
+}
+
+.cloudcontent .main .tabletitles{
+  background:#f7f8fa!important;
+}
+.cloudcontent .main .el-table .cell {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  word-break: break-all;
+  line-height: 23px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cloudcontent .main .el-button--text {
+  color: #108cee;
+  background: 0 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+.cloudcontent .main .el-table td{
+  min-width: 0;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  position: relative;
+  padding-bottom: 5px;
+}
+
+/* 分页样式 */
+.cloudcontent .el-pagination {
+  white-space: nowrap;
+  padding: 30px 5px!important;
+  color: #303133;
+  font-weight: 700;
+  margin: 0 auto;
+  text-align: center!important;
+}
+/*表格头部样式*/
+.tableheader{
+  background:#f7f8fa!important;
+}
+/*编辑器的line-height*/
+.ueditor_box .el-form-item__content{
+  line-height: normal;
+}
+.submit-radio .cancal{
+  background: #ededed;
+  border-color: #ededed;
+  color: #666666;
+}
+
+#cloud_processtype .box{
+  padding: 0 20px;
+  overflow: hidden;
+  border-top: 20px solid #f5f5f5;
+}
+#cloud_processtype .box .topmain{
+  line-height: 40px;
+  color: #111111;
+  font-weight: bold;
+  padding: 0px;
+  margin: 10px auto;
+}
+#cloud_processtype .box .topmain .addbutton{
+  float: right;
+}
+#cloud_processtype .box .el-table{
+  width: 100%;
+}
+
+.bitianicon .el-form-item__label::before{
+  content:"*";
+  color:#f66c6c;
+  margin-right: 5px;
+}
+
+/*统一提示语*/
+.el-message{
+  min-width: 50px!important;
+}
+.el-icon-success{
+  display: inline-block;
+  vertical-align: middle;
+  float: left;
+}
+.el-message__content{
+  display: inline-block;
+  vertical-align: middle;
+  float: right;
+}
+.ueditor{
+  line-height: 20px;
+}

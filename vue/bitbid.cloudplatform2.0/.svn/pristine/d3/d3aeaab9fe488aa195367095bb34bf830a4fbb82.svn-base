@@ -1,0 +1,11 @@
+export default [
+  {
+    path: '/archives/management',
+    name: '档案管理',
+    meta: {
+      title: '档案管理',
+      active: '/archives/management'
+    },
+    component: () => import(/* webpackChunkName: 'archives' */ '@/pages/archives/management/index')
+  }
+]

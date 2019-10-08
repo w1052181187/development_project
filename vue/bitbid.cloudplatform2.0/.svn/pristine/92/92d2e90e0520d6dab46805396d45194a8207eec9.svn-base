@@ -1,0 +1,144 @@
+<template>
+  <div class="cloudcontent competitor-detail" id="cloud_business_analysis">
+    <div class="main">
+      <p class="competitor-title">企业情况分析表（与招标人合作的招标代理机构）</p>
+      <el-form :model="detailForm">
+        <el-row>
+          <el-form-item label="招标代理机构名称：">
+            <span>{{detailForm.bidderAgency}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="法定代表人：">
+            <span>{{detailForm.legalRepresentative}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="经营范围：">
+            <span>{{detailForm.businessScope}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="成立时间：">
+            <span>{{detailForm.establishmentTime}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="营业期限：">
+            <span>{{detailForm.businessTerm}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="注册资本：">
+            <span>{{detailForm.registeredCapital}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="企业资质等级：">
+            <span>{{detailForm.qualificationLevel}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="地址：">
+            <span>{{detailForm.address}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="企业荣誉：">
+            <span>{{detailForm.enterpriseHonor}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="业绩（近1年承接本业主招标项目的业绩）：">
+            <span>总数：{{detailForm.total + '，'}}总金额：{{detailForm.amount}}</span>
+          </el-form-item>
+        </el-row>
+      </el-form>
+      <p class="competitor-title">业绩</p>
+      <el-table :data="tableData" border tooltip-effect="dark" style="width: 100%"
+        header-cell-class-name="tableheader">
+        <el-table-column type="index" label="序号" width="60" align="center"></el-table-column>
+        <el-table-column prop="projecrAddress" label="项目地点" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="projectName" label="项目名称" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="registrationTime" label="报名时间" show-overflow-tooltip width="120"></el-table-column>
+        <el-table-column prop="biddingWebsite" label="招标公告网址" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="bidAmount" label="中标金额（万元）" show-overflow-tooltip width="140"></el-table-column>
+        <el-table-column prop="agencyTelephone" label="代理机构电话" show-overflow-tooltip width="160"></el-table-column>
+        <el-table-column prop="winningResult" label="中标结果公示网址" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <a href="javascript:;" @click="toCompetitorDetail(scope.row)">{{scope.row.winningResult}}</a>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+  </div>
+</template>
+<script>
+
+export default {
+  components: {},
+  data () {
+    return {
+      detailForm: {
+        bidderAgency: '山西省烟草职工培训中心',
+        legalRepresentative: '从刘建业的工商信息数据接口中读取',
+        businessScope: '从刘建业的工商信息数据接口中读取',
+        establishmentTime: '从刘建业的工商信息数据接口中读取',
+        businessTerm: '从刘建业的工商信息数据接口中读取',
+        registeredCapital: '从刘建业的工商信息数据接口中读取',
+        qualificationLevel: '从刘建业的工商信息数据接口中读取',
+        address: '从刘建业的工商信息数据接口中读取',
+        enterpriseHonor: '从刘建业的工商信息数据接口中读取',
+        total: '4个',
+        amount: '10万元'
+      },
+      tableData: [
+        {detailId: 111, projecrAddress: '安徽省滁州市凤阳县', projectName: '安徽省烟草公司池州市分公司麻袋打包绳采购项目', registrationTime: '20190605', biddingWebsite: '', bidAmount: '200', agencyTelephone: '0566-2565485', winningResult: 'http://www.ahzfcg.gov.cn:80/portals/bulletinView?bulletinId=hdjahd1223hjhs'},
+        {detailId: 222, projecrAddress: '云南省昆明市', projectName: '烟草生产经营中心24混脂硫酸铜水乳采购项目', registrationTime: '20190605', biddingWebsite: '', bidAmount: '200', agencyTelephone: '0566-2565485', winningResult: 'http://www.ahzfcg.gov.cn:80/portals/bulletinView?bulletinId=hdjahd1223hjhs'},
+        {detailId: 333, projecrAddress: '安徽省池州市', projectName: '安徽省烟草公司池州市分公司麻袋打包绳采购项目', registrationTime: '20190605', biddingWebsite: '', bidAmount: '200', agencyTelephone: '0566-2565485', winningResult: 'http://www.ahzfcg.gov.cn:80/portals/bulletinView?bulletinId=hdjahd1223hjhs'},
+        {detailId: 444, projecrAddress: '安徽省滁州市凤阳县', projectName: '安徽省烟草公司池州市分公司麻袋打包绳采购项目', registrationTime: '20190605', biddingWebsite: '', bidAmount: '200', agencyTelephone: '0566-2565485', winningResult: 'http://www.ahzfcg.gov.cn:80/portals/bulletinView?bulletinId=hdjahd1223hjhs'}
+      ]
+    }
+  },
+  watch: {
+  },
+  methods: {
+    toCompetitorDetail (rowData) {}
+  },
+  filters: {
+  },
+  mounted () {
+  }
+}
+</script>
+<style scoped lang="less">
+.clearfix:after{
+    content:".";
+    display:block;
+    height:0;
+    clear:both;
+    visibility:hidden;
+}
+.clearfix{
+    zoom:1;
+}
+.competitor-title{
+  line-height: 40px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+.index-span{
+  margin-right: 6px;
+}
+</style>
+<style lang="less">
+.competitor-detail{
+  .main{
+    .el-form-item__label{
+      width: 276px;
+      margin-right: 10px;
+    }
+  }
+}
+</style>

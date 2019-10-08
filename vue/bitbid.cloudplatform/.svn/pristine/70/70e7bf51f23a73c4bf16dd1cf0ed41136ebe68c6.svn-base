@@ -1,0 +1,9 @@
+import eindex from '@/pages/dailyManage/enterprise/index'
+
+export default[
+  {
+    path: '/dailyManage/enterprise',
+    name: 'cloud-enterprise',
+    component: eindex
+  }
+]

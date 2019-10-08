@@ -1,0 +1,404 @@
+<template>
+  <div class="cloudcontent" id="cloud_enterprise">
+    <div class="main">
+      <p class="title">
+        企业信息
+        <img v-if="this.enterpriseForm.status === 3" src="../../../../static/images/check_no.png"/>
+        <span>注：完善资料后即可获得更多服务，*号为必填项。</span>
+      </p>
+      <el-form :model="enterpriseForm" :rules="rules" ref="enterpriseForm" :validate-on-rule-change="true">
+        <div class="part">
+          <h3><span>企业基本信息</span></h3>
+          <div class="formmain">
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="企业名称：" prop="name">
+                  <el-input v-model="enterpriseForm.name" clearable placeholder="请输入企业名称">
+                    <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="统一信用代码：" prop="uscCode">
+                  <el-input v-model="enterpriseForm.uscCode" clearable placeholder="请输入统一信用代码">
+                    <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="法定代表人：" prop="businessLicenseName">
+                  <el-input v-model="enterpriseForm.businessLicenseName" clearable placeholder="请输入法定代表人">
+                    <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="法人身份证号：" prop="businessLicenseCardNo">
+                  <el-input v-model="enterpriseForm.businessLicenseCardNo" clearable placeholder="请输入法人身份证号">
+                    <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="所属行业：" prop="industry" >
+                  <el-cascader class=""
+                               :props="{ expandTrigger: 'hover' }"
+                               :options="industryOptions"
+                               v-model="selectedIndustryOptions"
+                               @change="handleIndustryChange"
+                               clearable>
+                  </el-cascader>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="所在地区：" prop="address.privinceId" clearable>
+                  <el-cascader class=""
+                               :props="{ expandTrigger: 'hover' }"
+                               :options="addressOptions"
+                               v-model="selectedcityOptions"
+                               @change="handlecityChange"
+                               clearable>
+                  </el-cascader>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="详细地址：" prop="address.addr">
+                  <el-input v-model="enterpriseForm.address.addr" placeholder="请输入详细地址">
+                    <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </div>
+        </div>
+        <div class="part">
+          <h3><span>联系人信息</span></h3>
+          <div class="formmain">
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="联系人：" prop="contactName">
+                  <el-input v-model="enterpriseForm.contactName">
+                    <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="手机号码：" prop="contactCellphone">
+                  <el-input v-model="enterpriseForm.contactCellphone">
+                    <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <!--<el-row>
+              <el-col :span="12">
+                <el-form-item label="邮箱："  prop="email">
+                  <el-input v-model="enterpriseForm.email"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>-->
+          </div>
+        </div>
+        <div class="part">
+          <h3><span>企业证件</span></h3>
+          <div class="formmain">
+            <el-row>
+              <el-col :span="8">
+                <el-form-item label="营业执照：" prop="fileValue1">
+                  <upload-file @uploadSuccess="uploadSuccess" @deleteSuccess="deleteSuccess" fileType="1" :fileArrays="fileInformations" isImage="1"></upload-file>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="法人身份证（正）：" prop="fileValue6">
+                  <upload-file @uploadSuccess="uploadSuccess" @deleteSuccess="deleteSuccess" fileType="6" :fileArrays="fileInformations" isImage="1"></upload-file>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="法人身份证（反）：" prop="fileValue7">
+                  <upload-file @uploadSuccess="uploadSuccess" @deleteSuccess="deleteSuccess" fileType="7" :fileArrays="fileInformations" isImage="1"></upload-file>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="8">
+                <el-form-item label="开户许可：" prop="fileValue4">
+                  <upload-file @uploadSuccess="uploadSuccess" @deleteSuccess="deleteSuccess" fileType="4" :fileArrays="fileInformations" isImage="1"></upload-file>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </div>
+        </div>
+        <div class="part" v-if="enterpriseForm.status === 3">
+          <h3><span>审核情况</span></h3>
+          <div class="formmain">
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="审核意见：" v-if="this.enterpriseForm.status === 3">
+                  <el-input
+                    readonly="readonly"
+                    type="textarea"
+                    :autosize="{ minRows: 3, maxRows: 5}"
+                    v-model.trim="enterpriseForm.checkOptions">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </div>
+        </div>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" v-if="this.enterpriseForm.status === 0" @click="saveEnterprise('enterpriseForm')" :loading="loadingFlag">提交</el-button>
+        </el-form-item>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" v-if="this.enterpriseForm.status === 3" @click="updateEnterprise('enterpriseForm')">修改</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import uploadFile from '@/components/upload/publicFileUpload'
+import * as region from '@/assets/js/region'
+import * as industry from '@/assets/js/industry_three'
+import {validateMobilePhone, validateIdCard} from '@/assets/js/validate'
+import {enterprise} from '@/api/system'
+
+export default {
+  components: {
+    uploadFile
+  },
+  data () {
+    // 电话号码
+    let validPhoneUser = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('请输入联系电话'))
+      } else if (!validateMobilePhone(value)) {
+        callback(new Error('请输入正确的11位手机号码'))
+      } else {
+        callback()
+      }
+    }
+    // 身份证号
+    let validIdCard = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('请输入法人身份证号'))
+      } else if (!validateIdCard(value)) {
+        callback(new Error('请输入正确的法人身份证号'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      loadingFlag: false,
+      isMultipleInOne: 1,
+      enterpriseForm: {
+        name: '',
+        uscCode: '',
+        address: {
+          privinceId: '',
+          cityId: '',
+          countyId: '',
+          addr: ''
+        },
+        businessLicenseName: '',
+        businessLicenseCardNo: '',
+        industry: '',
+        industrySecond: '',
+        industryThird: '',
+        fileValue1: '',
+        fileValue4: '',
+        fileValue6: '',
+        fileValue7: ''
+      },
+      fileInformations: [],
+      // 地址三级联动
+      addressOptions: region.CityInfo,
+      selectedcityOptions: [],
+      // 行业三级联动
+      industryOptions: industry.industry,
+      selectedIndustryOptions: [],
+      // 表单验证
+      rules: {
+        name: [
+          { required: true, message: '企业名称不能为空', trigger: 'blur' }
+        ],
+        uscCode: [
+          { required: true, message: '统一信用代码不能为空', trigger: 'blur' }
+        ],
+        businessLicenseName: [
+          { required: true, message: '法定代表人不能为空', trigger: 'blur' }
+        ],
+        businessLicenseCardNo: [
+          { required: true, message: '法人身份证号不能为空', trigger: 'blur' },
+          {validator: validIdCard, trigger: 'blur'}
+        ],
+        industry: [
+          { required: true, message: '所属行业不能为空', trigger: ['blur', 'change'] }
+        ],
+        'address.privinceId': [
+          { required: true, message: '所在地区不能为空', trigger: ['blur', 'change'] }
+        ],
+        contactName: [
+          { required: true, message: '联系人不能为空', trigger: 'blur' }
+        ],
+        contactCellphone: [
+          { required: true, message: '手机号码不能为空', trigger: 'blur' },
+          {validator: validPhoneUser, trigger: 'blur'}
+        ],
+        fileValue1: [
+          { required: true, message: '文件不能为空', trigger: 'change' }
+        ],
+        fileValue4: [
+          { required: true, message: '文件不能为空', trigger: 'change' }
+        ],
+        fileValue6: [
+          { required: true, message: '文件不能为空', trigger: 'change' }
+        ],
+        fileValue7: [
+          { required: true, message: '文件不能为空', trigger: 'change' }
+        ]
+      }
+    }
+  },
+  methods: {
+    // 上传文件
+    uploadSuccess (file, fileType) {
+      this.fileInformations = this.fileInformations.filter(item => item.businessType !== fileType)
+      this.fileInformations.push(file)
+      this.$set(this.enterpriseForm, `fileValue${fileType}`, fileType)
+      this.$refs['enterpriseForm'].validateField(`fileValue${fileType}`)
+      console.log(this.enterpriseForm)
+    },
+    // 删除文件
+    deleteSuccess (fileId, fileType) {
+      this.fileInformations = this.fileInformations.filter(item => item.relativePath !== fileId)
+      this.enterpriseForm[`fileValue${fileType}`] = ''
+      this.$refs['enterpriseForm'].validateField(`fileValue${fileType}`)
+    },
+    // 所属行业三级联动赋值
+    handleIndustryChange (value) {
+      this.enterpriseForm.industry = value[0]
+      this.enterpriseForm.industrySecond = value[1]
+      this.enterpriseForm.industryThird = value[2]
+    },
+    // 所在地区三级联动赋值
+    handlecityChange (value) {
+      this.enterpriseForm.address.privinceId = value[0]
+      this.enterpriseForm.address.cityId = value[1]
+      this.enterpriseForm.address.countyId = value[2]
+    },
+    saveEnterprise (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.$confirm('确认要提交吗?', '提示', {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.loadingFlag = true
+            this.enterpriseForm.status = 1
+            this.enterpriseForm.fileInformations = this.fileInformations
+            enterprise.update(this.enterpriseForm).then((res) => {
+              this.loadingFlag = false
+              this.$router.push({path: '/system/enterprise/detail'})
+            })
+          }).catch(() => {
+            this.loadingFlag = false
+            return false
+          })
+        }
+      })
+    },
+    detail () {
+      let enterpriseId = this.$store.getters.authUser.enterpriseId
+      enterprise.queryOne(enterpriseId).then((res) => {
+        this.enterpriseForm = res.data.enterprise
+        this.fileInformations = res.data.fileInformations || []
+        if (this.fileInformations.length) {
+          this.fileInformations.forEach(item => { this.enterpriseForm[`fileValue${item.businessType}`] = item.businessType })
+        }
+        if (this.enterpriseForm.address && this.enterpriseForm.address.privinceId) {
+          this.selectedcityOptions.push(this.enterpriseForm.address.privinceId)
+          this.selectedcityOptions.push(this.enterpriseForm.address.cityId)
+          this.selectedcityOptions.push(this.enterpriseForm.address.countyId)
+        }
+        if (this.enterpriseForm.industry) {
+          this.selectedIndustryOptions.push(this.enterpriseForm.industry)
+          this.selectedIndustryOptions.push(this.enterpriseForm.industrySecond)
+          this.selectedIndustryOptions.push(this.enterpriseForm.industryThird)
+        }
+        if (this.enterpriseForm.status !== 0 && this.enterpriseForm.status !== 3) {
+          this.$router.push({path: '/system/enterprise/detail'})
+        }
+      })
+    },
+    updateEnterprise (formName) {
+      this.saveEnterprise(formName)
+    }
+  },
+  mounted () {
+    this.detail()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_enterprise {
+    .main p.title{
+      padding: 0 20px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #111111;
+      line-height: 32px;
+      position: relative;
+    }
+    .main p.title span{
+      display: inline-block;
+      width: 100%;
+      line-height: 28px;
+      color: #999999;
+      font-size: 14px;
+    }
+    .main p.title img{
+      position: absolute;
+      right: 10px;
+      top: 10px;
+    }
+    .part{
+      overflow: hidden;
+      margin: 12px auto;
+    }
+    .part h3{
+      height: 36px;
+      line-height: 36px;
+      color: #111111;
+      font-size: 14px;
+      border-bottom: 1px solid #dcdfe6;
+    }
+    .part h3 span{
+      display: inline-block;
+      padding: 0 10px;
+      float: left;
+    }
+    .main .el-form{
+      width: 100%;
+    }
+    .formmain{
+      overflow: hidden;
+      width: 90%;
+      margin: 30px auto;
+    }
+    .el-cascader{
+      width: 41%;
+    }
+    .ctype{
+      margin: 20px 0 30px 60px;
+    }
+  }
+</style>

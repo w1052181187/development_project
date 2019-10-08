@@ -1,0 +1,228 @@
+<template>
+  <div class="cloudcontent" id="cloud_paymentList">
+    <div class="tit">
+      <span>山西国新能源旧址扩建总包工程项目<i>（项目编号：M2019052600010000001）</i></span>
+    </div>
+    <div class="main">
+      <!--搜索 & 添加按钮-->
+      <div class="topmain">
+        <el-row>
+          <div class="seacher_box">
+            <span>收支项目：</span>
+            <el-input class="search left" placeholder="请输入收支项目关键字" v-model="messageLike">
+              <el-button  slot="append" icon="el-icon-search" type="" @click="search"></el-button>
+            </el-input>
+          </div>
+          <!--按钮-->
+          <div class="fr">
+            <el-button class="addbutton" @click="addBtn">
+              <span> + 新增项目</span>
+            </el-button>
+          </div>
+          <!--按钮-->
+        </el-row>
+      </div>
+      <!--搜索 & 添加按钮-->
+      <el-table
+        :data="tableData"
+        border
+        tooltip-effect="dark"
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='indexMethod'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="收支项目"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="money"
+          label="金额合计"
+          width="260"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookBtn(scope)">查看</el-button>
+            <el-button type="text" size="small" @click="delBtn(scope)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <el-dialog title="新增收支项目" width="600px"  :visible.sync="showVisible">
+      <el-form :model="payForm" ref="payForm" label-width="120px" >
+        <el-form-item label="收支项目名称：" prop="name">
+          <el-input v-model.trim="payForm.name" placeholder="请输入收支项目名称">
+          </el-input>
+        </el-form-item>
+        <el-form-item label="收支类型">
+          <el-select v-model="payForm.type" placeholder="请选择收支类型">
+            <el-option label="收入" value="1"></el-option>
+            <el-option label="支出" value="2"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="是否需要退还" v-if="Number(payForm.type) === 1">
+          <el-select v-model="payForm.refund" placeholder="请选择收支类型">
+            <el-option label="不退还" value="1"></el-option>
+            <el-option label="退还" value="2"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="收支方式" v-if="Number(payForm.type) === 1">
+          <el-select v-model="payForm.method" placeholder="请选择收支类型">
+            <el-option label="按费用项" value="1" v-if="Number(payForm.refund) === 1"></el-option>
+            <el-option label="按用户" value="2" ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer operationbtn">
+        <el-button type="info" @click="cancel()">取 消</el-button>
+        <el-button type="primary" @click="save()">确 定</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+      searchForm: {},
+      messageLike: '',
+      tableData: [
+        {
+          name: '标书费',
+          money: '6,000.00'
+        },
+        {
+          name: '保证金',
+          money: '6,000.00'
+        },
+        {
+          name: '服务费',
+          money: '6,000.00'
+        },
+        {
+          name: '收入退还',
+          money: '6,000.00',
+          flag: 1
+        },
+        {
+          name: '收入不退还-按用户',
+          money: '6,000.00',
+          flag: 2
+        },
+        {
+          name: '收入不退还-按收费项',
+          money: '6,000.00',
+          flag: 3
+        },
+        {
+          name: '支出',
+          money: '6,000.00'
+        },
+        {
+          name: '其他收入',
+          money: '6,000.00'
+        },
+        {
+          name: '其他收支',
+          money: '6,000.00'
+        }
+      ],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      dataIndex: 1,
+      // 新增收支项目弹窗
+      showVisible: false,
+      payForm: {}
+    }
+  },
+  watch: {
+    '$route': 'getTableData'
+  },
+  created () {
+    this.getTableData()
+  },
+  methods: {
+    getTableData () {},
+    search () {},
+    addBtn () {
+      this.showVisible = true
+    },
+    indexMethod () {
+      return 1
+    },
+    lookBtn (scope) {
+      console.log(scope.row)
+      let rowName = scope.row.name
+      if (rowName === '标书费') {
+        this.$router.push({path: `/project/proSettlement/paymentDetails/tenderFeeList`, query: {text: '标书费'}})
+      } else if (rowName === '保证金') {
+        console.log('保证金')
+        this.$router.push({path: `/project/proSettlement/customDetails/depositList`, query: {text: '保证金'}})
+      } else if (rowName === '服务费') {
+        console.log('服务费')
+        this.$router.push({path: `/project/proSettlement/paymentDetails/serviceList`, query: {text: '服务费'}})
+      } else if (rowName === '其他收入') {
+        this.$router.push({path: `/project/proSettlement/otherIncomePay/otherIncome`, query: {text: '其他收入'}})
+      } else if (rowName === '其他收支') {
+        this.$router.push({path: `/project/proSettlement/otherIncomePay/otherPay`, query: {text: '其他收支'}})
+      } else if (rowName === '支出') {
+        this.$router.push({path: `/project/proSettlement/otherIncomePay/payList`, query: {text: '支出'}})
+      } else {
+        if (scope.row.flag === 1) {
+          this.$router.push({path: `/project/proSettlement/customDetails/customChargeList`, query: {text: '收入退还'}})
+        } else if (scope.row.flag === 2) {
+          this.$router.push({path: `/project/proSettlement/paymentDetails/customerList`, query: {text: '收入不退还按用户'}})
+        } else {
+          this.$router.push({path: `/project/proSettlement/otherIncomePay/feesList`, query: {text: '收入不退换按收费项'}})
+        }
+      }
+    },
+    delBtn () {},
+    handleCurrentChange () {},
+    handleCurrentNext () {},
+    // 取消
+    cancel () {},
+    // 保存
+    save () {}
+  }
+}
+</script>
+<style lang="less">
+  #cloud_paymentList {
+    .seacher_box{
+      width: 700px;
+    }
+    .seacher_box .search{
+      width: 44%;
+    }
+    .fr>em{
+      font-size: 14px;
+      font-style: normal;
+      line-height: 40px;
+      margin: 0 10px;
+    }
+  }
+</style>

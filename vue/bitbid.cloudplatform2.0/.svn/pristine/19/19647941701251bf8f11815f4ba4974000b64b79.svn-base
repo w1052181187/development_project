@@ -1,0 +1,141 @@
+/**
+ * Created by Administrator on 2019-3-7.
+ * 开标评标
+ */
+export default [
+  {
+    path: '/project/projectProcess/project/process/bidOpening/bidexpert/add',
+    name: '开标评标-评标专家-添加',
+    meta: {
+      title: '开标评标-评标专家-添加',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidOpening/addBidexpert.vue'], resolve)
+  },
+  {
+    path: '/project/projectProcess/project/process/bidOpening/bidexpert/update',
+    name: '开标评标-评标专家-修改',
+    meta: {
+      title: '开标评标-评标专家-修改',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidOpening/updateBidexpert.vue'], resolve)
+  },
+  {
+    path: '/project/projectProcess/project/process/bidOpening/bidexpert/detail/:objectId',
+    name: '开标评标-评标专家-查看',
+    meta: {
+      title: '开标评标-评标专家-查看',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidOpening/detailBidexpert.vue'], resolve)
+  },
+  {
+    path: '/project/projectProcess/project/process/bidOpening/docclear/add',
+    name: '开标评标-投标文件疑义及澄清-添加',
+    meta: {
+      title: '开标评标-投标文件疑义及澄清-添加',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidOpening/addDocclear.vue'], resolve)
+  },
+  {
+    path: '/project/projectProcess/project/process/bidOpening/docclear/update',
+    name: '开标评标-投标文件疑义及澄清-修改',
+    meta: {
+      title: '开标评标-投标文件疑义及澄清-修改',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidOpening/updateDocclear.vue'], resolve)
+  },
+  {
+    path: '/project/projectProcess/project/process/bidOpening/docclear/detail/:objectId',
+    name: '开标评标-投标文件疑义及澄清-查看',
+    meta: {
+      title: '开标评标-投标文件疑义及澄清-查看',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidOpening/detailDocclear.vue'], resolve)
+  },
+  {
+    path: '/project/projectProcess/project/process/bidOpening/bidrecord/add',
+    name: '开标评标-开标记录-添加',
+    meta: {
+      title: '开标评标-开标记录-添加',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidOpening/addBidrecord.vue'], resolve)
+  },
+  {
+    path: '/project/projectProcess/project/process/bidOpening/bidrecord/update',
+    name: '开标评标-开标记录-修改',
+    meta: {
+      title: '开标评标-开标记录-修改',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidOpening/updateBidrecord.vue'], resolve)
+  },
+  {
+    path: '/project/projectProcess/project/process/bidOpening/bidrecord/detail/:objectId',
+    name: '开标评标-开标记录-查看',
+    meta: {
+      title: '开标评标-开标记录-查看',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidOpening/detailBidrecord.vue'], resolve)
+  },
+  {
+    path: '/project/projectProcess/project/process/bidOpening/recordclear/add',
+    name: '开标评标-开标记录表疑义及澄清-添加',
+    meta: {
+      title: '开标评标-开标记录表疑义及澄清-添加',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidOpening/addRecordclear.vue'], resolve)
+  },
+  {
+    path: '/project/projectProcess/project/process/bidOpening/recordclear/update',
+    name: '开标评标-开标记录表疑义及澄清-修改',
+    meta: {
+      title: '开标评标-开标记录表疑义及澄清-修改',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidOpening/updateRecordclear.vue'], resolve)
+  },
+  {
+    path: '/project/projectProcess/project/process/bidOpening/recordclear/detail/:objectId',
+    name: '开标评标-开标记录表疑义及澄清-查看',
+    meta: {
+      title: '开标评标-开标记录表疑义及澄清-查看',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidOpening/detailRecordclear.vue'], resolve)
+  },
+  {
+    path: '/project/projectProcess/project/process/bidOpening/bidreport/add',
+    name: '开标评标-评标报告-添加',
+    meta: {
+      title: '开标评标-评标报告-添加',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidOpening/addBidreport.vue'], resolve)
+  },
+  {
+    path: '/project/projectProcess/project/process/bidOpening/bidreport/update',
+    name: '开标评标-评标报告-修改',
+    meta: {
+      title: '开标评标-评标报告-修改',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidOpening/updateBidreport.vue'], resolve)
+  },
+  {
+    path: '/project/projectProcess/project/process/bidOpening/bidreport/detail/:objectId',
+    name: '开标评标-评标报告-查看',
+    meta: {
+      title: '开标评标-评标报告-查看',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/bidOpening/detailBidreport.vue'], resolve)
+  }
+]

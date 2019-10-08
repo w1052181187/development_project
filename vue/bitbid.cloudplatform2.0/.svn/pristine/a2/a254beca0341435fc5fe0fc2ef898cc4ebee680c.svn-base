@@ -1,0 +1,38 @@
+export default[
+  {
+    path: 'project/registProject',
+    name: '登记项目信息',
+    meta: {
+      title: '登记项目信息',
+      active: '/project/registProject'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/registProject/index')
+  },
+  {
+    path: 'project/registProject/add',
+    name: '添加登记项目',
+    meta: {
+      title: '添加登记项目',
+      active: '/project/registProject'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/registProject/add')
+  },
+  {
+    path: 'project/registProject/update',
+    name: '修改登记项目',
+    meta: {
+      title: '修改登记项目',
+      active: '/project/registProject'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/registProject/update')
+  },
+  {
+    path: 'project/registProject/detail/:code',
+    name: '登记项目详情',
+    meta: {
+      title: '登记项目详情',
+      active: '/project/registProject'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/registProject/detail')
+  }
+]

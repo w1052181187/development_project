@@ -1,0 +1,164 @@
+<template>
+  <div class="viewdetails">
+    <div class="section_listbox">
+      <div class="section_list">
+        <ul class="section_ul">
+          <li v-for="(item, index) in bidList" :key="item.index" :class="activeBid === index ? 'cur': ''" @click="handleBidClick(item, index)">
+            <p :title="item.name">{{item.name}}</p>
+          </li>
+        </ul>
+      </div>
+      <div class="btnMore" v-if="isMore">
+        <i class="open" v-if="!isOpen" @click="handleIsOpen">展开</i>
+        <i class="close" v-if="isOpen" @click="handleIsOpen">收起</i>
+      </div>
+    </div>
+    <el-form :model="info">
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="标段名称：">
+            <span>{{info.bidSectionName}}</span>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="项目名称：">
+            <span>{{info.tenderProjectName}}</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="标段编号：">
+            <span>{{info.bidSectionCode}}</span>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="招标项目编号：">
+            <span>{{info.tenderProjectCode}}</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="招标方式：">
+            <span v-if="info.tenderProject">{{info.tenderProject.tenderMode | filterTenderMode}}</span>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="资审方式：" v-if="info.tenderProject && info.tenderProject.tenderMode === 1">
+            <span v-if="info.tenderProject && info.tenderProject.isPreBid === 1">资格预审</span>
+            <span v-if="info.tenderProject && info.tenderProject.isPreBid === 0">资格后审</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="招标人：">
+            <span>{{info.tenderProject ? info.tenderProject.tendererName : ''}}</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="项目经理：">
+            <span>{{info.projectLeader ? info.projectLeader.split(',')[0] : ''}}</span>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="所属部门：">
+            <span>{{info.projectLeader ? info.projectLeader.split(',')[1] : ''}}</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <el-form-item label="标段内容：">
+            <editor ref="sectionEditor" class="ueditor" :editread="editread"></editor>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+  </div>
+</template>
+
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+export default {
+  props: ['info'],
+  components: {
+    editor
+  },
+  watch: {
+    info () {
+      this.setContent(this.info)
+    }
+  },
+  name: 'basicInfo',
+  data () {
+    return {
+      editread: true,
+      sectionInfo: {},
+      bidList: [
+        {
+          name: 'ddd的大佛而疯狂尾盘问了人陪了人情味了饿',
+          progressValue: '1/5'
+        },
+        {
+          name: 'ddd',
+          progressValue: '2/5'
+        },
+        {
+          name: 'ddd',
+          progressValue: '3/5'
+        },
+        {
+          name: 'ddd',
+          progressValue: '4/5'
+        }
+      ],
+      isMore: false, // 判断标段是否需要多行显示
+      isOpen: false, // 判断标段是否展开收起
+      activeBid: 0
+    }
+  },
+  filters: {
+    filterTenderMode (value) {
+      if (Number(value) === 1) {
+        return '公开招标'
+      } else if (Number(value) === 2) {
+        return '邀请招标'
+      } else if (Number(value) === 3) {
+        return '竞争性谈判'
+      } else if (Number(value) === 4) {
+        return '单一来源采购'
+      } else if (Number(value) === 5) {
+        return '询价采购'
+      } else if (Number(value) === 6) {
+        return '竞争性磋商'
+      }
+    }
+  },
+  methods: {
+    /**
+     * 标段切换
+     * @param item
+     * @param index
+     */
+    handleBidClick (item, index) {
+      this.activeBid = index
+    },
+    setContent (sectionInfo) {
+      if (sectionInfo.bidSection && sectionInfo.bidSection.bidSectionContent) {
+        this.$refs.sectionEditor.setContent(sectionInfo.bidSection.bidSectionContent)
+      }
+    }
+  },
+  mounted () {
+    // this.setContent()
+  }
+}
+</script>
+
+<style lang="less">
+
+</style>

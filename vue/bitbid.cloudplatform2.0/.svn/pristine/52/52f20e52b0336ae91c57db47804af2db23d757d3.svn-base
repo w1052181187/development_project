@@ -1,0 +1,11 @@
+export default [
+  {
+    path: '/resource/biddingRoom',
+    name: '开评标室管理',
+    meta: {
+      title: '开评标室管理',
+      active: '/resource/biddingRoom'
+    },
+    component: resolve => require(['@/pages/resource/biddingRoom/index'], resolve)
+  }
+]

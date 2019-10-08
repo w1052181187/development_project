@@ -1,0 +1,185 @@
+<template>
+  <div class="cloudcontent" id="cloud_registProject">
+    <div class="main">
+      <el-table
+        :data="projectData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='dataIndex'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="tenderProjectName"
+          label="项目名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="bidSectionCode"
+          label="标段编号"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="bidSectionName"
+          label="标段名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="flowStatus"
+          label="标段状态"
+          width="200"
+          :formatter="filterFlowStatus"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="createDate"
+          label="创建时间"
+          width="160"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="120">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookBtn(scope)">查看</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+import {bidSection} from '@/api/project'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      searchForm: {},
+      projectData: [],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10, // 每页展示条数
+      dataIndex: 1
+    }
+  },
+  watch: {
+    '$route': 'getTableData'
+  },
+  created () {
+    this.init()
+  },
+  methods: {
+    init () {
+      this.tenderSystemCode = this.$route.params.code
+      this.getTableData()
+    },
+    /** 获取列表数据 */
+    getTableData () {
+      bidSection.getList({
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        tenderSystemCode: this.tenderSystemCode,
+        messageLike: this.searchForm.bidSectionNameLike || null
+      }).then((res) => {
+        if (res.data.bidSectionList && res.data.bidSectionList.list) {
+          this.projectData = res.data.bidSectionList.list
+          this.total = res.data.bidSectionList.total
+        }
+      })
+    },
+    /** 流程状态:1.已保存；2.待审批；3.已审批；4.已驳回；5.已提交（不需要审批）；6.招标公告; 7.资格预审公告; 8.投标邀请书;  9.资格预审文件; 10.响应资格预审; 11.资格审查结果; 12.招标文件; 13.响应招标; 14.开标评标; 15.废标结果公告; 16.定标结果; 17.完结  */
+    filterFlowStatus (row) {
+      if (row.flowStatus === 1) {
+        return '已保存'
+      } else if (row.flowStatus === 2) {
+        return '待审批'
+      } else if (row.flowStatus === 3) {
+        return '已审批'
+      } else if (row.flowStatus === 4) {
+        return '已驳回'
+      } else if (row.flowStatus === 5) {
+        return '已提交'
+      } else if (row.flowStatus === 6) {
+        return '招标公告'
+      } else if (row.flowStatus === 7) {
+        return '资格预审公告'
+      } else if (row.flowStatus === 8) {
+        return '投标邀请书'
+      } else if (row.flowStatus === 9) {
+        return '资格预审文件'
+      } else if (row.flowStatus === 10) {
+        return '响应资格预审'
+      } else if (row.flowStatus === 11) {
+        return '资格审查结果'
+      } else if (row.flowStatus === 12) {
+        return '招标文件'
+      } else if (row.flowStatus === 13) {
+        return '响应招标'
+      } else if (row.flowStatus === 14) {
+        return '开标评标'
+      } else if (row.flowStatus === 15) {
+        return '废标结果公告'
+      } else if (row.flowStatus === 16) {
+        return '定标结果'
+      } else if (row.flowStatus === 17) {
+        return '已结束'
+      }
+    },
+    /** 模糊查询方法 */
+    search () {
+      this.getTableData()
+    },
+    // 查看
+    lookBtn (scope) {
+      sessionStorage.setItem('isOverview', false) // 全部操作按钮隐藏
+      this.$router.push({path: `/project/projectProcess/project/process/${scope.row.code}`, query: {code: this.tenderSystemCode}})
+      this.clearCurProjectSession(scope.row.code)
+    },
+    clearCurProjectSession (code) {
+      let progressTemp = sessionStorage.getItem(this.tenderSystemCode)
+      if (progressTemp) {
+        let curProject = JSON.parse(progressTemp)
+        if (curProject.hasOwnProperty(code)) {
+          delete curProject[code]
+          sessionStorage.setItem(this.tenderSystemCode, JSON.stringify(curProject))
+        }
+      }
+    },
+    // 表单分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData(parseInt(this.pageNo), parseInt(this.pageSize))
+    },
+    handleCurrentNext (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getTableData(parseInt(this.pageNo), parseInt(this.pageSize))
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_registProject {
+    .tabletitles{
+      background:#f7f8fa!important;
+    }
+  }
+</style>

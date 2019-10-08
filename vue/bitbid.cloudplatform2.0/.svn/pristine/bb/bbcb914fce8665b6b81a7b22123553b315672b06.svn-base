@@ -1,0 +1,366 @@
+<template>
+  <div class="custom-charge-list cloudcontent" id="tenderFeeList" :loading="loading">
+    <div class="tit">
+      <span class="fl">{{tenderProjectName}}<i>（项目编号：{{tenderProjectCode}}）</i></span>
+      <a href="javascript:;" class="returnBtn fr" @click="toPaymentTerm">返回收支列表</a>
+    </div>
+    <div class="main">
+      <div class="topmain">
+        <el-row>
+          <div class="seacher_box">
+            <el-select v-model="ruleForm.sectionSystemCode" placeholder="请选择" @focus="getBidSectionList" clearable>
+              <el-option v-for="item in fullBidList" :key="item.code" :label="item.bidSectionName" :value="item.code">
+              </el-option>
+            </el-select>
+            <el-select v-model="ruleForm.status" placeholder="请选择" clearable>
+              <el-option v-for="item in paymentScheduleList" :key="item.value" :label="item.text" :value="item.value">
+              </el-option>
+            </el-select>
+            <el-input class="keyword-input" v-model="ruleForm.bidderNameLike" placeholder="请输入缴费单位名称关键字"></el-input>
+            <el-button @click="tenderFeeSrh">查询</el-button>
+          </div>
+          <div class="fr" v-if="Number(isToSettle) === 0">
+            <el-button class="addbutton batch-refund-btn">
+              <span @click="BatchRefundBtn">批量退{{pageText === '保证金' ? '保' : '还'}}</span>
+            </el-button>
+            <el-button class="addbutton">
+              <span @click="addChargeBtn">新增收费</span>
+            </el-button>
+          </div>
+        </el-row>
+      </div>
+      <el-table :data="tableData" border tooltip-effect="dark" style="width: 100%"
+        header-cell-class-name="tableheader" @selection-change="getReturnTableData">
+        <el-table-column type="index" label="序号" width="60" align="center"></el-table-column>
+        <el-table-column fixed type="selection" width="50" align="center"></el-table-column>
+        <el-table-column prop="bidderName" label="缴费单位" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="amount" label="缴费金额/元" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="paymentMethod" label="缴费方式" :formatter="filterPaymentMethod" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="paymentTime" label="缴费时间" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="sectionSystemNameList" label="相关标段" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <p v-for="(item,index) in scope.row.sectionSystemNameList" :key="index" class="dresult-span">{{item}}</p>
+          </template>
+        </el-table-column>
+        <el-table-column prop="returnTime" label="退还时间" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="status" label="缴费进度" :formatter="filterStatus" show-overflow-tooltip></el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="modifyRowLine(scope.row)">修改</el-button>
+            <el-button type="text" size="small" @click="modifyRowLine(scope.row)">更正</el-button>
+            <el-button type="text" size="small" @click="returnRowLine(scope.row)">退还</el-button>
+            <el-button type="text" size="small" @click="seeRowDetail(scope.row)">查看</el-button>
+            <el-button type="text" size="small" @click="delRowLine(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination background layout="prev, pager, next" :total="pages.total" :page-size='pages.pageSize'
+        :current-page.sync="pages.pageNo" @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+    </div>
+    <!-- 批量退还弹框 -->
+    <el-dialog title="批量退还" :visible.sync="BatchRefundBox" class="company-choose-box" :width="'460px'" height="'600px'">
+      <div class="dialogUnaudited-content">
+        <div class="main">
+          <!-- <p>批量设置退还方式为：</p> -->
+          <el-form :model="returnForm" :rules="rules" ref="returnForm">
+            <el-form-item v-if="pageText === '保证金'" label="批量设置退保方式为："></el-form-item>
+            <el-form-item v-if="pageText === '收入退还'" label="批量设置退还方式为："></el-form-item>
+            <el-form-item label="退还方式：" prop="returnType">
+              <el-select v-model="returnForm.returnType" placeholder="请选择">
+                <el-option v-for="item in returnTypeList" :key="item.value" :label="item.text" :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="退还金额（元）：" prop="returnAmount">
+              <el-input v-model="returnForm.returnAmount"></el-input>
+            </el-form-item>
+            <el-form-item label="退还时间：" prop="returnTime">
+              <el-date-picker v-model="returnForm.returnTime" type="date" placeholder="选择时间">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="备注：" prop="remarks">
+              <el-input v-model="returnForm.remarks"></el-input>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div class="dialog-btn-box">
+          <el-button type="primary" @click="determineReturnBtn">确认</el-button>
+          <el-button type="cancel" @click="BatchRefundBox = false">取消</el-button>
+        </div>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import { tenderProject, settlementItem, bidSection } from '@/api/project'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      loading: false,
+      ruleForm: {
+        sectionSystemCode: '',
+        status: '',
+        bidderNameLike: ''
+      },
+      fullBidList: [], // 全部标段下拉列表
+      paymentScheduleList: [ // 0.未缴费 1.缴费 2.退还
+        {value: 0, text: '未缴费'},
+        {value: 1, text: '已缴费'},
+        {value: 2, text: '已退还'}
+      ],
+      returnForm: {
+        returnType: '',
+        returnAmount: '',
+        returnTime: '',
+        remarks: ''
+      },
+      rules: {
+        returnType: [{ required: true, message: '请选择退还方式', trigger: 'change' }],
+        returnAmount: [{ required: true, message: '请输入退还金额', trigger: 'change' }],
+        returnTime: [{ required: true, message: '请选择退还时间', trigger: 'change' }]
+      },
+      returnTypeList: [
+        {value: 'value1', text: '支付宝'},
+        {value: 'value2', text: '微信'},
+        {value: 'value3', text: '银联'},
+        {value: 'value4', text: '现金'},
+        {value: 'value5', text: '汇款'},
+        {value: 'value6', text: '支票'},
+        {value: 'value7', text: '保函'},
+        {value: 'value8', text: '其他'}
+      ], // 缴费类型下拉列表
+      tableData: [
+        {detailId: 12346, unit: '比比网络', change: 100, type: '微信', time: 20190302, tender: '一标段', returnTime: '2019-06-05', progress: '已退还'},
+        {detailId: 12545, unit: '比比网络', change: 100, type: '微信', time: 20190302, tender: '一标段', returnTime: '2019-06-05', progress: '已缴费'}
+      ],
+      pages: {
+        pageNo: 1,
+        pageSize: 1,
+        total: 1
+      },
+      returnTableData: [], // 勾选的退还数据
+      BatchRefundBox: false, // 批量退还弹框
+      settlementGroupCode: this.$route.query.settlementGroupCode,
+      tenderSystemCode: this.$route.query.tenderSystemCode,
+      isToSettle: this.$route.query.isToSettle,
+      tenderProjectName: '',
+      tenderProjectCode: '',
+      pageText: this.$route.query.text
+    }
+  },
+  watch: {
+  },
+  created () {
+    this.getTenderProjectName()
+    this.getTableData()
+  },
+  methods: {
+    filterStatus (row) {
+      if (row.status === 0) {
+        return '未缴费'
+      } else if (row.status === 1) {
+        return '已缴费'
+      } else if (row.status === 2) {
+        return '已退还'
+      }
+    },
+    filterPaymentMethod (row) {
+      if (row.paymentMethod === 1) {
+        return '支付宝'
+      } else if (row.paymentMethod === 2) {
+        return '微信'
+      } else if (row.paymentMethod === 3) {
+        return '现金'
+      } else if (row.paymentMethod === 4) {
+        return '银联'
+      } else if (row.paymentMethod === 5) {
+        return '支票'
+      } else if (row.paymentMethod === 6) {
+        return '保函'
+      } else if (row.paymentMethod === 9) {
+        return '保函'
+      }
+    },
+    /** 查询项目名称 */
+    getTenderProjectName () {
+      this.loading = true
+      tenderProject.getOne(this.tenderSystemCode).then((res) => {
+        if (res.data.tenderProject) {
+          this.tenderProjectName = res.data.tenderProject.tenderProjectName
+          this.tenderProjectCode = res.data.tenderProject.tenderProjectCode
+        }
+      })
+    },
+    /** 获取标段数据 */
+    getBidSectionList () {
+      bidSection.getList({
+        tenderSystemCode: this.tenderSystemCode
+      }).then((res) => {
+        if (res.data.bidSectionList && res.data.bidSectionList.list) {
+          this.fullBidList = res.data.bidSectionList.list
+        }
+      })
+    },
+    getTableData () {
+      let query = {
+        pageNo: this.pages.pageNo,
+        pageSize: this.pages.pageSize,
+        groupCode: this.settlementGroupCode,
+        status: this.searchForm.status || null,
+        messageLike: this.searchForm.bidderNameLike || null
+      }
+      if (this.searchForm.sectionSystemCode) {
+        query.sectionSystemCode = this.searchForm.sectionSystemCode
+      }
+      settlementItem.getSettlementItemList(query).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.tableData = res.data.settlementItemList.list
+          this.total = res.data.settlementItemList.total
+        }
+        this.loading = false
+      })
+    },
+    // 返回收支列表
+    toPaymentTerm () {
+      this.$router.push({path: `/project/proSettlement/paymentTerm`})
+    },
+    // 查询按钮
+    tenderFeeSrh () {
+
+    },
+    // 新增收费按钮
+    addChargeBtn () {
+      if (this.pageText === '保证金') {
+        this.$router.push({path: `/project/proSettlement/customDetails/depositAdd`, query: {type: 'add', text: this.pageText, tenderSystemCode: this.tenderSystemCode, settlementGroupCode: this.settlementGroupCode}})
+      } else if (this.pageText === '收入退还') {
+        this.$router.push({path: `/project/proSettlement/customDetails/customChargeAdd`, query: {type: 'add', text: this.pageText, tenderSystemCode: this.tenderSystemCode, settlementGroupCode: this.settlementGroupCode}})
+      }
+    },
+    // 批量退还
+    BatchRefundBtn () {
+      console.log('长度', this.returnTableData.length)
+      if (this.returnTableData.length !== 0) {
+        this.BatchRefundBox = true
+      } else {
+        this.$message('请选择需要退还的数据')
+      }
+    },
+    // 确认退还按钮
+    determineReturnBtn () {
+      this.$refs.returnForm.validate((valid) => {
+        if (valid) {
+          alert('submit!')
+          this.BatchRefundBox = false
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    // 选择退还数据
+    getReturnTableData (data) {
+      this.returnTableData = data
+    },
+    // 修改按钮
+    modifyRowLine (rowData) {
+      if (this.pageText === '保证金') {
+        this.$router.push({path: `/project/proSettlement/customDetails/depositAdd/${rowData.detailId}`, query: {type: 'modify', text: this.pageText, tenderSystemCode: this.tenderSystemCode, settlementGroupCode: this.settlementGroupCode}})
+      } else if (this.pageText === '收入退还') {
+        this.$router.push({path: `/project/proSettlement/customDetails/customChargeAdd/${rowData.detailId}`, query: {type: 'modify', text: this.pageText, tenderSystemCode: this.tenderSystemCode, settlementGroupCode: this.settlementGroupCode}})
+      }
+    },
+    // 退还按钮
+    returnRowLine (rowData) {
+      if (this.pageText === '保证金') {
+        this.$router.push({path: `/project/proSettlement/customDetails/depositReturn/${rowData.detailId}`, query: {text: this.pageText, tenderSystemCode: this.tenderSystemCode, settlementGroupCode: this.settlementGroupCode}})
+      } else if (this.pageText === '收入退还') {
+        this.$router.push({path: `/project/proSettlement/customDetails/customChargeReturn/${rowData.detailId}`, query: {text: this.pageText, tenderSystemCode: this.tenderSystemCode, settlementGroupCode: this.settlementGroupCode}})
+      }
+    },
+    // 查看按钮
+    seeRowDetail (rowData) {
+      if (this.pageText === '保证金') {
+        this.$router.push({path: `/project/proSettlement/customDetails/depositDetail/${rowData.detailId}`, query: {text: this.pageText, tenderSystemCode: this.tenderSystemCode, settlementGroupCode: this.settlementGroupCode}})
+      } else if (this.pageText === '收入退还') {
+        this.$router.push({path: `/project/proSettlement/customDetails/customChargeDetail/${rowData.detailId}`, query: {text: this.pageText, tenderSystemCode: this.tenderSystemCode, settlementGroupCode: this.settlementGroupCode}})
+      }
+    },
+    // 删除按钮
+    delRowLine () {},
+    indexMethod (index) {
+      return index + (this.pages.currentPage - 1) * 10 + 1
+    },
+    // 表单分页
+    handleCurrentChange (nowNum) {
+      this.pages.currentPage = nowNum
+      this.pages.pageNo = (nowNum - 1) * this.pages.pageSize
+      this.getTableData(parseInt(this.pages.pageNo), parseInt(this.pages.pageSize))
+    },
+    handleCurrentNext (nowNum) {
+      this.pages.currentPage = nowNum
+      this.pages.pageNo = (nowNum - 1) * this.pages.pageSize
+      this.getTableData(parseInt(this.pages.pageNo), parseInt(this.pages.pageSize))
+    }
+  }
+}
+</script>
+<style lang="less" scoped>
+.custom-charge-list{
+  .batch-refund-btn{
+    margin-left: 10px;
+  }
+  .company-choose-box{
+    p{
+      line-height: 50px;
+    }
+    .main{
+      margin: 0;
+      .el-form-item__label{
+        // width: 160px;
+      }
+    }
+    .el-select{
+      width: 200px;
+    }
+    .el-input{
+      width: 200px;
+    }
+    .dialog-btn-box{
+      text-align: center;
+    }
+  }
+}
+</style>
+<style lang="less">
+.custom-charge-list{
+  .el-select{
+    width: 120px;
+  }
+  .keyword-input{
+    width: 200px;
+  }
+  .company-choose-box{
+    .el-dialog__body{
+      padding: 0 20px 20px 20px;
+    }
+    .el-form-item__label{
+      // width: 160px;
+    }
+  }
+  .returnBtn{
+    float:right;
+    color:#3f63f6;
+    font-size: 14px;
+    line-height: 20px;
+    border-bottom: 1px solid #3f63f6;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: bold;
+  }
+}
+</style>

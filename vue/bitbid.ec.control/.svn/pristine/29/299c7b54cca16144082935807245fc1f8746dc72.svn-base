@@ -1,0 +1,18 @@
+import request from '@/utils/axios'
+
+export const user = {
+  queryList (params) {
+    return request({
+      url: '/users',
+      method: 'get',
+      params
+    })
+  },
+  saveUsers (params) {
+    return request({
+      url: '/users',
+      method: 'post',
+      params
+    })
+  }
+}

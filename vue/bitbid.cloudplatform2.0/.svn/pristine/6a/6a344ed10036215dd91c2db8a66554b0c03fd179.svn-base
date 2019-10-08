@@ -1,0 +1,129 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="detailForm">
+        <el-row>
+          <el-form-item label="缴费单位：">
+            <span>{{detailForm.company}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row v-if="pageText === '保证金'">
+          <el-form-item label="应缴金额（元）：">
+            <span>{{detailForm.amountPayable}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="缴费方式：">
+            <span>{{detailForm.paymentMethod}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="缴费时间：">
+            <span>{{detailForm.paymentTime}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="缴费标段：">
+            <!-- <span>{{detailForm.paymentTenders}}</span> -->
+            <el-table :data="detailForm.paymentTendersData" border style="width: 100%" header-cell-class-name="tableheader">
+              <el-table-column type="index" label="序号" width="60" align="center"></el-table-column>
+              <el-table-column prop="unitNumber" label="标段编号" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="unitName" label="标段名称" show-overflow-tooltip></el-table-column>
+            </el-table>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="退还金额：">
+            <span>{{detailForm.returnAmount}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="退还方式：">
+            <span>{{detailForm.returnType}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="退还时间：">
+            <span>{{detailForm.returnTime}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="备注：">
+            <span>{{detailForm.remarks}}</span>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="操作记录：">
+            <el-table :data="detailForm.detailTableData" border style="width: 100%" header-cell-class-name="tableheader">
+              <el-table-column type="index" label="序号" width="60" align="center"></el-table-column>
+              <el-table-column prop="operation" label="操作" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="operationPerson" label="操作人" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="operationTime" label="操作时间" show-overflow-tooltip></el-table-column>
+            </el-table>
+          </el-form-item>
+        </el-row>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+// import editor from '@/components/ueditor/ueditor.vue'
+// import { qualificationSubject } from '@/api/resource'
+
+export default {
+  name: '',
+  components: {
+    // editor
+  },
+  data () {
+    return {
+      pageText: '', // 哪种收支项目详情
+      detailForm: {
+        company: '',
+        amountPayable: '',
+        paymentMethod: '',
+        paymentTime: '',
+        paymentTendersData: [],
+        returnAmount: '',
+        returnType: '',
+        returnTime: '',
+        remarks: '',
+        detailTableData: []
+      },
+      detailTableData: [
+        {operation: '收费', operationPerson: '李三', operationTime: '2018-11-10'}
+      ]
+    }
+  },
+  mounted () {
+    this.pageText = this.$route.query.text
+    this.getDetailData()
+  },
+  methods: {
+    getDetailData () {
+      this.detailForm = {
+        company: '比比网络',
+        amountPayable: 500,
+        paymentMethod: '现金',
+        paymentTime: '2018-02-25',
+        paymentTendersData: [
+          {unitNumber: 'SG101', unitName: '标段一', value: 1},
+          {unitNumber: 'SG102', unitName: '标段二', value: 2}
+        ],
+        returnAmount: 500,
+        returnType: '现金',
+        returnTime: '2019-06-05',
+        remarks: '备注备注备注备注备注备注备注备注',
+        detailTableData: [
+          {operation: '收费', operationPerson: '李三', operationTime: '2018-11-10'},
+          {operation: '退还', operationPerson: '李三', operationTime: '2018-11-10'}
+        ]
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+</style>

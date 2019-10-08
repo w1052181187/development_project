@@ -1,0 +1,90 @@
+<template>
+  <div class="cloudcontent"  id="cloud_collaborationDetail">
+    <div class="main viewdetails collaborationDetail">
+      <div class="tit">
+        <span>关于******的资源协调关于******的资源协调</span>
+        <em>工作协同</em>
+        <em class="blue">高级优先</em>
+        <i class="icon-forward">转发</i>
+        <i class="icon-reply">回复</i>
+      </div>
+      <el-form :model="submitForm" :rules="rulesList" ref="submitForm" label-width="80px" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="发送人："  prop="recipient">
+              <span>王然</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="发送时间："  prop="recipient">
+              <span>2019-05-20 10:20:10</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="接收人："  prop="copy">
+              <span>张宇，刘洋，刘鑫</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="抄送人："  prop="copy">
+              <span>张宇，刘洋，刘鑫</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-form-item label="附件：">
+            <file-download :fileArrays="fileInformations" fileType=""></file-download>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="内容："  prop="content">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content" @contentChange="handleContentChange"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+    <div class="main recordcontent">
+      <span>阅读记录：</span>
+      <p class="read">已读：<span>李阳、马化腾</span></p>
+      <p class="unread">未读: <span>张三</span></p>
+      <div class="submit-radio">
+        <el-button class="cancal" @click="handleCancle">返回</el-button>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import fileDownload from '@/components/download/file-download'
+export default {
+  components: {
+    editor,
+    fileDownload
+  },
+  data () {
+    return {
+      submitForm: {
+        fileInformations: []
+      }
+    }
+  },
+  methods: {
+    handleCancle () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_collaborationDetail{
+  }
+</style>

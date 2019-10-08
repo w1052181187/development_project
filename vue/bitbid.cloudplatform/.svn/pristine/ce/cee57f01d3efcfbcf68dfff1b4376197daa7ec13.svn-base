@@ -1,0 +1,145 @@
+<template>
+  <div class="cloudcontent" id="cloud_agencyContract">
+    <!--面包屑-->
+    <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb_box">
+      <el-breadcrumb-item :to="{ path: '/index' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/agencyContract' }">代理合同管理</el-breadcrumb-item>
+      <el-breadcrumb-item class="active_bread">修改代理合同</el-breadcrumb-item>
+    </el-breadcrumb>
+    <!--面包屑-->
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" ref="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="代理合同编号："  prop="agencyContractCode">
+              <el-input v-model="updateForm.agencyContractCode"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="代理合同名称："  prop="agencyContractName">
+              <el-input v-model="updateForm.agencyContractName"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="委托单位："  prop="entrustEnterpriseName">
+              <el-input v-model="updateForm.entrustEnterpriseName"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="委托单位联系人："  prop="entrustEnterpriseContacts">
+              <el-input v-model="updateForm.entrustEnterpriseContacts"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="委托单位联系电话："  prop="entrustEnterpriseContactsPhone">
+              <el-input v-model="updateForm.entrustEnterpriseContactsPhone"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="合同签订日期："  prop="contractSigningDate">
+              <el-date-picker
+                style="width:100%;"
+                v-model="updateForm.contractSigningDate"
+                type="date"
+                placeholder="选择日期">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="合同内容：">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="附件：">
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submitBtn('updateForm')">提交</el-button>
+          <el-button type="primary" @click="saveBtn('updateForm')">保存</el-button>
+          <el-button class="cancal" @click="$router.go(-1)">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import {agencyContract} from '@/api/cloudplatform'
+export default {
+  components: {
+    editor
+  },
+  data () {
+    return {
+      updateForm: {},
+      rules: {
+        agencyContractCode: {required: true, message: '请填写代理合同编号', trigger: 'blur'},
+        agencyContractName: {required: true, message: '请填写代理合同名称', trigger: 'blur'},
+        entrustEnterpriseName: {required: true, message: '请填写委托单位', trigger: 'blur'},
+        contractSigningDate: {required: true, message: '请填写合同签订日期', trigger: 'change'}
+      },
+      // 富文本
+      editread: false,
+      content: ''
+    }
+  },
+  methods: {
+    getOne () {
+      agencyContract.getOne(this.$route.params.code).then(res => {
+        this.updateForm = res.data.agencyContract
+        if (this.updateForm.contractContent) {
+          this.$refs.ueditor.setContent(this.updateForm.contractContent)
+        }
+      })
+    },
+    saveBtn (val) {
+      this.$refs[val].validate((vaild) => {
+        if (vaild) {
+          this.updateForm.status = 1
+          this.updateForm.contractContent = this.$refs.ueditor.getContent()
+          let contractSigningDate = new Date(this.updateForm.contractSigningDate).getTime()
+          this.updateForm.contractSigningDate = contractSigningDate
+          agencyContract.save(this.updateForm).then(() => {
+            this.$router.push({path: `/processManage/agencyContract`})
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    submitBtn (val) {
+      this.$refs[val].validate((vaild) => {
+        if (vaild) {
+          this.updateForm.status = 2
+          this.updateForm.contractContent = this.$refs.ueditor.getContent()
+          agencyContract.save(this.updateForm).then(() => {
+            this.$router.push({path: `/processManage/agencyContract`})
+          })
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  mounted () {
+    this.getOne()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_agencyContract {
+    .el-select{
+      width: 100%;
+    }
+  }
+</style>

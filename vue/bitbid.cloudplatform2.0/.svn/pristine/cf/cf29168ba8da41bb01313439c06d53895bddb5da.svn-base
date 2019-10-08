@@ -1,0 +1,48 @@
+import request from '@/utils/axios/up-axios'
+
+export const login = {
+// 注册用户
+  regist (data) {
+    return request({
+      url: '/regist',
+      method: 'post',
+      data: data
+    })
+  },
+  // 登录
+  login (data) {
+    return request({
+      url: '/login',
+      method: 'post',
+      data: data
+    })
+  },
+  // 退出
+  logout () {
+    return request({
+      url: '/logout',
+      method: 'post'
+    })
+  },
+  // 发送短信验证码
+  sendVerCode (cellPhone, type) {
+    return request({
+      url: '/sendVerCode/' + cellPhone + '/' + type,
+      method: 'post'
+    })
+  },
+  // 找回(重置)密码
+  resetPwd (account, newPwd) {
+    return request({
+      url: '/resetPwd/' + account + '/' + newPwd,
+      method: 'post'
+    })
+  },
+  // 验证验证码是否正确
+  authCode (cellPhone, smsCode) {
+    return request({
+      url: '/authCode/' + cellPhone + '/' + smsCode,
+      method: 'post'
+    })
+  }
+}

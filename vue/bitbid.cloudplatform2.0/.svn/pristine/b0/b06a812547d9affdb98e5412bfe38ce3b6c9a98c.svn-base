@@ -1,0 +1,195 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" ref="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <el-input v-model="bidSection.tenderProjectCode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <el-input v-model="bidSection.tenderProjectName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段编号：">
+              <el-input v-model="bidSection.bidSectionCode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段名称：">
+              <el-input v-model="bidSection.bidSectionName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="投标人："  prop="bidderName">
+              <el-input v-model="updateForm.bidderName"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标题："  prop="objectionTitle">
+              <el-input v-model="updateForm.objectionTitle"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="疑义内容：" class="bitianicon">
+              <editor ref="objectionUeditor" class="ueditor" :editread="editread"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="疑义附件：">
+              <upload-file @uploadSuccess="uploadOtherSuccess" @deleteSuccess="deleteSuccess"
+                           :fileArrays="updateForm.fileInformationList"
+                           fileType="1"
+                           isImage="0">
+              </upload-file>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="澄清内容：" class="bitianicon">
+              <editor ref="clarifyUeditor" class="ueditor" :editread="editread"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="澄清附件：">
+              <upload-file @uploadSuccess="uploadClarifySuccess" @deleteSuccess="deleteClarifySuccess"
+                           :fileArrays="updateForm.fileInformationList"
+                           fileType="2"
+                           isImage="0">
+              </upload-file>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit('updateForm', 1)" :loading="isSubmiting">提交</el-button>
+          <el-button type="primary" @click="submit('updateForm', 0)" :loading="isSaving">保存</el-button>
+          <el-button class="cancal" @click="close">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import uploadFile from '@/components/upload/publicFileUpload'
+import {questionAndAnswerInfo} from '@/api/project'
+export default {
+  components: {
+    editor,
+    uploadFile
+  },
+  data () {
+    return {
+      isSaving: false,
+      isSubmiting: false,
+      updateForm: {
+        fileInformationList: []
+      },
+      rules: {
+        bidderName: {required: true, message: '请填写投标人', trigger: 'blur'},
+        objectionTitle: {required: true, message: '请填写疑义标题', trigger: 'blur'}
+      },
+      // 富文本
+      editread: false,
+      bidSection: {}
+    }
+  },
+  methods: {
+    // 上传附件
+    uploadOtherSuccess (file) {
+      this.updateForm.fileInformationList.push(file)
+    },
+    deleteSuccess (fileId) {
+      this.updateForm.fileInformationList = this.updateForm.fileInformationList.filter(item => item.relativePath !== fileId)
+    },
+    // 上传澄清附件
+    uploadClarifySuccess (file) {
+      this.updateForm.fileInformationList.push(file)
+    },
+    deleteClarifySuccess (fileId) {
+      this.updateForm.fileInformationList = this.updateForm.fileInformationList.filter(item => item.relativePath !== fileId)
+    },
+    // 提交/保存
+    submit (form, status) {
+      if (!this.$refs.objectionUeditor.getContent() || !this.$refs.clarifyUeditor.getContent()) {
+        this.$message({
+          message: '请填写疑义内容及澄清内容！',
+          type: 'warning'
+        })
+        return
+      }
+      this.$refs[form].validate((vaild) => {
+        if (vaild) {
+          if (Object.is(status, 0)) {
+            // 保存
+            this.isSaving = true
+            this.updateForm.auditStatus = 0
+          } else if (Object.is(status, 1)) {
+            // 提交
+            this.isSubmiting = true
+            this.updateForm.auditStatus = 4
+            this.updateForm.submitTime = new Date().getTime()
+          }
+          this.updateForm.objectionContent = this.$refs.objectionUeditor.getContent()
+          this.updateForm.clarifyContent = this.$refs.clarifyUeditor.getContent()
+          this.updateForm.fileInformationList.map(item => {
+            item.objectId = null
+          })
+          questionAndAnswerInfo.update(this.updateForm).then((res) => {
+            this.isSubmiting = false
+            this.isSubmiting = false
+            if (res.data.resCode === '0000') {
+              this.close()
+            }
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    // 取消
+    close () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    },
+    getQuesAndAnsInfo () {
+      questionAndAnswerInfo.getById(this.$route.query.objectId).then(res => {
+        this.updateForm = res.data.questionAndAnswerInfo
+        if (this.updateForm.bidSection) {
+          this.bidSection = this.updateForm.bidSection
+        }
+        if (this.updateForm.objectionContent) {
+          this.$refs.objectionUeditor.setContent(this.updateForm.objectionContent)
+        }
+        if (this.updateForm.clarifyContent) {
+          this.$refs.clarifyUeditor.setContent(this.updateForm.clarifyContent)
+        }
+      })
+    }
+  },
+  watch: {
+    '$route': 'getQuesAndAnsInfo'
+  },
+  mounted () {
+    this.getQuesAndAnsInfo()
+  }
+}
+</script>
+
+<style scoped>
+</style>

@@ -1,0 +1,46 @@
+import request from '@/utils/axios/up-axios'
+
+export const department = {
+  /**
+   * 查询部门树
+   * @param data
+   */
+  queryList (data) {
+    return request({
+      url: `/departments/${data}`,
+      method: 'get'
+    })
+  },
+  /**
+   * 增加部门
+   * @param data
+   */
+  save (data) {
+    return request({
+      url: '/departments',
+      method: 'post',
+      data
+    })
+  },
+  /**
+   * 修改部门
+   * @param data
+   */
+  update (data) {
+    return request({
+      url: '/departments',
+      method: 'put',
+      data
+    })
+  },
+  /**
+   * 删除部门
+   * @param data
+   */
+  delete (data) {
+    return request({
+      url: `/departments/${data}`,
+      method: 'delete'
+    })
+  }
+}

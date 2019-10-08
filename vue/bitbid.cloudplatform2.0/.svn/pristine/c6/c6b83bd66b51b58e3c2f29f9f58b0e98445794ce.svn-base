@@ -1,0 +1,62 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <div class="main">
+      <p class="title">参数设置</p>
+      <el-form :model="submitForm" ref="submitForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="历史数据补录模式：">
+              <el-switch
+                @change="submit"
+                v-model="submitForm.historyDataFlag"
+                active-color="#13ce66"
+                inactive-color="#ff4949"
+                :active-value="1"
+                :inactive-value="0">
+              </el-switch>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import {parameterSetting} from '@/api/system'
+export default {
+  data () {
+    return {
+      submitForm: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId
+      }
+    }
+  },
+  methods: {
+    // 初始化数据
+    initData () {
+      parameterSetting.queryOne(this.$store.getters.authUser.enterpriseId).then(res => {
+        this.submitForm = res.data.data || {
+          enterpriseId: this.$store.getters.authUser.enterpriseId,
+          historyDataFlag: 0
+        }
+      })
+    },
+    // 保存
+    submit () {
+      parameterSetting.update(this.submitForm)
+    }
+  },
+  mounted () {
+    this.initData()
+  }
+}
+</script>
+
+<style scoped>
+  p.title{
+    padding-left: 12px;
+    border-left: 4px solid #4a8cea;
+    color: #000000;
+    margin-bottom: 20px;
+  }
+</style>

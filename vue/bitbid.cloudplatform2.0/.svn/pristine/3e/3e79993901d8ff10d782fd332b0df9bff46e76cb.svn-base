@@ -1,0 +1,141 @@
+/**
+ * Created by Administrator on 2019-3-7.
+ * 响应资格预审
+ */
+export default [
+  {
+    path: '/project/projectProcess/prequalification_response/add',
+    name: '流程管理-响应资格预审-添加报名',
+    meta: {
+      title: '流程管理-响应资格预审-添加报名',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/prequalificationResponse/add'], resolve)
+  },
+  {
+    path: '/project/projectProcess/prequalification_response/update',
+    name: '流程管理-响应资格预审-编辑报名',
+    meta: {
+      title: '流程管理-响应资格预审-编辑报名',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/prequalificationResponse/update'], resolve)
+  },
+  {
+    path: '/project/projectProcess/prequalification_response/detail/:objectId',
+    name: '流程管理-响应资格预审-查看报名',
+    meta: {
+      title: '流程管理-响应资格预审-查看报名',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/prequalificationResponse/detail'], resolve)
+  },
+  {
+    path: '/project/projectProcess/prequalification_response/add_cost',
+    name: '流程管理-响应资格预审-添加文件费用',
+    meta: {
+      title: '流程管理-响应资格预审-添加文件费用',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/prequalificationResponse/addCost'], resolve)
+  },
+  {
+    path: '/project/projectProcess/prequalification_response/update_cost',
+    name: '流程管理-响应资格预审-修改文件费用',
+    meta: {
+      title: '流程管理-响应资格预审-修改文件费用',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/prequalificationResponse/updateCost'], resolve)
+  },
+  {
+    path: '/project/projectProcess/prequalification_response/cost_detail/:objectId',
+    name: '流程管理-响应资格预审-查看文件费用',
+    meta: {
+      title: '流程管理-响应资格预审-查看文件费用',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/prequalificationResponse/costDetail'], resolve)
+  },
+  {
+    path: '/project/projectProcess/prequalification_response/add_file',
+    name: '流程管理-响应资格预审-添加申请文件',
+    meta: {
+      title: '流程管理-响应资格预审-添加申请文件',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/prequalificationResponse/addFile'], resolve)
+  },
+  {
+    path: '/project/projectProcess/prequalification_response/update_file',
+    name: '流程管理-响应资格预审-修改申请文件',
+    meta: {
+      title: '流程管理-响应资格预审-修改申请文件',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/prequalificationResponse/updateFile'], resolve)
+  },
+  {
+    path: '/project/projectProcess/prequalification_response/file_detail/:objectId',
+    name: '流程管理-响应资格预审-查看申请文件',
+    meta: {
+      title: '流程管理-响应资格预审-查看申请文件',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/prequalificationResponse/fileDetail'], resolve)
+  },
+  {
+    path: '/project/projectProcess/prequalification_response/add_doubt',
+    name: '流程管理-响应资格预审-添加澄清疑义',
+    meta: {
+      title: '流程管理-响应资格预审-添加澄清疑义',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/prequalificationResponse/addDoubt'], resolve)
+  },
+  {
+    path: '/project/projectProcess/prequalification_response/update_doubt',
+    name: '流程管理-响应资格预审-修改澄清疑义',
+    meta: {
+      title: '流程管理-响应资格预审-修改澄清疑义',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/prequalificationResponse/updateDoubt'], resolve)
+  },
+  {
+    path: '/project/projectProcess/prequalification_response/doubt_detail/:objectId',
+    name: '流程管理-响应资格预审-查看澄清疑义',
+    meta: {
+      title: '流程管理-响应资格预审-查看澄清疑义',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/prequalificationResponse/doubtDetail'], resolve)
+  },
+  {
+    path: '/project/projectProcess/prequalification_response/add_clarify',
+    name: '流程管理-响应资格预审-添加澄清',
+    meta: {
+      title: '流程管理-响应资格预审-添加澄清',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/prequalificationResponse/addClarify'], resolve)
+  },
+  {
+    path: '/project/projectProcess/prequalification_response/update_clarify',
+    name: '流程管理-响应资格预审-修改澄清',
+    meta: {
+      title: '流程管理-响应资格预审-修改澄清',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/prequalificationResponse/updateClarify'], resolve)
+  },
+  {
+    path: '/project/projectProcess/prequalification_response/clarify_detail/:objectId',
+    name: '流程管理-响应资格预审-查看澄清',
+    meta: {
+      title: '流程管理-响应资格预审-查看澄清',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/prequalificationResponse/clarifyDetail'], resolve)
+  }
+]

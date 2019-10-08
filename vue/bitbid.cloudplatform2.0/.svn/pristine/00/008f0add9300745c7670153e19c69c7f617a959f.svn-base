@@ -1,0 +1,29 @@
+export default[
+  {
+    path: '/project/agentProject',
+    name: '代理分配项目',
+    meta: {
+      title: '代理分配项目',
+      active: '/project/agentProject'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/agentProject/index')
+  },
+  {
+    path: '/project/agentProject/agent',
+    name: '分配项目负责人',
+    meta: {
+      title: '分配项目负责人',
+      active: '/project/agentProject'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/agentProject/agent')
+  },
+  {
+    path: '/project/agentProject/detail/:code',
+    name: '代理分配项目详情',
+    meta: {
+      title: '代理分配项目详情',
+      active: '/project/agentProject'
+    },
+    component: () => import(/* webpackChunkName: 'project' */ '@/pages/project/agentProject/detail')
+  }
+]

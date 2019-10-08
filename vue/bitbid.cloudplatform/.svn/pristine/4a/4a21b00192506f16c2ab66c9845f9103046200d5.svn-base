@@ -1,0 +1,251 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <div class="box">
+      <div class="topmain">
+        资格预审文件
+        <!--按钮-->
+        <el-button class="addbutton" @click="handleAdd">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="tableData"
+        border>
+        <el-table-column
+          type="index"
+          label="序号"
+          width="50">
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="资格预审文件"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="文件发布时间"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="提交状态"
+          width="180">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '1'">已保存</span>
+            <span  v-if="scope.row.status === '2'">已提交</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          label="提交时间">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetail(scope)">查看</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'" @click="handleEdit(scope)">编辑</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <div class="box">
+      <div class="topmain">
+        资格预审文件疑义及澄清
+        <!--按钮-->
+        <el-button class="addbutton" @click="handleAddDoubt">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="tableData"
+        border>
+        <el-table-column
+          type="index"
+          label="序号"
+          width="50">
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="疑义标题"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="投标人"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="提交状态"
+          width="180">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '1'">已保存</span>
+            <span  v-if="scope.row.status === '2'">已提交</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          label="提交时间">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetailDoubt(scope)">查看</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'" @click="handleEditDoubt(scope)">编辑</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+    <div class="box">
+      <div class="topmain">
+        资格预审澄清文件
+        <!--按钮-->
+        <el-button class="addbutton" @click="handleAddClarify">
+          <span> + 添加</span>
+        </el-button>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="tableData"
+        border>
+        <el-table-column
+          type="index"
+          label="序号"
+          width="50">
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="资格预审澄清文件"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          label="文件发布时间"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="提交状态"
+          width="180">
+          <template slot-scope="scope">
+            <span  v-if="scope.row.status === '1'">已保存</span>
+            <span  v-if="scope.row.status === '2'">已提交</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          label="提交时间">
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="260">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetailClarify(scope)">查看</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'" @click="handleEditClarify(scope)">编辑</el-button>
+            <el-button type="text" size="small" v-if="scope.row.status === '1'">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+      tableData: [{
+        date: '上海市普陀区金沙江路',
+        status: '1',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '1',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '2',
+        address: '2016-05-04'
+      }, {
+        date: '上海市普陀区金沙江路',
+        status: '2',
+        address: '2016-05-04'
+      }],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10 // 每页展示条数
+    }
+  },
+  methods: {
+    // 编辑
+    handleEdit (scope) {
+      this.$router.push({path: `/processManage/projectProcess/prequalification_file/update`, query: {objectId: scope.row.objectId}})
+    },
+    handleAdd () {
+      this.$router.push({path: `/processManage/projectProcess/prequalification_file/add`})
+    },
+    handleDetail (scope) {
+      this.$router.push({path: `/processManage/projectProcess/prequalification_file/detail/${scope.row.objectId}`})
+    },
+    // 编辑
+    handleEditDoubt (scope) {
+      this.$router.push({path: `/processManage/projectProcess/prequalification_file/update_doubt`, query: {objectId: scope.row.objectId}})
+    },
+    handleAddDoubt () {
+      this.$router.push({path: `/processManage/projectProcess/prequalification_file/add_doubt`})
+    },
+    handleDetailDoubt (scope) {
+      this.$router.push({path: `/processManage/projectProcess/prequalification_file/doubt_detail/${scope.row.objectId}`})
+    }, // 编辑
+    handleEditClarify (scope) {
+      this.$router.push({path: `/processManage/projectProcess/prequalification_file/update_clarify`, query: {objectId: scope.row.objectId}})
+    },
+    handleAddClarify () {
+      this.$router.push({path: `/processManage/projectProcess/prequalification_file/add_clarify`})
+    },
+    handleDetailClarify (scope) {
+      this.$router.push({path: `/processManage/projectProcess/prequalification_file/clarify_detail/${scope.row.objectId}`})
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_processtype{
+  }
+</style>

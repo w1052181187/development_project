@@ -1,0 +1,237 @@
+<template>
+  <div id="ckbidwincheck" class="smaincontent">
+    <div class="headertitle">
+      <!--面包屑-->
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/main' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item>公告审核</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/annoapprove/ckbidwin' }">中标候选人公示审核</el-breadcrumb-item>
+        <el-breadcrumb-item>审核中标候选人公示</el-breadcrumb-item>
+      </el-breadcrumb>
+      <!--面包屑-->
+      <div class="returnboxbig">
+        <template>
+          <el-button @click="close">返回</el-button>
+        </template>
+      </div>
+    </div>
+    <div class="contentbigbox">
+      <template>
+        <el-form :model="winBidForm" ref="winBidForm">
+          <table class="detailtable">
+            <tr>
+              <td>公示名称：</td>
+              <td colspan="2">
+                <span :title="winBidForm.publicityName">{{winBidForm.publicityName}}</span>
+              </td>
+              <td>公示性质：</td>
+              <td colspan="2">
+                <span v-if="winBidForm.noticeNature === '1'">正常公示</span>
+                <span v-if="winBidForm.noticeNature === '2'">变更公示</span>
+                <span v-if="winBidForm.noticeNature === '9'">其他</span>
+              </td>
+            </tr>
+            <tr>
+              <td>招标项目编号：</td>
+              <td colspan="2">
+                <span :title="winBidForm.tenderProjectCode">{{winBidForm.tenderProjectCode}}</span>
+              </td>
+              <td>招标项目名称：</td>
+              <td colspan="2">
+                <span :title="winBidForm.tenderExpandsInfo.tenderProjectName">{{winBidForm.tenderExpandsInfo.tenderProjectName}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>项目行业：</td>
+              <td colspan="2">
+                <span>{{industryStr}}</span>
+              </td>
+              <td>行政区域：</td>
+              <td colspan="2">
+                <span>{{regionStr}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>标段（包）编号：</td>
+              <td colspan="2">
+                <span :title="winBidForm.bidSectionCodes">{{winBidForm.bidSectionCodes}}</span>
+              </td>
+              <td>公示开始时间：</td>
+              <td colspan="2">
+                <span>{{winBidForm.publicityStartTime}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>公示结束时间：</td>
+              <td colspan="2">
+                <span>{{winBidForm.publicityEndTime}}</span>
+              </td>
+              <td>公示发布时间：</td>
+              <td colspan="2">
+                <span>{{winBidForm.publicityReferTime}}</span>
+              </td>
+            </tr>
+            <tr v-if="fileObject !== null">
+              <td>公示附件：</td>
+              <td colspan="5">
+                <file-download :fileArrays="winBidForm.fileInformations" fileType="9"></file-download>
+              </td>
+            </tr>
+            <tr v-if="showNotice">
+              <td>公示内容：</td>
+              <td colspan="5">
+                <editor ref="ueditor" class="ueditor" :editread="true"></editor>
+              </td>
+            </tr>
+            <tr v-if="winBidForm.noticeNature === '2'">
+              <td>变更公示内容：</td>
+              <td colspan="5">
+                <editor ref="change_ueditor" class="ueditor" :editread="true"></editor>
+              </td>
+            </tr>
+            <approve @approveForm="approveForm" ref="approveForm"></approve>
+          </table>
+          <el-form-item class="submit-radio">
+            <el-button type="primary" @click="submitForm()">提交</el-button>
+            <el-button class="cancel" @click="close">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </template>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import fileDownload from '@/components/file-download'
+import approve from '@/components/approve.vue'
+import {bidwin} from '@/api'
+import * as industry from '../../../assets/js/industry'
+import * as region from '../../../assets/js/region'
+export default {
+  components: {
+    editor,
+    fileDownload,
+    approve
+  },
+  data () {
+    return {
+      showNotice: false,
+      industryList: industry.industry,
+      addressOptions: region.CityInfo,
+      regionStr: '',
+      industryStr: '',
+      fileObject: {},
+      winBidForm: {
+        tenderExpandsInfo: {
+        }
+      },
+      childForm: {},
+      status: null
+    }
+  },
+  methods: {
+    detail () {
+      bidwin.detail(this.$route.query.objectId).then((res) => {
+        // 行业
+        this.industryList.map((item) => {
+          if (item.value === res.data.record.tenderExpandsInfo.industryTypeFirst) {
+            this.industryStr = item.label
+          }
+        })
+        // 行政区域
+        this.addressOptions.map((item) => {
+          if (item.value === res.data.record.tenderExpandsInfo.provinceId) {
+            this.regionStr += item.label
+            item.children.map((ite) => {
+              if (ite.value === res.data.record.tenderExpandsInfo.cityId) {
+                this.regionStr += ite.label
+              }
+            })
+          }
+        })
+        this.winBidForm = res.data.record
+        this.fileObject = res.data.record.fileInformations.length === 0 ? null : res.data.record.fileInformations[0]
+        this.showNotice = true
+        return this.winBidForm
+      }).then((result) => {
+        if (result.noticeNature === '2') {
+          this.$refs.ueditor.setContent(result.originalBulletinContent)
+          this.$refs.change_ueditor.setContent(result.publicityContent)
+        } else {
+          this.$refs.ueditor.setContent(result.publicityContent)
+        }
+      })
+    },
+    close () {
+      this.$router.push({path: '/annoapprove/ckbidwin', query: {status: this.status}})
+    },
+    approveForm (formV) {
+      this.childForm = formV
+      this.childForm.relatedCode = this.winBidForm.code
+    },
+    submitForm () {
+      // 必填验证
+      this.$refs.approveForm.handleValidate()
+      if (this.childForm.auditStatus === 0 && !this.childForm.opinion.trim()) {
+        this.$message({
+          message: '请填写审批意见',
+          type: 'warning'
+        })
+        return false
+      }
+      // 提交数据
+      this.winBidForm.recordOfApprovals = []
+      this.winBidForm.recordOfApprovals.push(this.childForm)
+      // 同步审批结果
+      this.winBidForm.status = this.childForm.auditStatus === 1 ? 2 : 3
+      console.log(this.winBidForm)
+      bidwin.approve(this.winBidForm).then((res) => {
+        this.$router.push({path: '/annoapprove/ckbidwin', query: {status: this.status}})
+      })
+    }
+  },
+  mounted () {
+    this.status = this.$route.query.status ? this.$route.query.status : null
+    this.detail()
+  }
+}
+</script>
+<style lang="less">
+  #ckbidwincheck{
+    .select {
+      float: left;
+      width: 100%;
+    }
+    .el-cascader{
+      float: left;
+      width: 100%;
+    }
+    .el-date-editor{
+      float: left;
+      width: 100%;
+    }
+    .el-date-editor.el-input, .el-date-editor.el-input__inner{
+      width: 100%;
+    }
+    .expandtable{
+      margin-bottom: 10px;
+    }
+    .expandtable  .cell{
+      height: 40px;
+      line-height: 40px;
+    }
+    .expandtable  .cell span{
+      color: #66b1ff;
+    }
+    .el-radio{
+      float: left;
+      line-height: 40px;
+    }
+    span.el-radio__input,span.el-radio__label{
+      float: none;
+    }
+    .el-textarea__inner{
+      height: 120px;
+    }
+  }
+</style>

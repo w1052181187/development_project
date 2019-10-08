@@ -1,0 +1,319 @@
+<template>
+  <div class="cloudcontent" id="setNum">
+    <el-row :gutter="20">
+      <el-col :span="14">
+        <el-form :model="submitForm" :rules="rules" ref="submitForm" :validate-on-rule-change="true" label-width="0px" :inline="true" :hide-required-asterisk="true">
+          <ul class="autoNumberList">
+            <li v-for="(item, index) in submitForm.autoNumberList" :key="index">
+              <div class="num">第{{index + 1}}节<span @click="handelAdd(index)"><img src="../../../../static/images/jia_b.png"/> </span><span @click="handelDel(index)" v-if="index !== 0"><img src="../../../../static/images/jian_b.png"/> </span></div>
+              <div class="rule">
+                <el-form-item :prop="'autoNumberList.'+ index + '.delimiterType'" :rules="rules.simpleRequiredSelect" v-if="index !== 0">
+                  <el-select v-model="item.delimiterType" placeholder="分隔符">
+                    <el-option
+                      v-for="item in separatorOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item :prop="'autoNumberList.'+ index + '.variableType'" :rules="rules.simpleRequiredSelect">
+                  <el-select v-model="item.variableType" placeholder="请选择">
+                    <el-option
+                      v-for="item in ruleOptions"
+                      v-if="!item.numberTypes || item.numberTypes.includes(Number(autoNumber.numberType))"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+                <p v-if="item.variableType === 4">
+                  <el-form-item :prop="'autoNumberList.'+ index + '.variableDigit'" v-if="item.variableType === 4">
+                    <el-input-number v-model="item.variableDigit" controls-position="right" :min="2" :max="5"></el-input-number> 位
+                  </el-form-item>
+                </p>
+                <el-form-item :prop="'autoNumberList.'+ index + '.textValue'" :rules="rules.simpleRequiredText" v-if="item.variableType === 11">
+                  <el-input v-model="item.textValue" placeholder="请输入文本"></el-input>
+                </el-form-item>
+              </div>
+            </li>
+          </ul>
+          <p class="example">
+            编号规则：<br/>
+            {{numberExample}}
+          </p>
+          <el-form-item class="submit-radio">
+            <el-button type="primary" @click="submit" :loading="submitLoading">确定</el-button>
+            <el-button class="cancel" @click="cancel" v-if="Number(numberType) !== 4">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+      <el-col :span="10">
+        <span>变量说明：</span>
+        <el-table
+          :data="detailInfo"
+          border
+          header-cell-class-name="tableheader">
+          <el-table-column
+            prop="name"
+            label="变量">
+          </el-table-column>
+          <el-table-column
+            prop="example"
+            label="示例">
+          </el-table-column>
+        </el-table>
+      </el-col>
+    </el-row>
+  </div>
+</template>
+<script>
+import {autoNumber} from '@/api/system'
+import { Message } from 'element-ui'
+export default {
+  data () {
+    return {
+      loading: false,
+      submitLoading: false,
+      queryModel: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        isDelete: 0
+      },
+      submitForm: {
+        autoNumberList: []
+      },
+      autoNumber: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        numberType: this.numberType,
+        nodeNumber: null,
+        delimiterType: null,
+        variableType: null,
+        variableDigit: 5
+      },
+      separatorOptions: [
+        {
+          value: 1,
+          label: '横线'
+        },
+        {
+          value: 2,
+          label: '下划线'
+        },
+        {
+          value: 0,
+          label: '无'
+        }
+      ],
+      ruleOptions: [
+        {
+          value: 1,
+          label: '年度'
+        },
+        {
+          value: 2,
+          label: '月份'
+        },
+        {
+          value: 3,
+          label: '日期'
+        },
+        {
+          value: 4,
+          label: '流水号'
+        },
+        {
+          value: 5,
+          label: '资质主体文字',
+          numberTypes: [3, 4]
+        },
+        {
+          value: 6,
+          label: '资质主体首字母',
+          numberTypes: [3, 4]
+        },
+        {
+          value: 7,
+          label: '项目编号',
+          numberTypes: [4]
+        },
+        {
+          value: 8,
+          label: '标段编号',
+          numberTypes: [4]
+        },
+        {
+          value: 9,
+          label: '项目类型文字',
+          numberTypes: [4]
+        },
+        {
+          value: 10,
+          label: '项目类型首字母',
+          numberTypes: [4]
+        },
+        {
+          value: 11,
+          label: '文本',
+          numberTypes: [4]
+        }
+      ],
+      rules: {
+        simpleRequiredSelect: [
+          { required: true, message: '选择不能为空', trigger: 'change' }
+        ],
+        simpleRequiredText: [
+          { required: true, message: '输入不能为空', trigger: 'blur' },
+          { min: 1, max: 10, message: '长度在1~10个字符', trigger: 'blur' }
+        ]
+      },
+      separatorInfos: ['', '-', '_', ''],
+      numberRuleInfos: ['', '年度', '月份', '日期', '位流水号', '资质', '资质首字母', '项目编号', '标段编号', '项目类型', '项目类型首字母', '自由文本']
+    }
+  },
+  props: ['detailInfo', 'numberType'],
+  watch: {
+    'submitForm.autoNumberList.length' () {
+      setTimeout(() => {
+        this.$refs.submitForm.clearValidate()
+      }, 10)
+    }
+  },
+  computed: {
+    numberExample () {
+      let result = ''
+      if (this.submitForm.autoNumberList.length) {
+        this.submitForm.autoNumberList.forEach(item => {
+          result += this.separatorInfos[Number(item.delimiterType)]
+          if (item.variableType === 4) {
+            result += item.variableDigit + this.numberRuleInfos[Number(item.variableType)]
+          } else {
+            result += this.numberRuleInfos[Number(item.variableType)]
+          }
+        })
+      }
+      return result || '---'
+    }
+  },
+  methods: {
+    // 初始化数据
+    initData () {
+      this.loading = true
+      autoNumber.queryOne(this.queryModel).then(res => {
+        this.loading = false
+        this.submitForm = res.data.data
+        if (!this.submitForm.autoNumberList.length) {
+          this.submitForm.autoNumberList.push(Object.assign({}, this.autoNumber))
+        }
+      })
+    },
+    handelAdd (index) {
+      if (this.submitForm.autoNumberList.length < 5) {
+        this.submitForm.autoNumberList.splice(index + 1, 0, Object.assign({}, this.autoNumber))
+      } else {
+        Message.closeAll()
+        Message({
+          showClose: true,
+          message: '编号设置最多五级',
+          type: 'warning',
+          duration: 3 * 1000
+        })
+      }
+    },
+    handelDel (index) {
+      this.submitForm.autoNumberList.splice(index, 1)
+    },
+    submit () {
+      this.$refs['submitForm'].validate((valid) => {
+        if (valid) {
+          this.$confirm('确认要提交吗?', '提示', {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.loading = true
+            for (let i = 0; i < this.submitForm.autoNumberList.length; i++) {
+              this.submitForm.autoNumberList[i].nodeNumber = i + 1
+            }
+            autoNumber.update(this.submitForm.autoNumberList).then(res => {
+              this.loading = false
+              if (res.data.resCode === '0000') {
+                if (Number(this.numberType) !== 4) {
+                  this.cancel()
+                }
+              }
+            })
+          }).catch(() => {
+            this.loading = false
+            return false
+          })
+        }
+      })
+    },
+    cancel () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.push({path: `/system/auto-number`})
+    }
+  },
+  mounted () {
+    this.queryModel.numberType = this.numberType
+    this.initData()
+  }
+}
+</script>
+<style lang="less">
+  #setNum{
+    .el-col-10 {
+      float: right;
+    }
+    .el-col-10 span{
+      line-height: 32px;
+      color: #333333;font-weight: bold;
+    }
+    ul.autoNumberList{
+      width: 100%;
+      overflow: hidden;
+    }
+    ul.autoNumberList li{
+      margin-bottom: 10px;
+    }
+    ul.autoNumberList li .num{
+      margin: 5px 0;
+      line-height: 24px;
+    }
+    ul.autoNumberList li .num span{
+      margin-left: 7px;
+      cursor: pointer;
+    }
+    ul.autoNumberList li .rule{
+      width: 100%;
+    }
+    ul.autoNumberList li .rule .el-form-item{
+      padding-right: 0;
+    }
+    ul.autoNumberList li .rule .el-select{
+      width: 150px;
+    }
+    ul.autoNumberList li .rule p{
+      display: inline-block;
+    }
+    ul.autoNumberList li .rule  .el-input-number{
+      width: 120px;
+      line-height: 32px;
+    }
+    .el-input-number.is-controls-right>span{
+      height: 16px!important;
+      line-height: 16px!important;
+    }
+    ul.autoNumberList li .rule .el-input{
+      width: auto;
+    }
+    p.example{
+      margin: 50px 0 30px 0;
+      line-height: 24px;
+    }
+    ul.autoNumberList li .el-form-item__content{
+      margin-left: 0px!important;
+    }
+  }
+</style>

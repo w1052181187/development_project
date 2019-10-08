@@ -1,0 +1,217 @@
+<template>
+  <div id="into-room">
+    <div class="into-more-room">
+      <p class="bidtitle">当前拍卖竞价室：{{projectInfoForm.sectionName}}</p>
+      <div class="bidcontain">
+        <div class="time">
+          <div class="countdown">
+            <span v-html="isIntoStatus ? 0 : day"></span>天
+            <span v-html="isIntoStatus ? 0 : hour"></span>时
+            <span v-html="isIntoStatus ? 0 : min"></span>分
+            <span v-html="isIntoStatus ? 0 : second"></span>秒
+          </div>
+          <p class="prompt">距离竞价开始时间</p>
+        </div>
+        <el-row :gutter="15">
+          <el-col :span="4" v-for="(o, i) in bidUserList" :key="i" style="margin-bottom: 20px;">
+            <el-card :class="{'box-card':true, 'card-border': cardBorderIndex == i}">
+              <div slot="header" class="clearfix">
+                <span>{{o.userName}}</span>
+              </div>
+              <div class="text item card-cont">
+                <span>当前价格</span>
+                <p class="price-p">{{o.price}}<span class="price-span">元</span></p>
+                <el-radio v-model="checkedBtn" class="card-check" :label="o.objectId" @change="changeCheckBox(o)">
+                  &nbsp;
+                </el-radio>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+        <div class="button">
+          <el-button size="small" class="btn-blue-bg" @click="goIntoRoom" :disabled="disavledBtn">进入竞价室</el-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import {scalingEnd, projectInfo} from '@/api'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      disavledBtn: false, // 进入竞价室禁用
+      day: 0, // 天
+      hour: 0, // 时
+      min: 0, // 分
+      second: 0, // 秒
+      timer: -1,
+      isIntoStatus: false,
+      projectInfoForm: {
+        sectionName: ''
+      },
+      checkedBtn: '',
+      cardBorderIndex: 0,
+      projectId: this.$store.getters.projectId,
+      methodType: this.$route.query.methodType,
+      roomId: '',
+      bidUserList: [] // 定标人列表
+    }
+  },
+  methods: {
+    changeCheckBox (val) {
+      if (val) {
+        this.roomId = val.roomId
+      }
+    },
+    // 获取竞价人的信息
+    getBidPersonInfo () {
+      let obj = {
+        methodType: this.methodType,
+        num: 1,
+        isNext: 1
+      }
+      projectInfo.scalingEndInfo(this.projectId, obj).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.bidUserList = res.data.ProjectView.users
+        }
+      })
+    },
+    // 进入竞价室
+    goIntoRoom () {
+      if (this.checkedBtn) {
+        if (this.isIntoStatus) {
+          this.$router.push({path: '/admin/bidding-room/bidding', query: {methodType: this.methodType, roomId: this.roomId}})
+        } else {
+          this.$message({
+            type: 'warning',
+            message: '竞价还未开始'
+          })
+        }
+      } else {
+        this.$message({
+          type: 'warning',
+          message: '请选择进入的竞价室'
+        })
+      }
+    },
+    // 获取竞价信息
+    getBiddingInfo () {
+      let obj = {
+        methodType: this.methodType
+      }
+      projectInfo.getProjectInfo(this.projectId, obj).then(res => {
+        // console.log(res)
+        let tempObj = res.data.ProjectView
+        this.projectInfoForm.sectionName = tempObj.project.sectionName
+        this.bidStartTime = tempObj.scalingSystemMethods[0].beginDate
+        this.startCountDown(this.bidStartTime)
+      })
+    },
+    // 开始倒计时
+    startCountDown (time) {
+      let times = time
+      let startTimes = new Date(Date.parse(times.replace(/-/g, '/'))).getTime()
+      let that = this
+      this.timer = setInterval(function () {
+        let start = new Date().getTime()
+        let totalTime = startTimes - start
+        if (totalTime <= 0) {
+          that.stopCountDown()
+          that.isIntoStatus = true
+        } else {
+          that.day = parseInt(totalTime / (1000 * 60 * 60 * 24))
+          that.hour = parseInt(totalTime / (1000 * 60 * 60) % 24)
+          that.min = parseInt(totalTime / (1000 * 60) % 60)
+          that.second = parseInt(totalTime / 1000 % 60)
+        }
+      }, 1000)
+    },
+    // 停止倒计时
+    stopCountDown () {
+      clearInterval(this.timer)
+    },
+    // 竞价室-流程
+    getBidRoomPage () {
+      let obj = {
+        methodType: this.methodType
+      }
+      scalingEnd.getBidRoomPage(this.projectId, obj).then(res => {
+        if (res.data.isHide === '4444') {
+          this.disavledBtn = true
+        } else {
+          this.disabledBtn = false
+        }
+      })
+    }
+  },
+  mounted () {
+    this.getBidPersonInfo()
+    this.getBiddingInfo()
+    this.getBidRoomPage()
+  }
+}
+</script>
+
+<style lang="scss">
+#into-room {
+  .into-more-room {
+    .bidtitle {
+      background: #fff;
+      text-align: left;
+      padding: 10px;
+      padding-left: 20px;
+    }
+    .bidcontain {
+      background: #fff;
+      margin: 15px;
+      padding: 15px;
+      .box-card:hover {
+        border: 1px solid #409EFF;
+      }
+      .el-card__header {
+        background: #eee;
+      }
+      .card-cont {
+        position: relative;
+        .price-p {
+          font-size: 18px;
+          font-weight: 800;
+          color: #2C972F;
+        }
+        .price-span {
+          color: #999;
+          font-weight: normal;
+          font-size: 16px;
+        }
+      }
+      .card-check {
+        position: absolute;
+        right: -38px;
+        bottom: -40px;
+      }
+      .el-radio__inner {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        border-radius: 0;
+      }
+      .el-radio__inner::after {
+        background-color: transparent;
+        content: "√";
+        color: #fff;
+        width: 17px;
+        font-size: 18px;
+        top: 40%;
+        left: 50%;
+        position: absolute;
+      }
+      .card-border {
+        border: 1px solid #409EFF;
+      }
+    }
+  }
+}
+</style>

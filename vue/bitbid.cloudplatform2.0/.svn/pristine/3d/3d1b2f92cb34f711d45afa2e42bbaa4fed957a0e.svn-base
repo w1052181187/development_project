@@ -1,0 +1,127 @@
+<template>
+  <div class="cloudcontent" id="file-end">
+    <div class="main">
+      <div class="basic-info-title">移交信息</div>
+      <el-table
+        :data="transferData"
+        border
+        style="width: 98%;margin-left: 32px" header-cell-class-name="tableheader">
+        <el-table-column
+          width="50"
+          type="index"
+          align="center"
+          label="序号">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="档案目录"
+          align="center"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="transferStatus"
+          label="移交状态"
+          align="center"
+          width="100"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="scope.row.transferStatus === 0">待移交</span>
+            <span v-if="scope.row.transferStatus === 1">已接收</span>
+            <span v-if="scope.row.transferStatus === 2">已移交</span>
+            <span v-if="scope.row.transferStatus === 3">已退回</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="lastTransferName"
+          label="最新移交人"
+          align="center"
+          width="120"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="lastTransferTime"
+          label="最新移交时间"
+          align="center"
+          width="160"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="归档状态"
+          align="center"
+          width="100"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="scope.row.status === 0">未归档</span>
+            <span v-if="scope.row.status === 1">已归档</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="filingTime"
+          label="归档时间"
+          align="center"
+          width="160"
+          show-overflow-tooltip>
+        </el-table-column>
+      </el-table>
+    </div>
+  </div>
+</template>
+<script>
+import {archivesClassify} from '@/api/archives'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      transferData: [
+        {}
+      ],
+      objectId: ''
+    }
+  },
+  methods: {
+    getInfo () {
+      archivesClassify.getArchivesClassifyList({
+        archivesInfoId: this.$route.params.objectId
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.transferData = res.data.archivesClassifyList.list
+        }
+      })
+    }
+  },
+  mounted () {
+    this.objectId = this.$route.params.objectId
+    this.getInfo()
+  }
+}
+</script>
+<style lang="less">
+  #file-end {
+    .file-end-hint {
+      border: #89d280 1px solid;
+      background-color: #f4ffee;
+      padding: 14px 50px;
+      box-sizing: border-box;
+      color: #333333;
+      font-size: 14px;
+    }
+    .file-end-info {
+      margin-top: 10px;
+      padding: 12px 12px;
+      box-sizing: border-box;
+      border: #dcdfe6 1px solid;
+    }
+    .confirm-title {
+      margin: 22px 0;
+    }
+    .user-form {
+      width: 100%;
+      margin-left: 16px;
+    }
+    .user-select {
+      width: 200px;
+    }
+  }
+</style>

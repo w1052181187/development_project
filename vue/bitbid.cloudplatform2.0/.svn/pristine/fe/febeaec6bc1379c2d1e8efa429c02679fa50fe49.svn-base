@@ -1,0 +1,265 @@
+<template>
+  <div class="cloudcontent" id="cloud_customer">
+    <div class="main">
+      <div class="selectbox">
+        <el-form :model="queryModel" ref="searchForm" label-width="80px" :validate-on-rule-change="true">
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="客户价值：">
+                <el-checkbox-group v-model="queryModel.dicValueCodes" v-loading="dicCustomerValueLoading">
+                  <el-checkbox v-for="item in dicCustomerValueList" :label="item.code" :key="item.code" >{{item.name}}</el-checkbox>
+                </el-checkbox-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="所属行业：">
+                <el-checkbox-group v-model="queryModel.dicIndustryCodes" v-loading="dicCustomerIndustryLoading">
+                  <el-checkbox v-for="item in dicCustomerIndustryList" :label="item.code" :key="item.code" >{{item.name}}</el-checkbox>
+                </el-checkbox-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="客户名称：">
+                <el-input class="search" v-model="queryModel.messageLike" placeholder="请输入客户名称"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-button  type="primary" @click="getTableData">搜索</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+      <div class="topmain">
+        <!--按钮-->
+        <div class="btnbigbox">
+          <div class="addrole">
+            <el-button class="addbutton" @click="addBtn">
+              <span> + 新增客户</span>
+            </el-button>
+          </div>
+        </div>
+        <!--按钮-->
+      </div>
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="客户名称"
+          width="500"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="dicIndustryCode"
+          label="所属行业"
+          :formatter="formatIndustry"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="dicValueCode"
+          label="客户价值"
+          :formatter="formatValue"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="departmentName"
+          label="所在部门"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="chargePersonName"
+          label="负责人"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="lookBtn(scope)">查看</el-button>
+            <el-button type="text" size="small" @click="updateBtn(scope)">修改</el-button>
+            <el-button type="text" size="small" @click="followUp(scope)">跟进</el-button>
+            <el-button type="text" size="small" @click="logoff(scope.row.objectId)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="page.total"
+        :page-size='page.pageSize'
+        :current-page.sync="page.currentPage"
+        @current-change="handlePage"
+        @next-click="handlePage">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+import { customer } from '@/api/customer'
+import { dataDictionary } from '@/api/system'
+export default {
+  data () {
+    return {
+      page: {
+        pageSize: 10,
+        pageNo: 1,
+        total: 0, // 总条数
+        currentPage: 1
+      },
+      queryModel: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        isDelete: 0,
+        messageLike: '',
+        dicValueCodes: [],
+        dicIndustryCodes: []
+      },
+      tableData: [],
+      // 客户价值字典项Id
+      dicCustomerValueId: 10001,
+      // 客户行业分类字典项Id
+      dicCustomerIndustryId: 10002,
+      // 客户价值集合
+      dicCustomerValueList: [],
+      // 客户行业分类集合
+      dicCustomerIndustryList: [],
+      dicCustomerValueLoading: true,
+      dicCustomerIndustryLoading: true
+    }
+  },
+  watch: {
+    '$route': 'getTableData'
+  },
+  methods: {
+    // 获取列表数据,稍作延迟
+    getTableData () {
+      this.queryModel.pageNo = this.page.pageNo
+      this.queryModel.pageSize = this.page.pageSize
+      customer.queryList(this.queryModel).then(res => {
+        setTimeout(() => {
+          this.queryModel.pageNo = this.page.pageNo
+          this.tableData = res.data.data.list
+          this.page.total = res.data.data.total
+        }, 200)
+      })
+    },
+    // 客户价值初始化
+    initCustomerValue () {
+      let query = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        dictionaryDirectoryId: this.dicCustomerValueId
+      }
+      dataDictionary.getDetailList(query).then(res => {
+        this.dicCustomerValueLoading = false
+        this.dicCustomerValueList = res.data.dictionaryDetails
+      })
+    },
+    // 客户行业分类集合初始化
+    initCustomerIndustry () {
+      let query = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        dictionaryDirectoryId: this.dicCustomerIndustryId
+      }
+      dataDictionary.getDetailList(query).then(res => {
+        this.dicCustomerIndustryLoading = false
+        this.dicCustomerIndustryList = res.data.dictionaryDetails
+      })
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    // 格式化列表中的行业数据
+    formatIndustry (row, col, cellValue) {
+      return this.dicCustomerIndustryList.find(item => item.code === cellValue).name || '---'
+    },
+    // 格式化列表中的客户价值数据
+    formatValue (row, col, cellValue) {
+      return this.dicCustomerValueList.find(item => item.code === cellValue).name || '---'
+    },
+    // 添加
+    addBtn () {
+      this.$router.push({path: `/customerMan/customer/add`})
+    },
+    // 查看
+    lookBtn (scope) {
+      this.$router.push({path: `/customerMan/customer/detail/${scope.row.objectId}`})
+    },
+    // 修改
+    updateBtn (scope) {
+      this.$router.push({path: `/customerMan/customer/update`, query: {objectId: scope.row.objectId}})
+    },
+    // 跟进
+    followUp (scope) {
+      this.$router.push({path: `/customerMan/customer/follow`, query: {relatedCode: scope.row.code, type: 'customer'}})
+    },
+    // 删除
+    logoff (objectId) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        customer.logoff(objectId).then(() => {
+          this.getTableData()
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 表单分页
+    handlePage (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = (nowNum - 1) * this.page.pageSize
+      this.getTableData()
+    }
+  },
+  mounted () {
+    // 客户价值初始化
+    this.initCustomerValue()
+    // 客户行业分类初始化
+    this.initCustomerIndustry()
+    // 列表初始化
+    this.getTableData()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_customer {
+    .tabletitles{
+      background:#f7f8fa!important;
+    }
+    .main{
+      margin: 0px;
+    }
+    .selectbox{
+      background: #f7f8f9;
+      padding: 20px 0;
+      margin-bottom: 20px;
+    }
+    .el-form-item__label{
+      font-weight: bold;
+      text-align: left;
+    }
+    .el-form-item{
+      margin-bottom: 5px;
+    }
+    .search{
+      width: 400px;
+    }
+  }
+</style>

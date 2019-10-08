@@ -1,0 +1,79 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <ul>
+        <li v-for="(item, index) in roomList" :key="index" class="room-item">
+          <img v-if="index === roomList.length - 1" src="../../../assets/dai_hui.png.png">
+          <img v-else src="../../../assets/dai_huang.png">
+          <span>{{item.name}}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'archivesRoom',
+  data () {
+    return {
+      roomList: [
+        {
+          name: '档案室一'
+        },
+        {
+          name: '档案室二'
+        },
+        {
+          name: '档案室三'
+        },
+        {
+          name: '无位置档案'
+        }
+      ],
+      cabinetList: [
+        {
+          name: '档案柜一'
+        },
+        {
+          name: '档案柜二'
+        },
+        {
+          name: '档案柜三'
+        },
+        {
+          name: '无位置档案'
+        }
+      ]
+    }
+  },
+  watch: {
+  },
+  methods: {
+    // 获取档案室
+    getRoom () {},
+    // 获取档案柜
+    getCabinet () {},
+    getData () {
+    },
+    handleBtn (row) {
+      this.$router.push({path: `/archives/query/detail/` + row.objectId + '?status=1'})
+    },
+    // 搜索
+    handleSearch () {
+      this.getData()
+    },
+    reset () {}
+  },
+  mounted () {
+    this.getData()
+  }
+}
+</script>
+
+<style scoped>
+.room-item {
+  margin: 24px 45px;
+}
+
+</style>

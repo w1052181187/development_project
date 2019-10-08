@@ -1,0 +1,145 @@
+<template>
+  <div class="cloudcontent"  id="cloud_collaborationAdd">
+    <div class="main">
+      <el-form :model="submitForm" :rules="rulesList" ref="submitForm" label-width="80px" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="接收人："  prop="recipient">
+              <el-input v-model="submitForm.temType">
+                <i slot="suffix" class="el-input__icon icon_people_fill"></i>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="抄送人："  prop="copy">
+              <el-input v-model="submitForm.copy">
+                <i slot="suffix" class="el-input__icon icon_people_fill"></i>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="22">
+            <el-form-item label="标题："  prop="name">
+              <el-input v-model="submitForm.name"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="2">
+            <el-checkbox v-model="submitForm.checked"><i class="red"> * </i> 高优先级</el-checkbox>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="类型："  prop="type">
+              <el-select v-model="submitForm.type" placeholder="请选择">
+                <el-option
+                  v-for="item in typeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="内容："  prop="content">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content" @contentChange="handleContentChange"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-form-item label="附件：">
+            <upload-file @uploadSuccess="uploadSuccess" @deleteSuccess="deleteSuccess"
+                         :fileArrays="submitForm.fileInformations"
+                         fileType="9"
+                         isImage="0"
+                         fileMaxNum="5">
+            </upload-file>
+          </el-form-item>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="handleClickEvent('submitForm','save')" :loading="loading">保存</el-button>
+          <el-button class="cancal" @click="handleClickEvent('submitForm','cancel')">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import UploadFile from '@/components/upload/publicFileUpload'
+export default {
+  components: {
+    editor,
+    UploadFile
+  },
+  data () {
+    return {
+      submitForm: {
+        fileInformations: []
+      },
+      rulesList: {},
+      typeOptions: [
+        {
+          value: 1,
+          label: '工作沟通'
+        },
+        {
+          value: 2,
+          label: '工作协同'
+        },
+        {
+          value: 3,
+          label: '活动交流'
+        },
+        {
+          value: 4,
+          label: '请示汇报'
+        },
+        {
+          value: 5,
+          label: '资源协调'
+        },
+        {
+          value: 6,
+          label: '其他'
+        }
+      ],
+      loading: false,
+      // 富文本
+      editread: false,
+      content: ''
+    }
+  },
+  methods: {
+    handleContentChange () {
+      if (this.$refs.ueditor) {
+      }
+    },
+    // 上传附件
+    uploadSuccess (file) {
+      this.submitForm.fileInformations.push(file)
+    },
+    deleteSuccess (fileId) {
+      this.submitForm.fileInformations = this.submitForm.fileInformations.filter(item => item.relativePath !== fileId)
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_collaborationAdd{
+    .icon_people_fill{
+      width: 32px;
+      height: 32px;
+      border-left: 1px solid #dddddd;
+      display: inline-block;
+      background: url("../../../../static/images/office/icon_people_fill.png") center center no-repeat;
+    }
+  }
+</style>

@@ -1,0 +1,35 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-tabs v-model="activeTab">
+        <el-tab-pane label="预约管理" name="1">
+          <OrderManager></OrderManager>
+        </el-tab-pane>
+        <el-tab-pane label="我的预约" name="2">我的预约</el-tab-pane>
+        <el-tab-pane label="开评标室列表" name="3">开评标室列表</el-tab-pane>
+      </el-tabs>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: '',
+  components: {
+    // 邀请招标
+    OrderManager: resolve => require(['./orderManager.vue'], resolve)
+  },
+  data () {
+    return {
+      activeTab: '1'
+    }
+  },
+  methods: {
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style scoped>
+</style>

@@ -1,0 +1,59 @@
+<template>
+  <div class="cloudcontent" id="archives-detail">
+    <div class="main">
+      <div class="detail-title">{{(info.tenderProjectName ? info.tenderProjectName : '') + (info.bidSectionName ? '(' + info.bidSectionName + ')' : '')}}</div>
+      <el-tabs class="detail_tab" v-model="activeTab" type="card">
+        <el-tab-pane label="移交情况" name="1">
+          <transfer-situation :info="info"></transfer-situation>
+        </el-tab-pane>
+        <el-tab-pane label="标段信息" name="2">
+          <section-info :info="info"></section-info>
+        </el-tab-pane>
+        <el-tab-pane label="移交资料" name="3">
+          <file-pack-download :info="info"></file-pack-download>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+  </div>
+</template>
+<script>
+// import {archivesInfo} from '@/api/archives'
+export default {
+  components: {
+    transferSituation: resolve => require(['./transferSituation'], resolve),
+    sectionInfo: resolve => require(['./sectionInfo'], resolve),
+    filePackDownload: resolve => require(['./filePackDownload'], resolve)
+  },
+  data () {
+    return {
+      title: '',
+      activeTab: '1',
+      info: {}
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  methods: {
+    init () {
+      this.getData()
+    },
+    getData () {
+    }
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+
+<style lang="less">
+  #archives-detail{
+    .detail-title{
+      padding: 12px 0;
+      box-sizing: border-box;
+      color: #333;
+      font-weight: 800;
+    }
+  }
+</style>

@@ -1,0 +1,131 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <div class="box">
+      <div class="topmain">
+        废标结果公告
+        <div class="fr">
+          <!--按钮-->
+          <el-button type="primary"><span>编辑</span></el-button>
+          <el-button><span>删除</span></el-button>
+          <!--按钮-->
+        </div>
+      </div>
+      <div class="main">
+        <el-form :model="updateForm" ref= "updateForm" :validate-on-rule-change="true">
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="废标结果公告名称：">
+                <span>{{updateForm.tenderProjectName}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="是否重新招标：">
+                <span>{{updateForm.tenderProjectName}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="公告链接：">
+                <span>{{updateForm.tenderProjectName}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="发布链接：">
+                <span>{{updateForm.tenderProjectName}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="废标原因：">
+                <el-input type="textarea" v-model="updateForm.desc"  class="areaBox"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="公告内容：">
+                <editor ref="notice_ueditor" class="ueditor" :editread="editread"></editor>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="附件：">
+                <el-table
+                  :data="updateForm.fileInformationList"
+                  border
+                  style="width: 100%" header-cell-class-name="tableheader">
+                  <el-table-column
+                    type="index"
+                    label="序号"
+                    width="60"
+                    align="center">
+                  </el-table-column>
+                  <el-table-column
+                    prop="fileName"
+                    label="文件名称"
+                    show-overflow-tooltip>
+                  </el-table-column>
+                  <el-table-column
+                    label="操作" align="center" width="200">
+                    <template slot-scope="scope">
+                      <el-button type="text" size="small" @click="lookFile(scope.row)">查看</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="提交人：">
+                <span>{{updateForm.tenderProjectName}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="提交时间：">
+                <span>{{updateForm.tenderProjectName}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import {downloadFile} from '@/assets/js/common'
+export default {
+  components: {
+    editor
+  },
+  data () {
+    return {
+      updateForm: {
+        fileInformationList: []
+      },
+      // 富文本
+      editread: true
+    }
+  },
+  props: [],
+  methods: {
+    lookFile (file) {
+      downloadFile(file.fileName, file.relativePath)
+    }
+  },
+  mounted () {}
+}
+</script>
+<style lang="less">
+  #cloud_processtype{
+    .areaBox textarea{
+      min-height: 100px !important;
+    }
+  }
+</style>

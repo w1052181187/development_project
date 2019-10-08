@@ -1,0 +1,112 @@
+<template>
+  <div>
+    <approve-flow v-if="isApproved" :list="flowList" :curFlowIndex="curFlowIndex"></approve-flow>
+    <div class="project-info-line"></div>
+    <div class="main viewdetails">
+      <el-form :model="addForm" label-width="100px" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{updateForm.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <span>{{updateForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段名称："  prop="bidSectionName">
+              <el-input v-model="updateForm.bidSectionName"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段编号："  prop="bidSectionCode">
+              <el-input v-model="updateForm.bidSectionCode"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="附件：">
+              <download-file :fileArrays="addForm.fileInformationList" fileType="9"></download-file>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+    <template v-if="isApproved">
+      <div class="project-info-line"></div>
+      <communicate-record :tableData="communicateRecordList"></communicate-record>
+      <div class="project-info-line"></div>
+      <approve-record :approvalTaskCode="approvalTaskCode" :subjectCode="$route.params.code"></approve-record>
+    </template>
+    <div class="project-info-line"></div>
+    <approve-handle :isApproved="isApproved" :approvalTaskCode="approvalTaskCode" :noticeUser="noticeUser"></approve-handle>
+  </div>
+</template>
+<script>
+import downloadFile from '@/components/download/file-download'
+import {documentInfo} from '@/api/project'
+import approveFlow from '@/pages/todoList/commonComponents/approveFlow.vue'
+import communicateRecord from '@/pages/todoList/commonComponents/communicateRecord.vue'
+import approveRecord from '@/pages/todoList/commonComponents/approveRecord.vue'
+import approveHandle from '@/pages/todoList/commonComponents/approveHandle.vue'
+export default {
+  components: {
+    downloadFile,
+    approveFlow,
+    approveRecord,
+    communicateRecord,
+    approveHandle
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      // 是否显示审批（0:详情 1：审批 2：审批详情 3：我发起的详情）
+      isApproved: 0,
+      auditStatus: 0,
+      addForm: {
+        fileInformationList: ''
+      },
+      approvalTaskCode: '',
+      form: {},
+      // 审批流程
+      flowList: [
+      ],
+      curFlowIndex: 0,
+      communicateRecordList: [
+        {}
+      ],
+      // 知会人
+      noticeUser: ''
+    }
+  },
+  props: [],
+  watch: {
+    '$route': 'init'
+  },
+  created () {
+    this.init()
+  },
+  methods: {
+    init () {
+      this.isApproved = this.$route.query.isApproved
+      this.auditStatus = this.$route.query.auditStatus
+      this.approvalTaskCode = this.$route.query.code
+      this.getDocumentInfo()
+    },
+    getDocumentInfo () {
+      documentInfo.getById(this.$route.params.objectId).then(res => {
+        this.addForm = res.data.documentInfo
+      })
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style scoped>
+</style>

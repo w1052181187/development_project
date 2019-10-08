@@ -1,0 +1,170 @@
+<template>
+  <div id="portal-credit-eval-page" class="cont-view">
+    <!-- 面包屑区域start -->
+    <div class="bread-box">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item>门户信息管理</el-breadcrumb-item>
+        <el-breadcrumb-item>信用评价</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <!-- 面包屑区域end -->
+    <div class="credit-eval-list">
+      <div class="handle-add">
+        <el-button type="primary" size="small" @click="addEval">新增评价</el-button>
+      </div>
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%">
+        <el-table-column
+          label="序号"
+          type="index"
+          align="center"
+          :index="computedIndex"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="userName"
+          align="center"
+          label="电商名称">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          align="center"
+          label="排名">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          label="操作">
+          <template slot-scope="scope">
+            <el-button type="text" @click="handleTableBtn(scope.row, 'del')">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="pagination-box">
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="page.total"
+          :page-size='page.pageSize'
+          :current-page.sync="page.currentPage"
+          @current-change="handlePage"
+          @next-click="handlePage">
+        </el-pagination>
+        <!--分页-->
+      </div>
+    </div>
+    <!-- 弹窗start -->
+    <div class="dialog-box">
+      <el-dialog
+        title="新增评价"
+        :visible.sync="dialogVisible"
+        width="40%"
+        center>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
+        </span>
+      </el-dialog>
+    </div>
+    <!-- 弹窗end -->
+  </div>
+</template>
+<script>
+import {credit} from '@/api'
+export default {
+  name: 'credit-eval',
+  data () {
+    return {
+      ruleForm: {},
+      tableData: [],
+      page: {
+        total: 0,
+        pageSize: 10,
+        pageNo: 0,
+        currentPage: 1
+      },
+      rules: {
+        creditOrder: [
+          {required: true, message: '请选择排名', trigger: ['blur', 'change']}
+        ],
+        evaluation: [
+          {required: true, message: '请填写评语', trigger: ['blur', 'change']}
+        ]
+      },
+      dialogVisible: false,
+      orderOptions: []
+    }
+  },
+  methods: {
+    /** 序号计算 */
+    computedIndex (index) {
+      return index + (this.page.currentPage - 1) * this.page.pageSize + 1
+    },
+    submitForm () {
+      this.$refs['ruleForm'].validate(valid => {
+        if (valid) {
+          if (this.isRepeat(this.ruleForm.list)) {
+            this.$message({
+              type: 'warning',
+              message: '排名有重复，请重新排序'
+            })
+            return false
+          }
+          credit.update(this.ruleForm.list).then(res => {
+            // 成功
+            if (res.data.resCode === '0000') {
+            }
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    /** 新增评价 */
+    addEval () {
+      this.dialogVisible = true
+    },
+    handleTableBtn (row, type) {},
+    handlePage (val) {},
+    // 判断数组是否有重复数据、
+    isRepeat (arr) {
+      let hash = {}
+      for (let i in arr) {
+        if (hash[arr[i].creditOrder]) {
+          return true
+        }
+        hash[arr[i].creditOrder] = true
+      }
+      return false
+    },
+    getList () {
+      credit.queryList().then(res => {
+        this.tableData = res.data.creditEvaluationList
+        this.generateOrderOption(this.ruleForm.list)
+      })
+    },
+    generateOrderOption (list) {
+      list.forEach((item, index) => {
+        let obj = {}
+        obj.creditOrder = Number(index) + 1
+        obj.name = '第' + obj.creditOrder + '名'
+        this.orderOptions.push(obj)
+      })
+    }
+  },
+  mounted () {
+    // this.getList()
+  }
+}
+</script>
+<style lang="less">
+#portal-credit-eval-page {
+  .handle-add {
+    padding-bottom: 15px;
+    text-align: right;
+  }
+}
+</style>

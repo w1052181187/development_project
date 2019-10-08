@@ -1,0 +1,258 @@
+<template>
+  <div class="cloudcontent" id="bid-opening">
+    <!--搜索按钮-->
+    <div class="topmain">
+      <el-form :model="searchForm" ref="searchForm" label-width="85px">
+        <el-row>
+          <div class="selectlist">
+            <el-form-item label="开标时间：">
+              <el-radio-group v-model="searchForm.openingTimeType">
+                <el-radio :label="0">全部</el-radio>
+                <el-radio :label="1">本周</el-radio>
+                <el-radio :label="2">下周</el-radio>
+                <el-radio :label="3">本月</el-radio>
+                <el-radio :label="4">下月</el-radio>
+                <el-radio :label="5">自定义</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </div>
+          <div class="selectlist" v-if="searchForm.openingTimeType === 5">
+            <el-form-item class="date-select">
+              <el-date-picker
+                v-model="searchForm.publishTime"
+                type="daterange"
+                range-separator="--"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :default-time="['00:00:00', '23:59:59']"
+                value-format="yyyy-MM-dd HH:mm:ss">
+              </el-date-picker>
+            </el-form-item>
+          </div>
+          <el-button  class="search-btn" @click="search">查询</el-button>
+          <el-button  @click="reset">重置</el-button>
+        </el-row>
+      </el-form>
+    </div>
+    <!--搜索按钮-->
+    <div class="main">
+      <el-table
+        :data="tableData"
+        border
+        header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          align="center"
+          :index="indexMethod"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="tenderProjectName"
+          label="项目名称"
+          width="300"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="bidSectionName"
+          label="标段名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="firstProjectLeaderName"
+          label="项目经理"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="bidOpeningTime"
+          label="开标时间"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="countDown"
+          label="倒计时"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="count-down-start" v-if="scope.row.countDown !== '已结束'">{{scope.row.countDown}}</span>
+            <span class="count-down-end" v-else>{{scope.row.countDown}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="100">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleDetail(scope)">查看</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+import {bidSection} from '@/api/project'
+export default {
+  name: '',
+  data () {
+    return {
+      // 搜索form
+      searchForm: {
+        openingTimeType: 0
+      },
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      tableData: [],
+      currentDate: null,
+      timers: {}
+    }
+  },
+  methods: {
+    // 序号
+    indexMethod (index) {
+      return index + (this.currentPage - 1) * this.pageSize + 1
+    },
+    // 重置
+    reset () {
+      this.searchForm.openingTimeType = 0
+      this.currentPage = 1
+      this.pageNo = 0
+      this.getData()
+    },
+    // 搜索
+    search () {
+      this.currentPage = 1
+      this.pageNo = 0
+      this.getData()
+    },
+    // 列表
+    getData () {
+      this.getTableList()
+    },
+    getTableList () {
+      let query = {
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        openingTimeType: this.searchForm.openingTimeType
+      }
+      if (Object.is(this.searchForm.openingTimeType, 5)) {
+        if (this.searchForm.publishTime) {
+          query.openingTimeLowerLimit = this.searchForm.publishTime[0]
+          query.openingTimeUpperLimit = this.searchForm.publishTime[1]
+        }
+      }
+      bidSection.getToOpenBidList(query).then(res => {
+        let data = res.data.bidSectionList
+        if (data) {
+          this.tableData = data.list
+          this.total = data.total
+          this.currentDate = res.data.currentDate
+          this.expTime()
+        }
+      })
+    },
+    // 倒计时
+    expTime () {
+      this.tableData.map((item, key) => {
+        let dateStart = this.tableData[key]['bidOpeningTime'] // 开始时间
+        let start = '' // 开始时间
+        let curTime = this.currentDate // 服务器时间
+        let end = ''
+        if (curTime) { // 开始时间进行格式化
+          end = new Date(curTime.substring(0, 4), parseInt(curTime.substring(5, 7)) - 1, curTime.substring(8, 10), curTime.substring(11, 13), curTime.substring(14, 16), curTime.substring(17)).getTime()
+        }
+        if (this.tableData[key]['bidOpeningTime']) { // 开始时间进行格式化
+          start = new Date(dateStart.substring(0, 4), parseInt(dateStart.substring(5, 7)) - 1, dateStart.substring(8, 10), dateStart.substring(11, 13), dateStart.substring(14, 16), dateStart.substring(17)).getTime()
+        }
+        let totalTime = start - end
+        this.timers[key] = setInterval(() => {
+          totalTime -= 1000
+          if (totalTime > 0) {
+            var dd = Math.floor(totalTime / 1000 / 60 / 60 / 24)
+            var hh = Math.floor((totalTime / 1000 / 60 / 60) % 24)
+            var mm = Math.floor((totalTime / 1000 / 60) % 60)
+            var ss = Math.floor((totalTime / 1000) % 60)
+            // 注：this.$set(object,'djs','要赋的值'); 给每一行设置一个值
+            this.$set(this.tableData[key], 'countDown', dd + '天' + hh + '小时' + mm + '分' + ss + '秒')
+          } else {
+            this.$set(this.tableData[key], 'countDown', '已结束')
+          }
+        }, 1000)
+      })
+    },
+    // 表单分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getData()
+    },
+    // 删除
+    handleDel (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+      }).catch(() => {
+        return false
+      })
+    },
+    // 查看
+    handleDetail (scope) {
+      sessionStorage.setItem('isOverview', true)
+      this.$router.push({path: `/project/projectProcess/project/process/${scope.row.tenderSystemCode}`})
+    }
+  },
+  mounted () {
+    this.searchForm.openingTimeType = Number(this.$route.query.openingTimeType) || null
+    if (Object.is(this.searchForm.openingTimeType, 5) && this.$route.query.selectDate) {
+      this.searchForm.publishTime = []
+      this.searchForm.publishTime[0] = this.$route.query.selectDate + ' 00:00:00'
+      this.searchForm.publishTime[1] = this.$route.query.selectDate + ' 23:59:59'
+    }
+    this.getData()
+  },
+  destroyed () {
+    this.tableData.map((item, key) => {
+      clearInterval(this.timers[key])
+    })
+  }
+}
+</script>
+
+<style lang="less">
+  #bid-opening{
+    .search-btn{
+      margin-bottom: 12px;
+      color: #fff;
+      background-color: #409EFF;
+      border-color: #409EFF;
+      margin-left: 20px;
+      margin-right: 10px;
+    }
+    .selectlist{
+      display: inline-block;
+      float: left;
+    }
+    .date-select .el-form-item__content{
+      margin-left: 20px!important;
+    }
+    .count-down-start{
+      color:#ff0001 ;
+    }
+    .count-down-end{
+      color:#bbbbbb ;
+    }
+  }
+</style>

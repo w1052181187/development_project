@@ -1,0 +1,246 @@
+<template>
+  <div class="cloudcontent" id="cloud_business_assess">
+    <div class="main">
+      <div class="tit">
+        <span>{{baseInfo.projectName}}<i>评估日期：{{baseInfo.assessStartDate | formatDate}}&nbsp;&nbsp;&nbsp;&nbsp;发起人：{{baseInfo.assessorName || $store.getters.authUser.userName}}</i></span>
+        <el-button type="primary" class="fr" @click="showDialog"> 提交评估报告 </el-button>
+        <assessors :relatedCode="this.$route.params.code" :showVisible="showVisible" :projectName="baseInfo.projectName" @showDialog="showDialog" @saveSuccess="submitAssessSuccess"></assessors>
+      </div>
+      <div class="assess_main">
+        <p class="title"><span>评估报告目录：</span></p>
+        <el-tabs :tab-position="tabPosition">
+          <el-tab-pane label="第一部分  客户基本信息">
+            <base-info :detailData="baseInfo"></base-info>
+          </el-tab-pane>
+          <el-tab-pane label="第二部分  竞争对手信息">
+            <competitor-info :relatedCode="$route.params.code"></competitor-info>
+          </el-tab-pane>
+          <el-tab-pane label="第三部分  项目可行性评估">
+            <template-scoring></template-scoring>
+          </el-tab-pane>
+          <el-tab-pane label="第四部分  项目评估建议">
+            <p class="advice">初步评估建议：</p>
+            <el-form :model="baseInfo" ref="submitForm">
+              <el-row>
+                <el-col :span="24">
+                  <el-form-item label="是否继续跟进该项目：" label-width="140px" prop="isFollowUp">
+                    <el-radio-group v-model="baseInfo.isFollowUp">
+                      <el-radio :label="1">是</el-radio>
+                      <el-radio :label="0">否</el-radio>
+                    </el-radio-group>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="24">
+                  <el-form-item label="评估建议：" label-width="140px" prop="opinion" :rules="rules.longText">
+                    <el-input type="textarea" v-model="baseInfo.opinion"></el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-form-item class="submit-radio">
+                <el-button type="primary" @click="submit" v-loading="submitLoading">保存</el-button>
+              </el-form-item>
+            </el-form>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import BaseInfo from '../detail/baseInfo'
+import CompetitorInfo from '../competitor/list_detail'
+import TemplateScoring from '../../template/scoring'
+import Assessors from './assessors'
+import {business} from '@/api/customer'
+import {dateFormat} from '@/assets/js/common'
+
+export default {
+  components: {
+    BaseInfo,
+    CompetitorInfo,
+    TemplateScoring,
+    Assessors
+  },
+  data () {
+    return {
+      tabPosition: 'left',
+      baseInfo: {},
+      submitLoading: false,
+      // 选择决策人弹框
+      showVisible: false,
+      // 表单验证
+      rules: {
+        longText: [
+          { min: 1, max: 500, message: '长度在1~500个字符', trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  methods: {
+    // 初始化数据
+    initData () {
+      business.queryOneByCode(this.$route.params.code).then(res => {
+        this.baseInfo = res.data.data
+      })
+    },
+    // 打开/关闭弹出框
+    showDialog () {
+      this.showVisible = !this.showVisible
+    },
+    // 提交
+    submit () {
+      this.$refs['submitForm'].validate((valid) => {
+        if (valid) {
+          this.$confirm('确认要提交吗?', '提示', {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            let submitForm = {
+              code: this.baseInfo.code,
+              isFollowUp: this.baseInfo.isFollowUp,
+              opinion: this.baseInfo.opinion
+            }
+            this.submitLoading = true
+            business.updateByCode(submitForm).then(res => {
+              this.submitLoading = false
+            })
+          }).catch(() => {
+            this.loading = false
+            return false
+          })
+        }
+      })
+    },
+    // 提交评估成功
+    submitAssessSuccess () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.push({path: '/customerMan/business'})
+    }
+  },
+  filters: {
+    // 格式化时间
+    formatDate (value) {
+      return value ? dateFormat(value, 'yyyy-MM-dd') : dateFormat(new Date(), 'yyyy-MM-dd')
+    }
+  },
+  mounted () {
+    // 初始化数据
+    this.initData()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_business_assess {
+    .el-form{
+      width: 100%;
+    }
+    .assess_main{
+      width: 100%;
+      margin-top: 20px;
+      min-height: 100px;
+      border-top: 1px solid #dedede;
+    }
+    .assess_main p.title{
+      width: 100%;
+      height: 50px;
+    }
+    .assess_main p.title span{
+      width: 178px;
+      height: 50px;
+      line-height: 50px;
+      font-weight: bold;
+      display: block;
+      border-right: 1px solid #dedede;
+      padding-right: 20px;
+      text-align: right;
+    }
+    .el-tabs__nav{
+      border-right: 1px solid #dedede;
+      margin-right: 10px;
+      min-height: 700px;
+    }
+    .el-tabs--left .el-tabs__active-bar.is-left, .el-tabs--left .el-tabs__active-bar.is-right, .el-tabs--right .el-tabs__active-bar.is-left, .el-tabs--right .el-tabs__active-bar.is-right{
+      top: 14px;
+      width: 10px;
+      height: 10px!important;
+    }
+    .el-tabs--left .el-tabs__active-bar.is-left, .el-tabs--left .el-tabs__nav-wrap.is-left::after{
+      right: -5px;
+      -webkit-border-radius: 10px;
+      -moz-border-radius: 10px;
+      border-radius: 10px;
+    }
+    .el-tabs__item{
+      height: 100px;
+    }
+    .el-textarea__inner{
+      height: 160px;
+    }
+    p.advice{
+      line-height: 50px;
+      font-weight: bold;
+    }
+    .selectbox{
+      width: 100%;
+      overflow: hidden;
+      margin: 30px 10px;
+    }
+    .selectbox p{
+      width: 100%;
+      height: 30px;
+      line-height: 30px;
+      border-bottom: 1px solid #dedede;
+    }
+    .selectbox p span{
+      color: #409EFF;
+      border-bottom: 2px solid #409EFF;
+      display: inline-block;
+      padding: 0 10px;
+      font-weight: bold;
+    }
+    .selectbox ul{
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #dedede;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+    .selectbox ul li{
+      width: 66px;
+      height: 30px;
+      line-height: 30px;
+      float: left;
+      margin: 8px;
+      position: relative;
+    }
+    .selectbox ul li span{
+      display: block;
+      width: 100%;
+      height: 30px;
+      text-align: center;
+      background: #e9f8d8;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+    }
+    .selectbox ul li i{
+      width: 18px;
+      height: 18px;
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      display: inline-block;
+      cursor: pointer;
+      background: url("../../../../../static/images/close.png") center center no-repeat;
+    }
+    .selectbox ul.jc li span{
+      background: #d8f8f8;
+    }
+  }
+</style>

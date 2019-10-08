@@ -1,0 +1,118 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main viewdetails">
+      <el-form :model="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <span>{{bidSection.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{bidSection.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段编号：">
+              <span>{{bidSection.bidSectionCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段名称：">
+              <span>{{bidSection.bidSectionName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="投标人："  prop="bidderName">
+              <span>{{updateForm.bidderName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="投标文件：">
+              <el-table
+                :data="updateForm.fileInformationList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  type="index"
+                  label="序号"
+                  width="60"
+                  align="center">
+                </el-table-column>
+                <el-table-column
+                  prop="fileName"
+                  label="文件名称"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  label="操作" align="center" width="200">
+                  <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="lookFile(scope.row)">查看</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+    <div class="project-info-line"></div>
+    <approve-handle></approve-handle>
+  </div>
+</template>
+
+<script>
+import {resultInfo} from '@/api/project'
+import {downloadFile} from '@/assets/js/common'
+import approveHandle from '@/pages/todoList/commonComponents/approveHandle.vue'
+export default {
+  components: {
+    approveHandle
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      auditStatus: 0,
+      objectId: '',
+      updateForm: {},
+      bidSection: {},
+      form: {}
+    }
+  },
+  methods: {
+    lookFile (file) {
+      downloadFile(file.fileName, file.relativePath)
+    },
+    getResultInfo () {
+      resultInfo.getById(this.objectId).then(res => {
+        this.updateForm = res.data.resultInfo
+        if (this.updateForm.bidSection) {
+          this.bidSection = this.updateForm.bidSection
+        }
+      })
+    },
+    init () {
+      this.isApproved = this.$route.query.isApproved
+      this.auditStatus = this.$route.query.auditStatus
+      this.objectId = this.$route.params.objectId
+      this.getResultInfo()
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+
+<style scoped>
+</style>

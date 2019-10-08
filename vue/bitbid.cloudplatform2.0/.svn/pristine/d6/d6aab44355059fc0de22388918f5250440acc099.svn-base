@@ -1,0 +1,132 @@
+<template>
+  <div id="file-end">
+    <div class="basic-info-title">移交情况</div>
+    <el-form :model="info" class="viewdetails" label-width="100px">
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="移交状态：">
+            <span>{{info.adminName}}</span>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="最新移交人：">
+            <span>{{info.adminName}}</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="移交进度：">
+            <span>{{info.adminName}}</span>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="最新移交时间：">
+            <span>{{info.adminName}}</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="档案管理员：">
+            <span>{{info.adminName}}</span>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+    <div class="basic-info-title">移交信息</div>
+    <el-table
+      :data="info.archivesClassifyList"
+      border
+      style="width: 100%;margin-left: 32px" header-cell-class-name="tableheader">
+      <el-table-column
+        width="50"
+        type="index"
+        align="center"
+        label="序号">
+      </el-table-column>
+      <el-table-column
+        prop="name"
+        label="档案目录"
+        align="center"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="transferStatus"
+        label="移交状态"
+        align="center"
+        width="100"
+        show-overflow-tooltip>
+        <template slot-scope="scope">
+          <span v-if="scope.row.transferStatus === 0">待移交</span>
+          <span v-if="scope.row.transferStatus === 1" class="transferStatus-accept">已接收</span>
+          <span v-if="scope.row.transferStatus === 2">已移交</span>
+          <span v-if="scope.row.transferStatus === 3">已退回</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="lastTransferName"
+        label="最新移交人"
+        align="center"
+        width="120"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="lastTransferTime"
+        label="最新移交时间"
+        align="center"
+        width="160"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="status"
+        label="归档状态"
+        align="center"
+        width="100"
+        show-overflow-tooltip>
+        <template slot-scope="scope">
+          <span v-if="scope.row.transferStatus === 0"></span>
+          <template v-else>
+            <span v-if="scope.row.status === 0">未归档</span>
+            <span v-if="scope.row.status === 1" class="transferStatus-accept">已归档</span>
+          </template>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="filingTime"
+        label="归档时间"
+        align="center"
+        width="160"
+        show-overflow-tooltip>
+      </el-table-column>
+    </el-table>
+  </div>
+</template>
+<script>
+// import {archivesClassify} from '@/api/archives'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      objectId: ''
+    }
+  },
+  props: ['info'],
+  methods: {
+    getInfo () {}
+  },
+  mounted () {
+    this.objectId = this.$route.params.objectId
+    this.getInfo()
+  }
+}
+</script>
+<style lang="less">
+  #file-end {
+    .user-form {
+      width: 100%;
+      margin-left: 16px;
+    }
+  }
+</style>

@@ -1,0 +1,68 @@
+/**
+ * Created by Administrator on 2019-3-7.
+ */
+export default [
+  {
+    path: '/project/projectProcess/invite/add',
+    name: '流程管理-邀请招标-添加',
+    meta: {
+      title: '流程管理-邀请招标-添加',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/invite/add'], resolve)
+  },
+  {
+    path: '/project/projectProcess/invite/update',
+    name: '流程管理-邀请招标-编辑',
+    meta: {
+      title: '流程管理-邀请招标-编辑',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/invite/update'], resolve)
+  },
+  {
+    path: '/project/projectProcess/invite/detail/:code',
+    name: '流程管理-邀请招标-查看',
+    meta: {
+      title: '流程管理-邀请招标-查看',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/invite/detail'], resolve)
+  },
+  {
+    path: '/project/projectProcess/invite/add_notice',
+    name: '流程管理-邀请招标-添加更正公告',
+    meta: {
+      title: '流程管理-邀请招标-添加更正公告',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/invite/addNotice'], resolve)
+  },
+  {
+    path: '/project/projectProcess/invite/update_notice',
+    name: '流程管理-邀请招标-修改更正公告',
+    meta: {
+      title: '流程管理-邀请招标-修改更正公告',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/invite/updateNotice'], resolve)
+  },
+  {
+    path: '/project/projectProcess/invite/notice_detail/:code',
+    name: '流程管理-邀请招标-查看更正公告',
+    meta: {
+      title: '流程管理-邀请招标-查看更正公告',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/invite/noticeDetail'], resolve)
+  },
+  {
+    path: '/project/projectProcess/invite/tender_confirm',
+    name: '流程管理-邀请招标-投标人确认情况',
+    meta: {
+      title: '流程管理-邀请招标-投标人确认情况',
+      active: '/project/projectProcess'
+    },
+    component: resolve => require(['@/pages/project/projectProcess/invite/tenderConfirm'], resolve)
+  }
+]

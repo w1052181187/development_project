@@ -1,0 +1,18 @@
+import department from './department'
+import enterprise from './enterprise'
+import roles from './roles'
+import users from './users'
+import projectProcessSet from './projectProcessSet'
+import dataDict from './dataDict'
+import approveConfig from './approveConfig'
+import service from './service'
+export default[
+  ...department,
+  ...enterprise,
+  ...roles,
+  ...users,
+  ...projectProcessSet,
+  ...approveConfig,
+  ...dataDict,
+  ...service
+]

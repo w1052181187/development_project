@@ -1,0 +1,88 @@
+import request from '@/utils/axios/components-axios'
+
+export const archivesInfo = {
+  /** 查询 */
+  getArchivesInfoList (params) {
+    return request({
+      url: '/archives-infos',
+      method: 'get',
+      params: params
+    })
+  },
+  /** 查询详情 */
+  detailArchivesInfo (objectId) {
+    return request({
+      url: '/archives-infos/' + objectId,
+      method: 'get'
+    })
+  },
+  /** 保存 */
+  saveArchivesInfo (data) {
+    return request({
+      url: '/archives-infos',
+      method: 'post',
+      data: data
+    })
+  },
+  /** 修改 */
+  updateArchivesInfo (data) {
+    return request({
+      url: '/archives-infos',
+      method: 'put',
+      data: data
+    })
+  },
+  /** 删除文件目录 */
+  deleteArchivesInfo (objectId) {
+    return request({
+      url: '/archives-infos/' + objectId,
+      method: 'delete'
+    })
+  },
+  /** 项目  归档 */
+  archivesFile (data) {
+    return request({
+      url: '/archives-infos/archivesFile',
+      method: 'put',
+      data: data
+    })
+  },
+  /** 获取当前归档未使用的文件目录 */
+  getUnaddedCatalog (data) {
+    return request({
+      url: '/archives-infos/getUnaddedCatalog',
+      method: 'get',
+      params: data
+    })
+  },
+  checkBidSectionArchived (sectionSystemCode) {
+    return request({
+      url: '/archives-infos/checkBidSectionArchived/' + sectionSystemCode,
+      method: 'get'
+    })
+  },
+  /** 档案移交 */
+  transferInfo (data) {
+    return request({
+      url: '/archives-infos/transferInfo',
+      method: 'put',
+      data: data
+    })
+  },
+  /** 档案接收或者退回 */
+  receiveOrReturn (data) {
+    return request({
+      url: '/archives-infos/receiveOrReturn',
+      method: 'put',
+      data: data
+    })
+  },
+  /** 批量档案接收 */
+  receiveList (data) {
+    return request({
+      url: '/archives-infos/receiveList',
+      method: 'put',
+      data: data
+    })
+  }
+}

@@ -1,0 +1,38 @@
+export default [
+  {
+    path: '/knowledge/agencyContract',
+    name: '代理合同管理',
+    meta: {
+      title: '代理合同管理',
+      active: '/knowledge/agencyContract'
+    },
+    component: resolve => require(['@/pages/knowledge/agencyContract/index'], resolve)
+  },
+  {
+    path: '/knowledge/agencyContract/add',
+    name: '添加代理合同',
+    meta: {
+      title: '添加代理合同',
+      active: '/knowledge/agencyContract'
+    },
+    component: resolve => require(['@/pages/knowledge/agencyContract/add'], resolve)
+  },
+  {
+    path: '/knowledge/agencyContract/update/:code',
+    name: '修改代理合同',
+    meta: {
+      title: '修改代理合同',
+      active: '/knowledge/agencyContract'
+    },
+    component: resolve => require(['@/pages/knowledge/agencyContract/update'], resolve)
+  },
+  {
+    path: '/knowledge/agencyContract/detail/:code',
+    name: '查看代理合同',
+    meta: {
+      title: '查看代理合同',
+      active: '/knowledge/agencyContract'
+    },
+    component: resolve => require(['@/pages/knowledge/agencyContract/detail'], resolve)
+  }
+]

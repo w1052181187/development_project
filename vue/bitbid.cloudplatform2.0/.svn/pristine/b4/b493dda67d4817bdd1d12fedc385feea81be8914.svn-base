@@ -1,0 +1,457 @@
+<template>
+  <div class="cloudcontent" id="cloud_archives_man">
+    <div class="topmain">
+      <div class="seacher_box">
+        <span>项目名称：</span>
+        <el-input class="search" placeholder="请输入项目名称" style="vertical-align: top"  v-model="searchContent"></el-input>
+        <span>归档状态：</span>
+        <el-select class="select" v-model="status" placeholder="请选择">
+          <el-option
+            v-for="item in searchClassify"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <div class="handBtn">
+          <el-button  type="primary" class="search" @click="search">查询</el-button>
+          <el-button  @click="reset">重置</el-button>
+        </div>
+      </div>
+    </div>
+    <div class="main">
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="60"
+          :index='dataIndex'
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="tenderProjectName"
+          label="项目名称"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <div class="tender-project-name">
+              <img src="../../../assets/lishi_b.png" v-if="Number(scope.row.tenderProject.dataSource) === 1" title="历史项目">{{scope.row.tenderProjectName}}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="bidSectionName"
+          label="标段名称"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="lastkTransferTime"
+          label="最新移交时间"
+          width="160"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="adminName"
+          label="档案管理员"
+          width="120"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="归档状态"
+          width="80"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="scope.row.status === 0">待归档</span>
+            <span v-if="scope.row.status === 1">已归档</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="filingTime"
+          label="归档时间"
+          width="160"
+          :formatter="simpleFormatData"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="归档进度"
+          width="80"
+          align="center"
+          prop="archivesSchedule"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          label="操作" align="center" width="240">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleAcceptBtn(scope)" v-if="$store.getters.permissions.includes('1070202') && checkedButton(scope.row, 'receive')">接收</el-button>
+            <el-button type="text" size="small" @click="handleEditBtn(scope)" v-if="$store.getters.permissions.includes('1070202') && checkedButton(scope.row, 'modifyLocation')" >修改位置</el-button>
+            <el-button type="text" size="small" @click="handleAdminUpdate(scope)" v-if="$store.getters.permissions.includes('1070202') && checkedButton(scope.row, 'replaceAdmin')">更换管理员</el-button>
+            <el-button type="text" size="small" @click="handleLookBtn(scope)">查看</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+      <el-dialog title="修改档案位置" :visible.sync="dialogTableVisible">
+        <el-form :model="positionForm" :validate-on-rule-change="true">
+          <el-form-item label="档案名称：">
+            <span>{{positionForm.name}}</span>
+          </el-form-item>
+          <el-form-item class="bitianicon" label="实物位置：">
+            <el-select class="position-select" v-model="positionForm.archivesRoomId" placeholder="请选择" @change="getArchivesCabinet($event,true)">
+              <el-option
+                v-for="item in roomOptions"
+                :key="item.objectId"
+                :label="item.name"
+                :value="item.objectId">
+              </el-option>
+            </el-select>
+            <el-select class="position-select" v-model="positionForm.archivesCabinetId" placeholder="请选择" @change="getLayerNumber($event,true)">
+              <el-option
+                v-for="item in cabinetList"
+                :key="item.objectId"
+                :label="item.name"
+                :value="item.objectId">
+              </el-option>
+            </el-select>
+            <el-select class="position-select" v-model="positionForm.archivesCabinetLayerNumber" placeholder="请选择">
+              <el-option
+                v-for="item in layerNumberList"
+                :key="item.layerNumber"
+                :label="item.layerNumber"
+                :value="item.layerNumber">
+              </el-option>
+            </el-select>
+            <el-input class="position-input" v-model="positionForm.locationDescription"></el-input>
+          </el-form-item>
+          <el-form-item label="实物档案编号：">
+            <el-input class="position-input" v-model="positionForm.physicalNumber"></el-input>
+          </el-form-item>
+          <el-table
+            :data="positionForm.archivesClassifyList.filter(item => Number(item.status) === 1)"
+            border
+            style="width: 100%" header-cell-class-name="tableheader">
+            <el-table-column
+              width="50"
+              type="index"
+              align="center"
+              label="序号">
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="档案目录"
+              align="center"
+              width="200"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              label="详细位置描述"
+              align="center">
+              <template slot-scope="scope" v-if="scope.row.name !== '电子档案'">
+                <el-input v-model="scope.row.locationDescription"></el-input>
+              </template>
+              <template slot-scope="scope" v-if="scope.row.name === '电子档案'">
+                <span>------</span>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-form-item class="submit-radio">
+            <el-button type="primary" @click="handleConfirm" :loading="isSubmiting">确定</el-button>
+            <el-button class="cancal" @click="dialogTableVisible = false">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+      <!-- 更换管理员弹窗 -->
+      <el-dialog title="更换管理员" width="600px" :visible.sync="dialogAdminVisible">
+        <el-form :model="adminForm" :validate-on-rule-change="true">
+          <el-form-item label="项目名称：">
+            <span>{{adminForm.tenderProjectName}}</span>
+          </el-form-item>
+          <el-form-item label="标段名称：">
+            <span>{{adminForm.bidSectionName}}</span>
+          </el-form-item>
+          <el-form-item label="原档案管理员：">
+            <span>{{adminForm.adminName}}</span>
+          </el-form-item>
+          <el-form-item class="bitianicon" label="现档案管理员：">
+            <el-select v-model="adminForm.newAdminId" placeholder="请选择" @click.native="getAdmin">
+              <el-option
+                v-for="item in adminList"
+                :key="item.adminId"
+                :label="item.adminName"
+                :value="item.adminId">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item class="submit-radio">
+            <el-button type="primary" @click="submitNewAdmin" :loading="isSubmiting">确定</el-button>
+            <el-button class="cancal" @click="dialogAdminVisible = false">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+      <!-- 更换管理员弹窗 -->
+    </div>
+  </div>
+</template>
+<script>
+import {archivesInfo, archivesRoom} from '@/api/archives'
+import admin from '@/pages/archives/setting/dialog/admin'
+export default {
+  components: {
+    admin
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      status: null,
+      searchClassify: [{
+        value: null,
+        label: '全部'
+      }, {
+        value: '0',
+        label: '待归档'
+      }, {
+        value: '1',
+        label: '已归档'
+      }],
+      // 普通格式化数据，空的时候展示"---"
+      simpleFormatData (row, col, cellValue) {
+        return cellValue || '---'
+      },
+      searchContent: '',
+      tableData: [],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: null, // 总条数
+      pageSize: 10, // 每页展示条数
+      dialogTableVisible: false,
+      positionForm: {
+        archivesClassifyList: []
+      },
+      roomOptions: [],
+      cabinetList: [],
+      layerNumberList: [],
+      dialogAdminVisible: false,
+      adminForm: {
+        newAdminId: ''
+      },
+      adminFormIndex: '',
+      adminList: [],
+      // 是否展示管理员
+      showAdminVisible: false
+    }
+  },
+  watch: {
+    $route: 'resetView'
+  },
+  methods: {
+    // 判断按钮是否可以存在
+    checkedButton (row, buttonName) {
+      let archivesScheduleArr = row.archivesSchedule.split('/')
+      if (buttonName === 'receive') {
+        // 未全归档
+        if (Number(archivesScheduleArr[0]) < archivesScheduleArr[1]) {
+          return true
+        }
+      } else {
+        // 部分归档 或 全部归档
+        if (Number(archivesScheduleArr[0]) > 0) {
+          return true
+        }
+      }
+    },
+    // 更换档案管理员
+    submitNewAdmin () {
+      if (!this.adminForm.newAdminId) {
+        this.$message({
+          message: '请选择现档案管理员',
+          type: 'warning'
+        })
+        return false
+      }
+      if (this.adminForm.newAdminId === this.adminForm.adminId) {
+        this.$message({
+          message: '现档案管理员不能与原管理员一致',
+          type: 'warning'
+        })
+        return false
+      }
+      this.isSubmiting = true
+      this.adminForm.adminId = this.adminForm.newAdminId
+      this.tableData[this.adminFormIndex].adminId = this.adminForm.adminId
+      this.adminList.forEach(admin => {
+        if (this.adminForm.newAdminId === admin.adminId) {
+          this.adminForm.adminName = admin.adminName
+          this.tableData[this.adminFormIndex].adminName = this.adminForm.adminName
+        }
+      })
+      archivesInfo.updateArchivesInfo(this.adminForm).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.getArchivesInfos()
+          this.dialogAdminVisible = false
+        }
+      })
+      this.isSubmiting = false
+    },
+    getAdmin () {
+      if (this.adminList.length <= 0) {
+        archivesRoom.getAdminList().then((res) => {
+          if (res.data.resCode === '0000') {
+            this.adminList = res.data.adminList
+          }
+        })
+      }
+    },
+    // 管理员打开
+    showAdminDialog () {
+      this.showAdminVisible = !this.showAdminVisible
+    },
+    // 选择管理员
+    selectedAdmin (obj) {
+    },
+    // 获取归档信息
+    getArchivesInfos () {
+      archivesInfo.getArchivesInfoList({
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        status: this.status,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        projectNameLike: this.searchContent,
+        adminId: this.$store.getters.authUser.userId
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.tableData = res.data.archivesInfoList.list
+          this.total = res.data.archivesInfoList.total
+        }
+      })
+    },
+    getArchivesCabinet (id, isClean) {
+      this.cabinetList = []
+      if (isClean) {
+        this.positionForm.archivesCabinetId = ''
+        this.positionForm.archivesCabinetLayerNumber = ''
+        this.positionForm.locationDescription = ''
+      }
+      this.roomOptions.forEach(room => {
+        if (room.objectId === id) {
+          this.cabinetList = room.archivesCabinetList
+        }
+      })
+    },
+    getLayerNumber (id, isClean) {
+      if (isClean) {
+        this.positionForm.archivesCabinetLayerNumber = ''
+        this.positionForm.locationDescription = ''
+      }
+      this.layerNumberList = []
+      this.cabinetList.forEach(cabinet => {
+        if (cabinet.objectId === id) {
+          for (let i = 1; i < Number(cabinet.layerNumber) + 1; i++) {
+            this.layerNumberList.push({layerNumber: i + '层'})
+          }
+        }
+      })
+    },
+    // 搜索
+    search () {
+      this.pageNo = 0
+      this.currentPage = 1
+      this.getArchivesInfos()
+    },
+    reset () {
+      this.status = null
+      this.searchContent = ''
+      this.pageNo = 0
+      this.currentPage = 1
+      this.getArchivesInfos()
+    },
+    // 分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getArchivesInfos()
+    },
+    dataIndex (index) {
+      return index + (this.currentPage - 1) * this.pageSize + 1
+    },
+    // 接受
+    handleAcceptBtn (scope) {
+      this.$router.push({path: `/archives/management/add/` + scope.row.objectId})
+    },
+    handleEditBtn (scope) {
+      this.dialogTableVisible = true
+      // 获取档案位置
+      archivesRoom.getArchivesRoomList({
+        enterpriseId: this.$store.getters.authUser.enterpriseId
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.roomOptions = res.data.archivesRoomList.list
+        }
+      })
+      // 获取归档文件
+      let isSetRecord = 0 // 不设置查询记录
+      archivesInfo.detailArchivesInfo(scope.row.objectId, isSetRecord).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.positionForm = res.data.archivesInfo
+          if (this.positionForm.archivesRoomId) {
+            this.getArchivesCabinet(this.positionForm.archivesRoomId, false)
+          }
+          if (this.positionForm.archivesCabinetId) {
+            this.getLayerNumber(this.positionForm.archivesCabinetId, false)
+          }
+        }
+      })
+    },
+    // 更换管理员
+    handleAdminUpdate (scope) {
+      this.dialogAdminVisible = true
+      this.adminForm = Object.assign({}, scope.row)
+      this.adminFormIndex = scope.$index
+    },
+    // 查阅
+    handleLookBtn (scope) {
+      this.$router.push({path: `/archives/management/detail/` + scope.row.objectId, query: {status: scope.row.status}})
+    },
+    // 修改位置
+    handleConfirm () {
+      if (!this.positionForm.archivesRoomId) {
+        this.$message({
+          message: '请选择实物位置',
+          type: 'warning'
+        })
+        return false
+      }
+      archivesInfo.updateArchivesInfo(this.positionForm).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.getArchivesInfos()
+          this.dialogTableVisible = false
+        }
+      })
+      this.isSubmiting = false
+    }
+  },
+  mounted () {
+    this.getArchivesInfos()
+  }
+}
+</script>
+<style lang="less">
+  .position-select {
+    width: 200px;
+    margin-bottom: 10px;
+  }
+  .position-input {
+    width: 30%;
+  }
+</style>

@@ -1,0 +1,140 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <div v-if="curType !== 'room'" class="nav">
+        <span @click="handleNavClick('all')">全部</span>
+        <span :class="curType === 'cabinet' ? 'nav-active' : ''" v-if="curType === 'cabinet' || curType === 'list'" @click="handleNavClick('room')"><span class="arrow">{{'>'}}</span><span>{{curRoom}}</span></span>
+        <span :class="curType === 'list' ? 'nav-active' : ''" v-if="curType === 'list'"><span class="arrow">{{'>'}}</span><span>{{curCabinet}}</span></span>
+      </div>
+      <ul>
+        <li v-for="(item, index) in roomList" :key="index" class="room-item" v-if="curType === 'room'" @click="handleClick('room', item)">
+          <img v-if="index === roomList.length - 1" src="../../../assets/dai_hui.png">
+          <img v-else src="../../../assets/dai_huang.png">
+          <div>{{item.name}}</div>
+        </li>
+        <li v-for="(item, index) in cabinetList" :key="index" class="room-item" v-if="curType === 'cabinet'" @click="handleClick('cabinet', item)">
+          <img v-if="index === cabinetList.length - 1" src="../../../assets/gui_hui.png">
+          <img v-else src="../../../assets/gui_huang.png">
+          <div>{{item.name}}</div>
+        </li>
+        <list v-if="curType === 'list'" :archivesCabinetId = 'archivesCabinetId' :archivesRoomId = 'archivesRoomId' :query = 'true'></list>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script>
+import {archivesRoom, archivesCabinet} from '@/api/archives'
+
+export default {
+  name: 'archivesRoom',
+  components: {
+    list: resolve => require(['./list'], resolve)
+  },
+  data () {
+    return {
+      roomList: [],
+      cabinetList: [],
+      curType: 'room',
+      curRoom: '',
+      curCabinet: '',
+      archivesCabinetId: '',
+      archivesRoomId: ''
+    }
+  },
+  watch: {
+  },
+  methods: {
+    // 获取档案室
+    getRoom () {
+      archivesRoom.getArchivesRoomList({
+        enterpriseId: this.$store.getters.authUser.enterpriseId
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.roomList = res.data.archivesRoomList.list
+          this.roomList.push({name: '无位置档案'})
+        }
+      })
+    },
+    // 获取档案柜
+    getCabinet (objectId) {
+      archivesCabinet.getArchivesCabinetList({
+        archivesRoomId: objectId
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.cabinetList = res.data.archivesCabinetList.list
+          this.cabinetList.push({name: '无位置档案'})
+        }
+      })
+    },
+    getData (archivesCabinetId) {
+    },
+    handleBtn (row) {
+      this.$router.push({path: `/archives/query/detail/` + row.objectId + '?status=1'})
+    },
+    handleClick (type, item) {
+      switch (type) {
+        case 'room':
+          this.curRoom = item.name
+          if (item.objectId) {
+            this.curType = 'cabinet'
+            this.archivesRoomId = item.objectId
+            this.getCabinet(item.objectId)
+          } else {
+            this.archivesCabinetId = ''
+            this.curType = 'list'
+          }
+          break
+        case 'cabinet':
+          this.curType = 'list'
+          this.curCabinet = item.name
+          this.archivesCabinetId = item.objectId
+          break
+        default:
+          this.archivesCabinetId = ''
+          this.curCabinet = ''
+          this.archivesRoomId = ''
+      }
+    },
+    handleNavClick (type) {
+      switch (type) {
+        case 'all':
+          this.curType = 'room'
+          break
+        case 'room':
+          this.curType = 'cabinet'
+          break
+      }
+    }
+  },
+  mounted () {
+    this.getRoom()
+  }
+}
+</script>
+
+<style scoped>
+  .room-item {
+    margin: 24px 45px;
+    display: inline-block;
+    text-align: center;
+  }
+  .room-item img {
+    width: 52px;
+    height: 52px;
+    margin-bottom: 16px;
+  }
+  .nav {
+    color: #a0a0a0;
+  }
+  .nav span {
+    cursor: pointer;
+  }
+  .nav .arrow {
+    margin: 0 6px;
+  }
+  .nav-active span{
+    color: #333;
+    cursor: default;
+  }
+</style>

@@ -1,0 +1,233 @@
+<template>
+  <div class="cloudcontent"  id="cloud_templateAdd">
+    <div class="main">
+      <el-form :model="addForm" :rules="rulesList" ref="addForm" label-width="80px" :validate-on-rule-change="true">
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="handleClickEvent('addForm','save')" :loading="loading">保存</el-button>
+          <el-button class="cancal" @click="handleClickEvent('addForm','cancel')">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+
+export default {
+  components: {
+  },
+  data () {
+    return {
+      addForm: {},
+      rulesList: {},
+      loading: false,
+      defaultImg: '../../static/images/office/default.png',
+      // 选择图标弹窗
+      dialogVisible: false,
+      imgList: [
+        {
+          imgSrc: '../../static/images/office/icon1.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon2.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon3.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon4.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon5.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon6.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon7.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon8.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon9.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon10.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon11.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon12.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon13.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon14.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon15.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon16.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon17.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon18.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon19.png'
+        },
+        {
+          imgSrc: '../../static/images/office/icon20.png'
+        }
+      ],
+      // 模板项
+      temTableData: [
+        {
+          name: '',
+          type: '',
+          optional: ''
+        },
+        {
+          name: '',
+          type: ''
+        },
+        {
+          name: '',
+          type: ''
+        },
+        {
+          name: '',
+          type: ''
+        }
+      ],
+      // 模板项类型
+      typeOptions: [
+        {
+          value: 1,
+          label: '输入框'
+        },
+        {
+          value: 2,
+          label: '选择框'
+        },
+        {
+          value: 3,
+          label: '单选框'
+        },
+        {
+          value: 4,
+          label: '多选框'
+        },
+        {
+          value: 5,
+          label: '图文'
+        },
+        {
+          value: 6,
+          label: '附件'
+        },
+        {
+          value: 7,
+          label: '日期(年月日)'
+        },
+        {
+          value: 8,
+          label: '日期(年月日时分秒)'
+        }
+      ],
+      // 可选项弹窗
+      dialogOptionalVisible: false,
+      desc: ''
+    }
+  },
+  methods: {
+    handleClick (tab, event) {},
+    imgSelected (val) {
+      this.dialogVisible = false
+      this.defaultImg = val.imgSrc
+    },
+    addRow () {},
+    moveUp: function (index) {
+      const temp = this.temTableData[index]
+      if (index > 0 && index < this.temTableData.length) {
+        this.temTableData.splice(index, 1)
+        this.temTableData.splice(index - 1, 0, temp)
+      }
+    },
+    moveDown: function (index) {
+      const temp = this.temTableData[index]
+      if (index >= 0 && index < this.temTableData.length - 1) {
+        this.temTableData.splice(index, 1)
+        this.temTableData.splice(index + 1, 0, temp)
+      }
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_templateAdd{
+    .showImg{
+      width:100px;
+      overflow: hidden;
+    }
+    .showImg .el-button{
+      padding: 8px 11px;
+    }
+    .showImg img{
+      margin-top: 13px;
+    }
+    .imgDialog .el-dialog__header{
+      border-bottom: 1px solid #eeeeee;
+    }
+    .imgDialog .el-dialog__body{
+      padding: 0;
+    }
+    ul.imgList{
+      width: 100%;
+      overflow: hidden;
+      margin: 20px 0 30px 0;
+    }
+    ul.imgList li{
+      float: left;
+      width: 80px;
+      height: 80px;
+      margin: 16px 30px;
+      position: relative;
+    }
+    ul.imgList li .hover{
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: none;
+      cursor: pointer;
+    }
+    ul.imgList li:hover .hover{
+      display: block;
+    }
+    .temTableData {
+      margin-top: 20px;
+      border: 0!important;
+    }
+    .optional span:hover{
+      cursor: pointer;
+      color: #409EFF;
+    }
+    .optionalDialog .el-dialog__header{
+      border-bottom: 1px solid #eeeeee;
+    }
+    .optionalDialog p{
+      color: #999999;
+      line-height: 24px;
+    }
+    .optionalDialog .submit-radio{
+      text-align: center;
+    }
+  }
+</style>

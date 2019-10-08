@@ -1,0 +1,54 @@
+<template>
+  <div id="index">
+    <commonheader></commonheader>
+    <el-row style="height:100%;margin-top:50px;">
+      <leftMenu></leftMenu>
+      <el-col :span="21" style="height:100%;overflow: auto;padding-bottom: 50px;">
+        <div class="content-warp">
+          <router-view/>
+        </div>
+      </el-col>
+    </el-row>
+  </div>
+</template>
+<script>
+import leftMenu from '../components/left.vue'
+import commonheader from '../components/header.vue'
+// import commonfooter from '../components/footer.vue'
+export default {
+  components: {
+    leftMenu,
+    commonheader
+    // commonfooter
+  },
+
+  data () {
+    return {
+    }
+  }
+}
+</script>
+<style lang="less">
+  @import '../assets/css/common.css';
+  #index {
+    color: #2c3e50;
+    background:#fff;
+    height: 100%;
+    .el-col-21{
+      float: right;
+      position: relative;
+    }
+    .sidebox{
+      border: none;
+    }
+    .indexs{
+      text-align: left;
+    }
+    .el-main{
+      padding: 0;
+    }
+    .content-warp {
+      height: 100%;
+    }
+  }
+</style>

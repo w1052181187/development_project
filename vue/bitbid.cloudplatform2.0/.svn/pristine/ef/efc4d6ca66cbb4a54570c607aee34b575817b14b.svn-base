@@ -1,0 +1,451 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <div class="top_bg">档案室<span class="top_addbtn" @click="handleAdd">+ 新增</span></div>
+          <el-table
+            ref="archivesTable"
+            :data="archivesRoomList"
+            highlight-current-row
+            border
+            :row-class-name="tableRowClassName"
+            :row-style="handleRowStyle"
+            :cell-style="handleCellStyle"
+            @current-change="handleArchivesRowClick">
+            <el-table-column
+              type="index"
+              label="序号"
+              align="center"
+              width="60">
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              align="center"
+              label="档案室名称"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="adminName"
+              align="center"
+              label="档案管理员"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              label="操作" align="center" width="200">
+              <template slot-scope="scope">
+                <el-button type="text" size="small" @click="handleEdit(scope)">编辑</el-button>
+                <el-button type="text" size="small" @click="handleDel(scope)">删除</el-button>
+                <el-button type="text" size="small" @click="handleAddCabinet(scope)">添加档案柜</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :total="total"
+            :page-size='pageSize'
+            :current-page.sync="currentPage"
+            @current-change="handleCurrentChange">
+          </el-pagination>
+        </el-col>
+        <el-col :span="12">
+          <div class="top_bg">{{archivesRoomName}}档案柜</div>
+          <el-table
+            ref="cabinetTable"
+            :data="cabinetList"
+            border
+            :row-class-name="tableRowClassName"
+            :row-style="handleDetailRowStyle"
+            :cell-style="handleDetailCellStyle">
+            <el-table-column
+              type="index"
+              label="序号"
+              align="center"
+              width="60">
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              align="center"
+              label="档案柜名称"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="layerNumber"
+              align="center"
+              label="层数"
+              width="100"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              label="操作" align="center" width="100">
+              <template slot-scope="scope">
+                <el-button type="text" size="small" @click="updateCabinet(scope)">编辑</el-button>
+                <el-button type="text" size="small" @click="delCabinet(scope)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :total="totalCabinet"
+            :page-size='pageSizeCabinet'
+            :current-page.sync="currentPageCabinet"
+            @current-change="handleCabinetCurrentChange">
+          </el-pagination>
+        </el-col>
+      </el-row>
+    </div>
+    <!-- 新增档案室-->
+    <el-dialog :title="dialogArchivesTitle" :visible.sync="dialogArchivesVisible" width="600px" :before-close="closeArchives">
+      <el-form :model="archivesRoomForm" :rules="archivesRules" ref="archivesRoomForm" :label-width="formLabelWidth">
+        <el-form-item label="档案室名称：" prop="name">
+          <el-input v-model.trim="archivesRoomForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="档案管理员：" prop="adminName" ref="adminsnsn">
+          <el-input v-model="archivesRoomForm.adminName" readonly placeholder="请选择">
+            <el-button slot="append" icon="el-icon-search" @click="showAdminDialog"></el-button>
+          </el-input>
+        </el-form-item>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submitArchives" :loading="isSubmiting">提交</el-button>
+          <el-button class="cancal" @click="closeArchives">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <admin :showVisible="showAdminVisible" :checkedUserId="checkedRoleId" @selected="selectedAdmin" @showDialog="showAdminDialog"></admin>
+    <!-- 新增档案室-->
+    <!-- 新增档案柜-->
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="600px" :before-close="close">
+      <el-form :model="form" :rules="rules" ref="form" :label-width="formLabelWidth">
+        <el-form-item label="所属档案室：">
+          <span>{{archivesRoomName}}</span>
+        </el-form-item>
+        <el-form-item label="档案柜名称：" prop="name">
+          <el-input v-model.trim="form.name"></el-input>
+        </el-form-item>
+        <el-form-item label="层数：" prop="layerNumber">
+          <el-input v-model.trim="form.layerNumber"></el-input>
+        </el-form-item>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit" :loading="isSubmiting">提交</el-button>
+          <el-button class="cancal" @click="close">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <!-- 新增档案柜-->
+  </div>
+</template>
+<script>
+// import {dataDictionary} from '@/api/system'
+import admin from './dialog/admin'
+import {archivesRoom, archivesCabinet} from '@/api/archives'
+import {validateInteger} from '@/assets/js/validate'
+
+const validInteger = (rule, value, callback) => {
+  if (!validateInteger(value)) {
+    callback(new Error('档案柜层数只能输入正整数'))
+  } else {
+    callback()
+  }
+}
+const validLength = (rule, value, callback) => {
+  if (value.length > 100) {
+    callback(new Error('名称不能超过100！'))
+  } else {
+    callback()
+  }
+}
+export default {
+  components: {
+    admin
+  },
+  name: 'position',
+  data () {
+    return {
+      archivesRoomList: [],
+      cabinetList: [],
+      curIndex: 0,
+      curCabinetIndex: 0,
+      isSubmiting: false,
+      dialogVisible: false,
+      dialogTitle: '',
+      form: {},
+      formLabelWidth: '120px',
+      rules: {
+        name: [
+          {required: true, message: '请输入名称', trigger: ['blur', 'change']},
+          {validator: validLength, trigger: ['blur', 'change']}
+        ],
+        layerNumber: [
+          { required: true, trigger: 'change', validator: validInteger }
+        ]
+      },
+      dialogArchivesVisible: false,
+      dialogArchivesTitle: '',
+      archivesRoomForm: {
+      },
+      archivesRules: {
+        name: [
+          {required: true, message: '请输入名称', trigger: ['blur', 'change']}
+        ],
+        adminName: [
+          {required: true, message: '请选择管理员', trigger: ['blur', 'change']}
+        ]
+      },
+      archivesRoomName: '',
+      currentPage: 1,
+      pageNo: 0,
+      total: 0,
+      pageSize: 10,
+      currentPageCabinet: 1,
+      pageNoCabinet: 0,
+      totalCabinet: 0,
+      pageSizeCabinet: 10,
+      archivesRoomId: '',
+      // 是否展示管理员
+      showAdminVisible: false,
+      checkedRoleId: ''
+    }
+  },
+  methods: {
+    // 管理员打开
+    showAdminDialog () {
+      this.showAdminVisible = !this.showAdminVisible
+    },
+    // 选择管理员
+    selectedAdmin (obj) {
+      this.$set(this.archivesRoomForm, 'adminName', obj.name)
+      this.$set(this.archivesRoomForm, 'adminId', obj.objectId)
+      this.checkedRoleId = obj.objectId
+    },
+    init () {
+      this.getData()
+    },
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getData()
+    },
+    handleCabinetCurrentChange (nowNum) {
+      this.currentPageCabinet = nowNum
+      this.pageNoCabinet = (nowNum - 1) * this.pageSizeCabinet
+      this.getCabinetList(this.archivesRoomId)
+    },
+    // 获取档案室
+    getData () {
+      archivesRoom.getArchivesRoomList({
+        pageNo: this.pageNo,
+        pageSize: this.pageSize,
+        enterpriseId: this.$store.getters.authUser.enterpriseId
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.archivesRoomList = res.data.archivesRoomList.list
+          this.total = res.data.archivesRoomList.total
+          if (this.archivesRoomList.length > 0) {
+            this.archivesRoomName = this.archivesRoomList[0].name
+          }
+          // 获取第一个档案室中的档案柜
+          if (this.archivesRoomList.length > 0) {
+            this.getCabinetList(this.archivesRoomList[0].objectId)
+          }
+        }
+      })
+    },
+    // 获取档案柜
+    getCabinetList (archivesRoomId) {
+      archivesCabinet.getArchivesCabinetList({
+        pageNo: this.pageNoCabinet,
+        pageSize: this.pageSizeCabinet,
+        archivesRoomId: archivesRoomId,
+        enterpriseId: this.$store.getters.authUser.enterpriseId
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.cabinetList = res.data.archivesCabinetList.list
+          this.totalCabinet = res.data.archivesCabinetList.total
+        }
+      })
+    },
+    tableRowClassName ({row, rowIndex}) {
+      row.index = rowIndex
+    },
+    handleRowStyle ({row, rowIndex}) {
+      if (this.curIndex === rowIndex) {
+        return 'background-color: #ecf3fd'
+      }
+    },
+    handleCellStyle ({row, column, rowIndex, columnIndex}) {
+      if (this.curIndex === rowIndex && columnIndex === 1) {
+        return 'color: #5592eb'
+      }
+    },
+    handleArchivesRowClick (row) {
+      // 切换模块
+      if (row) {
+        this.curIndex = row.index
+        this.archivesRoomName = row.name
+        this.archivesRoomId = row.objectId
+        this.getCabinetList(row.objectId)
+      }
+    },
+    handleDetailRowStyle ({row, rowIndex}) {
+      if (this.curCabinetIndex === rowIndex) {
+        return 'background-color: #ecf3fd'
+      }
+    },
+    handleDetailCellStyle ({row, column, rowIndex, columnIndex}) {
+      if (this.curCabinetIndex === rowIndex && columnIndex === 1) {
+        return 'color: #5592eb'
+      }
+    },
+    // 添加档案室
+    handleAdd () {
+      this.dialogArchivesTitle = '新增档案室'
+      this.dialogArchivesVisible = true
+    },
+    // 编辑档案室
+    handleEdit (scope) {
+      this.dialogArchivesTitle = '编辑档案室'
+      this.archivesRoomForm = Object.assign({}, scope.row)
+      this.dialogArchivesVisible = true
+      this.checkedRoleId = this.archivesRoomForm.adminId
+    },
+    // 删除档案室
+    handleDel (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        archivesRoom.deleteRoom(scope.row.objectId).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.getData()
+          }
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    // 关闭档案室
+    closeArchives () {
+      this.checkedRoleId = ''
+      this.archivesRoomForm = {}
+      this.$refs['archivesRoomForm'].resetFields()
+      this.dialogArchivesVisible = false
+    },
+    // 提交档案室
+    submitArchives () {
+      this.$refs['archivesRoomForm'].validate((valid) => {
+        if (valid) {
+          this.$confirm('确定要提交吗？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            beforeClose: (action, instance, done) => {
+              done()
+            }
+          }).then(() => {
+            archivesRoom.saveOrUpdateRoom(this.archivesRoomForm).then((res) => {
+              if (res.data.resCode === '0000') {
+                // res.data.archivesRoom.objectId
+                this.getData()
+                this.dialogArchivesVisible = false
+              }
+            })
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    // 添加档案柜
+    handleAddCabinet (scope) {
+      this.dialogTitle = '新增档案柜'
+      this.form.archivesRoomId = scope.row.objectId
+      this.dialogVisible = true
+    },
+    // 编辑档案柜
+    updateCabinet (scope) {
+      this.dialogTitle = '编辑档案柜'
+      this.form = Object.assign({}, scope.row)
+      this.dialogVisible = true
+    },
+    // 删除档案柜
+    delCabinet (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        archivesCabinet.deleteCabinet(scope.row.objectId).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.getCabinetList(this.archivesRoomId)
+          }
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    close () {
+      this.form = {}
+      this.$refs['form'].resetFields()
+      this.dialogVisible = false
+    },
+    submit () {
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          this.$confirm('确定要提交吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            archivesCabinet.saveOrUpdateCabinet(this.form).then((res) => {
+              if (res.data.resCode === '0000') {
+                this.getCabinetList(this.archivesRoomId)
+                this.dialogVisible = false
+              }
+            })
+          }).catch(() => {
+            return false
+          })
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+
+<style scoped>
+  .top_bg {
+    background-color: #4a8cea;
+    font-size: 14px;
+    color: white;
+    height: 38px;
+    line-height: 38px;
+    box-sizing: border-box;
+    padding: 0 10px;
+    font-weight: 800;
+  }
+  .top_addbtn{
+    float: right;
+    height: 26px;
+    line-height: 26px;
+    font-size: 14px;
+    color: #4a8cea;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 0 10px;
+    border-radius: 3px;
+    background-color: white;
+    margin-top: 6px;
+    cursor: pointer;
+  }
+  .submit-radio{
+    text-align: center;
+  }
+</style>

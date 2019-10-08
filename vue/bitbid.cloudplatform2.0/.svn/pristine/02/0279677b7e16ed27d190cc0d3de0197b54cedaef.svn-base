@@ -1,0 +1,253 @@
+<template>
+  <div class="cloudcontent" id="cloud_projectProcess">
+    <approve-flow :approvalTaskCode="approvalTaskCode" :subjectCode="$route.params.code" v-if="tableFlag"></approve-flow>
+    <div class="project-info-line" v-if="tableFlag"></div>
+    <div class="main viewdetails">
+      <div class="basic-approve-title">标段详情</div>
+      <el-form :model="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{updateForm.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目编号：" >
+              <span>{{updateForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段名称：">
+              <span>{{updateForm.bidSectionName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段编号：">
+              <span>{{updateForm.bidSectionCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段类型：">
+              <span>{{updateForm.tenderProjectClassifyCodeStr}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段合同估算价(元)：" >
+              <span>{{updateForm.contractReckonPrice}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标文件售价(元)：">
+              <span>{{updateForm.docGetFee}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box" >
+            <el-form-item label="标段内容：" prop="sectionContent" ref="sectionContent">
+              <editor ref="sectionEditor" class="ueditor" :editread="editread" v-model="updateForm.sectionContent"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="投标人资格条件：" prop="bidderContent" ref="bidderContent">
+              <editor ref="bidderEditor" class="ueditor" :editread="editread" v-model="updateForm.bidderContent"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+    <template>
+      <div class="project-info-line" v-if="tableFlag"></div>
+      <communicate-record v-if="tableFlag" :relatedCode="$route.params.code" :flowType='flowType' :creator="updateForm.submitter" :createName="updateForm.submitterName" :routingPath="routingPath" :nodeContent="nodeContent"></communicate-record>
+      <div class="project-info-line"></div>
+      <approve-record :tableFlag="tableFlag"  :approvalTaskCode="approvalTaskCode" :flowStatus='flowStatus' :subjectCode="$route.params.code" ></approve-record>
+    </template>
+    <approve-handle :isApproved="isApproved" :approvalTaskCode="approvalTaskCode"></approve-handle>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import * as bidsType from '@/assets/js/constants'
+import {bidSection} from '@/api/project'
+import approveFlow from '@/pages/todoList/commonComponents/approveFlow.vue'
+import communicateRecord from '@/pages/todoList/commonComponents/communicateRecord.vue'
+import approveRecord from '@/pages/todoList/commonComponents/approveRecord.vue'
+import approveHandle from '@/pages/todoList/commonComponents/approveHandle.vue'
+import {approvalNode} from '@/api/todoList/flow/approval-node'
+export default {
+  components: {
+    editor,
+    approveFlow,
+    approveRecord,
+    communicateRecord,
+    approveHandle
+  },
+  data () {
+    return {
+      flowStatus: 2,
+      isSubmiting: false,
+      // 是否显示审批（0:详情 1：审批 2：审批详情 3：我发起的详情）
+      isApproved: 0,
+      auditStatus: 0,
+      objectId: '',
+      updateForm: {
+        tenderProjectName: ''
+      },
+      // 富文本
+      editread: true,
+      // 标段类型
+      bidsTypeOptions: bidsType.bidsType,
+      approvalTaskCode: '',
+      routingPath: '', // 路由地址
+      nodeContent: '',
+      flowType: 'tenderProject', // 审批类型
+      tableFlag: false
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  created () {
+    this.init()
+  },
+  methods: {
+    // 查询当前节点是否需要审批
+    checkedIsNeedFlow (flowStatus) {
+      approvalNode.checkedIsNeedFlow(flowStatus).then((res) => {
+        if (res.data.resCode === '0000') {
+          if (res.data.isNeedFlow === 1) {
+            this.tableFlag = true
+            this.$nextTick(() => {
+              this.$refs.sectionEditor.setContent(this.updateForm.bidSectionContent)
+              this.$refs.bidderEditor.setContent(this.updateForm.bidQualification)
+            })
+          }
+        }
+      })
+    },
+    init () {
+      this.isApproved = this.$route.query.isApproved
+      this.auditStatus = this.$route.query.auditStatus
+      this.approvalTaskCode = this.$route.query.code
+      this.tableFlag = false
+      this.getChooseBidSectionInfo()
+    },
+    /** 获取当前选择的标段信息 */
+    getChooseBidSectionInfo () {
+      bidSection.getOne(this.$route.params.code).then((res) => {
+        if (res.data.bidSection) {
+          this.updateForm = res.data.bidSection
+          // 获取文本编辑器的内容
+          if (this.updateForm.bidSectionContent) {
+            this.$refs.sectionEditor.setContent(this.updateForm.bidSectionContent)
+          }
+          if (this.updateForm.bidQualification) {
+            this.$refs.bidderEditor.setContent(this.updateForm.bidQualification)
+          }
+          // 获取标段（包）分类代码
+          let list = this.getClassifyList(this.updateForm.tenderProjectClassifyCode)
+          if (list.length > 0) {
+            this.updateForm.tenderProjectClassifyCodeStr = this.getClassifyInfo(list)
+          }
+          // 沟通记录
+          this.nodeContent = this.updateForm.tenderProjectName + this.updateForm.bidSectionName
+          this.routingPath = this.updateForm.routingPath + this.$route.params.code
+          // 审批信息的展示
+          if (Number(this.updateForm.flowStatus) !== 1) {
+            this.checkedIsNeedFlow(this.flowStatus)
+          }
+        }
+      })
+    },
+    /** 获取标段分类代码的集合 */
+    getClassifyList (tenderProjectClassifyCode) {
+      let list = tenderProjectClassifyCode.split('-')
+      return list
+    },
+    /** 获取招标项目扩展信息 */
+    getClassifyInfo (list) {
+      let str = ''
+      let firstId = this.getLabelName(this.bidsTypeOptions, list[0])
+      let secondId = this.getLabelName(this.bidsTypeOptions, list[1])
+      let thirdId = this.getLabelName(this.bidsTypeOptions, list[2])
+      let fourthId = this.getLabelName(this.bidsTypeOptions, list[3])
+      if (firstId.node) {
+        str += `${firstId.node.label}`
+        str += '/'
+      }
+      if (secondId.node) {
+        str += `${secondId.node.label}`
+        str += '/'
+      }
+      if (thirdId.node) {
+        str += `${thirdId.node.label}`
+        str += '/'
+      }
+      if (fourthId.node) {
+        str += `${fourthId.node.label}`
+      }
+      return str
+    },
+    /** treeData [原始数据集]， key 传入的key值 */
+    getLabelName (treeData, key) {
+      let parentNode = null
+      let node = null
+      function getTreeDeepArr (treeData, key) {
+        for (let i = 0; i < treeData.length; i++) {
+          // 1.如果没有子节点 beark
+          if (node) {
+            break
+          }
+          // 定义需要操作的数据
+          let obj = treeData[i]
+          // 没有节点就下一个
+          if (!obj || !obj.value) {
+            continue
+          }
+          // 2.有节点就继续找，一直递归
+          if (obj.value === key) {
+            node = obj
+            break
+          } else {
+            // 3.如果有子节点就继续找
+            if (obj.children) {
+              // 4.递归前，记录当前节点，作为parentNode
+              parentNode = obj
+              // 递归
+              getTreeDeepArr(obj.children, key)
+            } else {
+              // 跳出当前递归
+              continue
+            }
+          }
+        }
+        // 如果没有找到父节点，置为null
+        if (!node) {
+          parentNode = null
+        }
+        // 返回结果
+        return {
+          node: node,
+          parentNode: parentNode
+        }
+      }
+      return getTreeDeepArr(treeData, key)
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_projectProcess {
+    .el-select{
+      width: 100%;
+    }
+  }
+</style>

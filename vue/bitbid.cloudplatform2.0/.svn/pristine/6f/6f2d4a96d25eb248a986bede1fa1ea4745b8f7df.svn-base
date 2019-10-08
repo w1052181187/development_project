@@ -1,0 +1,393 @@
+<template>
+  <div id="bid-file">
+    <ul class="bid-list-box">
+      <li :class="activeBid === index ? 'active' : ''" v-for="(item, index) in bidList" :key="index" @click="handleBidClick(item, index)">
+        <p :title="item.name">{{item.name}}</p>
+        <p>归档：{{item.progressValue}}</p>
+      </li>
+    </ul>
+    <div class="module">
+      <div class="left">
+        <div class="title">{{!isQuery ? '移交目录' : '档案目录'}}</div>
+        <ul class="left-menu">
+          <li :class="activeMenuIndex === index ? 'active-menu' : ''"
+              v-for="(item, index) in archivesClassifyList" :key="index"
+              :title="menuTitle(item)"
+              @click="handleMenuClick(item.objectId, index)">
+            <template v-if="!isQuery">
+              <img v-if="Number(item.transferStatus) === 1" src="../../../assets/yiyijiao.png">
+              <img v-else-if="Number(item.transferStatus) === 2" src="../../../assets/transfered.png">
+              <!--<img v-else-if="Number(item.transferStatus) === 3" src="../../../assets/cehui.png">-->
+              <span v-else></span>
+            </template>
+            <template v-else>
+              <img v-if="Number(item.status) === 1" src="../../../assets/yiyijiao.png">
+              <span v-else></span>
+            </template>
+            {{item.name}}
+          </li>
+        </ul>
+      </div>
+      <div class="middle"></div>
+      <div class="right">
+        <div class="title">{{moduleName}}</div>
+        <div class="line"></div>
+        <div class="content">
+          <template v-if="moduleName === '电子档案'">
+            <ul class="file-box">
+              <div class="file-pack-check-all">
+                <el-checkbox :disabled="checkAllBtnCanClick(archivesFileList)" :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+                <el-button class="pack-btn" @click="handlePack">
+                  <img class="pack-down" src="../../../assets/pack-down.png"/><span>打包下载</span>
+                </el-button>
+              </div>
+              <li class="file-item-border" v-for="(item, index) in archivesFileList"
+                  :key="index" v-if="index >= (pageSize * currentPage) - pageSize && index < currentPage * pageSize">
+                <el-checkbox-group class="file-box" v-model="checkList" @change="handleCheckedFileChange">
+                  <div class="file-item">
+                      <el-checkbox :label="index" :disabled="checkDisAbled(item)">&nbsp;</el-checkbox>
+                      <span>{{index + 1 + '&nbsp;&nbsp;&nbsp;&nbsp;' + item.archivesCatalog.name}}</span>
+                      <img class="has-file-img" v-if="item.refArchivesFileInformationList && item.refArchivesFileInformationList.length > 0 && item.refArchivesFileInformationList[0].fileInformation" src="../../../assets/qubiezhen.png"/>
+                      <span class="has-file-img" v-else></span>
+                      <div :class="item.archivesCatalog.name === activeName ? 'file-action-active' : 'file-action'" @click="updateBtn(item)">
+                        <span class="file-action-txt">{{item.archivesCatalog.name === activeName ? '收起' : '展开'}}</span>
+                        <img class="pack-reduce" src="../../../assets/reduce.png" v-if="item.archivesCatalog.name === activeName">
+                        <img class="pack-down" src="../../../assets/plus.png" v-else>
+                      </div>
+                  </div>
+                  <fileItem v-if="item.archivesCatalog.name === activeName" :can-edit="canEdit" :item="item" :active-name="activeName"></fileItem>
+                </el-checkbox-group>
+              </li>
+            </ul>
+            <!--按钮-->
+            <!--分页-->
+            <el-pagination
+              background
+              layout="prev, pager, next"
+              :total="archivesFileList.length"
+              :current-page.sync="currentPage"
+              :page-size='pageSize'
+              @current-change="handleCurrentChange">
+            </el-pagination>
+            <!--分页-->
+          </template>
+          <div v-else class="explain-box">
+            <template v-if="Number(isOnlyPhysical) === 0">
+              <fileUpload class="file-type-enclosure" :canEdit="canEdit"
+                          :file-list="archivesFileForm.refArchivesFileInformationList"
+                          :object-id="archivesFileId" :file-type='9' file-name='no'></fileUpload>
+            </template>
+            <div class="explain">资料说明:</div>
+            <el-input
+              type="textarea"
+              :autosize="{ minRows: 2 }"
+              placeholder="请输入内容"
+              v-model="archivesFileForm.archivesProjectExpands.evaluationInformation">
+            </el-input>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <el-dialog :before-close='close' title="新增文件类型" :visible.sync="dialogVisible">
+      <el-form :model="dialogForm" :rules="rules" ref="dialogForm" :label-width="formLabelWidth">
+        <el-form-item label="文件类型：" prop="fileType">
+          <el-select v-model="dialogForm.fileType" placeholder="请选择">
+            <el-option
+              v-for="item in fileTypeOptions"
+              :key="item.archivesCatalog.objectId"
+              :label="item.archivesCatalog.name"
+              :value="item.archivesCatalog.objectId">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button class="cancal" @click="close">取 消</el-button>
+        <el-button type="primary" @click="submitForm('dialogForm')">确认</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import {archivesFile, archivesInfo} from '@/api/archives'
+import {archivesFileDownload} from '@/assets/js/common'
+export default {
+  watch: {
+    info () {
+      this.getInitData(this.info)
+    }
+  },
+  components: {
+    // () => import(/* webpackChunkName: 'customer' */ '@/pages/customer/business/index')
+    fileItem: resolve => require(['../public/fileItem'], resolve),
+    fileUpload: resolve => require(['../public/fileUpload'], resolve)
+  },
+  name: 'file',
+  props: ['info', 'isQuery'],
+  data () {
+    return {
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: null, // 总条数
+      pageSize: 10, // 每页展示条数
+      activeName: '',
+      canEdit: false,
+      dialogVisible: false,
+      isIndeterminate: false,
+      checkAll: false,
+      formLabelWidth: '120px',
+      dialogForm: {
+      },
+      rules: {
+        fileType: [
+          {required: true, message: '请选择文件类型', trigger: ['blur', 'change']}
+        ]
+      },
+      fileTypeOptions: [],
+      moduleName: '电子档案',
+      activeMenuIndex: 0,
+      archivesFileList: [],
+      curHoverIndex: '',
+      fileInformationList: [],
+      fileObjectId: '',
+      fileExplain: '',
+      isSaving: false,
+      isOnlyPhysical: 0, // 是否需要上传文件
+      archivesFileId: '', // 当前选择的文件id
+      archivesFileForm: {
+        archivesProjectExpands: {
+          evaluationInformation: ''
+        },
+        refArchivesFileInformationList: []
+      },
+      checkList: [],
+      archivesClassifyList: '',
+      bidList: [
+        {
+          name: 'ddd的大佛而疯狂尾盘问了人陪了人情味了饿',
+          progressValue: '1/5'
+        },
+        {
+          name: 'ddd',
+          progressValue: '2/5'
+        },
+        {
+          name: 'ddd',
+          progressValue: '3/5'
+        },
+        {
+          name: 'ddd',
+          progressValue: '4/5'
+        }
+      ],
+      activeBid: 0
+    }
+  },
+  methods: {
+    /**
+     * 标段切换
+     * @param item
+     * @param index
+     */
+    handleBidClick (item, index) {
+      this.activeBid = index
+    },
+    // 打包下载
+    checkDisAbled (item) {
+      if (item.refArchivesFileInformationList && item.refArchivesFileInformationList.length > 0 && item.refArchivesFileInformationList[0].fileInformation) {
+        return false
+      } else {
+        return true
+      }
+    },
+    handlePack () {
+      // 判断是否选择了文件
+      if (this.checkList === undefined || this.checkList.length <= 0) {
+        this.$message({
+          message: '请选择要打包下载的文件',
+          type: 'warning'
+        })
+        return false
+      }
+      let params = ''
+      this.checkList.forEach((value) => {
+        params += 'archivesFileIds=' + this.archivesFileList[value].objectId + '&'
+      })
+      params += 'archivesInfoId=' + this.info.objectId
+      archivesFileDownload(params)
+    },
+    // 判断全选是否可以点击
+    checkAllBtnCanClick (fileList) {
+      let temp = fileList.filter(item => item.refArchivesFileInformationList && item.refArchivesFileInformationList.length > 0 && item.refArchivesFileInformationList[0].fileInformation)
+      return temp.length === 0
+    },
+    handleCheckAllChange (val) {
+      this.checkList = []
+      if (val) {
+        this.archivesFileList.map((item, index) => {
+          if (item.refArchivesFileInformationList && item.refArchivesFileInformationList.length > 0 && item.refArchivesFileInformationList[0].fileInformation) {
+            this.checkList.push(index)
+          }
+        })
+      }
+      this.isIndeterminate = false
+    },
+    handleCheckedFileChange (value) {
+      this.checkList = value
+      let checkedCount = value.length
+      let temp = this.archivesFileList.filter(item => item.refArchivesFileInformationList && item.refArchivesFileInformationList.length > 0 && item.refArchivesFileInformationList[0].fileInformation)
+      this.checkAll = checkedCount === temp.length
+      this.isIndeterminate = checkedCount > 0 && checkedCount < temp.length
+    },
+    handleMenuClick (classifyObjectid, index) {
+      if (this.activeMenuIndex === index) {
+        return
+      }
+      this.moduleName = this.archivesClassifyList[index].name
+      this.activeMenuIndex = index
+      archivesFile.getArchivesFileList({
+        archivesClassifyId: classifyObjectid
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.archivesFileList = res.data.archivesFileList.list
+          if (res.data.archivesFileList.list[0].archivesProjectExpands) {
+            this.archivesFileForm = res.data.archivesFileList.list[0]
+          } else {
+            this.archivesFileForm = {
+              archivesProjectExpands: {
+                evaluationInformation: ''
+              }
+            }
+          }
+          if (res.data.archivesFileList.list[0].refArchivesFileInformationList) {
+            this.archivesFileForm.refArchivesFileInformationList = res.data.archivesFileList.list[0].refArchivesFileInformationList
+          } else {
+            this.archivesFileForm.refArchivesFileInformationList = []
+          }
+          this.archivesFileId = res.data.archivesFileList.list[0].objectId
+          this.isOnlyPhysical = this.archivesClassifyList[index].isOnlyPhysical
+        }
+      })
+    },
+    menuTitle (value) {
+      if (this.isQuery) {
+        if (Number(value.status) === 0) {
+          return '未归档'
+        } else if (Number(value.status) === 1) {
+          return '已归档'
+        }
+      } else {
+        if (Number(value.transferStatus) === 0) {
+          return '待移交'
+        } else if (Number(value.transferStatus) === 1) {
+          if (+value.status === 1) {
+            return '已归档'
+          }
+          return '已接收'
+        } else if (Number(value.transferStatus) === 2) {
+          return '已移交'
+        } else if (Number(value.transferStatus) === 3) {
+          return '已退回'
+        }
+      }
+    },
+    // 分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+    },
+    dataIndex (index) {
+      return index + (this.currentPage - 1) * this.pageSize + 1
+    },
+    updateBtn (item) {
+      if (this.activeName === item.archivesCatalog.name) {
+        this.activeName = ''
+      } else {
+        this.activeName = item.archivesCatalog.name
+      }
+    },
+    handleAddFileDir () {
+      this.dialogVisible = true
+      // 获取目录
+      archivesInfo.getUnaddedCatalog({
+        tenderSystemCode: this.info.tenderSystemCode,
+        objectId: this.info.objectId,
+        enterpriseId: this.info.enterpriseId
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.fileTypeOptions = res.data.archivesFileList
+        }
+      })
+    },
+    close () {
+      this.dialogVisible = false
+      this.$refs.dialogForm.resetFields()
+    },
+    getInitData (info) {
+      if (this.isQuery) {
+        this.archivesClassifyList = info.archivesClassifyList.filter(classify => Number(classify.status) !== 0)
+      } else {
+        this.archivesClassifyList = info.archivesClassifyList.filter(classify => Number(classify.transferStatus) !== 3 && Number(classify.transferStatus) !== 0)
+      }
+      if (this.archivesClassifyList[0]) {
+        archivesFile.getArchivesFileList({
+          archivesClassifyId: this.archivesClassifyList[0].objectId
+        }).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.archivesFileList = res.data.archivesFileList.list
+            this.moduleName = this.archivesClassifyList[0].name
+            if (res.data.archivesFileList.list[0].archivesProjectExpands) {
+              this.archivesFileForm = res.data.archivesFileList.list[0]
+            } else {
+              this.archivesFileForm = {
+                archivesProjectExpands: {
+                  evaluationInformation: ''
+                }
+              }
+            }
+            if (res.data.archivesFileList.list[0].refArchivesFileInformationList) {
+              this.archivesFileForm.refArchivesFileInformationList = res.data.archivesFileList.list[0].refArchivesFileInformationList
+            } else {
+              this.archivesFileForm.refArchivesFileInformationList = []
+            }
+            this.archivesFileId = res.data.archivesFileList.list[0].objectId
+            this.isOnlyPhysical = this.archivesClassifyList[0].isOnlyPhysical
+          }
+        })
+      }
+    },
+    // 增加文件目录
+    submitForm (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.fileTypeOptions.forEach(item => {
+            if (this.dialogForm.fileType === item.archivesCatalog.objectId) {
+              item.archivesClassifyId = this.archivesClassifyList[this.activeMenuIndex].objectId
+              archivesFile.addArchivesFile(item).then((res) => {
+                this.archivesFileList.push(res.data.archivesFile)
+                this.dialogVisible = false
+                this.dialogForm.fileType = ''
+              })
+            }
+          })
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style lang="less">
+  #bid-file{
+    .file-item>.el-checkbox {
+      margin-right: 0;
+    }
+  }
+</style>

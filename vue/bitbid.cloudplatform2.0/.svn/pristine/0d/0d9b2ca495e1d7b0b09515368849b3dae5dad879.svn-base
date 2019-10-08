@@ -1,0 +1,312 @@
+<template>
+  <div class="cloudcontent" id="cloud_agencyContract">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" ref="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="委托协议编号："  prop="agencyContractCode">
+              <el-input v-model="updateForm.agencyContractCode" clearable placeholder="请输入委托协议编号">
+                <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="委托协议名称："  prop="agencyContractName">
+              <el-input v-model="updateForm.agencyContractName" clearable placeholder="请输入委托协议名称">
+                <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="委托单位："  prop="entrustEnterpriseName">
+              <el-input v-model="updateForm.entrustEnterpriseName" readonly placeholder="请选择委托单位">
+                <el-button slot="append" icon="el-icon-search" @click="showCustomerDialog"></el-button>
+              </el-input>
+            </el-form-item>
+            <customer-radio-dialog :showVisible="showCustomerVisible" @selected="selectedCustomer" @showDialog="showCustomerDialog"></customer-radio-dialog>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="委托单位联系人："  prop="entrustEnterpriseContacts">
+              <el-input v-model="updateForm.entrustEnterpriseContacts" clearable placeholder="请输入委托单位联系人">
+                <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="委托单位联系电话："  prop="entrustEnterpriseContactsPhone">
+              <el-input v-model="updateForm.entrustEnterpriseContactsPhone" clearable placeholder="请输入委托单位联系电话">
+                <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="委托协议签订日期："  prop="contractSigningDate" placeholder="请选择委托协议签订日期">
+              <el-date-picker
+                style="width:100%;"
+                v-model="updateForm.contractSigningDate"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                type="date">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="收费比例："  prop="chargeRatio">
+              <el-input v-model="updateForm.chargeRatio" clearable placeholder="请输入收费比例">
+                <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="负责人："  prop="chargePersonId">
+              <el-select v-model="updateForm.chargePersonId" placeholder="请选择">
+                <el-option
+                  v-for="item in users"
+                  :key="item.objectId"
+                  :label="item.name"
+                  :value="item.objectId">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="负责部门：" prop="departmentName">
+              <el-input class="deptInput" v-model="updateForm.departmentName" auto-complete="off" placeholder="请选择所属部门" readonly="readonly" clearable @click.native="showDepartmentTree">
+                <i slot="suffix" class="el-input__icon el-icon-arrow-down"></i>
+              </el-input>
+              <tree-options :initData="updateForm.departmentId" @selectSuccess="selectedDepatment" :isShowOptions="isShowDptTree"></tree-options>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="备注：">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="委托协议扫描件：">
+              <upload-file @uploadSuccess="uploadOtherSuccess" @deleteSuccess="deleteSuccess"
+                           :fileArrays="updateForm.fileInformationList"
+                           fileType="9"
+                           isImage="0">
+              </upload-file>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="saveBtn('updateForm')" :loading="isSaving">保存</el-button>
+          <el-button type="primary" class="submitBtn" @click="submitBtn('updateForm')" :loading="isSubmiting">提交</el-button>
+          <el-button class="cancal" @click="$router.go(-1)">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import {agencyContract} from '@/api/knowledge'
+import uploadFile from '@/components/upload/publicFileUpload'
+import {validPhoneUser} from '@/assets/js/validate.js'
+import CustomerRadioDialog from '@/pages/customer/customer/dialog/radio_dialog.vue'
+import TreeOptions from '@/pages/system/department/tree/tree_options'
+import { user } from '@/api/system'
+export default {
+  components: {
+    editor,
+    uploadFile,
+    CustomerRadioDialog,
+    TreeOptions
+  },
+  data () {
+    return {
+      isSaving: false,
+      isSubmiting: false,
+      updateForm: {
+        departmentName: '',
+        fileInformationList: []
+      },
+      rules: {
+        agencyContractCode: {required: true, message: '请填写委托协议编号', trigger: 'blur'},
+        agencyContractName: {required: true, message: '请填写委托协议名称', trigger: 'blur'},
+        entrustEnterpriseName: {required: true, message: '请填写委托单位', trigger: 'change'},
+        contractSigningDate: {required: true, message: '请填写委托协议签订日期', trigger: 'change'},
+        entrustEnterpriseContactsPhone: { validator: validPhoneUser, trigger: 'blur' },
+        chargeRatio: { min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur' },
+        chargePersonId: [
+          { required: true, message: '负责人不能为空', trigger: 'change' }
+        ],
+        departmentName: [
+          { required: true, message: '负责部门不能为空', trigger: 'change' }
+        ]
+      },
+      // 富文本
+      editread: false,
+      content: '',
+      code: this.$route.params.code,
+      // 客户管理选择弹框
+      showCustomerVisible: false,
+      // 部门
+      isShowDptTree: false,
+      // 负责人集合
+      users: []
+    }
+  },
+  watch: {
+    '$route': 'init',
+    // 负责人名称
+    // 负责人名称
+    'updateForm.chargePersonId' (value) {
+      if (this.users.length && value) {
+        this.updateForm.chargePersonName = this.users.find(item => item.objectId === value).name
+      }
+    }
+  },
+  methods: {
+    // 上传附件
+    uploadOtherSuccess (file) {
+      this.updateForm.fileInformationList.push(file)
+    },
+    deleteSuccess (fileId) {
+      this.updateForm.fileInformationList = this.updateForm.fileInformationList.filter(item => item.relativePath !== fileId)
+    },
+    getOne () {
+      agencyContract.getOne(this.code).then(res => {
+        this.updateForm = res.data.agencyContract
+        if (this.updateForm.contractContent) {
+          this.$refs.ueditor.setContent(this.updateForm.contractContent)
+        }
+      })
+    },
+    saveBtn (val) {
+      this.$refs[val].validate((vaild) => {
+        if (vaild) {
+          this.$confirm('确定要保存吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            beforeClose: (action, instance, done) => {
+              done()
+            }
+          }).then(() => {
+            this.isSaving = true
+            this.updateForm.contractContent = this.$refs.ueditor.getContent()
+            this.updateForm.fileInformationList.map(item => {
+              item.objectId = null
+            })
+            agencyContract.save(this.updateForm).then(() => {
+              this.$store.commit('delete_tabs', this.$route.fullPath)
+              this.$router.push({path: `/knowledge/agencyContract`})
+              this.isSaving = false
+            })
+          }).catch(() => {
+            this.isSaving = false
+            return false
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    // 客户弹框打开/关闭
+    showCustomerDialog () {
+      this.showCustomerVisible = !this.showCustomerVisible
+    },
+    // 选择客户
+    selectedCustomer (obj) {
+      this.updateForm.customerManagementCode = obj.code
+      this.updateForm.entrustEnterpriseName = obj.name
+    },
+    // 负责人初始化
+    initUsers () {
+      let query = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        isDelete: 0,
+        type: 2,
+        pageNum: 1,
+        pageSize: 100
+      }
+      user.queryList(query).then(res => {
+        this.users = res.data.data
+      })
+    },
+    // 部门树展开/关闭
+    showDepartmentTree () {
+      this.isShowDptTree = !this.isShowDptTree
+    },
+    // 选择部门
+    selectedDepatment (deptTreeNode) {
+      this.updateForm.departmentName = deptTreeNode.label
+      this.updateForm.departmentId = deptTreeNode.id
+      this.isShowDptTree = false
+    },
+    submitBtn (val) {
+      this.$refs[val].validate((vaild) => {
+        if (vaild) {
+          this.approveDialogVisable = true
+        } else {
+          return false
+        }
+      })
+    },
+    submitData () {
+      this.$confirm('提交后数据将锁定，不允许修改，确认要提交吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          done()
+        }
+      }).then(() => {
+        this.isSubmiting = true
+        this.updateForm.status = 4
+        this.updateForm.submitTime = new Date().getTime()
+        this.updateForm.contractContent = this.$refs.ueditor.getContent()
+        this.updateForm.fileInformationList.map(item => {
+          item.objectId = null
+        })
+        agencyContract.save(this.updateForm).then(() => {
+          this.$store.commit('delete_tabs', this.$route.fullPath)
+          this.$router.push({path: `/knowledge/agencyContract`})
+          this.isSubmiting = false
+        })
+      }).catch(() => {
+        this.isSubmiting = false
+        return false
+      })
+    },
+    // 确认提交
+    confirmSubmit (obj) {
+      this.submitData()
+    },
+    cancelApprove () {
+      this.approveDialogVisable = false
+    },
+    init () {
+      this.code = this.$route.params.code
+      this.getOne()
+    }
+  },
+  mounted () {
+    // 初始化负责人
+    this.initUsers()
+    this.getOne()
+  }
+}
+</script>
+<style lang="less">
+  #cloud_agencyContract {
+    .el-select{
+      width: 100%;
+    }
+  }
+</style>

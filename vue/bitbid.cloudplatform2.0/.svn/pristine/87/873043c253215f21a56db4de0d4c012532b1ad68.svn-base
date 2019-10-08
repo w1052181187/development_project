@@ -1,0 +1,208 @@
+<template>
+  <div>
+    <el-dialog
+      :title="approveMethod === 2 ? '设置审批人' : '设置知会人'"
+      :visible.sync="showVisible"
+      :before-close="handleCancel"
+      width="30%">
+      <div>
+        <div v-if="approveMethod === 2" class="approve-box">
+          <div class="basic-approve-title bitian">审批人</div>
+          <ul class="approve">
+            <li v-for="(item, index) in obj.approveList" :key="index">
+              <div class="approve-person">
+                <span>{{item.name}}</span>
+                <img class="close" src="../../../../static/images/approve/close.png" @click="handleDel('approve', index)">
+              </div>
+              <img class="arrow" src="../../../../static/images/approve/jiantou.png">
+            </li>
+            <li class="add" @click="handleAdd('approve')">
+              <img src="../../../../static/images/approve/add.png">
+            </li>
+          </ul>
+        </div>
+        <div class="basic-approve-title">知会给谁<span>（审批通过后，知会给一下人员）</span></div>
+        <ul class="approve">
+          <li v-for="(item, index) in obj.noticeList" :key="index">
+            <div class="approve-person notice-person">
+              <span>{{item.name}}</span>
+              <img class="close" src="../../../../static/images/approve/close.png" @click="handleDel('notice', index)">
+            </div>
+          </li>
+          <li class="add" @click="handleAdd('notice')">
+            <img src="../../../../static/images/approve/add.png">
+          </li>
+        </ul>
+      </div>
+      <div class="footer-box">
+        <el-button type="primary" @click="handleSubmit" :loading="loading">确认提交</el-button>
+        <el-button @click="handleCancel">取 消</el-button>
+      </div>
+    </el-dialog>
+    <select-user-dialog :showVisible="showUserVisible" @selected="selectedUser" @showDialog="showUserDialog"></select-user-dialog>
+    <multiSelectUserDialog :showVisible="showMultiUserVisible" :saveSelectedUser="obj.noticeList" @selected="selectedMultiUser" @showDialog="showMultiUserDialog"></multiSelectUserDialog>
+  </div>
+</template>
+
+<script>
+import selectUserDialog from '@/pages/system/users/search_user_radio'
+import multiSelectUserDialog from '@/pages/system/users/search_user_checkbox'
+export default {
+  name: 'submitApproveDialog',
+  // approveMethod: 0 无需审批 1 固定审批 2 自由审批
+  props: {
+    approveMethod: {
+      type: Number,
+      default: 0
+    },
+    showVisible: {
+      type: Boolean,
+      default: false
+    }
+  },
+  components: {
+    selectUserDialog,
+    multiSelectUserDialog
+  },
+  data () {
+    return {
+      loading: false,
+      obj: {
+        approveList: [
+        ],
+        noticeList: [
+        ]
+      },
+      showUserVisible: false,
+      showMultiUserVisible: false,
+      curType: ''
+    }
+  },
+  methods: {
+    // 确认提交
+    handleSubmit () {
+      if (this.approveMethod === 2 && this.obj.approveList.length === 0) {
+        this.$message({
+          message: '请选择审批人',
+          type: 'warning'
+        })
+        return
+      }
+      this.$emit('confirmSubmit', this.obj)
+    },
+    // 关闭弹框
+    handleCancel () {
+      this.$emit('handleCancel')
+    },
+    // 选择审批人或者知会人
+    handleAdd (type) {
+      this.curType = type
+      switch (type) {
+        case 'approve':
+          this.showUserDialog()
+          break
+        case 'notice':
+          this.showMultiUserDialog()
+          break
+      }
+    },
+    handleDel (type, index) {
+      switch (type) {
+        case 'approve':
+          this.obj.approveList.splice(index, 1)
+          break
+        case 'notice':
+          this.obj.noticeList.splice(index, 1)
+          break
+      }
+    },
+    showUserDialog () {
+      this.showUserVisible = !this.showUserVisible
+    },
+    showMultiUserDialog () {
+      this.showMultiUserVisible = !this.showMultiUserVisible
+    },
+    selectedUser (obj) {
+      this.obj.approveList.push(obj)
+    },
+    selectedMultiUser (users) {
+      this.obj.noticeList = users
+    }
+  }
+}
+</script>
+
+<style scoped>
+  .basic-approve-title span{
+    color: #999;
+  }
+  .approve-box{
+    margin-bottom: 20px;
+  }
+  .approve{
+    overflow: hidden;
+  }
+  .approve li{
+    /*display: inline-block;*/
+    float: left;
+  }
+  .approve-person{
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+  }
+  .approve-person span{
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    border-radius: 100%;
+    background-color: #3bb072;
+    font-size: 12px;
+    color: white;
+    display: inline-block;
+    overflow: hidden;
+  }
+  .close{
+    width: 16px;
+    height: 16px;
+    top: 0;
+    right: 0;
+    position: absolute;
+    cursor: pointer;
+  }
+  .arrow{
+    display: inline-block;
+    width: 12px;
+    height: 8px;
+    vertical-align: middle;
+    margin: 0 12px;
+  }
+  .add{
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    border-radius: 100%;
+    background-color: #eeeeee;
+    display: inline-block;
+    cursor: pointer;
+  }
+  .add img{
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+  }
+  .notice-person{
+    margin-right: 12px;
+  }
+  .notice-person span{
+    background-color: #f2b55a;
+  }
+  .footer-box{
+    text-align: center;
+    margin-top: 30px;
+  }
+</style>

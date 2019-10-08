@@ -1,0 +1,25 @@
+import request from '@/utils/axios'
+
+export const transactionRecord = {
+  /**
+   * 列表查询
+   * @param {*} query [查询信息]
+   */
+  getList (query) {
+    return request({
+      url: '/Transaction-record',
+      method: 'get',
+      params: query
+    })
+  },
+  /**
+   * 单条查询
+   * @param id
+   */
+  getOne (id) {
+    return request({
+      url: '/Transaction-record/query' + id,
+      method: 'get'
+    })
+  }
+}

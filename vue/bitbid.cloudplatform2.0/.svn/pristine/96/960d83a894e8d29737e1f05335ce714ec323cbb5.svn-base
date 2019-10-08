@@ -1,0 +1,223 @@
+<template>
+  <div class="cloudcontent" id="cloud_processtype">
+    <!--搜索 & 添加按钮-->
+    <div class="topmain">
+      <el-row>
+        <div class="seacher_box">
+          <span>资质类别：</span>
+          <el-select v-model="type" class="select">
+            <el-option
+              v-for="item in typeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <el-select v-model="typeName" class="select left">
+            <el-option
+              v-for="item in typeNameOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <el-input class="select" style="vertical-align: top"  placeholder="请输入关键字" v-model="search_input"></el-input>
+          <el-checkbox-group v-model="checkList" class="check_group left">
+            <el-checkbox label="自有"></el-checkbox>
+            <el-checkbox label="借入"></el-checkbox>
+          </el-checkbox-group>
+          <el-button  class="left" icon="el-icon-search" @click="search"></el-button>
+        </div>
+      </el-row>
+      <!--搜索 & 添加按钮-->
+      <div class="main">
+        <el-button class="addbutton" @click="handleAdd">
+          <span>资质登记</span>
+        </el-button>
+        <el-table
+          :data="tableData"
+          border>
+          <el-table-column
+            type="index"
+            label="序号"
+            align="center"
+            width="80">
+          </el-table-column>
+          <el-table-column
+            prop="type"
+            label="资质类别"
+            width="80">
+            <template slot-scope="scope">
+              <span  v-if="scope.row.type === 1">公开招标</span>
+              <span  v-if="scope.row.type === 2">邀请招标</span>
+              <span  v-if="scope.row.type === 3">竞争性谈判</span>
+              <span  v-if="scope.row.type === 4">单一来源采购</span>
+              <span  v-if="scope.row.type === 5">询价采购</span>
+              <span  v-if="scope.row.type === 6">竞争性磋商</span>
+              <span  v-if="scope.row.type === 9">其他</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="flowStatus"
+            label="资质编号">
+            <template slot-scope="scope">
+              <span  v-if="scope.row.flowStatus === 1">招标文件</span>
+              <span  v-if="scope.row.flowStatus === 2">招标公告</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="type"
+            label="资质等级"
+            width="80"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="type"
+            label="资质名称"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="auditStatus"
+            label="资质来源"
+            width="80">
+            <template slot-scope="scope">
+              <span  v-if="scope.row.auditStatus === 0">待审批</span>
+              <span  v-if="scope.row.auditStatus === 1">通过</span>
+              <span  v-if="scope.row.auditStatus === 2">不通过</span>
+              <span  v-if="scope.row.auditStatus === 3">已撤销</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="createDate"
+            label="资质主体/合作方">
+          </el-table-column>
+          <el-table-column
+            prop="createDate"
+            label="资质有效期/合作时间">
+          </el-table-column>
+          <el-table-column
+            label="操作" align="center" width="120">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" @click="handleDetail(scope)">查看</el-button>
+              <el-button type="text" size="small" @click="handleDel(scope)">删除</el-button>
+              <el-button type="text" size="small" @click="handleRecord(scope)">合作记录</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="total"
+          :page-size='pageSize'
+          :current-page.sync="currentPage"
+          @current-change="handleCurrentChange">
+        </el-pagination>
+        <!--分页-->
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: '',
+  data () {
+    return {
+      type: null,
+      typeOptions: [{
+        value: null,
+        label: '全部'
+      }, {
+        value: 0,
+        label: '类别一'
+      }, {
+        value: 1,
+        label: '类别二'
+      }, {
+        value: 2,
+        label: '类别三'
+      }],
+      typeName: null,
+      typeNameOptions: [{
+        value: 0,
+        label: '资质名称'
+      }, {
+        value: 1,
+        label: '资质主体'
+      }, {
+        value: 2,
+        label: '资质编号'
+      }],
+      search_input: '',
+      checkList: [],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 100, // 总条数
+      pageSize: 10, // 每页展示条数
+      tableData: [
+        {
+          type: 1
+        }
+      ]
+    }
+  },
+  methods: {
+    search () {
+      this.currentPage = 1
+      this.pageNo = 0
+      this.getList()
+    },
+    // 分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+      this.getList()
+    },
+    handleAdd () {
+      this.$router.push({path: `/knowledge/agencyContract/add`})
+    },
+    handleDetail (scope) {
+      this.$router.push({path: `/knowledge/agencyContract/add/${scope.row.code}`})
+    },
+    handleDel (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+      }).catch(() => {
+        return false
+      })
+    },
+    handleRecord (scope) {
+      this.$router.push({path: `/knowledge/agencyContract/add/${scope.row.code}`})
+    },
+    getList () {
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style scoped>
+  .seacher_box>span{
+    display: inline-block;
+    line-height: 40px;
+    font-size: 14px;
+  }
+  .select{
+    width: 14%;
+  }
+  .check_group {
+    width: 4%;
+  }
+  .search{
+    width: 20%;
+  }
+  .left {
+    margin-left: 12px;
+  }
+</style>

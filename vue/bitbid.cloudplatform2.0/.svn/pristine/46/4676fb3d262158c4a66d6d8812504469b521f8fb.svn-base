@@ -1,0 +1,46 @@
+import request from '@/utils/axios/components-axios'
+
+export const serviceSubscription = {
+  /**
+   * 服务订阅列表查询
+   * @param {*} query [查询信息]
+   */
+  getList (query) {
+    return request({
+      url: '/serviceSubscription-info',
+      method: 'get',
+      params: query
+    })
+  },
+  /**
+   * 服务订阅单条查询
+   * @param {*} objectId [查询信息]
+   */
+  getById (objectId) {
+    return request({
+      url: '/serviceSubscription-info/' + objectId,
+      method: 'get'
+    })
+  },
+  /**
+   * 新增/修改服务订阅
+   * @param {*} data [主体数据]
+   */
+  update (data) {
+    return request({
+      url: '/serviceSubscription-info',
+      method: 'put',
+      data
+    })
+  },
+  /**
+   * 删除服务订阅
+   * @param {[String]} code [编号]
+   */
+  deleteByCode (code) {
+    return request({
+      url: '/serviceSubscription-info/' + code,
+      method: 'delete'
+    })
+  }
+}

@@ -1,0 +1,87 @@
+<template>
+  <div class="main">
+    <h3>内蒙古招投标网招标公告发布回执</h3>
+    <div class="content">
+      <p style="text-indent: 0em"><span>{{enterpriseName}}</span></p>
+      <p>贵单位受<span>{{ownerName}}</span>的委托，名为《<span>{{title}}</span>》的招标公告已经在内蒙古招标投标网正式发布。</p>
+      <p>浏览地址：<a :href="url">{{url}}</a></p>
+      <p>专函特告！</p>
+    </div>
+    <div class="bottom">
+      <p>发布日期：{{publishTime}}</p>
+      <p>打印日期：{{printTime}}</p>
+    </div>
+  </div>
+</template>
+
+<script>
+import {bidanno} from '@/api'
+import {dateFormat} from '@/assets/js/common'
+export default {
+  name: '',
+  data () {
+    return {
+      enterpriseName: '',
+      title: '',
+      publishTime: '',
+      ownerName: '',
+      url: '',
+      printTime: this.getNowFormatDate()
+    }
+  },
+  methods: {
+    getPrintInfo () {
+      bidanno.print(this.$route.params.objectId).then((res) => {
+        this.enterpriseName = res.data.enterpriseName
+        this.title = res.data.title
+        this.publishTime = res.data.publishTime
+        this.ownerName = res.data.ownerName
+        this.url = res.data.url
+      })
+    },
+    getNowFormatDate () {
+      return dateFormat(new Date(), 'yyyy-MM-dd hh:mm:ss')
+    }
+  },
+  mounted () {
+    this.getPrintInfo()
+  }
+}
+</script>
+
+<style scoped>
+  .main{
+    width: 1000px;
+    margin: 0 auto;
+    padding:30px;
+    text-align: left;
+    background: #ffffff;
+  }
+  .main h3{
+    text-align: center;
+    line-height: 100px;
+    font-size: 30px;
+  }
+  .main a{
+    text-decoration:none;
+    color: #108cee;
+  }
+  .content{
+    width: 1000px;
+    margin: 0 auto;
+  }
+  .content p{
+    color: #000;
+    font-size: 16px;
+    line-height: 36px;
+    text-indent: 2em
+  }
+  .content p span{
+    text-decoration: underline;
+  }
+  .bottom{
+    width: 1000px;
+    margin: 30px auto;
+    text-align: right;
+  }
+</style>

@@ -1,0 +1,75 @@
+<template>
+  <div class="cloudcontent" id="cloud_notice">
+    <div class="main">
+      <ul class="model_list">
+        <li>
+          <router-link :to="{ path: '/websiteManage/notice/tender' }">
+            <img src="../../../../static/images/webmanage/zbgg.png"/>
+            <span>招标公告</span>
+          </router-link>
+        </li>
+        <li>
+          <router-link :to="{ path: '/websiteManage/notice/public' }">
+            <img src="../../../../static/images/webmanage/jggs.png"/>
+            <span>结果公示</span>
+          </router-link>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+    }
+  },
+  methods: {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_notice {
+    .main ul.model_list{
+      margin: 0 auto;
+      padding: 20px 0;
+    }
+    .main ul.model_list:after {
+      display: block;
+      content: "";
+      clear: both;
+    }
+    .main ul.model_list li{
+      width: 130px;
+      height: 170px;
+      border: 1px solid #cccccc;
+      float: left;
+      margin: 0 30px;
+      text-align: center;
+      -webkit-border-radius: 10px;
+      -moz-border-radius: 10px;
+      border-radius: 10px;
+    }
+    .main ul.model_list li img{
+      margin-top: 30px;
+    }
+    .main ul.model_list li a{
+      text-decoration: none!important;
+    }
+    .main ul.model_list li span{
+      width: 100%;
+      display: block;
+      line-height: 32px;
+      overflow: hidden;
+      margin-top: 16px;
+      color: #333333;
+      text-decoration: none!important;
+    }
+    .main ul.model_list li:hover{
+      border: 1px solid #3f63f6;
+      box-shadow:0px 0px  10px 5px #eeeeee;
+    }
+  }
+</style>

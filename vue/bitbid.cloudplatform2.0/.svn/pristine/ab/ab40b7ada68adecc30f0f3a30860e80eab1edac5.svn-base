@@ -1,0 +1,113 @@
+<template>
+  <div class="approve-box">
+    <div class="basic-approve-title">审批记录</div>
+    <el-table
+      :data="recordList"
+      border
+      style="width: 100%" header-cell-class-name="tableheader">
+      <el-table-column
+        type="index"
+        label="序号"
+        width="60"
+        :index="indexMethod"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        prop="auditorName"
+        label="审批人"
+        width="120"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="auditStatus"
+        label="审批结果"
+        width="100"
+        show-overflow-tooltip>
+        <template slot-scope="scope">
+          <span  v-if="scope.row.auditStatus === 1">通过</span>
+          <span  v-if="scope.row.auditStatus === 2">不通过</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="createDate"
+        label="审批时间"
+        width="160"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="opinion"
+        label="审批意见"
+        show-overflow-tooltip>
+      </el-table-column>
+    </el-table>
+    <div class="basic-approve-title">知会人：{{noticeUser}}</div>
+  </div>
+</template>
+<script>
+import {approvalRecord} from '@/api/todoList'
+export default {
+  name: 'approveRecord',
+  components: {
+  },
+  props: ['approvalTaskCode', 'subjectCode'],
+  data () {
+    return {
+      recordList: [],
+      noticeUser: ''
+    }
+  },
+  methods: {
+    indexMethod (index) {
+      return index + 1
+    },
+    approveRecord () {
+      if (!this.subjectCode) {
+        return
+      }
+      let query = {
+        subjectCode: this.subjectCode,
+        relatedCode: this.approvalTaskCode
+      }
+      approvalRecord.approvalRecordList(query).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.recordList = res.data.recordOfApprovalList
+          // this.taskExecutor = res.data.taskExecutor
+        }
+      })
+    },
+    init () {
+      this.approveRecord()
+    }
+  },
+  watch: {
+    '$route': 'init',
+    subjectCode: {
+      handler () {
+        this.init()
+      },
+      immediate: true,
+      deep: true
+    }
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+
+<style scoped>
+  .approve-box {
+    padding: 16px 20px;
+    box-sizing: border-box;
+  }
+  .footer-box{
+    text-align: center;
+    margin-top: 30px;
+  }
+  .addbutton{
+    color: #fff;
+    background-color: #409EFF;
+    border-color: #409EFF;
+    float: right;
+  }
+</style>

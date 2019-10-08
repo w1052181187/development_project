@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+<head>
+  <title>金格iWebPDF示例程序</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width" />
+  <style type="text/css" media="screen">
+    html, body	{
+      height:100%;
+      overflow: hidden; }
+    body { margin:0; padding:0; overflow: hidden; }
+    #flashContent { display:none; }
+    .formBar{
+      width: 100%;
+      float: right;
+      background: #bebebe;
+      overflow: hidden;
+    }
+    .formBar ul{
+      width: 240px;
+      float: right;
+      overflow: hidden;
+    }
+    .formBar ul li{
+      float: left;
+      margin: 0 15px;
+      list-style: none;
+    }
+    .formBar ul li button{
+      background: #3f63f6;
+      height: 26px;
+      line-height: 26px;
+      border: 1px solid #3f63f6;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+      color: #ffffff;
+    }
+  </style>
+  <script type="text/javascript" src="../js/jquery.min.js"></script>
+</head>
+<body>
+<div class="pageCentent" style="height: 100%;">
+  <div class="pageFormContent" style="height: 92%;">
+    <form name="webform" id="webform" style="height: 100%" action="" method="post" >
+      <OBJECT id="HWPostil1_gg" align="middle" style="LEFT: 0px; WIDTH: 100%; TOP: 0px; HEIGHT: 100%"
+              classid="clsid:FF1FE7A0-0578-4FEE-A34E-FB21B277D561"
+              codebase="sxca/HWPostil.ocx#version=3,1,0,2">
+      </OBJECT>
+    </form>
+  </div>
+  <div class="formBar" style="height: 8%;">
+    <ul>
+      <li><div class="buttonActive"><div class="buttonContent"><button class="button" onclick="AddSeal()">签章</button></div></div></li>
+      <li><div class="buttonActive"><div class="buttonContent"><button class="button" onclick="SaveToService()">保存</button></div></div></li>
+      <li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+    </ul>
+  </div>
+</div>
+<script type="text/javascript">
+  if(!("ActiveXObject" in window) && !window.ActiveXObject){
+    alert("请使用IE8以上浏览器查看此页面,点击确定返回!")
+  }else{
+    function getQueryStr(sArgName)
+    {
+      var args = location.href.split("?");
+      var retval = "";
+      if(args[0] == location.href) /*参数为空*/
+      {
+        return retval; /*无需做任何处理*/
+      }
+      var str = args[1];
+      args = str.split("&");
+      for(var i = 0; i < args.length; i ++)
+      {
+        str = args[i];
+        var arg = str.split("=");
+        if(arg.length <= 1) continue;
+        if(arg[0] == sArgName) retval = arg[1];
+      }
+      return retval;
+    }
+    //获取变量
+    var feeSettlementId,filePath,serverUrl;
+
+    var objectId = getQueryStr("id")
+    var type = getQueryStr("type")
+    serverUrl = getQueryStr("serverUrl")
+    function OpenFile() {
+      return AipObj.LoadFile(serverUrl+"comptend/project/download/pdf/" + objectId + "/" + type);
+    }
+
+    $(function(){
+      AipObj = document.getElementById("HWPostil1_gg");
+      AipObj.ShowDefMenu=false;//隐藏菜单
+      AipObj.ShowToolBar=false;//隐藏工具条
+      if(OpenFile()!=1){
+        alert("打开文档失败！");
+      }
+    });
+
+    function AddSeal() {
+// 	var islogin=AipObj.Login("HWSEALDEMO**",4,4,"DEMO","");
+      var islogin=AipObj.Login("",1,65535,"",""); //如果正式用户有问题可用此方法，不过测试网除了两个CA（个人02，企业03）更新过信息，其他CA需要重新导入一下证书才能用此方法。
+      if (islogin != 0) {
+        alert("读取签章用户信息出错！");
+        return islogin;
+      } else {
+        AipObj.CurrAction = 2568;//添加印章操作状态,印章文件取自文件。
+      }
+    }
+
+    /****************************************************************************************************
+     方法名：SaveToS	保存文档
+     参  数：savetype	文档保存方式：0 保存本地，1 保存到服务器
+     filepath	文档保存路径：
+     savetype为0时为本地路径，可以为空，为空会弹出地址框，例如c:/test/1.pdf
+     savetype为1时为服务器路径，例如http://127.0.0.1/getfile.php,地址为文件接收服务器地址，接收文件流FileBlod
+     filecode	文档惟一标示：
+     savetype为0时为文档类型，值可以为doc，pdf，aip，word，jpg，gif，bmp等
+     savetype为1时为文档唯一标示，用做服务器接收的参数FileCode
+     *****************************************************************************************************/
+    function SaveToService() {
+      AipObj.HttpInit();
+      if(confirm ("确定要保存吗？")){
+        var filepath=serverUrl+"comptend/fileInfor/upload/" + objectId + "/" + type;
+        var temp = AipObj.GetTempFileName("");//获取缓冲文件地址
+        var reg1 = /\\(\w+|\.)+$/;
+        temp = temp.replace(reg1,"\\webofficeTemp.pdf");
+        AipObj.SaveTo(temp,"pdf",0);
+        AipObj.HttpAddPostFile("file", temp); //设置上传当前文件,文件标识为FileBlod。
+        AipObj.HttpPost(filepath); //上传数据。
+        AipObj.DeleteLocalFile(temp);//删除缓冲文件
+      }
+    }
+  }
+
+</script>
+</body>
+</html>

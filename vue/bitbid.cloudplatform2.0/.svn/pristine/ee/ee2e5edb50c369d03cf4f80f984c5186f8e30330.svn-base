@@ -1,0 +1,610 @@
+<template>
+    <div class="project-analysis">
+      <div class="statistics-box clearfix">
+        <div class="fr">
+          <span>统计期间：</span>
+          <el-select v-model="statisticsActive" placeholder="请选择">
+            <el-option v-for="item in statisticsList" :key="item.value" :label="item.text"
+                :value="item.value">
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+      <div class="total-line">
+        <el-row :gutter="20">
+          <el-col :span="6" v-for="item in totalList" :key="item.text">
+            <div class="line-box" :style="{background: 'url(' + item.imgSrc + ')', backgroundSize: '100%'}">
+              <span class="first-span">{{item.text}}</span>
+              <p class="fl first-pbox">
+                <span class="second-span">{{item.quantity}}</span>
+                <span>{{item.unitOne}}</span>
+              </p>
+              <p class="fl second-pbox">
+                <span class="second-span">{{item.change}}</span>
+                <span>{{item.unit}}</span>
+              </p>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="monthly-analysis">
+        <div id="monthlyAnalysis" style="width:100%; height:400px;"></div>
+      </div>
+      <div class="ratio-box">
+        <p>
+          <span class="title">同比环比</span>
+          <span class="text">2018年项目数量50个，2019年项目数量58个，同比增长14.3%；2018年项目金额600万元，2018年项目金额360万元，同比7.3%。</span>
+        </p>
+        <el-tabs class="ratio-tabs" v-model="activeRatio" @tab-click="handleClickRatio">
+          <el-tab-pane label="项目数量" name="activNumber"></el-tab-pane>
+          <el-tab-pane label="项目金额" name="activeMoney"></el-tab-pane>
+        </el-tabs>
+        <el-tabs class="region-tabs" v-model="activeTabs" @tab-click="handleClickRegion">
+          <el-tab-pane label="地区" name="activRegion"></el-tab-pane>
+          <el-tab-pane label="业主" name="activeOwner"></el-tab-pane>
+          <el-tab-pane label="行业" name="activeIndustry"></el-tab-pane>
+        </el-tabs>
+        <div class="radio-box">
+          <el-radio v-model="radioBox" label="yearRatio">同比</el-radio>
+          <el-radio v-model="radioBox" label="chainRatio">环比</el-radio>
+        </div>
+        <div id="chainRatio" class="active-box" style="width:100%; height:460px;"></div>
+      </div>
+      <div class="saving-rate-box">
+        <span>节资率分析</span>
+        <el-row>
+          <el-col :span="12">
+            <div id="savingRate" style="width:100%; height: 400px;" class="rate-echarts"></div>
+          </el-col>
+          <el-col :span="12">
+            <div class="rate-table">
+              <el-tabs v-model="activeName" @tab-click="handleClickSavingRate">
+                <el-tab-pane label="业主" name="savingRateOwner">
+                  <span class="project-change">金额单位：万元</span>
+                  <el-table :data="ownerTableData" border style="width: 100%">
+                    <el-table-column type="index" label="序号" width="60"></el-table-column>
+                    <el-table-column prop="yezhu" label="业主"></el-table-column>
+                    <el-table-column prop="xiangmushu" label="项目数"></el-table-column>
+                    <el-table-column prop="zonge" label="节资总额"></el-table-column>
+                    <el-table-column prop="feilv" label="节费率%"></el-table-column>
+                  </el-table>
+                </el-tab-pane>
+                <el-tab-pane label="项目" name="savingRateProject">
+                  <span class="project-change">金额单位：万元</span>
+                  <el-table :data="projectTableData" border style="width: 100%">
+                    <el-table-column type="index" label="序号" width="60"></el-table-column>
+                    <el-table-column prop="xiangmu" label="项目"></el-table-column>
+                    <el-table-column prop="kongzhijia" label="控制价"></el-table-column>
+                    <el-table-column prop="zhongbiaojia" label="中标价"></el-table-column>
+                    <el-table-column prop="zonge" label="节资总额"></el-table-column>
+                    <el-table-column prop="feilv" label="节费率%"></el-table-column>
+                  </el-table>
+                </el-tab-pane>
+              </el-tabs>
+              <el-input v-if="activeName === 'savingRateOwner'" v-model="ownerInput" placeholder="请输入业主名称" class="owner-input">
+                <i slot="suffix" class="el-input__icon el-icon-search"></i>
+              </el-input>
+              <el-input v-if="activeName === 'savingRateProject'" v-model="projectInput" placeholder="请输入项目名称" class="owner-input">
+                <i slot="suffix" class="el-input__icon el-icon-search"></i>
+              </el-input>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+    </div>
+</template>
+<script>
+import echarts from 'echarts'
+export default {
+  components: {},
+  data () {
+    return {
+      statisticsActive: 1, // 统计分析
+      statisticsList: [
+        {text: '本月', value: 1},
+        {text: '本周', value: 2},
+        {text: '上月', value: 3},
+        {text: '下月', value: 4},
+        {text: '下周', value: 5}
+      ], // 统计分析下拉列表
+      totalList: [
+        {text: '预测', quantity: 3, unitOne: '个', change: '$124', unit: '万元', imgSrc: '../../../../static/images/statistics/firstbg.png'},
+        {text: '新增', quantity: 188, unitOne: '个', change: '$124', unit: '万元', imgSrc: '../../../../static/images/statistics/secondbg.png'},
+        {text: '进行中', quantity: 3, unitOne: '个', change: '$124', unit: '万元', imgSrc: '../../../../static/images/statistics/thirdbg.png'},
+        {text: '已完成', quantity: 3, unitOne: '个', change: '$124', unit: '万元', imgSrc: '../../../../static/images/statistics/fourthbg.png'}
+      ], // 整体概括
+      monthlyAnalysisCharts: '', // 月度分析
+      monthlyAnalysisXData: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+      monthlyAnalysisColumnData: [900, 800, 700, 680, 650, 640, 600, 570, 680, 650, 640, 600],
+      monthlyAnalysisLineData: [75, 65, 85, 80, 45, 55, 56, 42, 78, 69, 70, 36],
+      activeRatio: 'activNumber', // 默认选择项目数量
+      activeTabs: 'activRegion', // 默认选择地区
+      radioBox: 'yearRatio', // 默认选择同比
+      chainRatioCharts: '', // 同比环比图表
+      chainRatioXData: ['太原1', '太原2', '太原3', '太原4', '太原5', '太原6', '太原7', '太原8', '太原9'],
+      chainRatioCurrentnData: [200, 500, 400, 300, 500, 711, 200, 500, 600], // 同比环比数据
+      chainRatioPreviousData: [100, 200, 300, 300, 600, 211, 400, 300, 300],
+      chainRatiolineData: [900, 800, 700, 680, 650, 80, 45, 55, 100],
+      savingRateCharts: '', // 节资率分析图表
+      savingRateXData: ['2015年', '2016年', '2017年', '2018年', '2019年'],
+      savingRateColumnData: [900, 800, 700, 680, 650],
+      savingRateLineData: [60, 70, 45, 55, 100],
+      activeName: 'savingRateOwner', // 默认选择业主tab
+      ownerInput: '', // 业主input
+      projectInput: '', // 项目input
+      ownerTableData: [
+        {yezhu: '山西比比网络', xiangmushu: 100, zonge: 200, feilv: 30},
+        {yezhu: '山西比比网络', xiangmushu: 100, zonge: 200, feilv: 30},
+        {yezhu: '山西比比网络', xiangmushu: 100, zonge: 200, feilv: 30},
+        {yezhu: '山西比比网络', xiangmushu: 100, zonge: 200, feilv: 30},
+        {yezhu: '山西比比网络', xiangmushu: 100, zonge: 200, feilv: 30}
+      ], // 业主表格
+      projectTableData: [
+        {xiangmu: '山西比比网络', kongzhijia: 100, zhongbiaojia: 200, zonge: 200, feilv: 30},
+        {xiangmu: '山西比比网络', kongzhijia: 100, zhongbiaojia: 200, zonge: 200, feilv: 30},
+        {xiangmu: '山西比比网络', kongzhijia: 100, zhongbiaojia: 200, zonge: 200, feilv: 30},
+        {xiangmu: '山西比比网络', kongzhijia: 100, zhongbiaojia: 200, zonge: 200, feilv: 30},
+        {xiangmu: '山西比比网络', kongzhijia: 100, zhongbiaojia: 200, zonge: 200, feilv: 30}
+      ] // 项目表格
+    }
+  },
+  created () {},
+  mounted () {
+    this.$nextTick(function () {
+      this.loadmonthlyAnalysis() // 月度分析图表
+      this.loadChainRatio() // 同比环比图标
+      this.loadSavingRateCharts() // 节资率图表
+    })
+  },
+  methods: {
+    // 月度分析图表
+    loadmonthlyAnalysis () {
+      this.monthlyAnalysisCharts = echarts.init(document.getElementById('monthlyAnalysis'))
+      var option = {
+        title: {
+          left: 'left',
+          text: '月度分析'
+        },
+        tooltip: {
+          trigger: 'axis'
+          // trigger: 'axis',
+          // formatter: '{a}:{c}',
+          // axisPointer: {
+          //   type: 'cross',
+          //   crossStyle: {
+          //     color: '#999'
+          //   }
+          // }
+        },
+        // calculable: true,
+        grid: {
+          show: false,
+          top: 70,
+          bottom: 50,
+          right: 60,
+          left: 60
+        },
+        legend: {
+          show: true,
+          data: ['项目数量', '项目金额'],
+          selectedMode: 'multiple', // 设置显示单一图例的图形，点击可切换
+          itemGap: 20, // 图例每项之间的间隔。横向布局时为水平间隔，纵向布局时为纵向间隔
+          textStyle: {
+            color: '#666',
+            fontSize: 12
+          },
+          top: 30,
+          right: 50
+        },
+        xAxis: [
+          {
+            type: 'category',
+            data: this.monthlyAnalysisXData,
+            axisTick: {
+              show: true,
+              interval: 0
+            }
+          }
+        ],
+        // 设置两个y轴，左边显示数量，右边显示概率
+        yAxis: [
+          {
+            type: 'value',
+            axisLine: {show: true}, // 是否显示坐标轴轴线
+            axisTick: {show: false} // 是否显示坐标轴刻度
+          },
+          {
+            type: 'value',
+            axisLine: {show: true}, // 是否显示坐标轴轴线
+            axisTick: {show: false} // 是否显示坐标轴刻度
+          }
+          // }
+        ],
+        // 每个设备分数量、概率2个指标，只要让他们的name一致，即可通过，legeng进行统一的切换
+        series: [
+          {
+            name: '项目数量',
+            type: 'bar',
+            data: this.monthlyAnalysisColumnData,
+            barWidth: '14',
+            itemStyle: {
+              normal: {
+                color: '#3fa5ee'
+              }
+            },
+            label: {
+              show: true, // 开启显示
+              position: 'top', // 在上方显示
+              textStyle: { // 数值样式
+                color: '#333',
+                fontSize: 12
+              }
+            }
+          },
+          {
+            name: '项目金额',
+            type: 'line',
+            yAxisIndex: 1, // 这里要设置哪个y轴，默认是最左边的是0，然后1，2顺序来。
+            data: this.monthlyAnalysisLineData,
+            symbolSize: 10,
+            itemStyle: {
+              normal: {
+                color: '#7dc745'
+              }
+            },
+            label: {
+              show: true, // 开启显示
+              position: 'top', // 在上方显示
+              textStyle: { // 数值样式
+                color: '#333',
+                fontSize: 12
+              }
+            }
+          }
+        ]
+      }
+      this.monthlyAnalysisCharts.setOption(option)
+    },
+    // 同比环比图标
+    loadChainRatio () {
+      this.chainRatioCharts = echarts.init(document.getElementById('chainRatio'))
+      var option = {
+        tooltip: {
+          trigger: 'axis'
+        },
+        grid: { // 图标距离
+          top: 100, // 距离上边的距离
+          bottom: '10%', // 距离下边的距离
+          left: '4%', // 距离左边的距离
+          right: '6%' // 距离右边的距离
+        },
+        legend: {
+          type: 'scroll',
+          bottom: 0,
+          data: ['当期', '上期', '同比']
+        },
+        color: ['#ff6384', '#ff7f50', '#3fa5ee'],
+        xAxis: [
+          {
+            type: 'category',
+            data: this.chainRatioXData
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value'
+            // name: '水量',
+            // axisLabel: {
+            //   formatter: '{value} ml'
+            // }
+          },
+          {
+            type: 'value',
+            // name: '温度',
+            axisLabel: {
+              formatter: '{value} %'
+            }
+          }
+        ],
+        series: [
+          {
+            name: '当期',
+            type: 'bar',
+            data: this.chainRatioCurrentnData,
+            barWidth: 14, // 柱图宽度
+            barGap: '80%', // 多个并排柱子设置柱子之间的间距
+            barCategoryGap: '50%', // 多个并排柱子设置柱子之间的间距
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true, // 开启显示
+                  position: 'top', // 在上方显示
+                  textStyle: { // 数值样式
+                    color: '#333',
+                    fontSize: 12
+                  }
+                }
+              }
+            }
+          },
+          {
+            name: '上期',
+            type: 'bar',
+            data: this.chainRatioPreviousData,
+            barWidth: 14, // 柱图宽度
+            barGap: '80%', // 多个并排柱子设置柱子之间的间距
+            barCategoryGap: '50%', // 多个并排柱子设置柱子之间的间距
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true, // 开启显示
+                  position: 'top', // 在上方显示
+                  textStyle: { // 数值样式
+                    color: '#333',
+                    fontSize: 12
+                  }
+                }
+              }
+            }
+          },
+          {
+            name: '同比',
+            type: 'line',
+            yAxisIndex: 1,
+            data: this.chainRatiolineData
+          }
+        ]
+      }
+      this.chainRatioCharts.setOption(option)
+    },
+    // 节资率图表
+    loadSavingRateCharts () {
+      this.savingRateCharts = echarts.init(document.getElementById('savingRate'))
+      var option = {
+        tooltip: {
+          trigger: 'axis'
+        },
+        grid: { // 图标距离
+          top: 100, // 距离上边的距离
+          bottom: '8%', // 距离下边的距离
+          left: '8%', // 距离左边的距离
+          right: '8%' // 距离右边的距离
+        },
+        legend: {
+          show: true,
+          data: ['节资额', '节费率'],
+          selectedMode: 'multiple', // 设置显示单一图例的图形，点击可切换
+          itemGap: 20, // 图例每项之间的间隔。横向布局时为水平间隔，纵向布局时为纵向间隔
+          textStyle: {
+            color: '#666',
+            fontSize: 12
+          },
+          top: 50,
+          right: 50
+        },
+        xAxis: [
+          {
+            type: 'category',
+            data: this.savingRateXData,
+            axisLine: {show: true}, // 是否显示坐标轴轴线
+            axisTick: {
+              show: true,
+              interval: 0
+            }
+          }
+        ],
+        // 设置两个y轴，左边显示数量，右边显示概率
+        yAxis: [
+          {
+            type: 'value',
+            axisLine: {show: true}, // 是否显示坐标轴轴线
+            axisTick: {show: false} // 是否显示坐标轴刻度
+          },
+          {
+            type: 'value',
+            axisLine: {show: true}, // 是否显示坐标轴轴线
+            axisTick: {show: false} // 是否显示坐标轴刻度
+          }
+          // }
+        ],
+        // 每个设备分数量、概率2个指标，只要让他们的name一致，即可通过，legeng进行统一的切换
+        series: [
+          {
+            name: '节资额',
+            type: 'bar',
+            data: this.savingRateColumnData,
+            barWidth: '20',
+            itemStyle: {
+              normal: {
+                color: '#7dc745'
+              }
+            },
+            label: {
+              show: true, // 开启显示
+              position: 'top', // 在上方显示
+              textStyle: { // 数值样式
+                color: '#333',
+                fontSize: 12
+              }
+            }
+          },
+          {
+            name: '节费率',
+            type: 'line',
+            data: this.savingRateLineData,
+            yAxisIndex: 1, // 这里要设置哪个y轴，默认是最左边的是0，然后1，2顺序来。
+            symbolSize: 10,
+            itemStyle: {
+              normal: {
+                color: '#3fa5ee'
+              }
+            },
+            label: {
+              show: true, // 开启显示
+              position: 'top', // 在上方显示
+              textStyle: { // 数值样式
+                color: '#333',
+                fontSize: 12
+              }
+            }
+          }
+        ]
+      }
+      this.savingRateCharts.setOption(option)
+    },
+    handleClickRatio () {},
+    handleClickRegion (tab) {
+      // if (tab.name === 'activeOwner') {
+      //   console.log('业主')
+      //   this.chainRatioXData = ['万科地产1', '万科地产2', '万科地产3', '万科地产4', '万科地产5', '万科地产6', '万科地产7', '万科地产8', '万科地产9']
+      // } else if (tab.name === 'activeIndustry') {
+      //   console.log('行业')
+      //   this.chainRatioXData = ['房屋建筑1', '房屋建筑2', '房屋建筑3', '房屋建筑4', '房屋建筑5', '房屋建筑6', '房屋建筑7', '房屋建筑8', '房屋建筑9']
+      // }
+    },
+    handleClickSavingRate () {}
+  }
+}
+</script>
+
+<style scoped lang="less">
+.clearfix:after{
+    content:".";
+    display:block;
+    height:0;
+    clear:both;
+    visibility:hidden;
+}
+.clearfix{
+    zoom:1;
+}
+.total-line{
+  margin: 20px 0;
+  .line-box{
+    height: 90px;
+    border-radius: 10px;
+    span{
+      display: inline-block;
+      color: #ffffff;
+    }
+    .first-span{
+      display: block;
+      height: 30px;
+      line-height: 44px;
+      margin-left: 60px;
+    }
+    .first-pbox{
+       margin: 0 30px 0 70px;
+    }
+    .second-span{
+      font-size: 30px;
+      font-weight: bold;
+    }
+    // span:last-child{
+    //   text-align: center;
+    // }
+  }
+}
+.ratio-box{
+  height: 500px;
+  position: relative;
+  .title{
+    color: #333;
+    font-weight: bold;
+  }
+  .text{
+    color: #666;
+    margin-left: 30px;
+  }
+  .radio-box{
+    position: absolute;
+    top: 34px;
+    right: 20px;
+  }
+}
+.saving-rate-box{
+  border: 1px solid #dcdfe6;
+  span{
+    display: block;
+    line-height: 30px;
+    font-size: 14px;
+    font-weight: bold;
+    border-bottom: 1px solid #dcdfe6;
+    padding-left: 10px;
+    box-sizing: border-box;
+  }
+  .project-change{
+    text-align: right;
+    padding-right: 12px;
+  }
+}
+.rate-table{
+  position: relative;
+}
+.owner-input{
+  width: 200px;
+  position: absolute;
+  top: 0;
+  right: 10px;
+}
+.project-analysis{
+  .el-select{
+    width: 130px;
+  }
+}
+</style>
+<style lang="less">
+.project-analysis{
+  .el-tabs__header{
+    margin-top: 10px;
+  }
+  .el-tabs__active-bar{
+    display: none;
+  }
+  .el-tabs__item{
+    width: 80px;
+    background-color: #dcdfe6;
+    color: #333333;
+    text-align: center;
+    padding: 0;
+  }
+  .el-tabs__item.is-active{
+    background-color: #409EFF;
+    color: #fff;
+  }
+  .el-tabs__nav-wrap::after{
+    background-color: #ffffff;
+  }
+  .owner-input{
+    .el-input__inner{
+      height: 38px;
+    }
+  }
+  .ratio-tabs{
+    position: absolute;
+    top: 24px;
+    left: calc(50% - 20px);
+  }
+  .region-tabs{
+    position: absolute;
+    top: 30px;
+    left: 0;
+    .el-tabs__nav{
+      border: 1px solid #cccccc;
+    }
+    .el-tabs__item{
+      height: 24px;
+      border-right: 1px solid #cccccc;
+      background-color: #ffffff;
+      line-height: 24px;
+    }
+    .el-tabs__item:last-child{
+      border: none;
+    }
+    .el-tabs__item.is-active{
+      background-color: #409EFF;
+      color: #fff;
+    }
+  }
+}
+</style>

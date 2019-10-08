@@ -1,0 +1,395 @@
+<template>
+  <div class="cloudcontent" id="cloud_projectProcess">
+    <approve-flow v-if="isApproved" :list="flowList" :curFlowIndex="curFlowIndex"></approve-flow>
+    <div class="project-info-line"></div>
+    <div class="main viewdetails">
+      <div class="basic-approve-title">项目详情</div>
+      <el-form :model="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{updateForm.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <span>{{updateForm.projectCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标项目编号：" >
+             <span>{{updateForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目预计收入(元)：" >
+              <span>{{updateForm.projectIncome}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目类型：">
+              <span>{{updateForm.tenderProjectType | filterTenderProjectType}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目预算（元）：">
+              <span>{{updateForm.tenderProjectBudget}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="资金来源：">
+              <span><p v-for="(item,index) in updateForm.fundSourceList" :key="index" class="dresult-span">
+                <span v-if="Number(item.sourceOfFunds) === 1">
+                  {{item.sourceOfFunds | filterSourceOfFunds}}:{{item.value}}%
+                  (国有资金控股：{{item.stateOwnedCapitalHolding | filterState}}；
+                  国有资金占主导地位：{{item.stateOwnedFundsPredominate| filterState}})
+                </span>
+                <span v-if="Number(item.sourceOfFunds) !== 0 &&Number(item.sourceOfFunds) !== 1">
+                  {{item.sourceOfFunds | filterSourceOfFunds}}:{{item.value}}%
+                </span>
+              </p></span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="批准文号：">
+              <span>{{updateForm.approvalNumber}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标人：" >
+             <span>{{updateForm.tendererName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="招标人单位地址：" >
+             <span>{{updateForm.tendererUnitAddress}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标方式：">
+              <span>{{updateForm.tenderMode | filterTenderMode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="监督部门名称：">
+              <span>{{updateForm.supervisionDepName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="是否组织踏勘：">
+              <span>{{updateForm.isToExplore | filterSyndicatedFlag}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="是否资格预审：" v-if="Number(updateForm.tenderMode) === 1">
+              <span>{{updateForm.isPreBid | filterIsPreBid}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="招标内容与范围及招标方案说明：">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="批复文件：">
+              <el-table
+                :data="updateForm.approvalFiles"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  type="index"
+                  label="序号"
+                  width="60"
+                  align="center">
+                </el-table-column>
+                <el-table-column
+                  prop="fileName"
+                  label="文件名称"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  label="操作" align="center" width="200">
+                  <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="lookFile(scope.row)">查看</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="附件：">
+              <el-table
+                :data="updateForm.otherFiles"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  type="index"
+                  label="序号"
+                  width="60"
+                  align="center">
+                </el-table-column>
+                <el-table-column
+                  prop="fileName"
+                  label="文件名称"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  label="操作" align="center" width="200">
+                  <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="lookFile(scope.row)">查看</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+    <template v-if="isApproved">
+      <div class="project-info-line"></div>
+      <communicate-record :tableData="communicateRecordList"></communicate-record>
+      <div class="project-info-line"></div>
+      <approve-record :approvalTaskCode="approvalTaskCode" :subjectCode="$route.params.code"></approve-record>
+    </template>
+    <div class="project-info-line"></div>
+    <approve-handle :isApproved="isApproved" :approvalTaskCode="approvalTaskCode" :noticeUser="noticeUser"></approve-handle>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import {tenderProject} from '@/api/project'
+import {downloadFile} from '@/assets/js/common'
+import approveFlow from '@/pages/todoList/commonComponents/approveFlow.vue'
+import communicateRecord from '@/pages/todoList/commonComponents/communicateRecord.vue'
+import approveRecord from '@/pages/todoList/commonComponents/approveRecord.vue'
+import approveHandle from '@/pages/todoList/commonComponents/approveHandle.vue'
+export default {
+  components: {
+    editor,
+    approveFlow,
+    approveRecord,
+    communicateRecord,
+    approveHandle
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      // 是否显示审批（0:详情 1：审批 2：审批详情 3：我发起的详情）
+      isApproved: 0,
+      auditStatus: 0,
+      objectId: '',
+      updateForm: {
+        approvalFiles: [],
+        otherFiles: []
+      },
+      // 项目类型
+      options: [{
+        value: '1',
+        label: '工程'
+      }, {
+        value: '2',
+        label: '货物'
+      }, {
+        value: '3',
+        label: '服务'
+      }],
+      value: '',
+      // 招标方式
+      typeOptions: [{
+        value: '1',
+        label: '公开招标'
+      }, {
+        value: '2',
+        label: '邀请招标'
+      }, {
+        value: '3',
+        label: '竞争性谈判'
+      }, {
+        value: '4',
+        label: '单一来源采购'
+      }, {
+        value: '5',
+        label: '询价采购'
+      }, {
+        value: '6',
+        label: '竞争性磋商'
+      }],
+      typeValue: '',
+      // 是否资格预审
+      isCheckOptions: [{
+        value: '1',
+        label: '是'
+      }, {
+        value: '2',
+        label: '否'
+      }],
+      isCheckValue: '',
+      // 是否允许联合体投标
+      isAllowOptions: [{
+        value: '1',
+        label: '是'
+      }, {
+        value: '2',
+        label: '否'
+      }],
+      isAllowValue: '',
+      // 富文本
+      editread: true,
+      content: '',
+      approvalTaskCode: '',
+      form: {},
+      // 审批流程
+      flowList: [
+      ],
+      curFlowIndex: 0,
+      communicateRecordList: [
+        {}
+      ],
+      // 知会人
+      noticeUser: ''
+    }
+  },
+  filters: {
+    /** 项目类型 */
+    filterTenderProjectType (value) {
+      if (value === '1') {
+        return '工程'
+      } else if (value === '2') {
+        return '货物'
+      } else if (value === '3') {
+        return '服务'
+      }
+    },
+    /** 招标方式 */
+    filterTenderMode (value) {
+      if (Number(value) === 1) {
+        return '公开招标'
+      } else if (Number(value) === 2) {
+        return '邀请招标'
+      } else if (Number(value) === 3) {
+        return '竞争性谈判'
+      } else if (Number(value) === 4) {
+        return '单一来源采购'
+      } else if (Number(value) === 5) {
+        return '询价采购'
+      } else if (Number(value) === 6) {
+        return '竞争性磋商'
+      }
+    },
+    /** 是否资格预审 */
+    filterIsPreBid (value) {
+      if (value === 0) {
+        return '否'
+      } else if (value === 1) {
+        return '是'
+      }
+    },
+    /** 是否允许联合体投标 */
+    filterSyndicatedFlag (value) {
+      if (value === 0) {
+        return '否'
+      } else if (value === 1) {
+        return '是'
+      }
+    },
+    /** 资金来源 */
+    filterSourceOfFunds (value) {
+      if (value === 1) {
+        return '自有资金'
+      } else if (value === 2) {
+        return '专项资金'
+      } else if (value === 3) {
+        return '吸收资金'
+      } else if (value === 4) {
+        return '其他资金'
+      }
+    },
+    /** 国有资金控股/国有资金占主导地位 */
+    filterState (value) {
+      if (value === 0) {
+        return '否'
+      } else if (value === 1) {
+        return '是'
+      }
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  created () {
+    this.init()
+  },
+  methods: {
+    init () {
+      this.isApproved = this.$route.query.isApproved
+      this.auditStatus = this.$route.query.auditStatus
+      this.approvalTaskCode = this.$route.query.code
+      this.getChooseTenderProjectInfo()
+    },
+    /** 获取当前招标项目信息 */
+    getChooseTenderProjectInfo () {
+      tenderProject.getBaseByCode(this.$route.params.code).then((res) => {
+        if (res.data.tenderProject && res.data.fundSourceList) {
+          this.updateForm = res.data.tenderProject
+          if (res.data.fundSourceList) {
+            this.updateForm.fundSourceList = res.data.fundSourceList
+            this.updateForm.fundSourceList.forEach(item => {
+              if (item.sourceOfFunds === 1) {
+                this.stateOwnedCapitalHolding = item.stateOwnedCapitalHolding
+                this.stateOwnedFundsPredominate = item.stateOwnedFundsPredominate
+              }
+            })
+          }
+          // 附件信息的区分
+          this.updateForm.approvalFiles = []
+          this.updateForm.otherFiles = []
+          if (this.updateForm.fileInformationList && this.updateForm.fileInformationList.length > 0) {
+            this.updateForm.fileInformationList.forEach(item => {
+              if (Number(item.businessType) === 8) { // 批复文件
+                this.updateForm.approvalFiles.push(item)
+              } else if (Number(item.businessType) === 9) { // 附件
+                this.updateForm.otherFiles.push(item)
+              }
+            })
+          }
+          // 获取文本编辑器的内容
+          if (this.updateForm.tenderContent) {
+            this.$refs.ueditor.setContent(this.content = this.updateForm.tenderContent)
+          }
+        }
+      })
+    },
+    handleClickEvent () {
+      this.$router.push({path: '/project/projectProcess'})
+    },
+    lookFile (file) {
+      downloadFile(file.fileName, file.relativePath)
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_projectProcess {
+    .el-select{
+      width: 100%;
+    }
+  }
+</style>

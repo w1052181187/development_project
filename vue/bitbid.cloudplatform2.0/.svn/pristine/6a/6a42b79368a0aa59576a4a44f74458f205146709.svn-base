@@ -1,0 +1,73 @@
+<template>
+  <div class="flow-box">
+    <div class="basic-approve-title">审批流程图</div>
+    <ul>
+      <li class="flow">
+        <div class="flow-person">开始</div>
+        <img class="flow-arrow" src="../../../../static/images/approve/jiantou.png">
+      </li>
+      <li class="flow" v-for="(item, index) in list" :key="index">
+        <div :class="['flow-person', curFlowIndex === index ? 'flow-cur' : curFlowIndex < index ? 'flow-last' : '']">{{item.name}}</div>
+        <img class="flow-arrow" src="../../../../static/images/approve/jiantou.png">
+      </li>
+      <li class="flow">
+        <div :class="['flow-person', curFlowIndex < list.length ? 'flow-last' : '']">结束</div>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'approveFlow',
+  props: ['list', 'curFlowIndex'],
+  data () {
+    return {
+    }
+  }
+}
+</script>
+
+<style scoped>
+  .flow-box{
+    padding: 16px 20px;
+    box-sizing: border-box;
+  }
+  .flow-box ul{
+    margin-top: 12px;
+    margin-left: 12px;
+    overflow: hidden;
+  }
+  .flow{
+    display: inline-block;
+    float: left;
+    height: 52px;
+    line-height: 52px;
+  }
+  .flow-person{
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    border-radius: 100%;
+    background-color: #3bb072;
+    font-size: 12px;
+    color: white;
+    display: inline-block;
+  }
+  .flow-arrow{
+    display: inline-block;
+    width: 12px;
+    height: 8px;
+    vertical-align: middle;
+    margin: 0 12px;
+  }
+  .flow-cur{
+    background-color: #eafff4;
+    border: 1px #3bb072 solid;
+    color: #333;
+  }
+  .flow-last{
+    background-color: #bbbbbb;
+  }
+</style>

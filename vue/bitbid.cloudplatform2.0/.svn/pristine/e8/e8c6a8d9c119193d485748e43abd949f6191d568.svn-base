@@ -1,0 +1,211 @@
+<template>
+  <div class="cloudcontent">
+    <approve-flow :approvalTaskCode="taskCode" :subjectCode="updateForm.code" v-if="tableFlag && updateForm.auditStatus !== 0"></approve-flow>
+    <div class="project-info-line"></div>
+    <div class="main viewdetails">
+      <div class="basic-approve-title">资格预审文件疑义及澄清</div>
+      <el-form :model="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <span>{{bidSection.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{bidSection.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段编号：">
+              <span>{{bidSection.bidSectionCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段名称：">
+              <span>{{bidSection.bidSectionName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="投标人："  prop="bidderName">
+              <span>{{updateForm.bidderName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="疑义标题："  prop="objectionTitle">
+              <span>{{updateForm.objectionTitle}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="疑义内容：">
+              <editor ref="objectionUeditor" class="ueditor" :editread="editread"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="疑义附件：">
+              <el-table
+                :data="updateForm.objectionFileInformationList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  type="index"
+                  label="序号"
+                  width="60"
+                  align="center">
+                </el-table-column>
+                <el-table-column
+                  prop="fileName"
+                  label="文件名称"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  label="操作" align="center" width="200">
+                  <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="lookFile(scope.row)">查看</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="澄清内容：">
+              <editor ref="clarifyUeditor" class="ueditor" :editread="editread"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="澄清附件：">
+              <el-table
+                :data="updateForm.clarifyFileInformationList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  type="index"
+                  label="序号"
+                  width="60"
+                  align="center">
+                </el-table-column>
+                <el-table-column
+                  prop="fileName"
+                  label="文件名称"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  label="操作" align="center" width="200">
+                  <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="lookFile(scope.row)">查看</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+    <template v-if="updateForm.auditStatus !== 0">
+      <div class="project-info-line" v-if="tableFlag"></div>
+      <communicate-record v-if="tableFlag" :relatedCode="updateForm.code" :flowType='flowType'
+                          :creator="updateForm.submitterId" :createName="updateForm.submitter"
+                          :routingPath="routingPath" :nodeContent="nodeContent"></communicate-record>
+      <div class="project-info-line"></div>
+      <approve-record :tableFlag="tableFlag" :approvalTaskCode="taskCode" :subjectCode="updateForm.code"></approve-record>
+    </template>
+    <approve-handle :isApproved="isApproved" :approvalTaskCode="taskCode" :relatedCode="updateForm.code"></approve-handle>
+  </div>
+</template>
+
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import {questionAndAnswerInfo} from '@/api/project'
+import {downloadFile} from '@/assets/js/common'
+import approveFlow from '@/pages/todoList/commonComponents/approveFlow.vue'
+import communicateRecord from '@/pages/todoList/commonComponents/communicateRecord.vue'
+import approveRecord from '@/pages/todoList/commonComponents/approveRecord.vue'
+import approveHandle from '@/pages/todoList/commonComponents/approveHandle.vue'
+export default {
+  components: {
+    editor,
+    approveFlow,
+    approveRecord,
+    communicateRecord,
+    approveHandle
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      // 是否显示审批（0:详情 1：审批 2：审批详情 3：我发起的详情）
+      isApproved: 0,
+      auditStatus: 0,
+      objectId: '',
+      updateForm: {},
+      // 富文本
+      editread: true,
+      bidSection: {},
+      taskCode: '',
+      tableFlag: false,
+      flowType: 'tenderProject', // 审批类型
+      routingPath: '', // 路由地址
+      nodeContent: ''
+    }
+  },
+  methods: {
+    lookFile (file) {
+      downloadFile(file.fileName, file.relativePath)
+    },
+    getQuesAndAnsInfo () {
+      questionAndAnswerInfo.getById(this.objectId).then(res => {
+        this.updateForm = res.data.questionAndAnswerInfo
+        if (this.updateForm.bidSection) {
+          this.bidSection = this.updateForm.bidSection
+          this.nodeContent = this.bidSection.tenderProjectName + this.bidSection.bidSectionName + '资格预审文件疑义及澄清'
+        }
+        this.routingPath = this.updateForm.routingPath
+        if (this.updateForm.objectionContent) {
+          this.$refs.objectionUeditor.setContent(this.updateForm.objectionContent)
+        }
+        if (this.updateForm.clarifyContent) {
+          this.$refs.clarifyUeditor.setContent(this.updateForm.clarifyContent)
+        }
+        if (this.updateForm.fileInformationList) {
+          this.updateForm.objectionFileInformationList = []
+          this.updateForm.clarifyFileInformationList = []
+          this.updateForm.fileInformationList.map(file => {
+            if (Object.is(file.businessType, '1')) {
+              this.updateForm.objectionFileInformationList.push(file)
+            } else if (Object.is(file.businessType, '2')) {
+              this.updateForm.clarifyFileInformationList.push(file)
+            }
+          })
+        }
+      })
+    },
+    init () {
+      this.isApproved = this.$route.query.isApproved
+      this.auditStatus = this.$route.query.auditStatus
+      this.objectId = this.$route.params.objectId
+      this.taskCode = this.$route.query.code
+      this.getQuesAndAnsInfo()
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  mounted () {
+    this.init()
+  }
+}
+</script>
+
+<style scoped>
+</style>

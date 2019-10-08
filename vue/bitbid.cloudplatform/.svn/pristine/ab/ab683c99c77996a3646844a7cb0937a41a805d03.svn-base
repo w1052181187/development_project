@@ -1,0 +1,101 @@
+<template>
+  <div class="cloudcontent" id="cloud_users">
+    <!--面包屑-->
+    <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb_box">
+      <el-breadcrumb-item :to="{ path: '/index' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/dailyManage/roles' }">角色管理</el-breadcrumb-item>
+      <el-breadcrumb-item class="active_bread">分配权限</el-breadcrumb-item>
+    </el-breadcrumb>
+    <!--面包屑-->
+    <div class="main">
+      <div class="topmain">
+        <!--按钮-->
+        <div class="btnbigbox">
+          <!--添加角色-->
+          <div class="addrole">
+            <el-button class="addbutton" @click='roleaEdit()'>
+              <span> + 新增角色</span>
+            </el-button>
+            <el-dialog title="添加角色" width="40%" :before-close="btnClose" :visible.sync="addRoleVisible">
+              <el-form :model="roleForm" :rules="rules" ref="roleForm">
+                <el-form-item label="角色名称" prop="name" :label-width="formLabelWidth">
+                  <el-input v-model.trim="roleForm.name" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="角色描述" prop="description"  :label-width="formLabelWidth">
+                  <el-input
+                    type="textarea"
+                    :autosize="{ minRows: 2, maxRows: 4}"
+                    v-model.trim="roleForm.description">
+                  </el-input>
+                </el-form-item>
+              </el-form>
+              <div slot="footer" class="dialog-footer operationbtn">
+                <el-button type="info" @click="addcancel('roleForm')">取 消</el-button>
+                <el-button type="primary" @click="addDetermine('roleForm',flag)">确 定</el-button>
+              </div>
+            </el-dialog>
+          </div>
+          <!--添加角色-->
+        </div>
+        <!--按钮-->
+      </div>
+      <!--表格-->
+      <div class="content_tablebox">
+        <template>
+          <el-table
+            :data="roletableData"
+            border
+            style="width: 100%" header-cell-class-name="tableheader">
+            <el-table-column
+              type="index"
+              label="序号"
+              width="60"
+              :index='dataIndex'
+              align="center">
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="角色名称"
+              width="250">
+            </el-table-column>
+            <el-table-column
+              prop="description"
+              label="角色描述">
+            </el-table-column>
+            <el-table-column
+              label="操作" align="center" width="200">
+              <template slot-scope="scope">
+                <el-button type="text" size="small" @click="roleaEdit(scope)">编辑</el-button>
+                <el-button type="text" size="small" @click="roleaDelect(scope)">删除</el-button>
+                <el-button type="text" size="small" @click="distribution(scope)">分配权限</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </template>
+      </div>
+      <!--表格-->
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+</script>
+<style lang="less">
+  #cloud_users {
+    .main .el-form-item__label{
+      padding: 0 12px 0 0;
+    }
+    .main .content_tablebox{
+      margin-top: 20px;
+    }
+  }
+</style>

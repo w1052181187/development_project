@@ -1,0 +1,334 @@
+<template>
+  <div id="bid-file">
+    <div class="module">
+      <div class="left">
+        <div class="title">移交目录</div>
+        <ul class="left-menu">
+          <li :class="activeMenuIndex === index ? 'active-menu' : ''"
+              v-for="(item, index) in info.archivesClassifyList" :key="index"
+              :title="menuTitle(item.transferStatus)"
+              @click="handleMenuClick(item.objectId, index)">
+            <img v-if="Number(item.transferStatus) === 1" src="../../../assets/yiyijiao.png">
+            <img v-else-if="Number(item.transferStatus) === 2" src="../../../assets/transfered.png">
+            <img v-else-if="Number(item.transferStatus) === 3" src="../../../assets/cehui.png">
+            <span v-else></span>
+            {{item.name}}
+          </li>
+        </ul>
+      </div>
+      <div class="middle"></div>
+      <div class="right">
+        <div class="title">{{moduleName}}</div>
+        <div class="line"></div>
+        <div class="content">
+          <template v-if="activeMenuIndex === 0">
+            <ul class="file-box">
+              <div class="file-pack-check-all">
+                <el-checkbox :disabled="checkAllBtnCanClick(archivesFileList)" :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+                <el-button class="pack-btn" @click="handlePack">
+                  <img class="pack-down" src="../../../assets/pack-down.png"/><span>打包下载</span>
+                </el-button>
+              </div>
+              <!--              <li class="file-item-border" v-for="(item, index) in info.archivesFileList" :key="index" v-if="index >= (pageSize * currentPage) - pageSize && index < currentPage * pageSize">-->
+              <li class="file-item-border" v-for="(item, index) in archivesFileList"
+                  :key="index" v-if="index >= (pageSize * currentPage) - pageSize && index < currentPage * pageSize">
+                <el-checkbox-group class="file-box" v-model="checkList" @change="handleCheckedFileChange">
+                  <div class="file-item"
+                       @mouseover="handleMouseOver(index)"
+                       @mouseout="handleMouseOut">
+                      <el-checkbox :label="index" :disabled="checkDisAbled(item)">&nbsp;</el-checkbox>
+                      <span>{{index + 1 + '&nbsp;&nbsp;&nbsp;&nbsp;' + item.archivesCatalog.name}}</span>
+                      <img class="has-file-img" v-if="item.refArchivesFileInformationList[0] && item.refArchivesFileInformationList[0].fileInformation" src="../../../assets/qubiezhen.png"/>
+                      <span class="has-file-img" v-else></span>
+                      <div :class="item.archivesCatalog.name === activeName ? 'file-action-active' : 'file-action'" @click="updateBtn(item)">
+                        <span class="file-action-txt">{{item.archivesCatalog.name === activeName ? '收起' : '展开'}}</span>
+                        <img class="pack-reduce" src="../../../assets/reduce.png" v-if="item.archivesCatalog.name === activeName">
+                        <img class="pack-down" src="../../../assets/plus.png" v-else>
+                      </div>
+                  </div>
+                  <fileItem v-if="item.archivesCatalog.name === activeName" :can-edit="canEdit" :item="item" :active-name="activeName"></fileItem>
+                </el-checkbox-group>
+              </li>
+            </ul>
+            <!--按钮-->
+            <!--分页-->
+            <el-pagination
+              background
+              layout="prev, pager, next"
+              :total="archivesFileList.length"
+              :current-page.sync="currentPage"
+              :page-size='pageSize'
+              @current-change="handleCurrentChange">
+            </el-pagination>
+            <!--分页-->
+          </template>
+          <template v-else>
+            <div class="explain">资料说明:</div>
+            <el-input
+              type="textarea"
+              :autosize="{ minRows: 2 }"
+              placeholder="请输入内容"
+              v-model="archivesFileForm.archivesProjectExpands.evaluationInformation">
+            </el-input>
+            <template v-if="Number(isOnlyPhysical) === 0">
+              <fileUpload class="file-type-enclosure" :canEdit="canEdit"
+                          :file-list="archivesFileForm.refArchivesFileInformationList"
+                          :object-id="archivesFileId" :file-type='9' file-name='已上传'></fileUpload>
+            </template>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <el-dialog :before-close='close' title="新增文件类型" :visible.sync="dialogVisible">
+      <el-form :model="dialogForm" :rules="rules" ref="dialogForm" :label-width="formLabelWidth">
+        <el-form-item label="文件类型：" prop="fileType">
+          <el-select v-model="dialogForm.fileType" placeholder="请选择">
+            <el-option
+              v-for="item in fileTypeOptions"
+              :key="item.archivesCatalog.objectId"
+              :label="item.archivesCatalog.name"
+              :value="item.archivesCatalog.objectId">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button class="cancal" @click="close">取 消</el-button>
+        <el-button type="primary" @click="submitForm('dialogForm')">确认</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import {archivesFile, archivesInfo} from '@/api/archives'
+import {archivesFileDownload} from '@/assets/js/common'
+export default {
+  watch: {
+    info () {
+      this.getInitData(this.info)
+    }
+  },
+  components: {
+    // () => import(/* webpackChunkName: 'customer' */ '@/pages/customer/business/index')
+    fileItem: resolve => require(['../public/fileItem'], resolve),
+    fileUpload: resolve => require(['../public/fileUpload'], resolve)
+  },
+  name: 'file',
+  props: ['info'],
+  data () {
+    return {
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: null, // 总条数
+      pageSize: 10, // 每页展示条数
+      activeName: '',
+      canEdit: false,
+      dialogVisible: false,
+      isIndeterminate: false,
+      checkAll: false,
+      formLabelWidth: '120px',
+      dialogForm: {
+      },
+      rules: {
+        fileType: [
+          {required: true, message: '请选择文件类型', trigger: ['blur', 'change']}
+        ]
+      },
+      fileTypeOptions: [],
+      moduleName: '电子档案',
+      activeMenuIndex: 0,
+      archivesFileList: [],
+      curHoverIndex: '',
+      fileInformationList: [],
+      fileObjectId: '',
+      fileExplain: '',
+      isSaving: false,
+      isOnlyPhysical: 0, // 是否需要上传文件
+      archivesFileId: '', // 当前选择的文件id
+      archivesFileForm: {
+        archivesProjectExpands: {
+          evaluationInformation: ''
+        },
+        refArchivesFileInformationList: []
+      },
+      checkList: []
+    }
+  },
+  methods: {// 打包下载
+    checkDisAbled (item) {
+      if (item.refArchivesFileInformationList[0] && item.refArchivesFileInformationList[0].fileInformation) {
+        return false
+      } else {
+        return true
+      }
+    },
+    handlePack () {
+      // 判断是否选择了文件
+      if (this.checkList === undefined || this.checkList.length <= 0) {
+        this.$message({
+          message: '请选择要打包下载的文件',
+          type: 'warning'
+        })
+        return false
+      }
+      let params = ''
+      this.checkList.forEach((value) => {
+        params += 'archivesFileIds=' + this.archivesFileList[value - 1].objectId + '&'
+      })
+      params += 'archivesInfoId=' + this.info.objectId
+      archivesFileDownload(params)
+    },
+    // 判断全选是否可以点击
+    checkAllBtnCanClick (fileList) {
+      fileList.map((item, index) => {
+        if (item.refArchivesFileInformationList[index] && item.refArchivesFileInformationList[index].fileInformation) {
+          return true
+        } else {
+          return false
+        }
+      })
+    },
+    handleCheckAllChange (val) {
+      this.checkList = []
+      if (val) {
+        this.archivesFileList.map((item, index) => {
+          if (item.refArchivesFileInformationList.length > 0) {
+            this.checkList.push(index)
+          }
+        })
+      }
+      this.isIndeterminate = false
+    },
+    handleCheckedFileChange (value) {
+      this.checkList = value
+      let checkedCount = value.length
+      let temp = this.archivesFileList.filter(item => item.refArchivesFileInformationList.length > 0)
+      this.checkAll = checkedCount === temp.length
+      this.isIndeterminate = checkedCount > 0 && checkedCount < temp.length
+    },
+    handleMenuClick (classifyObjectid, index) {
+      if (this.activeMenuIndex === index) {
+        return
+      }
+      this.moduleName = this.info.archivesClassifyList[index].name
+      this.activeMenuIndex = index
+      archivesFile.getArchivesFileList({
+        archivesClassifyId: classifyObjectid
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.archivesFileList = res.data.archivesFileList.list
+          if (res.data.archivesFileList.list[0].archivesProjectExpands) {
+            this.archivesFileForm = res.data.archivesFileList.list[0]
+          } else {
+            this.archivesFileForm = {
+              archivesProjectExpands: {
+                evaluationInformation: ''
+              }
+            }
+          }
+          if (res.data.archivesFileList.list[0].refArchivesFileInformationList) {
+            this.archivesFileForm.refArchivesFileInformationList = res.data.archivesFileList.list[0].refArchivesFileInformationList
+          } else {
+            this.archivesFileForm.refArchivesFileInformationList = []
+          }
+          this.archivesFileId = res.data.archivesFileList.list[0].objectId
+          this.isOnlyPhysical = this.info.archivesClassifyList[index].isOnlyPhysical
+        }
+      })
+    },
+    // 鼠标移上
+    handleMouseOver (index) {
+      if (this.curHoverIndex === index) {
+        return
+      }
+      this.curHoverIndex = index
+    },
+    // 鼠标移出
+    handleMouseOut () {
+      this.curHoverIndex = ''
+    },
+    menuTitle (value) {
+      if (Number(value) === 0) {
+        return '未归档'
+      } else if (Number(value) === 1) {
+        return '已归档'
+      }
+    },
+    // 分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+    },
+    dataIndex (index) {
+      return index + (this.currentPage - 1) * this.pageSize + 1
+    },
+    updateBtn (item) {
+      if (this.activeName === item.archivesCatalog.name) {
+        this.activeName = ''
+      } else {
+        this.activeName = item.archivesCatalog.name
+      }
+    },
+    handleAddFileDir () {
+      this.dialogVisible = true
+      // 获取目录
+      archivesInfo.getUnaddedCatalog({
+        tenderSystemCode: this.info.tenderSystemCode,
+        objectId: this.info.objectId,
+        enterpriseId: this.info.enterpriseId
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.fileTypeOptions = res.data.archivesFileList
+        }
+      })
+    },
+    close () {
+      this.dialogVisible = false
+      this.$refs.dialogForm.resetFields()
+    },
+    getInitData (info) {
+      if (info.archivesClassifyList[0]) {
+        archivesFile.getArchivesFileList({
+          archivesClassifyId: this.info.archivesClassifyList[0].objectId
+        }).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.archivesFileList = res.data.archivesFileList.list
+          }
+        })
+      }
+    },
+    // 增加文件目录
+    submitForm (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.fileTypeOptions.forEach(item => {
+            if (this.dialogForm.fileType === item.archivesCatalog.objectId) {
+              item.archivesClassifyId = this.info.archivesClassifyList[this.activeMenuIndex].objectId
+              archivesFile.addArchivesFile(item).then((res) => {
+                this.archivesFileList.push(res.data.archivesFile)
+                this.dialogVisible = false
+                this.dialogForm.fileType = ''
+              })
+            }
+          })
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+
+<style lang="less">
+  #bid-file{
+    .file-item>.el-checkbox {
+      margin-right: 0;
+    }
+  }
+</style>

@@ -1,0 +1,259 @@
+<template>
+  <div>
+    <div class="topmain" style="border-bottom: 0px;">
+      <div class="seacher_box advancedsearch_box advancedsearch" style="padding: 0">
+        <el-form :model="searchForm" label-width="90px" style="width:100%">
+          <el-row>
+            <el-col style="width: 340px;">
+              <el-form-item label="项目名称：">
+                <el-input placeholder="请输入项目名称关键字" v-model="searchForm.projectNameLike"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col style="width: 340px;">
+              <el-form-item label="项目编号：">
+                <el-input placeholder="请输入项目编号关键字" v-model="searchForm.projectCodeLike"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col class="handBtn" style="width: 320px;margin-bottom: 6px"  v-if="!showselect">
+              <el-button type="primary" class="search-btn" @click="search">
+                <span>查询</span>
+              </el-button>
+              <el-button @click="reset">
+                <span>重置</span>
+              </el-button>
+              <span @click="showselect = true" class="more">展开搜索条件</span>
+            </el-col>
+          </el-row>
+          <template v-if="showselect">
+            <el-row>
+              <el-form-item label="归档时间：" style="float: left; margin-right: 20px;">
+                <span :class="isArchiveTimeSelectAll ? 'all selectall': 'all'" @click="conditionCancel()">不限</span>
+                <el-radio-group v-model="searchForm.archivesTimeType" @change="conditionSelect($event)">
+                  <el-radio v-for="item in transferTimeOption" :label="item.code" :key="item.code" :checked="archiveTimeFlag">{{item.name}}</el-radio>
+                </el-radio-group>
+              </el-form-item>
+              <el-date-picker
+                v-model="searchForm.archiveCustomTime"
+                v-if="searchForm.archivesTimeType === 6"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                :default-time="['00:00:00', '23:59:59']">
+              </el-date-picker>
+            </el-row>
+            <el-row>
+              <el-col style="width: 340px;">
+                <el-form-item label="移交人：">
+                  <el-input v-model="searchForm.lastTransferName" readonly placeholder="请选择">
+                    <el-button slot="append" icon="el-icon-search" @click="showTransferDialog"></el-button>
+                  </el-input>
+                  <admin :title="transferTitle" :showVisible="showTransferVisible" :checkedUserId="checkedTransferRoleId" @selected="selectedTransfer" @closeDialog="closTransferDialog"></admin>
+                </el-form-item>
+              </el-col>
+              <el-col style="width: 340px;">
+                <el-form-item label="档案管理员：">
+                  <el-input v-model="searchForm.adminName" readonly placeholder="请选择">
+                    <el-button slot="append" icon="el-icon-search" @click="showAdminDialog"></el-button>
+                  </el-input>
+                  <admin :showVisible="showAdminVisible" :checkedUserId="checkedRoleId" @selected="selectedAdmin" @closeDialog="closAdminDialog"></admin>
+                </el-form-item>
+              </el-col>
+              <el-col style="width: 340px;">
+                <el-form-item label="档案号：">
+                  <el-input v-model="searchForm.physicalNumberLike" placeholder="请输入档案号">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-form-item label="档案位置：" class="region">
+                <el-select v-model="searchForm.archivesRoomId" @change="getCabinetNode" @click.native="getRoom" placeholder="请选择">
+                  <el-option
+                    v-for="item in searchRoomOptions"
+                    :key="item.objectId"
+                    :label="item.name"
+                    :value="item.objectId">
+                  </el-option>
+                </el-select>
+                <el-select v-model="searchForm.archivesCabinetId" @change="getLayerNode" placeholder="请选择">
+                  <el-option
+                    v-for="item in cabinetOptions"
+                    :key="item.objectId"
+                    :label="item.name"
+                    :value="item.objectId">
+                  </el-option>
+                </el-select>
+                <el-select v-model="searchForm.archivesCabinetLayerNumber" class="four" placeholder="请选择">
+                  <el-option
+                    v-for="item in layerOptions"
+                    :key="item.layerNumber"
+                    :label="item.layerNumberLabel"
+                    :value="item.layerNumber">
+                  </el-option>
+                </el-select>
+                <el-input class="position-input" v-model="searchForm.locationDescriptionLike" placeholder="请选择"></el-input>
+              </el-form-item>
+            </el-row>
+            <div class="handBtn">
+              <el-button  type="primary" class="search" @click="search">查询</el-button>
+              <el-button  @click="reset">重置</el-button>
+              <span @click="showselect = false" class="more">收起搜索条件</span>
+            </div>
+          </template>
+        </el-form>
+      </div>
+    </div>
+    <div class="main">
+      <table-list ref="table" :searchForm = 'searchForm' :query = 'false'></table-list>
+    </div>
+  </div>
+</template>
+<script>
+import {archivesRoom} from '@/api/archives'
+import admin from '@/pages/archives/setting/dialog/admin'
+export default {
+  components: {
+    tableList: resolve => require(['./table'], resolve),
+    admin
+  },
+  data () {
+    return {
+      searchForm: {
+        startTime: '',
+        endTime: '',
+        numberLike: '',
+        messageLike: '',
+        archivesRoomId: '',
+        archivesCabinetId: '',
+        archivesCabinetLayerNumber: '',
+        locationDescription: '',
+        archivesTimeType: ''
+      },
+      showselect: false,
+      showAdminVisible: false,
+      checkedRoleId: '',
+      showTransferVisible: false,
+      checkedTransferRoleId: '',
+      isArchiveTimeSelectAll: true,
+      archiveTimeFlag: true,
+      transferTitle: '选择移交人',
+      transferTimeOption: [
+        {
+          name: '近一周',
+          code: 1
+        },
+        {
+          name: '近一月',
+          code: 2
+        },
+        {
+          name: '近三月',
+          code: 3
+        },
+        {
+          name: '近半年',
+          code: 4
+        },
+        {
+          name: '近一年',
+          code: 5
+        },
+        {
+          name: '自定义',
+          code: 6
+        }
+      ],
+      searchRoomOptions: [],
+      cabinetOptions: [],
+      layerOptions: []
+    }
+  },
+  watch: {
+  },
+  methods: {
+    // 高级搜索-搜索条件选择
+    conditionSelect (value) {
+      this.searchForm.archivesTimeType = value
+      this.isArchiveTimeSelectAll = false
+    },
+    // 高级搜索-取消条件
+    conditionCancel () {
+      this.archiveTimeFlag = false
+      this.searchForm.archivesTimeType = null
+      this.isArchiveTimeSelectAll = true
+    },
+    // 管理员打开
+    showAdminDialog () {
+      this.showAdminVisible = true
+    },
+    closAdminDialog () {
+      this.showAdminVisible = false
+    },
+    // 选择管理员
+    selectedAdmin (obj) {
+      this.$set(this.searchForm, 'adminName', obj.name)
+      this.$set(this.searchForm, 'adminId', obj.objectId)
+      this.checkedTransferRoleId = obj.objectId
+    },
+    // 管理员打开
+    showTransferDialog () {
+      this.showTransferVisible = true
+    },
+    closTransferDialog () {
+      this.showTransferVisible = false
+    },
+    // 选择移交人
+    selectedTransfer (obj) {
+      this.$set(this.searchForm, 'lastTransferName', obj.name)
+      this.$set(this.searchForm, 'lastTransferId', obj.objectId)
+      this.checkedRoleId = obj.objectId
+    },
+    // 搜索
+    search () {
+      this.$refs['table'].handleSearch()
+    },
+    reset () {
+      this.searchForm = {}
+      this.$refs['table'].reset()
+    },
+    getRoom () {
+      archivesRoom.getArchivesRoomList({
+        enterpriseId: this.$store.getters.authUser.enterpriseId
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.searchRoomOptions = res.data.archivesRoomList.list
+        }
+      })
+    },
+    getCabinetNode (id) {
+      this.searchForm.archivesCabinetId = ''
+      this.searchForm.archivesCabinetLayerNumber = ''
+      this.searchForm.locationDescriptionLike = ''
+      this.cabinetOptions = []
+      this.searchRoomOptions.forEach(room => {
+        if (room.objectId === id) {
+          this.cabinetOptions = room.archivesCabinetList
+        }
+      })
+    },
+    getLayerNode (id) {
+      this.searchForm.archivesCabinetLayerNumber = ''
+      this.searchForm.locationDescriptionLike = ''
+      this.layerOptions = []
+      this.cabinetOptions.forEach(cabinet => {
+        if (cabinet.objectId === id) {
+          for (let i = 1; i < Number(cabinet.layerNumber) + 1; i++) {
+            this.layerOptions.push({layerNumber: i, layerNumberLabel: i + '层'})
+          }
+        }
+      })
+    }
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+</style>

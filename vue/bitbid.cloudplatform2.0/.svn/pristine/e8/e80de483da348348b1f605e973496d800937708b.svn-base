@@ -1,0 +1,966 @@
+<template>
+  <div class="cloudcontent" id="cloud_index">
+    <el-row :gutter="20">
+      <el-col :span="leftnum" class="leftcontent">
+        <div class="message">
+          <div class="fl">
+            <h3 class="mestitle">待开标 <img src="../../static/images/newindex/ico_tit1.png"/></h3>
+            <ul class="meslist">
+              <li>
+                <router-link to="/bidOpening?openingTimeType=1">
+                  <img src="../../static/images/newindex/topicon1.png">
+                  <em>本周</em>
+                  <span>{{thisWeekCount}}</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/bidOpening?openingTimeType=2">
+                  <img src="../../static/images/newindex/topicon2.png">
+                  <em>下周</em>
+                  <span>{{nextWeekCount}}</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/bidOpening?openingTimeType=3">
+                  <img src="../../static/images/newindex/topicon3.png">
+                  <em>本月</em>
+                  <span>{{thisMonthCount}}</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/bidOpening?openingTimeType=4">
+                  <img src="../../static/images/newindex/topicon4.png">
+                  <em>下月</em>
+                  <span>{{nextMonthCount}}</span>
+                </router-link>
+              </li>
+            </ul>
+          </div>
+          <div class="fr">
+            <h3 class="mestitle">提醒 <img src="../../static/images/newindex/ico_tit2.png"/></h3>
+            <ul class="meslist">
+              <li>
+                <router-link to="/todoList/need">
+                  <img src="../../static/images/newindex/topicon5.png">
+                  <em>待我审批</em>
+                  <span>{{needMeApprovedCount}}</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/todoList/initiate">
+                  <img src="../../static/images/newindex/topicon6.png">
+                  <em>我发起的</em>
+                  <span>{{myApprovalTask}}</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/dailyManagement/homeNoticeAnnouncement">
+                  <img src="../../static/images/newindex/topicon7.png">
+                  <em>通知公告</em>
+                  <span>{{noticeCount}}</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/notify">
+                  <img src="../../static/images/newindex/topicon8.png">
+                  <em>知会与我</em>
+                  <span>{{tellMeCount}}</span>
+                </router-link>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <el-row :gutter="10">
+          <el-col :span="14">
+            <div class="box" style="height: 438px;">
+              <div class="title">本周开标日程安排 <a @click="judgePermission('1010401', 'bidOpening?openingTimeType=1')">>></a></div>
+              <template v-if="weekData.length !== 0">
+                <el-table
+                  :data="weekData"
+                  stripe
+                  style="width: 98%; margin: 0 auto;">
+                  <el-table-column
+                    type="index"
+                    label="序号"
+                    width="50">
+                  </el-table-column>
+                  <el-table-column
+                    prop="name"
+                    label="项目名称（标段）"
+                    show-overflow-tooltip>
+                    <template slot-scope="scope">
+                      <a href="javascript:;" :title="scope.row.name">{{scope.row.tenderProjectName}}({{scope.row.bidSectionName}})</a>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="bidOpeningTime"
+                    label="开标时间"
+                    width="160">
+                  </el-table-column>
+                  <el-table-column
+                    prop="countDown"
+                    label="倒计时"
+                    width="160"
+                    align="right">
+                    <template slot-scope="scope">
+                      <span class="count-down-start" v-if="scope.row.countDown !== '已结束'"><i v-if="scope.row.dd !== 0"><em>{{scope.row.dd}}</em>天</i><i v-if="scope.row.hh !== 0"><em>{{scope.row.hh}}</em>时</i><i v-if="scope.row.mm !== 0"><em>{{scope.row.mm}}</em>分</i><i v-if="scope.row.ss !== 0"><em>{{scope.row.ss}}</em>秒</i></span>
+                      <span class="count-down-end" v-else>{{scope.row.countDown}}</span>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </template>
+              <div class="nodata"  v-if="weekData.length === 0">
+                <img src="../../static/images/newindex/nodata1.png"/>
+                <p>暂无开标安排</p>
+              </div>
+            </div>
+            <div class="box" style="height: 342px;">
+              <div class="title">进行中的项目 <a @click="judgePermission('1010401', '/project/projectProcess')">>></a> </div>
+              <template v-if="underwayData.length !== 0">
+                <el-table
+                  :data="underwayData"
+                  :loading="underwayDataLoading"
+                  @row-click="onclickBtn"
+                  stripe
+                  style="width: 98%; margin: 0 auto;">
+                  <el-table-column
+                    type="index"
+                    label="序号"
+                    width="50">
+                  </el-table-column>
+                  <el-table-column
+                    prop="tenderProjectName"
+                    label="项目名称"
+                    show-overflow-tooltip
+                   >
+                    <template slot-scope="scope">
+                      <a href="javascript:;" :title="scope.row.tenderProjectName">{{scope.row.tenderProjectName}}</a>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </template>
+              <div class="nodata"  v-if="underwayData.length === 0">
+                <img src="../../static/images/newindex/nodata2.png"/>
+                <p>暂无项目</p>
+              </div>
+            </div>
+            <div class="box" style="height: 217px;">
+              <div class="title">待我审批<i class="tab-total">{{'('+needMeApprovedCount+')'}}</i> <a @click="handeApproveMore">>></a> </div>
+              <ul class="approval" v-if="approvalList.length !== 0">
+                <li v-for="item in approvalList" :key="item.index">
+                  <span><em>{{item.sourceType | sourceTypeFilter}}</em><i>{{item.createDate}}</i></span>
+                  <a>{{item.title}}</a>
+                  <a class="btn" @click="handleApprove(item)">立即处理</a>
+                  <span class="manager">{{item.creatorName}}</span>
+                </li>
+              </ul>
+              <div class="nodata"  v-if="approvalList.length === 0">
+                <img src="../../static/images/newindex/nodata4.png"/>
+                <p>您的效率很高，暂无待办事项！</p>
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="10">
+            <calendar
+                ref="calendar"
+                :events="calendar.events"
+                :lunar="calendar.lunar"
+                :value="calendar.value"
+                :begin="calendar.begin"
+                :end="calendar.end"
+                :weeks="calendar.weeks"
+                :months="calendar.months"
+                @select="calendar.select"
+                @selectMonth="selectMonth"
+                @selectYear="calendar.selectYear"
+                @operate="handleIconBtn">
+              </calendar>
+            <div class="box"  style="height: 342px;">
+              <div class="title">通知公告 <a href="javascript:void(0);" @click="handleNoticeClick">>></a></div>
+              <ul class="noticeList" v-if="noticeList.length !== 0">
+                <li v-for="item in noticeList" :key="item.index">
+                  <a @click="noticeLookDetail(item)">{{item.title}}</a>
+                  <span>{{item.submitTime}}</span>
+                </li>
+              </ul>
+              <div class="nodata"  v-if="noticeList.length === 0">
+                <img src="../../static/images/newindex/nodata3.png"/>
+                <p>暂无数据</p>
+              </div>
+            </div>
+            <div class="box"  style="height: 217px;">
+            <div class="title">公司动态 <a href="javascript:void(0);" @click="handleNewsClick">>></a> </div>
+              <ul class="newsList" v-if="newsList.length !== 0">
+                <li v-for="item in newsList" :key="item.index">
+                  <a @click="newsLookDetail(item)">{{item.title}}</a>
+                  <span>{{item.submitTime}}</span>
+                </li>
+              </ul>
+              <div class="nodata"  v-if="newsList.length === 0">
+                <img src="../../static/images/newindex/nodata3.png"/>
+                <p>暂无数据</p>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+      </el-col>
+      <el-col :span="rightnum" class="rightmenu">
+        <h4>功能快捷入口</h4>
+        <ul class="shortcut-ul clearfix">
+          <li v-for="(item,index) in shortcutList" :key="index" class="shortcut-li fl" @click="judgePermission(item.permissionId, item.path)">
+            <img :src="item.imgSrc" class="shortcut-img" />
+            <span class="shortcut-span">{{item.text}}</span>
+          </li>
+          <li>
+            <router-link to="/quickMenu">
+              <img src="../../static/images/newindex/rightico8.png"/>
+              <span>自定义</span>
+            </router-link>
+          </li>
+        </ul>
+        <em @click="toggle" class="toggle">收起</em>
+      </el-col>
+    </el-row>
+    <div class="showmenu" v-show="menuBtn" @click="showMenu"><img src="../../static/images/newindex/show.png"/> </div>
+  </div>
+</template>
+<script>
+import calendar from '@/components/bidCalendar/calendar.vue'
+import { notice } from '@/api/notice/notice'
+import { approvalTask } from '@/api/todoList/flow/approval-task'
+import {tenderProject, bidSection} from '@/api/project'
+import {fastFunction} from '@/api/home/fastFunction'
+import {formatDate} from '@/assets/js/date'
+export default {
+  components: {
+    calendar
+  },
+  data () {
+    return {
+      leftnum: 22,
+      rightnum: 2,
+      menuBtn: false,
+      weekData: [],
+      underwayData: [],
+      underwayDataLoading: false,
+      approvalList: [],
+      needMeApprovedCount: 0, // 待我审批数
+      myApprovalTask: 0, // 我发起的数量
+      tellMeCount: 0, // 未读知会与我
+      calendar: {
+        value: [], // 默认日期
+        lunar: true, // 显示农历
+        // weeks: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], // 显示英文周
+        // months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], // 显示英文月份
+        events: {},
+        select (value) {
+        },
+        selectYear (year) {
+        },
+        timestamp: Date.now()
+      },
+      calendarTime: null,
+      // 通知公告数量
+      noticeCount: 0,
+      noticeList: [],
+      newsList: [],
+      shortcutList: [
+        {text: '项目登记', imgSrc: '../../static/images/newindex/rightico1.png', path: 'project/registProject/add', permissionId: '1010202'},
+        {text: '商机登记', imgSrc: '../../static/images/newindex/rightico2.png', path: '/customerMan/business/add', permissionId: '1040202'},
+        {text: '项目全貌', imgSrc: '../../static/images/newindex/rightico3.png', path: '/project/proOverview', permissionId: '1010101'},
+        {text: '客户管理', imgSrc: '../../static/images/newindex/rightico4.png', path: '/customerMan/customer', permissionId: '1040101'},
+        {text: '开评标室预约', imgSrc: '../../static/images/newindex/rightico5.png', path: '/resource/biddingRoom', permissionId: '1020101'},
+        {text: '档案查询', imgSrc: '../../static/images/newindex/rightico6.png', path: '/archives/query', permissionId: '1070301'},
+        {text: '比选公告', imgSrc: '../../static/images/newindex/rightico7.png', path: '/biddingSources/announcement', permissionId: '1030101'}
+      ], // 默认快捷功能列表
+      shortcutMap: {
+        '项目登记': {text: '项目登记', imgSrc: '../../static/images/newindex/rightico1.png', path: 'project/registProject/add', permissionId: '1010202'},
+        '商机登记': {text: '商机登记', imgSrc: '../../static/images/newindex/rightico2.png', path: '/customerMan/business/add', permissionId: '1040202'},
+        '项目全貌': {text: '项目全貌', imgSrc: '../../static/images/newindex/rightico3.png', path: '/project/proOverview', permissionId: '1010101'},
+        '客户管理': {text: '客户管理', imgSrc: '../../static/images/newindex/rightico4.png', path: '/customerMan/customer', permissionId: '1040101'},
+        '开评标室预约': {text: '开评标室预约', imgSrc: '../../static/images/newindex/rightico5.png', path: '/resource/biddingRoom', permissionId: '1020101'},
+        '档案查询': {text: '档案查询', imgSrc: '../../static/images/newindex/rightico6.png', path: '/archives/query', permissionId: '1070301'},
+        '比选公告': {text: '比选公告', imgSrc: '../../static/images/newindex/rightico7.png', path: '/biddingSources/announcement', permissionId: '1030101'},
+        '项目进度': {text: '项目进度', imgSrc: '../../static/images/newindex/rightico9.png', path: '/project/projectProcess', permissionId: '1010401'}
+      }, // 所有快捷功能
+      thisWeekCount: null, // 本周待开标数量
+      nextWeekCount: null, // 下周待开标数量
+      thisMonthCount: null, // 本月待开标数量
+      nextMonthCount: null, // 下月待开标数量
+      currentDate: null, // 服务器当前时间
+      timers: {}, // 倒计时数组
+      currentSelectYear: new Date().getFullYear(), // 日历选择年份
+      currentSelectMonth: new Date().getMonth() + 1 // 日历选择月份
+    }
+  },
+  filters: {
+    sourceTypeFilter (value) {
+      if (Number(value) === 1) {
+        return '项目管理'
+      } else if (Number(value) === 2) {
+        return '商机评估'
+      }
+    }
+  },
+  created () {
+    this.init()
+  },
+  methods: {
+    init () {
+      // 进行中的项目信息
+      this.initProjectTableData()
+    },
+    /** 我的项目信息 */
+    initProjectTableData () {
+      tenderProject.getList({
+        pageNo: 1,
+        pageSize: 5,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        statusList: '5,6,7,8,9,10,11,14' // 排除已完成的
+      }).then((res) => {
+        this.underwayDataLoading = true
+        if (res.data.tenderProjectList && res.data.tenderProjectList.list) {
+          this.underwayData = res.data.tenderProjectList.list
+          this.projectTotal = res.data.tenderProjectList.total
+        }
+        this.underwayDataLoading = false
+      })
+    },
+    onclickBtn (row) {
+      if (this.$store.getters.permissions.includes('1010402')) {
+        sessionStorage.setItem('isOverview', true) // 根据正常流程展示操作按钮
+        this.$router.push({path: `/project/projectProcess/project/process/${row.code}`})
+        this.clearCurProjectSession(row.code)
+      } else {
+        this.$alert('您没有该功能的查看或操作权限，请联系系统管理员授权！', '提示', {
+          confirmButtonText: '确定',
+          callback: () => {}
+        })
+      }
+    },
+    clearCurProjectSession (code) {
+      let progressTemp = sessionStorage.getItem(code)
+      if (progressTemp) {
+        let curProject = JSON.parse(progressTemp)
+        if (curProject.hasOwnProperty(this.sectionIndex)) {
+          delete curProject[this.sectionIndex]
+        }
+        if (curProject.hasOwnProperty(this.sectionFlowStatusIndex)) {
+          delete curProject[this.sectionFlowStatusIndex]
+        }
+        sessionStorage.setItem(code, JSON.stringify(curProject))
+      } else {
+        sessionStorage.setItem(code, JSON.stringify({}))
+      }
+    },
+    // 快捷入口判断权限并跳转
+    judgePermission (permissionId, path) {
+      if (this.$store.getters.permissions.includes(permissionId)) {
+        this.$router.push({path: path})
+      } else {
+        this.$alert('您没有该功能的查看或操作权限，请联系系统管理员授权！', '提示', {
+          confirmButtonText: '确定',
+          callback: () => {}
+        })
+      }
+    },
+    toggle () {
+      this.leftnum = 24
+      this.rightnum = 0
+      this.menuBtn = true
+    },
+    showMenu () {
+      this.leftnum = 22
+      this.rightnum = 2
+      this.menuBtn = false
+    },
+    // 立即处理
+    handleApprove (item) {
+      let path = item.routingPath
+      let link = '?'
+      if (path.indexOf('?') !== -1) {
+        link = '&'
+      }
+      path += (link + 'isApproved=1&code=' + item.code)
+      this.$router.push({path: path})
+    },
+    // 带我审批 更多按钮
+    handeApproveMore () {
+      this.$router.push({path: '/todoList/need'})
+    },
+    // 待我审批以及数量
+    initApprovalTaskNeed () {
+      this.approveLoading = true
+      approvalTask.needMeApproval({
+        pageNo: 1,
+        pageSize: 5,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        auditStatus: 0
+      }).then((res) => {
+        this.approveLoading = false
+        this.approvalList = res.data.approvalTaskList.list
+        this.needMeApprovedCount = res.data.approvalTaskList.total
+      })
+    },
+    // 我发起的
+    getMyApprovalTaskCount () {
+      let query = {
+        pageNo: 1,
+        pageSize: 5
+      }
+      approvalTask.launchedByMe(query).then((res) => {
+        this.myApprovalTask = res.data.approvalTaskList.total
+      })
+    },
+    // 获取通知公告
+    getNoticeList () {
+      let query = {
+        pageNo: 1,
+        pageSize: 5,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        userId: this.$store.getters.authUser.userId,
+        refType: 1 // 知会与我
+      }
+      notice.getMyNoticeList(query).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.noticeList = res.data.noticeList.list
+        }
+      })
+    },
+    // 获取公司动态
+    getNewsList () {
+      notice.getNoticeList({
+        pageNo: 1,
+        pageSize: 5,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        type: 2, // 公司动态
+        status: 1 // 已提交
+      }).then((res) => {
+        this.newsList = res.data.noticeList.list
+      })
+    },
+    // 获取知会与我未读数量
+    getTellMeUnReadCount () {
+      notice.getUnReadCount({
+        userId: this.$store.getters.authUser.userId,
+        type: 2 // 知会与我
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.tellMeCount = res.data.unReadCount
+        }
+      })
+    },
+    // 获取未读公告
+    getUnReadCount () {
+      notice.getUnReadCount({
+        userId: this.$store.getters.authUser.userId,
+        type: 1 // 通知公告
+      }).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.noticeCount = res.data.unReadCount
+        }
+      })
+    },
+    // 通知公告点击
+    handleNoticeClick () {
+      this.$router.push({path: `/notify`})
+    },
+    // 公司动态点击
+    handleNewsClick () {
+      this.$router.push({path: `/dailyManagement/homeCompanyNews`})
+    },
+    // 倒计时
+    expTime () {
+      this.weekData.map((item, key) => {
+        let dateStart = this.weekData[key]['bidOpeningTime'] // 开始时间
+        let start = '' // 开始时间
+        let curTime = new Date(this.currentDate).getTime() // 当前时间
+        if (this.weekData[key]['bidOpeningTime']) { // 开始时间进行格式化
+          start = new Date(dateStart.substring(0, 4), parseInt(dateStart.substring(5, 7)) - 1, dateStart.substring(8, 10), dateStart.substring(11, 13), dateStart.substring(14, 16), dateStart.substring(17)).getTime()
+        }
+        let totalTime = start - curTime
+        this.timers[key] = setInterval(() => {
+          totalTime -= 1000
+          if (totalTime > 0) {
+            var dd = Math.floor(totalTime / 1000 / 60 / 60 / 24)
+            var hh = Math.floor((totalTime / 1000 / 60 / 60) % 24)
+            var mm = Math.floor((totalTime / 1000 / 60) % 60)
+            var ss = Math.floor((totalTime / 1000) % 60)
+            // 注：this.$set(object,'djs','要赋的值'); 给每一行设置一个值
+            this.$set(this.weekData[key], 'dd', dd)
+            this.$set(this.weekData[key], 'hh', hh)
+            this.$set(this.weekData[key], 'mm', mm)
+            this.$set(this.weekData[key], 'ss', ss)
+          } else {
+            this.$set(this.weekData[key], 'countDown', '已结束')
+          }
+        }, 1000)
+      })
+    },
+    // 查询快捷功能
+    getFastFunctions () {
+      let params = {
+        userId: this.$store.getters.authUser.userId
+      }
+      fastFunction.getList(params).then(res => {
+        let fastFunctionList = res.data.fastFunctionList
+        if (fastFunctionList && fastFunctionList.length > 0) {
+          this.shortcutList = []
+          fastFunctionList.map(item => {
+            this.shortcutList.push(this.shortcutMap[item.functionName])
+          })
+        }
+      })
+    },
+    // 查询待开标数量
+    getToOpenBidCount () {
+      bidSection.getToOpenBidCount().then(res => {
+        let countMap = res.data.countMap
+        if (countMap) {
+          this.thisWeekCount = countMap.thisWeek
+          this.nextWeekCount = countMap.nextWeek
+          this.thisMonthCount = countMap.thisMonth
+          this.nextMonthCount = countMap.nextMonth
+        }
+      })
+    },
+    // 查询本周待开标数据
+    getThisWeekOpenBidList () {
+      let query = {
+        pageNo: 0,
+        pageSize: 7,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        openingTimeType: 1
+      }
+      bidSection.getToOpenBidList(query).then(res => {
+        let data = res.data.bidSectionList
+        if (data) {
+          this.weekData = data.list
+          this.currentDate = res.data.currentDate
+          this.expTime()
+        }
+      })
+    },
+    selectMonth (month, year) {
+      this.currentSelectYear = year
+      this.currentSelectMonth = month
+      this.getCalendarData()
+    },
+    filterDate (value) {
+      if (value) {
+        let date = new Date(value.publishedTime)
+        return formatDate(date, 'yyyy-MM-dd')
+      } else {
+        return null
+      }
+    },
+    // 显示当前日期-默认日期
+    getTodayDate () {
+      let date = new Date()
+      let Yo = date.getFullYear()
+      let Mo = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1)
+      let Do = date.getDate()
+      this.calendar.value.push(Yo)
+      this.calendar.value.push(Mo)
+      this.calendar.value.push(Do)
+    },
+    /** 日历图标操作 */
+    handleIconBtn (day, month, year) {
+      let cMonth = month + 1
+      let currentDate = year + '-' + cMonth + '-' + day
+      this.$router.push({path: '/bidOpening?openingTimeType=5&selectDate=' + currentDate})
+    },
+    getCalendarData () {
+      let query = {
+        year: this.currentSelectYear,
+        month: this.currentSelectMonth
+      }
+      bidSection.getOpenBidTimeList(query).then(res => {
+        let tempOpenBid = []
+        let bidData = res.data.openBidTimeList
+        if (bidData) {
+          tempOpenBid = this.filterFormatDate(bidData, 6)
+        }
+        // 转成map数据
+        this.transDataToMap(tempOpenBid)
+      })
+    },
+    // 格式化日期并转化数据格式
+    filterFormatDate (arr, type) {
+      let result = []
+      if (arr.length) {
+        arr = arr.map(item => {
+          // 格式化时间
+          item = this.formarDateYMD(item)
+          let obj = {
+            time: item,
+            type: type
+          }
+          return obj
+        })
+        return arr
+      }
+      return result
+    },
+    /**
+     * 格式化时间
+     * 将时间格式化为【2018-1-17】
+     * 月份天数不满10不补0
+     **/
+    formarDateYMD (date) {
+      let str = ''
+      let formatDate = new Date(date)
+      let year = `${formatDate.getFullYear()}`
+      let month = `${formatDate.getMonth() + 1}`
+      let tdate = `${formatDate.getDate()}`
+      str = `${year}-${month}-${tdate}`
+      return str
+    },
+    /** 将数据包装成以时间为key，type:1和count:2为value的map集合
+     * [
+     * {createDae: '2018-9-12',type: 1},
+     * {createDae: '2018-12-6',type: 5}
+     * {createDae: '2018-9-12',type: 1}
+     * ]
+     * 如{
+     *  '2018-9-12': [{type:1,count:2},{type:5,count:2},{type:6,count:2}],
+     *  '2018-12-6': [{type:1,count:2},{type:5,count:2},{type:6,count:2}]
+     * }
+     **/
+    transDataToMap (arr) {
+      if (Array.isArray(arr)) {
+        let resultMap = {}
+        // 将数组中同一天的数据整合在一起
+        let sameTimeArr = arr.map(item => {
+          return item.time
+        })
+        // 去重,获得新数据
+        let newArr = []
+        for (var i = 0; i < sameTimeArr.length; i++) {
+          if (newArr.indexOf(sameTimeArr[i]) === -1) {
+            newArr.push(sameTimeArr[i])
+          }
+        }
+        newArr.forEach((item) => {
+          let tempArr = []
+          arr.forEach(child => {
+            let obj = {}
+            if (String(item) === String(child.time)) {
+              obj = {
+                type: child.type
+              }
+            }
+            if (JSON.stringify(obj) !== '{}' && JSON.stringify(tempArr).indexOf(JSON.stringify(obj)) === -1) {
+              tempArr.push(obj)
+            }
+          })
+          resultMap[item] = tempArr
+        })
+        this.$set(this.calendar, 'events', resultMap)
+      }
+    },
+    // 通知公告查看详情
+    noticeLookDetail (item) {
+      this.$router.push({path: `/dailyManagement/noticeAnnouncement/detail/${item.objectId}`})
+    },
+    newsLookDetail (item) {
+      this.$router.push({path: `/dailyManagement/companyNews/detail/${item.objectId}`})
+    }
+  },
+  mounted () {
+    this.getNoticeList()
+    this.getNewsList()
+    this.getUnReadCount()
+    this.getTellMeUnReadCount()
+    this.initApprovalTaskNeed()
+    this.getMyApprovalTaskCount()
+    this.getFastFunctions()
+    this.getToOpenBidCount()
+    this.getThisWeekOpenBidList()
+    this.getTodayDate()
+    this.getCalendarData()
+  },
+  destroyed () {
+    this.weekData.map((item, key) => {
+      clearInterval(this.timers[key])
+    })
+  }
+}
+</script>
+<style lang="less">
+  #cloud_index{
+    padding: 20px;
+    position: relative;
+    a {
+      text-decoration: none;
+    }
+    .leftcontent .message{
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid #dcdfe6;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+    .leftcontent .message .fl,.leftcontent .message .fr{
+      width: 50%;
+    }
+    .leftcontent .message .fl{
+      border-right: 1px solid #dcdfe6;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .mestitle{
+      height: 34px;
+      line-height: 34px;
+      border-bottom: 1px solid #dcdfe6;
+      padding: 0 12px;
+      font-size: 15px;
+    }
+    .mestitle img{
+      float: left;
+      margin: 5px 8px 0 0;
+    }
+    .meslist{
+      width: 100%;
+    }
+    .meslist li{
+      width: 25%;
+      float: left;
+      text-align: center;
+      padding: 20px 0 12px 0;
+    }
+    .meslist li span,.meslist li em{
+      width: 100%;
+      display: inline-block;
+      text-align: center;
+      font-style: normal;
+    }
+    .meslist li em{
+      color: #666666;
+      font-size: 14px;
+      line-height: 24px;
+    }
+    .meslist li span{
+      font-size: 26px;
+    }
+    .meslist li:nth-child(1) span{
+      color: #fc7fac;
+    }
+    .meslist li:nth-child(2) span{
+      color: #f4ac4f;
+    }
+    .meslist li:nth-child(3) span{
+      color: #c087f5;
+    }
+    .meslist li:nth-child(4) span{
+      color: #fcb87c;
+    }
+    .meslist li:nth-child(5) span{
+      color: #89a1fa;
+    }
+    .meslist li:nth-child(6) span{
+      color: #fd8375;
+    }
+    .meslist li:nth-child(7) span{
+      color: #f68ae5;
+    }
+    .meslist li:nth-child(8) span{
+      color: #fd78af;
+    }
+    .box{
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid #dcdfe6;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      margin: 10px 0;
+      float: left;
+      position: relative;
+    }
+    .box .nodata{
+      width: 100%;
+      height: 130px;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      margin-top: -55px;
+      text-align: center;
+    }
+    .box .title{
+      width: 98%;
+      height: 50px;
+      line-height: 50px;
+      background: #dbe8fb;
+      padding: 0 1%;
+      font-size: 15px;
+      font-weight: bold;
+    }
+    .box .title a{
+      float: right;
+      cursor: pointer;
+    }
+    .cell{
+      color: #333333;
+    }
+    .cell a{
+      color: #333333;
+    }
+    .rightmenu{
+      border: 1px solid #dcdfe6;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .rightmenu h4{
+      font-size: 12px;
+      height: 50px;
+      line-height: 50px;
+      border-bottom: 1px solid #dcdfe6;
+      text-align: center;
+    }
+    .rightmenu ul{
+      text-align: center;
+      margin: 10px 0;
+    }
+    .rightmenu ul li{
+      width: 100%;
+      float: left;
+      text-align: center;
+      margin: 10px 0;
+      cursor: pointer;
+    }
+    .rightmenu ul li span{
+      width: 100%;
+      display: inline-block;
+      line-height: 32px;
+      color: #111111;
+    }
+    .rightmenu em.toggle{
+      background: url("../../static/images/newindex/hidden.png") top center no-repeat;
+      padding: 12px 0 7px 0;
+      display: inline-block;
+      width: 100%;
+      font-style: normal;
+      text-align: center;
+      cursor: pointer;
+    }
+    .tab-total{
+      color: red;
+      font-style: normal;
+      margin-left: 2px;
+    }
+    .showmenu{
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 86px;
+      height: 50px;
+      line-height: 50px;
+      background: #498ce9;
+      text-align: center;
+      cursor: pointer;
+    }
+    .showmenu img{
+      vertical-align: middle;
+    }
+    // 待我审批
+    ul.approval,ul.noticeList,ul.newsList{
+      width: 100%;
+      overflow: hidden;
+    }
+    ul.approval li,ul.noticeList li,ul.newsList li{
+      padding: 0 2%;
+      width: 96%;
+      height: 47px;
+      line-height: 47px;
+      float: left;
+      border-bottom: 1px solid #dcdfe6;
+    }
+    ul.approval li a,ul.noticeList li a,ul.newsList li a{
+      color: #333333;
+      max-width: 70%;
+      overflow: hidden;
+      -ms-text-overflow: ellipsis;
+      text-overflow: ellipsis;
+      display: inline-block;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    ul.approval li:hover a,ul.noticeList li:hover a,ul.newsList li:hover a{
+      color: #498ce9;
+    }
+    ul.noticeList li:last-child{
+      border-bottom: 0px;
+      padding-bottom: 3px;
+    }
+    ul.noticeList li span,ul.newsList li span{
+      color: #666666;
+      float: right;
+    }
+    ul.approval li,ul.newsList li{
+      height: 54px;
+      line-height: 54px;
+    }
+    ul.approval li span:nth-child(1){
+      width: 140px;
+      overflow: hidden;
+      float: left;
+      line-height: 20px;
+      margin-top: 5px;
+    }
+    ul.approval li span:nth-child(1) em,ul.approval li span:nth-child(1) i{
+      width: 100%;
+      display: inline-block;
+      line-height: 19px;
+      font-style: normal;
+      font-size: 14px;
+    }
+    ul.approval li span:nth-child(1) i{
+      color: #666666;
+      font-size: 12px;
+    }
+    ul.approval li a{
+      max-width: 40%;
+      float: left;
+    }
+    ul.approval li a.btn{
+      float: right;
+      width: 78px;
+      height: 28px;
+      line-height: 28px;
+      border: 1px solid #498ce9;
+      background: #e9f5ff;
+      color: #498ce9;
+      text-align: center;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+      display: inline-block;
+      margin-top: 12px;
+    }
+    ul.approval li a.btn:hover{
+      background: #498ce9;
+      color: #fff;
+    }
+    ul.approval li span.manager{
+      float: right;
+      width: 10%;
+      margin: 0 2%;
+    }
+    .count-down-start i{
+      font-style: normal;
+    }
+    .count-down-start em{
+      color:#ff0001;
+      font-style: normal;
+      font-size: 16px;
+    }
+    .count-down-end{
+      color:#bbbbbb ;
+    }
+  }
+</style>

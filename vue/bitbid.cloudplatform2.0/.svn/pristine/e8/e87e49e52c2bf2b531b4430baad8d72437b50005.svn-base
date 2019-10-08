@@ -1,0 +1,302 @@
+<template>
+  <div class="home" id="home" @click="leave">
+    <el-row>
+      <el-col :span="3" class="col3">
+        <!-- 左侧导航栏 -->
+        <slider></slider>
+      </el-col>
+      <el-col :span='21' class="col21">
+        <!-- header -->
+        <nav-top></nav-top>
+        <!-- 内容区 -->
+        <div class="app-wrap">
+          <!-- 此处放置el-tabs代码 -->
+          <div>
+            <ul v-show="visible" :style="{left: contextMenuLeft + 'px', top: contextMenuTop + 'px'}" class="contextmenu">
+              <li v-for="(item, key) in menuList" @click="handleTabsOption(key)" :key="key">{{item}}</li>
+            </ul>
+            <el-tabs
+              v-model="activeTab"
+              type="border-card"
+              closable
+              v-if="openTab.length"
+              @tab-click='tabClick(openTab)'
+              @tab-remove='tabRemove'
+            >
+              <el-tab-pane
+                :key="item.name + index"
+                v-for="(item, index) in openTab"
+                :label="item.name"
+                :name="item.route"
+                :index="index">
+                <span slot="label" @contextmenu.prevent="contextMenuClick(item, $event)">{{item.name}}</span>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
+          <div class="content-wrap" id="content-wrap">
+            <router-view/>
+          </div>
+        </div>
+      </el-col>
+    </el-row>
+  </div>
+</template>
+
+<script>
+// @ is an alias to /src
+import Slider from '@/components/Slider.vue'
+import navTop from '@/components/Header.vue'
+export default {
+  name: 'Home',
+  components: {
+    Slider,
+    navTop
+  },
+  data () {
+    return {
+      activeTab: '',
+      contextMenuLeft: 0,
+      contextMenuTop: 0,
+      visible: false,
+      menuList: {
+        others: '关闭其他',
+        all: '关闭所有'
+      }
+    }
+  },
+  methods: {
+    setHeight () {
+      // 获得屏幕的高度
+      let screenH = document.body.clientHeight
+      // 获得右侧内容区
+      let appWrap = document.getElementsByClassName('content-wrap')
+      // 设置右侧内容区的高度
+      appWrap[0].style.height = (screenH - 142) + 'px'
+    },
+    setActiveTab () {
+      this.activeTab = this.$route.fullPath
+    },
+    // tab标签点击时，切换相应的路由
+    tabClick (tab) {
+      this.$router.push({path: this.activeTab})
+    },
+    // 移除tab标签
+    tabRemove (targetName) {
+      // 首页不删
+      if (targetName === '/' || targetName === '/main') {
+        return
+      }
+      this.$store.commit('delete_tabs', targetName)
+      // 设置当前激活的路由
+      if (this.openTab && this.openTab.length >= 1) {
+        this.$store.commit('set_active_index', this.openTab[this.openTab.length - 1].route)
+        this.$router.push({path: this.openTab[this.openTab.length - 1].route})
+      } else {
+        this.$router.push({path: '/'})
+      }
+    },
+    handleTabsOption (type) {
+      if (type.includes('all')) {
+        // 关闭所有，除了home
+        this.$store.commit('delete_all_tabs', this.activeTab)
+        this.activeTab = '/main'
+      } else if (type.includes('others')) {
+        // 关闭除当前页和home页的其他页
+        this.$store.commit('delete_other_tabs', this.activeTab)
+      }
+      this.$router.push({path: this.activeTab})
+      this.visible = false
+    },
+    contextMenuClick (item, e) {
+      this.visible = true
+      this.activeTab = item.route
+      const offsetLeft = this.$el.getBoundingClientRect().left
+      this.contextMenuLeft = e.clientX - offsetLeft - 200
+      this.contextMenuTop = e.clientY
+    },
+    leave () {
+      if (this.visible) {
+        this.visible = false
+      }
+    },
+    handleScroll () {
+      document.getElementById('content-wrap').scrollTop = 0
+    }
+  },
+  mounted () {
+    this.handleScroll()
+    this.setHeight()
+    this.setActiveTab()
+    // 刷新时以当前路由做为tab加入tabs
+    // 当前路由不是首页时，添加首页以及另一页到store里，并设置激活状态
+    // 当当前路由是首页时，添加首页到store，并设置激活状态
+    let tabs = JSON.parse(sessionStorage.getItem('key'))
+    if (tabs) {
+      for (let i = 0; i < tabs.length; i++) {
+        this.$store.commit('add_tabs', tabs[i])
+      }
+      this.$store.commit('set_active_index', this.$route.meta.active)
+    } else {
+      if (this.$route.path !== '/' && this.$route.path !== '/main') {
+        this.$store.commit('add_tabs', {route: '/main', name: '首页'})
+        this.$store.commit('add_tabs', { route: this.$route.path, name: this.$route.name })
+        this.$store.commit('set_active_index', this.$route.meta.active)
+      } else {
+        this.$store.commit('add_tabs', {route: '/main', name: '首页'})
+        this.$store.commit('set_active_index', '/main')
+      }
+    }
+  },
+  computed: {
+    openTab () {
+      return this.$store.state.openTab
+    },
+    activeIndex: {
+      get () {
+        return this.$store.state.activeIndex
+      },
+      set (val) {
+        this.$store.commit('set_active_index', val)
+      }
+    }
+  },
+  watch: {
+    '$route' (to, from) {
+      document.getElementById('content-wrap').scrollTop = 0
+      // this.activeTab = to.path
+      this.activeTab = to.fullPath
+      // 判断路由是否已经打开
+      // 已经打开的 ，将其置为active
+      // 未打开的，将其放入队列里
+      let flag = false
+      for (let item of this.openTab) {
+        // if (item.route === to.path) {
+        if (item.route.indexOf(to.fullPath) !== -1) {
+          this.$store.commit('set_active_index', to.meta.active)
+          flag = true
+          break
+        }
+      }
+      if (!flag) {
+        // this.$store.commit('add_tabs', {route: to.path, name: to.name})
+        this.$store.commit('add_tabs', {route: to.fullPath, name: to.name})
+        this.$store.commit('set_active_index', to.meta.active)
+      }
+    }
+  }
+}
+</script>
+<style lang='less'>
+  body,p,h1,h2,h3,h4,h5,h6,ul,li,ol,dl,dt,dd,input,form{
+    margin:0px;
+    list-style:none;/*清除小圆点*/
+    padding:0px;
+    color: #333333;
+  }
+  body,html{
+    height: 100%;
+  }
+  /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+  ::-webkit-scrollbar
+  {
+    width: 5px;
+    height: 5px;
+  }
+
+  /*定义滚动条轨道 内阴影+圆角*/
+  ::-webkit-scrollbar-track
+  {
+    background-color: #b8b8b8;
+  }
+
+  /*定义滑块 内阴影+圆角*/
+  ::-webkit-scrollbar-thumb
+  {
+    border-radius: 5px;
+    -webkit-box-shadow: inset 0 0 2px rgba(0,0,0,0.3);
+    background-color: #cccccc
+  }
+  #home{
+    .col3{
+      position: fixed;
+      height: 100%;
+    }
+    .col21{
+      float: right;
+      position: relative;
+      background: #eaeef2;
+    }
+    .app-wrap{
+      margin-top: 48px;
+    }
+    .content-wrap{
+      margin: 10px;
+      padding: 20px;
+      overflow-y: auto;
+      background: #ffffff;
+    }
+    .el-tabs__nav-wrap{
+      margin-bottom: 0px;
+    }
+    .el-tabs.el-tabs--border-card {
+      box-shadow: none;
+      background: #f0f0f0;
+      border: 1px solid #cccccc;
+      padding: 0 3px;
+    }
+    .el-tabs--border-card>.el-tabs__header{
+      box-shadow: none;
+      border: none;
+      background: #f0f0f0;
+    }
+    .el-tabs--border-card>.el-tabs__header .el-tabs__item{
+      height: 32px;
+      line-height: 32px;
+      border-top: none;
+      padding: 0 30px 0 26px;
+      border-left: 2px solid #eaeef2;
+      border-right: 2px solid #eaeef2;
+      background: #ffffff url("../../static/images/graydian.png") 7px center no-repeat;
+    }
+    .el-tabs--border-card > .el-tabs__header .is-active {
+      background: #ffffff url("../../static/images/dian.png") 7px center no-repeat;
+    }
+    .el-tabs__item .el-icon-close{
+      position: absolute;
+      top: 9px;
+      right: 5px;
+    }
+    .el-tabs--border-card>.el-tabs__content{
+      padding: 0px;
+    }
+    .el-tabs__nav-next, .el-tabs__nav-prev{
+      width: 18px;
+      text-align: center;
+      background: #ffffff;
+      line-height: 32px;
+      border: 1px solid #dddddd;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+  }
+  .contextmenu {
+    position: absolute;
+    margin: 0;
+    padding: 5px 0;
+    background: #fff;
+    z-index: 1000;
+    list-style-type: none;
+    border-radius: 4px;
+    box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, .1);
+    li {
+      font-size: 14px;
+      margin: 0;
+      padding: 5px 15px;
+      cursor: pointer;
+      &:hover {
+        background: #eee;
+      }
+    }
+  }
+</style>

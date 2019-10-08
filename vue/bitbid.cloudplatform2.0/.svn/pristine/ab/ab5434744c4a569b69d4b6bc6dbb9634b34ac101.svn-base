@@ -1,0 +1,171 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <span>{{updateForm.tenderProjectCode}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{updateForm.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标人：">
+              <span>{{updateForm.tendererName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目经理：">
+              <span>{{updateForm.firstProjectLeaderName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-tabs v-model="activeTab" @tab-click="handleClickTabs">
+            <el-tab-pane label="项目情况总结" name="1">
+              <el-form-item label="项目背景与要求：">
+                <el-input
+                  type="textarea"
+                  :autosize="{ minRows: 4}"
+                  v-model="updateForm.projectBackgroundRequirements"
+                  disabled>
+                </el-input>
+              </el-form-item>
+              <el-form-item label="项目情况说明：" prop="projectDescription">
+                <el-input
+                  type="textarea"
+                  :autosize="{ minRows: 4}"
+                  v-model="updateForm.projectDescription"
+                  disabled>
+                </el-input>
+              </el-form-item>
+            </el-tab-pane>
+            <el-tab-pane label="专家评价" name="2">
+              <el-table
+                :data="updateForm.expertEvaluateList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  label="专家姓名"
+                  show-overflow-tooltip>
+                  <template slot-scope='scope'>
+                    <span>{{scope.row.expertName}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="content"
+                  label="评价内容"
+                  show-overflow-tooltip>
+                  <template slot-scope='scope'>
+                    <el-input
+                      type="textarea"
+                      autosize
+                      v-model="scope.row.evaluationContent"
+                      disabled>
+                    </el-input>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-tab-pane>
+            <el-tab-pane label="招标人评价" name="3">
+              <el-form-item label="评价内容：">
+                <el-input
+                  type="textarea"
+                  :autosize="{ minRows: 4}"
+                  v-model="updateForm.tendererEvaluateInfo.evaluationContent"
+                  disabled>
+                </el-input>
+              </el-form-item>
+            </el-tab-pane>
+          </el-tabs>
+        </el-row>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+import {tenderProject, tenderProjectSummary, evaluateInfo} from '@/api/project'
+export default {
+  name: 'detail',
+  data () {
+    return {
+      activeTab: '1',
+      updateForm: {
+        tenderProjectCode: '',
+        projectDescription: '',
+        tendererEvaluateInfo: {}, // 招标人评价
+        expertEvaluateList: [] // 专家评价
+      }
+    }
+  },
+  methods: {
+    detail () {
+      if (sessionStorage.getItem('checkSummaryAndAndEvaluate') === 0) {
+        tenderProject.getOne(this.$route.query.tenderSystemCode).then((res) => {
+          if (res.data.tenderProject) {
+            this.updateForm.code = res.data.tenderProject.code
+            this.updateForm.tenderProjectCode = res.data.tenderProject.tenderProjectCode
+            this.updateForm.tenderProjectName = res.data.tenderProject.tenderProjectName
+            this.updateForm.tendererName = res.data.tenderProject.tendererName
+            this.updateForm.firstProjectLeaderName = res.data.tenderProject.firstProjectLeaderName
+          }
+        })
+      } else {
+        tenderProjectSummary.getByRelatedCode(this.$route.query.tenderSystemCode).then((res) => {
+          if (res.data.tenderProjectSummary) {
+            this.updateForm.objectId = res.data.tenderProjectSummary.objectId
+            this.updateForm.code = res.data.tenderProjectSummary.code
+            this.updateForm.tenderSystemCode = res.data.tenderProjectSummary.tenderSystemCode
+            this.updateForm.tenderProjectCode = res.data.tenderProjectSummary.tenderProjectCode
+            this.updateForm.tenderProjectName = res.data.tenderProjectSummary.tenderProjectName
+            this.updateForm.tendererName = res.data.tenderProjectSummary.tendererName
+            this.updateForm.firstProjectLeaderName = res.data.tenderProjectSummary.firstProjectLeaderName
+            this.updateForm.projectBackgroundRequirements = res.data.tenderProjectSummary.projectBackgroundRequirements
+            this.updateForm.projectDescription = res.data.tenderProjectSummary.projectDescription
+          }
+        })
+      }
+    },
+    // tabs切换
+    handleClickTabs (data) {
+      this.activeTab = data.name
+      // 页面切换后重新获取数据
+      let query = {}
+      if (this.activeTab === '2') { // 专家评价
+        query = {
+          tenderSystemCode: this.$route.query.tenderSystemCode,
+          evaluationType: 0
+        }
+      } else if (this.activeTab === '3') { // 招标人评价
+        query = {
+          tenderSystemCode: this.$route.query.tenderSystemCode,
+          evaluationType: 1
+        }
+      }
+      evaluateInfo.getList(query).then((res) => {
+        if (res.data.evaluateInfoList) {
+          if (this.activeTab === '2') { // 专家评价
+            this.updateForm.expertEvaluateList = res.data.evaluateInfoList
+          } else if (this.activeTab === '3') { // 招标人评价
+            this.updateForm.tendererEvaluateInfo = res.data.evaluateInfoList[0]
+          }
+        }
+      })
+    }
+  },
+  mounted () {
+    this.detail()
+  }
+}
+</script>
+
+<style scoped>
+
+</style>

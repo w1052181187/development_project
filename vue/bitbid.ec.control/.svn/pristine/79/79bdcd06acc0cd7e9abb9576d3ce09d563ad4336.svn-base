@@ -1,0 +1,113 @@
+import {titleName} from '@/assets/js/common'
+export default[
+  {
+    path: '/index/trade-record',
+    name: 'trade-record',
+    meta: {
+      roleIds: [999],
+      title: '交易记录管理' + titleName,
+      active: '/index/trade-record'
+    },
+    component: resolve => require(['@/pages/deal-manage/trade-record'], resolve)
+  },
+  {
+    path: '/index/trade-details',
+    name: 'trade-details',
+    meta: {
+      roleIds: [999],
+      title: '交易记录详情' + titleName,
+      active: '/index/trade-record'
+    },
+    component: resolve => require(['@/pages/deal-manage/trade-details'], resolve)
+  },
+  {
+    path: '/index/order-cert',
+    name: 'order-cert',
+    meta: {
+      roleIds: [999],
+      title: '订单核销凭证打印' + titleName,
+      active: '/index/order-cert'
+    },
+    component: resolve => require(['@/pages/deal-manage/order-cert'], resolve)
+  },
+  {
+    path: '/index/print-form',
+    name: 'print-form',
+    meta: {
+      roleIds: [999],
+      title: '打印' + titleName,
+      active: '/index/order-cert'
+    },
+    component: resolve => require(['@/pages/deal-manage/print-form'], resolve)
+  },
+  {
+    path: '/index/order-statis',
+    name: 'order-statis',
+    meta: {
+      roleIds: [999],
+      title: '平台订单统计' + titleName,
+      active: '/index/order-statis'
+    },
+    component: resolve => require(['@/pages/deal-manage/order-statis'], resolve)
+  },
+  {
+    path: '/index/order-statis-list',
+    name: 'order-statis-list',
+    meta: {
+      roleIds: [999],
+      title: '平台订单统计列表' + titleName,
+      active: '/index/order-statis'
+    },
+    component: resolve => require(['@/pages/deal-manage/order-statis-list'], resolve)
+  },
+  {
+    path: '/index/order-statis-details',
+    name: 'order-statis-details',
+    meta: {
+      roleIds: [999],
+      title: '平台订单统计详情' + titleName,
+      active: '/index/order-statis'
+    },
+    component: resolve => require(['@/pages/deal-manage/order-statis-details'], resolve)
+  },
+  {
+    path: '/index/consume-statis',
+    name: 'consume-statis',
+    meta: {
+      roleIds: [999],
+      title: '采购人消费统计' + titleName,
+      active: '/index/consume-statis'
+    },
+    component: resolve => require(['@/pages/deal-manage/consume-statis'], resolve)
+  },
+  {
+    path: '/index/consume-statis-list',
+    name: 'consume-statis-list',
+    meta: {
+      roleIds: [999],
+      title: '采购人消费统计列表' + titleName,
+      active: '/index/consume-statis'
+    },
+    component: resolve => require(['@/pages/deal-manage/consume-statis-list'], resolve)
+  },
+  {
+    path: '/index/consume-statis-details',
+    name: 'consume-statis-details',
+    meta: {
+      roleIds: [999],
+      title: '采购人消费统计详情' + titleName,
+      active: '/index/consume-statis'
+    },
+    component: resolve => require(['@/pages/deal-manage/consume-statis-details'], resolve)
+  },
+  {
+    path: '/index/complaint',
+    name: 'complaint',
+    meta: {
+      roleIds: [999],
+      title: '投诉管理' + titleName,
+      active: '/index/complaint'
+    },
+    component: resolve => require(['@/pages/deal-manage/complaint'], resolve)
+  }
+]

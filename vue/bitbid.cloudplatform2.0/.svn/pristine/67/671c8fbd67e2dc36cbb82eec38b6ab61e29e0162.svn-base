@@ -1,0 +1,137 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <div v-if="curType !== 'room'" class="nav">
+        <span @click="handleNavClick('all')">全部</span>
+        <span :class="curType === 'cabinet' ? 'nav-active' : ''" v-if="curType === 'cabinet' || curType === 'list'" @click="handleNavClick('room')"><span class="arrow">{{'>'}}</span><span>{{curRoom}}</span></span>
+        <span :class="curType === 'list' ? 'nav-active' : ''" v-if="curType === 'list'"><span class="arrow">{{'>'}}</span><span>{{curCabinet}}</span></span>
+      </div>
+      <ul>
+        <li v-for="(item, index) in roomList" :key="index" class="room-item" v-if="curType === 'room'" @click="handleClick('room', item)">
+          <img v-if="index === roomList.length - 1" src="../../../assets/dai_hui.png">
+          <img v-else src="../../../assets/dai_huang.png">
+          <div>{{item.name}}</div>
+        </li>
+        <li v-for="(item, index) in cabinetList" :key="index" class="room-item" v-if="curType === 'cabinet'" @click="handleClick('cabinet', item)">
+          <img v-if="index === cabinetList.length - 1" src="../../../assets/gui_hui.png">
+          <img v-else src="../../../assets/gui_huang.png">
+          <div>{{item.name}}</div>
+        </li>
+        <list v-if="curType === 'list'"></list>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'archivesRoom',
+  components: {
+    list: resolve => require(['./list'], resolve)
+  },
+  data () {
+    return {
+      roomList: [
+        {
+          name: '档案室一'
+        },
+        {
+          name: '档案室二'
+        },
+        {
+          name: '档案室三'
+        },
+        {
+          name: '无位置档案'
+        }
+      ],
+      cabinetList: [
+        {
+          name: '档案柜一'
+        },
+        {
+          name: '档案柜二'
+        },
+        {
+          name: '档案柜三'
+        },
+        {
+          name: '无位置档案'
+        }
+      ],
+      curType: 'room',
+      curRoom: '',
+      curCabinet: ''
+    }
+  },
+  watch: {
+  },
+  methods: {
+    // 获取档案室
+    getRoom () {},
+    // 获取档案柜
+    getCabinet () {},
+    getData () {
+    },
+    handleBtn (row) {
+      this.$router.push({path: `/archives/query/detail/` + row.objectId + '?status=1'})
+    },
+    // 搜索
+    handleSearch () {
+      this.getData()
+    },
+    reset () {},
+    handleClick (type, item) {
+      switch (type) {
+        case 'room':
+          this.curType = 'cabinet'
+          this.curRoom = item.name
+          break
+        case 'cabinet':
+          this.curType = 'list'
+          this.curCabinet = item.name
+          break
+      }
+    },
+    handleNavClick (type) {
+      switch (type) {
+        case 'all':
+          this.curType = 'room'
+          break
+        case 'room':
+          this.curType = 'cabinet'
+          break
+      }
+    }
+  },
+  mounted () {
+    this.getData()
+  }
+}
+</script>
+
+<style scoped>
+  .room-item {
+    margin: 24px 45px;
+    display: inline-block;
+    text-align: center;
+  }
+  .room-item img {
+    width: 52px;
+    height: 52px;
+    margin-bottom: 16px;
+  }
+  .nav {
+    color: #a0a0a0;
+  }
+  .nav span {
+    cursor: pointer;
+  }
+  .nav .arrow {
+    margin: 0 6px;
+  }
+  .nav-active span{
+    color: #333;
+    cursor: default;
+  }
+</style>

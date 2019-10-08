@@ -1,0 +1,183 @@
+<template>
+  <div class="cloudcontent" id="archives_add">
+    <div class="main">
+      <ul class="step">
+        <li :class="active === 1 ? 'active' : 'prev'">
+          <i v-if="active > 1"><img src="../../../assets/duigou_2.png"></i>
+          <i v-else>1</i>
+          <span>基本信息</span>
+          <em></em>
+        </li>
+        <li :class="active === 2 ? 'active' : active === 3 ? 'prev' : ''">
+          <i v-if="active === 3"><img src="../../../assets/duigou_2.png"></i>
+          <i v-else>2</i>
+          <span>移交资料</span>
+          <em></em>
+        </li>
+        <li :class="active === 3 ? 'active' : ''">
+          <i>3</i>
+          <span>移交完成</span>
+        </li>
+      </ul>
+      <!--  使用v-show保证上一步回到页面的时候。富文本能正常显示    -->
+      <sectionInfo v-show="active === 1" ref="sectionInfo" :info="info"></sectionInfo>
+      <file v-if="active === 2" :info="info"></file>
+      <fileEnd v-if="active === 3" :info="info" ref="fileEnd"></fileEnd>
+      <div class="submit-radio">
+        <el-button class="cancal" @click="lastStep" v-if="active !== 1">{{lastText}}</el-button>
+        <el-button type="primary" @click="nextStep" :loading="isSubmiting">{{stepText}}</el-button>
+        <el-button class="cancal" @click="handleCancle" >{{cancleText}}</el-button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import {archivesInfo} from '@/api/archives'
+
+export default {
+  name: 'add',
+  components: {
+    // 基本信息
+    sectionInfo: resolve => require(['./sectionInfo.vue'], resolve),
+    // 移交资料
+    file: resolve => require(['./file.vue'], resolve),
+    // 移交完成
+    fileEnd: resolve => require(['./fileEnd.vue'], resolve)
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      stepText: '下一步',
+      lastText: '上一步',
+      cancleText: '取消',
+      // 步骤条
+      active: 1,
+      updateForm: {
+      },
+      rules: {
+      },
+      info: {},
+      fileInfo: {}
+    }
+  },
+  methods: {
+    getData () {
+      let isSetRecord = 0 // 不设置查询记录
+      archivesInfo.detailArchivesInfo(this.$route.params.objectId, isSetRecord).then((res) => {
+        if (res.data.resCode === '0000') {
+          this.info = res.data.archivesInfo
+        }
+      })
+    },
+    // 下一步
+    nextStep () {
+      switch (this.active) {
+        case 1:
+          this.active++
+          this.fileInfo = this.info
+          break
+        case 2:
+          this.active++
+          this.stepText = '确认移交'
+          this.cancleText = '关闭'
+          break
+        case 3:
+          // 移交
+          this.submitArchives()
+          break
+      }
+    },
+    lastStep () {
+      this.active--
+      this.cancleText = '取消'
+      this.stepText = '下一步'
+    },
+    // 取消
+    handleCancle () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    },
+    // 提交移交
+    submitArchives () {
+      this.$refs['fileEnd'].handleTransfer()
+    }
+  },
+  watch: {
+    '$route': 'getData'
+  },
+  mounted () {
+    this.getData()
+  }
+}
+</script>
+
+<style lang="less">
+  #archives_add {
+    ul.step{
+      list-style: none;
+      width: 616px;
+      height: 38px;
+      /*cursor: pointer;*/
+      overflow: hidden;
+      margin: 0 auto;
+      text-align: center;
+    }
+    ul.step li{
+      float: left;
+      height: 38px;
+      margin-right: 150px;
+      position: relative;
+    }
+    ul.step li i{
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      -webkit-border-radius: 50%;
+      -moz-border-radius: 50%;
+      border-radius: 50%;
+      background: #bbbbbb;
+      color: #ffffff;
+      font-style: normal;
+    }
+    ul.step li img {
+      width: 17px;
+      height: 11px;
+    }
+    ul.step li span{
+      display: inline-block;
+      line-height: 38px;
+      margin-left: 10px;
+      font-size: 14px;
+      color: #999;
+    }
+    ul.step li:last-child{
+      margin-right: 0px;
+    }
+    ul.step li em{
+      position: absolute;
+      width: 104px;
+      height: 2px;
+      display: block;
+      left: 120px;
+      top: 18px;
+      background: #eeeeee;
+    }
+    ul.step li.prev em{
+      background: #498ce9;
+    }
+    ul.step li.active i{
+      background: #498ce9;
+    }
+    ul.step li.active span{
+      color: #333333;
+    }
+    ul.step li.prev i{
+      background: #498ce9;
+    }
+    ul.step li.prev span{
+      color: #333;
+    }
+  }
+</style>

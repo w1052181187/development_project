@@ -1,0 +1,183 @@
+import VueRouter from 'vue-router'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+import system from './sys-manage/index'
+import purchaser from './purch-manage/index'
+import ecadmin from './ecadmin-manage/index'
+import deal from './deal-manage/index'
+import portal from './portal-manage/index'
+import ecSys from './ec-sys/index'
+import purchSys from './purch-sys/index'
+import store from '../store'
+import {titleName} from '@/assets/js/common'
+
+const router = new VueRouter({
+  mode: 'history',
+  routes: [
+    {
+      path: '/',
+      name: 'index',
+      redirect: '/main',
+      component: resolve => require(['@/pages/index'], resolve),
+      meta: {
+        roleId: [1, 2, 3, 4, 999],
+        enterpriseStatus: [0, 1, 2, 3]
+      },
+      children: [{
+        path: '/main',
+        name: 'main',
+        component: resolve => require(['@/pages/main'], resolve),
+        meta: {
+          roleId: [1, 2, 3, 4, 999],
+          enterpriseStatus: [0, 1, 2, 3],
+          title: '首页' + titleName,
+          active: '/main'
+        }
+      },
+      ...system,
+      ...purchaser,
+      ...ecadmin,
+      ...deal,
+      ...portal,
+      ...ecSys,
+      ...purchSys
+      ]
+    },
+    {
+      path: '/home',
+      name: 'home',
+      meta: {
+        noRequireAuth: true,
+        title: '首页' + titleName
+      },
+      component: resolve => require(['@/pages/home/home'], resolve)
+    },
+    {
+      path: '/home-deal-notice',
+      name: 'home-deal-notice',
+      meta: {
+        noRequireAuth: true,
+        title: '成交公示' + titleName
+      },
+      component: resolve => require(['@/pages/home/home-list/deal-notice'], resolve)
+    },
+    {
+      path: '/deal-notice-details',
+      name: 'deal-notice-details',
+      meta: {
+        noRequireAuth: true,
+        title: '成交公示详情' + titleName
+      },
+      component: resolve => require(['@/pages/home/home-list/deal-notice-details'], resolve)
+    },
+    {
+      path: '/home-expert-notice',
+      name: 'home-expert-notice',
+      meta: {
+        noRequireAuth: true,
+        title: '异常公示' + titleName
+      },
+      component: resolve => require(['@/pages/home/home-list/expert-notice'], resolve)
+    },
+    {
+      path: '/expert-notice-details',
+      name: 'expert-notice-details',
+      meta: {
+        noRequireAuth: true,
+        title: '异常公示详情' + titleName
+      },
+      component: resolve => require(['@/pages/home/home-list/expert-notice-details'], resolve)
+    },
+    {
+      path: '/home-policy-law',
+      name: 'home-policy-law',
+      meta: {
+        noRequireAuth: true,
+        title: '政策法规' + titleName
+      },
+      component: resolve => require(['@/pages/home/home-list/policy-law'], resolve)
+    },
+    {
+      path: '/policy-law-details',
+      name: 'policy-law-details',
+      meta: {
+        noRequireAuth: true,
+        title: '政策法规详情' + titleName
+      },
+      component: resolve => require(['@/pages/home/home-list/policy-law-details'], resolve)
+    },
+    {
+      path: '/login',
+      name: 'login',
+      meta: {
+        noRequireAuth: true,
+        title: '登录' + titleName
+      },
+      component: resolve => require(['@/pages/login/login'], resolve)
+    },
+    {
+      path: '*',
+      name: 'notFound',
+      meta: {
+        noRequireAuth: true,
+        title: '出错啦' + titleName
+      },
+      component: resolve => require(['@/pages/error/index'], resolve)
+    }
+  ]
+})
+
+router.beforeEach((to, from, next) => {
+  NProgress.start()
+  // token权限拦截
+  if (!to.meta.noRequireAuth) {
+    if (store.getters.token) {
+      // 开发用
+      if (!store.getters.authUser) {
+        store.dispatch('GetLoginInfo').then(() => {
+          next()
+        })
+      } else {
+        next()
+      }
+      // 生产环境用
+      // if (!store.getters.authUser) {
+      //   store.dispatch('GetLoginInfo').then(() => {
+      //     if (!to.meta.roleIds || to.meta.roleIds.includes(store.getters.authUser.roleId)) {
+      //       next()
+      //     } else {
+      //       next({name: 'notFound'})
+      //     }
+      //   })
+      // } else {
+      //   if (!to.meta.roleIds || to.meta.roleIds.includes(store.getters.authUser.roleId)) {
+      //     next()
+      //   } else {
+      //     next({name: 'notFound'})
+      //   }
+      // }
+    } else {
+      next({
+        path: '/home'
+      })
+    }
+  } else {
+    // 判断是否已经登录，如果已经登录跳转首页
+    if (store.getters.authUser) {
+      next({path: '/main'})
+    } else {
+      next()
+    }
+  }
+})
+
+// 标题改变
+router.afterEach((to, from) => {
+  document.title = to.meta.title || ''
+  if (to.name === 'main') {
+    NProgress.done()
+  }
+  NProgress.done()
+})
+
+export default router

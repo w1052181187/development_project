@@ -1,0 +1,320 @@
+<template>
+  <div class="cloudcontent" id="cloud_projectProcess">
+    <div class="main">
+      <el-form :model="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <span>{{updateForm.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目编号：" >
+              <span>{{updateForm.tenderProjectName}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段名称：">
+              <span>{{updateForm.bidSectionName}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段编号：">
+              <span>{{updateForm.bidSectionCode}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段类型：">
+              <span>{{updateForm.tenderProjectClassifyCodeStr}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段合同估算价(元)：" >
+              <span>{{updateForm.contractReckonPrice}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标文件售价(元)：">
+              <span>{{updateForm.docGetFee}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box" >
+            <el-form-item label="标段内容：" prop="sectionContent" ref="sectionContent">
+              <editor ref="sectionEditor" class="ueditor" :editread="editread" :content="updateForm.sectionContent" v-model="updateForm.sectionContent"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="投标人资格条件：" prop="bidderContent" ref="bidderContent">
+              <editor ref="bidderEditor" class="ueditor" :editread="editread" :content="bidderContent" v-model="updateForm.bidderContent"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <approve @approveForm="approveForm" ref="approveForm" v-if="Number(isApproved) === 1"></approve>
+        <el-row v-if="Number(isApproved) === 3">
+          <el-col :span="24">
+            <el-form-item label="当前审批人：">
+              <span>{{taskExecutor}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row v-if="isApproved">
+          <el-col :span="24">
+            <el-form-item label="审核记录：">
+              <el-table
+                :data="recordList"
+                border
+                style="width: 100%" header-cell-class-name="tableheader">
+                <el-table-column
+                  type="index"
+                  width="60"
+                  label="序号">
+                </el-table-column>
+                <el-table-column
+                  prop="auditStatus"
+                  label="审核结果"
+                  show-overflow-tooltip>
+                  <template slot-scope="scope">
+                    <span  v-if="scope.row.auditStatus === 1">通过</span>
+                    <span  v-if="scope.row.auditStatus === 2">不通过</span>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="auditorName"
+                  label="审核人"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  prop="createDate"
+                  label="审核时间"
+                  show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column
+                  prop="opinion"
+                  label="审核意见"
+                  show-overflow-tooltip>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="cancleApprove" v-if="Number(isApproved) === 3 && recordList.length === 0 && auditStatus !== 3" :loading="isSubmiting">撤回</el-button>
+          <template v-else>
+            <el-button type="primary" @click="submitApprove" v-if="Number(isApproved) === 1" :loading="isSubmiting">提交</el-button>
+            <el-button class="cancal" @click="$router.go(-1)">返回</el-button>
+          </template>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import * as bidsType from '@/assets/js/constants'
+import {bidSection} from '@/api/project'
+import approve from '@/components/approve.vue'
+import {approvalRecord, approvalTask} from '@/api/todoList'
+export default {
+  components: {
+    editor,
+    approve
+  },
+  data () {
+    return {
+      isSubmiting: false,
+      // 是否显示审批（0:详情 1：审批 2：审批详情 3：我发起的详情）
+      isApproved: 0,
+      auditStatus: 0,
+      recordList: [],
+      objectId: '',
+      updateForm: {
+        tenderProjectName: ''
+      },
+      // 富文本
+      editread: true,
+      sectionContent: '',
+      bidderContent: '',
+      // 标段类型
+      bidsTypeOptions: bidsType.bidsType,
+      approvalTaskCode: '',
+      taskExecutor: '',
+      form: {}
+    }
+  },
+  watch: {
+    '$route': 'init'
+  },
+  created () {
+    this.init()
+  },
+  methods: {
+    init () {
+      this.isApproved = this.$route.query.isApproved
+      this.auditStatus = this.$route.query.auditStatus
+      this.approvalTaskCode = this.$route.query.code
+      this.getChooseBidSectionInfo()
+      this.approveRecord()
+    },
+    /** 获取当前选择的标段信息 */
+    getChooseBidSectionInfo () {
+      bidSection.getOne(this.$route.params.code).then((res) => {
+        if (res.data.bidSection) {
+          this.updateForm = res.data.bidSection
+          // 获取文本编辑器的内容
+          this.$refs.sectionEditor.setContent(this.sectionContent = this.updateForm.bidSectionContent)
+          this.$refs.bidderEditor.setContent(this.bidderContent = this.updateForm.bidQualification)
+          // 获取标段（包）分类代码
+          let list = this.getClassifyList(this.updateForm.tenderProjectClassifyCode)
+          if (list.length > 0) {
+            this.updateForm.tenderProjectClassifyCodeStr = this.getClassifyInfo(list)
+          }
+        }
+      })
+    },
+    /** 获取标段分类代码的集合 */
+    getClassifyList (tenderProjectClassifyCode) {
+      let list = tenderProjectClassifyCode.split('-')
+      return list
+    },
+    /** 获取招标项目扩展信息 */
+    getClassifyInfo (list) {
+      let str = ''
+      let firstId = this.getLabelName(this.bidsTypeOptions, list[0])
+      let secondId = this.getLabelName(this.bidsTypeOptions, list[1])
+      let thirdId = this.getLabelName(this.bidsTypeOptions, list[2])
+      let fourthId = this.getLabelName(this.bidsTypeOptions, list[3])
+      if (firstId.node) {
+        str += `${firstId.node.label}`
+        str += '/'
+      }
+      if (secondId.node) {
+        str += `${secondId.node.label}`
+        str += '/'
+      }
+      if (thirdId.node) {
+        str += `${thirdId.node.label}`
+        str += '/'
+      }
+      if (fourthId.node) {
+        str += `${fourthId.node.label}`
+      }
+      return str
+    },
+    /** treeData [原始数据集]， key 传入的key值 */
+    getLabelName (treeData, key) {
+      let parentNode = null
+      let node = null
+      function getTreeDeepArr (treeData, key) {
+        for (let i = 0; i < treeData.length; i++) {
+          // 1.如果没有子节点 beark
+          if (node) {
+            break
+          }
+          // 定义需要操作的数据
+          let obj = treeData[i]
+          // 没有节点就下一个
+          if (!obj || !obj.value) {
+            continue
+          }
+          // 2.有节点就继续找，一直递归
+          if (obj.value === key) {
+            node = obj
+            break
+          } else {
+            // 3.如果有子节点就继续找
+            if (obj.children) {
+              // 4.递归前，记录当前节点，作为parentNode
+              parentNode = obj
+              // 递归
+              getTreeDeepArr(obj.children, key)
+            } else {
+              // 跳出当前递归
+              continue
+            }
+          }
+        }
+        // 如果没有找到父节点，置为null
+        if (!node) {
+          parentNode = null
+        }
+        // 返回结果
+        return {
+          node: node,
+          parentNode: parentNode
+        }
+      }
+      return getTreeDeepArr(treeData, key)
+    },
+    approveForm (formV) {
+      this.form = formV
+    },
+    submitApprove () {
+      // 必填验证
+      this.$refs.approveForm.handleValidate()
+      if (this.form.auditStatus === 2 && !this.form.opinion.trim()) {
+        this.$message({
+          message: '请填写审批意见',
+          type: 'warning'
+        })
+        return false
+      }
+      // 提交数据
+      this.isSubmiting = true
+      this.form.relatedCode = this.approvalTaskCode
+      this.form.subjectCode = this.$route.params.code
+      approvalRecord.approvalRecordSave(this.form).then((res) => {
+        this.isSubmiting = false
+        if (res.data.resCode === '0000') {
+          this.$store.commit('delete_tabs', this.$route.fullPath)
+          if (Number(this.isApproved) === 0) {
+            this.$router.push({path: '/project/projectProcess/project'})
+          } else {
+            this.$router.push({path: '/todoList/need'})
+          }
+        }
+      })
+    },
+    // 撤回审批
+    cancleApprove () {
+      this.isSubmiting = true
+      approvalTask.recallMyTask(this.approvalTaskCode).then((res) => {
+        this.isSubmiting = false
+        if (res.data.resCode === '0000') {
+          // this.$router.go(-1)
+        }
+      })
+    },
+    approveRecord () {
+      if (this.isApproved) {
+        let query = {
+          subjectCode: this.$route.params.code,
+          relatedCode: this.approvalTaskCode
+        }
+        approvalRecord.approvalRecordList(query).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.recordList = res.data.recordOfApprovalList
+            this.taskExecutor = res.data.taskExecutor
+          }
+        })
+      }
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_projectProcess {
+    .el-select{
+      width: 100%;
+    }
+  }
+</style>

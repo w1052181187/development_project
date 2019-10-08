@@ -1,0 +1,44 @@
+import {titleName} from '@/assets/js/common'
+
+export default[
+  {
+    path: '/index/home-manage/dynamic-info',
+    name: 'dynamic-info',
+    meta: {
+      permissions: [1, 2],
+      title: '轮换信息' + titleName,
+      active: '/index/home-manage/dynamic-info'
+    },
+    component: resolve => require(['@/pages/home-manage/dynamic-info/index'], resolve)
+  },
+  {
+    path: '/index/dynamic-info/add',
+    name: 'add',
+    meta: {
+      permissions: [1, 2],
+      title: '新增轮换信息' + titleName,
+      active: '/index/home-manage/dynamic-info'
+    },
+    component: resolve => require(['@/pages/home-manage/dynamic-info/add'], resolve)
+  },
+  {
+    path: '/index/dynamic-info/update',
+    name: 'update',
+    meta: {
+      permissions: [1, 2],
+      title: '修改轮换信息' + titleName,
+      active: '/index/home-manage/dynamic-info'
+    },
+    component: resolve => require(['@/pages/home-manage/dynamic-info/update'], resolve)
+  },
+  {
+    path: '/index/dynamic-info/detail/:objectId',
+    name: 'detail',
+    meta: {
+      permissions: [1, 2],
+      title: '详情' + titleName,
+      active: '/index/home-manage/dynamic-info'
+    },
+    component: resolve => require(['@/pages/home-manage/dynamic-info/detail'], resolve)
+  }
+]

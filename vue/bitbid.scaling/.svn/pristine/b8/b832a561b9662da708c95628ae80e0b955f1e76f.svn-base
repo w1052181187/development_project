@@ -1,0 +1,153 @@
+<template>
+  <div>
+    <div style="height: 60px;" v-if="!bidRoomStatus"></div>
+    <div id="footer">
+      <div class="footer_sonbox">
+        <!--查看招标文件弹框-->
+        <el-button size="small" class="look_btn" @click="lookTenderingFile">查看招标文件</el-button>
+        <el-dialog title="查看招标文件" :visible.sync="tenderingFileVisible" width="30%">
+          <div class="selectbigbox">
+            <div class="selecttitle">招标文件：</div>
+            <div class="look_download_btn">
+              <el-button size="small" class="look_download">查看</el-button>
+            </div>
+          </div>
+        </el-dialog>
+        <!--查看招标文件弹框-->
+        <!--浏览投标文件弹框-->
+        <el-button size="small" class="look_btn" @click="lookBrowseFile">浏览投标文件</el-button>
+        <el-dialog title="浏览投标文件" :visible.sync="browseFileVisible" width="30%">
+          <div class="selectbigbox">
+            <el-table
+              :data="tableDataBrowse"
+              border
+              style="width: 100%">
+              <el-table-column
+                type="index"
+                label="序号"
+                width="80"
+                align="center"
+                :index='dataIndex'>
+              </el-table-column>
+              <el-table-column
+                prop="label"
+                label="公司名称"
+                show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column
+                label="查看"
+                width="80"
+                align="center">
+                <template slot-scope="scope">
+                  <el-button type="text" size="small" class="look_download" @click="tenderFileBtn(scope)">查看</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </el-dialog>
+        <!--浏览投标文件弹框-->
+        <!--浏览工程量清单弹框-->
+        <el-button size="small" class="look_btn" @click="detailedBrowseFile">查看评标报告</el-button>
+        <el-dialog title="查看评标报告" :visible.sync="detailedFileVisible" width="30%">
+          <div class="selectbigbox">
+            <div class="selecttitle">评标报告：</div>
+            <div class="look_download_btn">
+              <el-button size="small" class="look_download">查看</el-button>
+            </div>
+          </div>
+        </el-dialog>
+        <!--浏览工程量清单弹框-->
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  props: ['bidRoomStatus'],
+  data () {
+    return {
+      tenderingFileVisible: false, // 查看招标文件
+      browseFileVisible: false, // 浏览投标文件
+      detailedFileVisible: false, // 查看评标报告
+      selectNegotiation: [], // 查看招标文件
+      tableDataBrowse: [], // 浏览投标文件
+      tableDataDetailed: [], // 查看评标报告
+      // 自定义序号
+      dataIndex: 1,
+      winHeight: 0,
+      winWidth: 0
+    }
+  },
+  methods: {
+    // 查看招标文件
+    lookTenderingFile () {
+      this.tenderingFileVisible = true
+    },
+    // 浏览投标文件
+    lookBrowseFile () {
+      this.browseFileVisible = true
+    },
+    // 浏览工程量清单
+    detailedBrowseFile () {
+      this.detailedFileVisible = true
+    }
+  },
+  watch: {},
+  mounted () {}
+}
+</script>
+<style lang="scss">
+  #footer{
+    display: inline-block;
+    width: 87.5%;
+    height: 60px;
+    background:#2a2d3c;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    padding: 0 37px;
+    box-sizing: border-box;
+    z-index: 200;
+    .look_btn{
+      float: left;
+      height: 32px;
+      background:#2c972f;
+      border-color: #2c972f;
+      font-size: 12px;
+      margin-top: 14px;
+      margin-left: 20px;
+      padding: 0px 15px;
+      color: #fff;
+    }
+    .look_btn:focus, .look_btn:hover {
+      background:#2C972F;
+      border-color: #2C972F;
+      color: #fff;
+    }
+    .el-dialog{
+      text-align: left;
+    }
+    .selectbigbox{
+      margin-bottom: 22px;
+    }
+    .selecttitle{
+      width: 115px;
+      display: inline-block;
+      vertical-align: middle;
+      text-align: right;
+    }
+    .look_download_btn{
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .look_download{
+      color:#2d76ed;
+      border: none;
+    }
+    .look_download:focus, .look_download:hover {
+      background:transparent;
+      border-color: transparent;
+      color:#2d76ed;
+    }
+  }
+</style>

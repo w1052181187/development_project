@@ -1,0 +1,642 @@
+<template>
+  <div class="cloudcontent" id="cloud_process">
+    <div class="main">
+      <div class="toptit" style="border-bottom: 0px;">
+        <el-button type="primary" class="addbutton" @click="addBtn">
+          <span> + 新增标段</span>
+        </el-button>
+        <h3 class="protitle">{{tenderProjectName}}（项目编号：{{projectCode}}）</h3>
+      </div>
+      <div class="section_listbox">
+        <div class="section_list">
+          <ul class="section_ul">
+            <li v-for="(item, index) in sectionList" :key="item.index" @click="changeBidSection(index)">
+              <p :title="item.bidSectionName">{{item.bidSectionName}}</p>
+              <span>{{item.flowStatus | filterFlowStatus}}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="btnMore" v-if="isMore">
+          <i class="open" v-if="!isOpen" @click="handleIsOpen">展开</i>
+          <i class="close" v-if="isOpen" @click="handleIsOpen">收起</i>
+        </div>
+      </div>
+      <div class="section_info">
+        <p class="handle">
+          <span class="btn_look" @click="detailBtn">查看标段</span>
+          <span class="btn_edit" @click="updateBtn" v-if="this.sectionForm.flowStatus === 1 || this.sectionForm.flowStatus === 4 || this.sectionForm.flowStatus === 18">编辑标段</span>
+          <span class="btn_del" @click="delBtn" v-if="this.sectionForm.flowStatus === 1">删除标段</span>
+          <span class="btn_waste">废标</span>
+        </p>
+        <table class="bidtable">
+          <tr>
+            <td class="tit">标段编号：</td>
+            <td><span>{{sectionForm.bidSectionCode}}</span></td>
+            <td class="tit">标段状态：</td>
+            <td><span>{{sectionForm.flowStatus | filterFlowStatus}}</span></td>
+          </tr>
+          <tr>
+            <td class="tit">开标时间：</td>
+            <td><span>{{sectionForm.bidOpenTime}}</span></td>
+            <td class="tit">开标地点：</td>
+            <td><span>{{sectionForm.bidOpeningAddress}}</span></td>
+          </tr>
+        </table>
+      </div>
+      <div class="process_box">
+        <p>
+          <span><em></em>已完成</span><span><em></em>进行中</span><span><em></em>未开始</span>
+        </p>
+        <div class="process" v-if="processFlag">
+          <ul>
+            <li v-for="item in process" :key="item.value" :class="item.colorFlag === 1? 'current':item.colorFlag === 2 ?  'next': 'prev'"  v-if="Number(item.check) === 0">
+              <el-button  @click="processBtn(item, true)">{{item.name}}</el-button>
+              <div class="per" v-if="item.percent && item.percent !== 100"><el-progress type="circle" :percentage="item.percent"></el-progress></div>
+              <div class="per" v-if="item.percent === 100"><el-progress type="circle" status="success" :percentage="item.percent"></el-progress></div>
+            </li>
+          </ul>
+        </div>
+        <div class="process_main" v-if="processFlag">
+          <div class="noinfo">
+            <!--标段状态=“已保存”-->
+            <p>该标段信息还未提交，请先提交标段信息！</p>
+            <!--标段状态=“已退回”-->
+            <p>该标段信息被退回，请重新完善标段信息！</p>
+            <!--标段状态=“审核中”-->
+            <p>该标段信息正在审核中，请耐心等待！</p>
+          </div>
+          <invitation :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'invitation'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></invitation>
+          <announcement :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'announcement'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></announcement>
+          <prequalificationFile :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'prequalificationFile'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></prequalificationFile>
+          <prequalificationResponse :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'prequalificationResponse'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></prequalificationResponse>
+          <checkResult :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'checkResult'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></checkResult>
+          <bidDocument :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'bidDocument'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></bidDocument>
+          <bidResponse :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'bidResponse'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></bidResponse>
+          <bidOpening :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'bidOpening'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></bidOpening>
+          <wasteBidResult :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'wasteBidResult'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></wasteBidResult>
+          <calibrationResult :tenderSystemCode="tenderSystemCode" :sectionSystemCode="selectCode" :operationFlag="operationFlag" v-if="currentView === 'calibrationResult'" @checkFlowStatusFlag="checkFlowStatusFlag" :type="type"></calibrationResult>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import {tenderProject, bidSection} from '@/api/project'
+export default {
+  components: {
+    // 邀请招标
+    invitation: resolve => require(['./invite/index.vue'], resolve),
+    // 招标公告/资格预审公告
+    announcement: resolve => require(['./announcement/index.vue'], resolve),
+    // 资格预审文件
+    prequalificationFile: resolve => require(['./prequalificationFile/index.vue'], resolve),
+    // 响应资格预审
+    prequalificationResponse: resolve => require(['./prequalificationResponse/index.vue'], resolve),
+    // 资格审查结果
+    checkResult: resolve => require(['./checkResult/index.vue'], resolve),
+    // 招标文件
+    bidDocument: resolve => require(['./bidDocument/index.vue'], resolve),
+    // 响应招标
+    bidResponse: resolve => require(['./bidResponse/index.vue'], resolve),
+    // 开标评标
+    bidOpening: resolve => require(['./bidOpening/index.vue'], resolve),
+    // 废标结果
+    wasteBidResult: resolve => require(['./wasteBidResult/index.vue'], resolve),
+    // 定标结果
+    calibrationResult: resolve => require(['./calibrationResult/index.vue'], resolve)
+  },
+  data () {
+    return {
+      tenderProjectName: '',
+      projectCode: '',
+      tenderSystemCode: this.$route.params.code,
+      sectionIndex: 'currentBidSection',
+      isMore: false, // 判断标段是否需要多行显示
+      isOpen: false, // 判断标段是否展开收起
+      sectionList: [],
+      sectionForm: {},
+      processFlag: true, // 流转信息是否展示，默认不展示
+      defaultProcess: [
+        {
+          name: '', // 招标公告/资格预审公告/投标邀请书
+          enName: '',
+          type: '',
+          check: '',
+          colorFlag: '', // 颜色高亮条件（0.已完成 1.进行中 2. 未完成）
+          clickFlag: '', // 是否可点击（false.否 true.是）
+          operationFlag: '' // 该主件下的操作按钮是否展示（false.否 true.是）
+        }, {
+          name: '资格预审文件',
+          enName: 'prequalificationFile',
+          type: '9',
+          check: '',
+          colorFlag: '',
+          clickFlag: '',
+          operationFlag: ''
+        }, {
+          name: '响应资格预审',
+          enName: 'prequalificationResponse',
+          type: '10',
+          check: '',
+          colorFlag: '',
+          clickFlag: '',
+          operationFlag: ''
+        }, {
+          name: '资格审查结果',
+          enName: 'checkResult',
+          type: '11',
+          check: '',
+          colorFlag: '',
+          clickFlag: '',
+          operationFlag: ''
+        }, {
+          name: '招标文件',
+          enName: 'bidDocument',
+          type: '12',
+          check: '',
+          colorFlag: '',
+          clickFlag: '',
+          operationFlag: ''
+        }, {
+          name: '响应招标',
+          enName: 'bidResponse',
+          type: '13',
+          check: '',
+          colorFlag: '',
+          clickFlag: '',
+          operationFlag: ''
+        }, {
+          name: '开标评标',
+          enName: 'bidOpening',
+          type: '14',
+          check: '',
+          colorFlag: '',
+          clickFlag: '',
+          operationFlag: ''
+        }, {
+          name: '废标结果公告',
+          enName: 'wasteBidResult',
+          type: '15',
+          check: '',
+          colorFlag: '',
+          clickFlag: '',
+          operationFlag: ''
+        }, {
+          name: '定标结果',
+          enName: 'calibrationResult',
+          type: '16',
+          check: '',
+          colorFlag: '',
+          clickFlag: '',
+          operationFlag: ''
+        }, {
+          name: '完结',
+          type: '17',
+          check: '',
+          colorFlag: '',
+          clickFlag: '',
+          operationFlag: ''
+        }
+      ],
+      process: [
+        {
+          colorFlag: 0,
+          check: '0',
+          name: '资格预审公告',
+          percent: 16
+        },
+        {
+          colorFlag: 0,
+          check: '0',
+          name: '资格预审文件',
+          percent: 50
+        },
+        {
+          colorFlag: 0,
+          check: '0',
+          name: '响应资格预审',
+          percent: 66
+        },
+        {
+          colorFlag: 1,
+          check: '0',
+          name: '资格审查结果',
+          percent: 48
+        },
+        {
+          colorFlag: 2,
+          check: '0',
+          name: '招标文件',
+          percent: 56
+        },
+        {
+          colorFlag: 2,
+          check: '0',
+          name: '响应招标',
+          percent: 76
+        },
+        {
+          colorFlag: 2,
+          check: '0',
+          name: '开标评标',
+          percent: 100
+        },
+        {
+          colorFlag: 2,
+          check: '0',
+          name: '定标结果',
+          percent: 48
+        },
+        {
+          colorFlag: 2,
+          check: '0',
+          name: '完结'
+        }
+      ],
+      currentView: '', // 按钮点击选择的视图
+      selectCode: '', // 用于流程切换
+      checkRoutePath: false, // 不是项目进度中进入的，操作按钮要全部隐藏
+      curProject: {} // 当前流程节点，用于刷新后维持原来节点不变
+    }
+  },
+  filters: {
+    /** 流程状态:1.已保存；2.待审批；3.已审批；4.已驳回；5.已提交（不需要审批）；6.招标公告; 7.资格预审公告; 8.投标邀请书;  9.资格预审文件; 10.响应资格预审; 11.资格审查结果; 12.招标文件; 13.响应招标; 14.开标评标; 15.废标结果公告; 16.定标结果; 17.完结  */
+    filterFlowStatus (flowStatus) {
+      if (flowStatus === 1) {
+        return '已保存'
+      } else if (flowStatus === 2) {
+        return '待审批'
+      } else if (flowStatus === 3) {
+        return '已审批'
+      } else if (flowStatus === 4) {
+        return '已驳回'
+      } else if (flowStatus === 5) {
+        return '已提交'
+      } else if (flowStatus === 6) {
+        return '招标公告'
+      } else if (flowStatus === 7) {
+        return '资格预审公告'
+      } else if (flowStatus === 8) {
+        return '投标邀请书'
+      } else if (flowStatus === 9) {
+        return '资格预审文件'
+      } else if (flowStatus === 10) {
+        return '响应资格预审'
+      } else if (flowStatus === 11) {
+        return '资格审查结果'
+      } else if (flowStatus === 12) {
+        return '招标文件'
+      } else if (flowStatus === 13) {
+        return '响应招标'
+      } else if (flowStatus === 14) {
+        return '开标评标'
+      } else if (flowStatus === 15) {
+        return '已废标'
+      } else if (flowStatus === 16) {
+        return '定标结果'
+      } else if (flowStatus === 17) {
+        return '已完成'
+      }
+    }
+  },
+  watch: {
+    // '$route': 'init'
+  },
+  mounted () {
+    this.init()
+  },
+  methods: {
+    // 新增
+    addBtn () {
+      this.$router.push({path: `/project/projectProcess/project/add`, query: {code: this.tenderSystemCode}})
+    },
+    // 修改
+    updateBtn () {
+      this.$router.push({path: `/project/projectProcess/project/update`, query: {code: this.tenderSystemCode, bidSectionSystemCode: this.sectionForm.code}})
+    },
+    // 查看
+    detailBtn () {
+      this.$router.push({path: `/project/projectProcess/project/detail/${this.sectionForm.code}`})
+    },
+    // 删除
+    delBtn () {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        bidSection.delete(this.sectionForm.objectId).then(() => {
+          this.getBidSectionList()
+        })
+      }).catch(() => {
+        return false
+      })
+    },
+    /** 获取指定标段的信息 */
+    changeBidSection (index) {
+      this.sectionForm = this.sectionList[index]
+      this.saveProjectBySession(this.sectionForm)
+    },
+    /** 查询项目名称 */
+    getTenderProjectName () {
+      tenderProject.getOne(this.tenderSystemCode).then((res) => {
+        if (res.data.tenderProject) {
+          this.tenderProjectName = res.data.tenderProject.tenderProjectName
+          this.projectCode = res.data.tenderProject.projectCode
+        }
+      })
+    },
+    /** 获取该招标项目下的所有标段信息 */
+    getBidSectionList () {
+      bidSection.getList({
+        tenderSystemCode: this.tenderSystemCode
+      }).then((res) => {
+        this.sectionList = res.data.bidSectionList.list
+        // 判断当前session中是否存在标段信息
+        let progressTemp = sessionStorage.getItem(this.tenderSystemCode)
+        if (progressTemp) {
+          this.curProject = JSON.parse(progressTemp)
+          if (this.curProject.hasOwnProperty(this.sectionIndex)) {
+            // 当前选择的标段
+            this.selectCode = this.curProject[this.sectionIndex].code
+            this.sectionForm = this.curProject[this.sectionIndex]
+          }
+        } else {
+          this.sectionForm = this.sectionList[0]
+          // session中存储当前标段的信息
+          this.checkRoutePath = sessionStorage.getItem('isOverview') === 'true'
+          this.process = []
+          this.process = this.process.concat(this.defaultProcess)
+          sessionStorage.setItem(this.tenderSystemCode, JSON.stringify(this.sectionForm))
+          this.selectCode = this.sectionForm.code
+        }
+      })
+    },
+    // 保存当前项目，当前标段及当前标段当前操作的流程
+    saveProjectBySession (bidSectionInfo) {
+      if (bidSectionInfo && bidSectionInfo.type === '17') { // 完结
+        return
+      }
+      this.curProject[this.sectionIndex] = {}
+      Object.assign(this.curProject[this.sectionIndex], bidSectionInfo)
+      sessionStorage.setItem(this.tenderSystemCode, JSON.stringify(this.curProject))
+    },
+    init () {
+      let sectionUlWrap = document.getElementsByClassName('section_ul')
+      let height = sectionUlWrap[0].clientHeight
+      if (height > 40) {
+        this.isMore = true
+      }
+      this.getTenderProjectName()
+      this.getBidSectionList()
+    },
+    handleIsOpen () {
+      this.isOpen = !this.isOpen
+      let sectionListWrap = document.getElementsByClassName('section_list')
+      if (this.isOpen) {
+        sectionListWrap[0].style.height = 'auto'
+      } else {
+        sectionListWrap[0].style.height = 48 + 'px'
+      }
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_process{
+    h3.protitle{
+      color: #000000;
+      font-size: 18px;
+      line-height: 40px;
+    }
+    .section_listbox{
+      width: 100%;
+      overflow: hidden;
+    }
+    .section_listbox .btnMore i {
+      float: right;
+      font-style: normal;
+      font-size: 12px;
+      padding-left: 18px;
+      margin-top: 5px;
+      cursor: pointer;
+    }
+    .section_listbox i.open {
+      background: url("../../../../static/images/ico_isopen.png") left center no-repeat;
+    }
+    .section_listbox i.close {
+      background: url("../../../../static/images/ico_isclose.png") left center no-repeat;
+    }
+    .section_list{
+      height: 48px;
+      overflow: hidden;
+    }
+    .section_list ul{
+      height: auto;
+      overflow: hidden;
+    }
+    .section_list ul li{
+      height: 44px;
+      padding: 0 12px;
+      border: 1px solid #d9d9d9;
+      max-width: 210px;
+      min-width: 100px;
+      text-align: center;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      float: left;
+      margin: 4px;
+      font-size: 12px;
+      line-height: 18px;
+    }
+    .section_list ul li p{
+      color: #666666;
+      max-width: 100%;
+      overflow: hidden;
+      -ms-text-overflow: ellipsis;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: bold;
+    }
+    .section_list ul li p i{
+      color: #fe903f;
+      font-style: normal;
+    }
+    .section_list ul li span{
+      color: #40a3f1;
+    }
+    .section_info{
+      width: 100%;
+      height: 139px;
+      border: 1px solid #d9d9d9;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      margin-top: 8px;
+    }
+    .section_info p.handle{
+      text-align: right;
+      line-height: 36px;
+    }
+    .section_info p.handle span{
+      margin: 0 12px;
+      color: #498ce9;
+      padding-left: 20px;
+      cursor: pointer;
+    }
+    .section_info p.handle span.btn_look{
+      background: url("../../../../static/images/icon_look.png") left center no-repeat;
+    }
+    .section_info p.handle span.btn_edit{
+      background: url("../../../../static/images/icon_edit.png") left center no-repeat;
+    }
+    .section_info p.handle span.btn_del{
+      background: url("../../../../static/images/icon_del.png") left center no-repeat;
+    }
+    .section_info p.handle span.btn_waste{
+      background: url("../../../../static/images/icon_waste.png") left center no-repeat;
+    }
+    .section_info table{
+      padding: 0 3%;
+      width: 94%;
+      overflow: hidden;
+      line-height: 36px;
+      color: #111111;
+    }
+    .section_info table tr{
+      margin: 20px 0 30px 0 ;
+    }
+    .section_info table tr td:nth-child(odd){
+      width: 80px;
+      color: #666666;
+    }
+    .process_box{
+      width: 100%;
+      padding-bottom: 50px;
+      border: 1px solid #d9d9d9;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      margin-top: 8px;
+    }
+    .process_box > p{
+      line-height: 33px;
+      text-align: right;
+      margin-bottom: 10px;
+    }
+    .process_box > p span{
+      display: inline-block;
+      margin: 0 12px;
+    }
+    .process_box > p span em{
+      width: 20px;
+      height: 6px;
+      background: #498ce9;
+      border: 1px solid #498ce9;
+      margin-right: 5px;
+      display: inline-block;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .process_box > p span:nth-child(1) em{
+      background: #c8dcf8;
+      border: 1px solid #c8dcf8;
+    }
+    .process_box > p span:nth-child(3) em{
+      background: #ffffff;
+      border: 1px solid #498ce9;
+    }
+    .process{
+      padding: 0 3%;
+      overflow-x: auto;
+    }
+    .process ul{
+      min-width: 1076px;
+    }
+    .process ul:after {
+      display: block;
+      content: "";
+      clear: both;
+    }
+    .process ul li{
+      float: left;
+      padding-right: 29px;
+      margin: 16px 0;
+      background: url("../../../../static/images/jt.png") right 3px center no-repeat;
+      position: relative;
+    }
+    .process ul li .el-button{
+      height: 48px;
+      background: #ffffff;
+      border-color: #3f63f7;
+      color: #3f63f7;
+      padding: 0 13px;
+    }
+    .process ul li.prev .el-button{
+      background: #c8dcf8;
+      border-color: #c8dcf8;
+      color: #333333;
+    }
+    .process ul li.current .el-button{
+      background: #498ce9;
+      border-color: #498ce9;
+      color: #ffffff;
+    }
+    .process ul li.next .el-button{
+      background: #ffffff;
+      border-color: #498ce9;
+      color: #333333;
+    }
+    .process ul li:last-child{
+      background: none;
+      padding-right: 0px;
+    }
+    .process ul li .per{
+      width: 30px;
+      height: 30px;
+      position: absolute;
+      right: 16px;
+      bottom: -9px;
+    }
+    .process ul li .per .el-progress-circle{
+      width: 30px!important;
+      height: 30px!important;
+      background: #ffffff;
+      -webkit-border-radius: 13px;
+      -moz-border-radius: 13px;
+      border-radius: 13px;
+    }
+    .process ul li .per .el-progress__text{
+      font-size: 10px!important;
+    }
+    .process ul li .per path:nth-child(1) {
+      stroke-width: 7;
+      stroke: #c0c0c0;
+    }
+    .process ul li .per path:nth-child(2) {
+      stroke-width: 7;
+      stroke: #14a614;
+    }
+    .is-success{
+      width: 30px;
+      height: 30px;
+      background: url("../../../../static/images/icon_complete.png") no-repeat;
+      background-size: cover;
+    }
+    .is-success .el-progress-circle,.is-success .el-progress__text{
+      display: none;
+    }
+    .noinfo{
+      text-align: center;
+      padding: 100px 0 30px 0;
+    }
+    .noinfo p{
+      padding-left: 30px;
+      line-height: 32px;
+      display: inline-block;
+      background: url("../../../../static/images/icon_warn.png") left center no-repeat;
+    }
+  }
+</style>

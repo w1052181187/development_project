@@ -1,0 +1,375 @@
+<template>
+  <div class="cloudcontent" id="cloud_buildProject">
+    <div class="main">
+      <div class="topmain">
+        <div class="seacher_box">
+          <span>项目名称：</span>
+          <el-input class="search" placeholder="请输入项目名称关键字" style="vertical-align: top"  v-model="searchForm.tenderProjectNameLike">
+            <el-button  slot="append" icon="el-icon-search" type="" @click="search"></el-button>
+          </el-input>
+        </div>
+        <span class="more" @click="showmore">+更多筛选条件</span>
+        <div class="selectbox" v-if="showselect">
+          <el-form :model="searchForm" ref="searchForm" label-width="80px" :validate-on-rule-change="true">
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="项目阶段">
+                  <span class="all">不限</span>
+                  <el-radio-group v-model="searchForm.proPhase">
+                    <el-radio v-for="item in proPhaseOption" :label="item.code" :key="item.code">{{item.name}}</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="项目类别">
+                  <span class="all">不限</span>
+                  <el-radio-group v-model="searchForm.proCategory">
+                    <el-radio v-for="item in proCategoryOption" :label="item.code" :key="item.code">{{item.name}}</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="所在地区">
+                  <span class="all">不限</span>
+                  <el-radio-group v-model="searchForm.region" class="region_radio">
+                    <el-radio v-for="item in regionOption" :label="item.value" :key="item.value">{{item.label}}</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="更新时间">
+                  <span class="all">不限</span>
+                  <el-radio-group v-model="searchForm.updateTime">
+                    <el-radio v-for="item in updateTimeOption" :label="item.code" :key="item.code">{{item.name}}</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form >
+        </div>
+      </div>
+      <p class="search_result">全网搜索，共检索出<span>{{searchForm.result}}</span>条项目信息</p>
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%" header-cell-class-name="tableheader">
+        <el-table-column
+          prop="tenderProject"
+          label="项目名称"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <a href="javascript:;" @click="lookDetail(scope)"  :title="scope.row.tenderProjectName"><span>[{{scope.row.tenderProject.phase}}]</span>{{scope.row.tenderProject.name}}</a>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="tenderProjectAddress"
+          label="地区"
+          width="200"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="tenderCategory"
+          label="项目类别"
+          width="200"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="money"
+          label="项目投资"
+          width="200"
+          show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="createDate"
+          label="更新时间"
+          width="200"
+          show-overflow-tooltip>
+        </el-table-column>
+      </el-table>
+      <!--分页-->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size='pageSize'
+        :current-page.sync="currentPage"
+        @current-change="handleCurrentChange"
+        @next-click="handleCurrentNext">
+      </el-pagination>
+      <!--分页-->
+    </div>
+  </div>
+</template>
+<script>
+import * as region from '@/assets/js/region'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      showselect: false,
+      tableData: [
+        {
+          tenderProject: {
+            name: '遂宁康佳产业园区开发有限公司PCB遂宁康佳产业园区开发有限公司PCB遂宁康佳产业园区开发有限公司PCB遂宁康佳产业园区开发有限公司PCB',
+            phase: '立项阶段'
+          },
+          tenderProjectAddress: '山西省',
+          tenderCategory: '建筑业',
+          money: '1000万',
+          createDate: '2019-05-16'
+        }, {
+          tenderProject: {
+            name: '遂宁康佳产业园区开发有限公司PCB',
+            phase: '立项阶段'
+          },
+          tenderProjectAddress: '山西省',
+          tenderCategory: '建筑业',
+          money: '1000万',
+          createDate: '2019-05-16'
+        }, {
+          tenderProject: {
+            name: '遂宁康佳产业园区开发有限公司PCB',
+            phase: '立项阶段'
+          },
+          tenderProjectAddress: '山西省',
+          tenderCategory: '建筑业',
+          money: '1000万',
+          createDate: '2019-05-16'
+        }, {
+          tenderProject: {
+            name: '遂宁康佳产业园区开发有限公司PCB',
+            phase: '立项阶段'
+          },
+          tenderProjectAddress: '山西省',
+          tenderCategory: '建筑业',
+          money: '1000万',
+          createDate: '2019-05-16'
+        }, {
+          tenderProject: {
+            name: '遂宁康佳产业园区开发有限公司PCB',
+            phase: '立项阶段'
+          },
+          tenderProjectAddress: '山西省',
+          tenderCategory: '建筑业',
+          money: '1000万',
+          createDate: '2019-05-16'
+        }
+      ],
+      searchForm: {
+        tenderProjectNameLike: '',
+        proPhase: '1',
+        proCategory: '2',
+        region: 140000,
+        updateTime: '1',
+        result: '15632'
+      },
+      // 项目阶段
+      proPhaseOption: [
+        {
+          name: '可行性研究',
+          code: '1'
+        },
+        {
+          name: '环境影响评价',
+          code: '2'
+        },
+        {
+          name: '审批/核准/备案',
+          code: '3'
+        },
+        {
+          name: '项目立项',
+          code: '4'
+        },
+        {
+          name: '设计阶段',
+          code: '5'
+        },
+        {
+          name: '施工准备',
+          code: '6'
+        }
+      ],
+      // 项目类别
+      proCategoryOption: [
+        {
+          name: '建筑工程',
+          code: '1'
+        },
+        {
+          name: '机械设备',
+          code: '2'
+        },
+        {
+          name: '仪器化工',
+          code: '3'
+        },
+        {
+          name: '通信安防',
+          code: '4'
+        },
+        {
+          name: '办公文教',
+          code: '5'
+        },
+        {
+          name: '环保绿化',
+          code: '6'
+        },
+        {
+          name: '医疗卫生',
+          code: '7'
+        },
+        {
+          name: '政府采购',
+          code: '8'
+        },
+        {
+          name: '其他',
+          code: '9'
+        }
+      ],
+      // 所在地区
+      regionOption: region.CityInfo,
+      // 更新时间
+      updateTimeOption: [
+        {
+          name: '今天',
+          code: '1'
+        },
+        {
+          name: '近三天',
+          code: '2'
+        },
+        {
+          name: '近一周',
+          code: '3'
+        },
+        {
+          name: '近三月',
+          code: '4'
+        },
+        {
+          name: '近半年',
+          code: '5'
+        },
+        {
+          name: '近一年',
+          code: '6'
+        }
+      ],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      dataIndex: 1
+    }
+  },
+  created () {
+  },
+  methods: {
+    // 展开收起 搜索条件
+    showmore () {
+      this.showselect = !this.showselect
+    },
+    // 详情
+    lookDetail (scope) {
+      this.$router.push({path: `/biddingSources/buildProject/detail/${scope.row.objectId}`})
+    },
+    search () {},
+    filterStatus () {},
+    handleCurrentChange () {},
+    handleCurrentNext () {}
+  }
+}
+</script>
+<style lang="less">
+  #cloud_buildProject{
+    .topmain{
+      margin-bottom: 0;
+    }
+    .topmain span.more{
+      margin-top: 16px;
+      color: #108cee;
+      font-size: 14px;
+      display: inline-block;
+      cursor: pointer;
+    }
+    .selectbox{
+      background: #f7f8f9;
+      padding: 20px 0;
+      margin-top: 17px;
+      margin-bottom: 20px;
+    }
+    .el-form-item__label{
+      text-align: left;
+      font-weight: bold;
+    }
+   .el-form-item{
+     margin-bottom: 0;
+   }
+    span.all{
+      display: inline-block;
+      float: left;
+      width: 44px;
+      height: 21px;
+      line-height: 21px;
+      border: 1px solid #498ce9;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      color: #498ce9;
+      text-align: center;
+      -webkit-border-radius: 10px;
+      -moz-border-radius: 10px;
+      border-radius: 10px;
+      margin: 10px 10px 0 0 ;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    span.all:hover,span.selectall{
+      background: #498ce9;
+      color: #fff;
+    }
+    .region_radio{
+      margin-top: 8px;
+      width: 90%;
+      display: inline-block;
+    }
+    .region_radio .el-radio{
+      margin-bottom: 5px;
+    }
+    .region_radio .el-radio__label{
+      width: 40px;
+      display: inline-block;
+    }
+    .search_result{
+      text-align: right;
+      line-height: 36px;
+      font-size: 14px;
+    }
+    .search_result span{
+      color: #108cee;
+      font-weight: bold;
+      display: inline-block;
+      margin: 0 3px;
+    }
+    .cell a{
+      text-decoration: none;
+      color: #333333;
+    }
+    .cell a span{
+      color: #05a646;
+      display: inline-block;
+      margin-right: 3px;
+    }
+  }
+</style>

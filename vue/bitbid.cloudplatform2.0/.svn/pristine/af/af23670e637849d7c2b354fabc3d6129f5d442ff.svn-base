@@ -1,0 +1,148 @@
+<template>
+  <div class="cloudcontent" id="cloud_customer_add">
+    <el-form :model="addForm" ref="addForm" :validate-on-rule-change="true">
+        <div class="part">
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目名称：" prop="code">
+                <span>{{addForm.code}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="商机来源：" prop="code">
+                <span>{{addForm.code}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目编号：" prop="name">
+                <span>{{addForm.code}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="商机阶段：" prop="code">
+                <span>{{addForm.code}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="客户名称：" prop="code">
+                <span>{{addForm.code}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="商机状态：" prop="code">
+                <span>{{addForm.code}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目所在地：" prop="code">
+                <span>{{addForm.code}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="招标类型：" prop="code">
+                <span>{{addForm.code}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目详细地址：" prop="code">
+                <span>{{addForm.code}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="发布时间：" prop="code">
+                <span>{{addForm.code}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目规模：" prop="code">
+                <span>{{addForm.code}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="报名截止时间：" prop="code">
+                <span>{{addForm.code}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目金额估计：" prop="code">
+                <span>{{addForm.code}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="负责人：" prop="code">
+                <span>{{addForm.code}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="联系人：" prop="code">
+                <span>{{addForm.code}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="所属部门：" prop="code">
+                <span>{{addForm.code}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label=" 联系电话：" prop="code">
+                <span>{{addForm.code}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-form-item label="项目内容：">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content"></editor>
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-form-item label="附件：">
+              <uploadDownload :fileArrays="addForm.fileInformationList" fileType="1"></uploadDownload>
+            </el-form-item>
+          </el-row>
+        </div>
+      </el-form>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import uploadDownload from '@/components/download/file-download.vue'
+export default {
+  components: {
+    editor,
+    uploadDownload
+  },
+  data () {
+    return {
+      addForm: {
+        code: '山西省国新能源新厂扩建施工总承包项目',
+        fileInformationList: []
+      },
+      // 富文本编辑器
+      editread: false,
+      content: ''
+    }
+  },
+  methods: {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_customer_add {
+  }
+</style>

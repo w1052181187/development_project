@@ -1,0 +1,613 @@
+<template>
+  <div class="cloudcontent" id="cloud_customer_add">
+    <div class="main">
+      <el-form :model="submitForm" ref="submitForm" :validate-on-rule-change="true" :rules="rules">
+        <div class="part">
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目名称：" prop="projectName">
+                <el-input v-model="submitForm.projectName" clearable placeholder="请输入项目名称">
+                  <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="商机来源：" prop="dicSourceCode">
+                <el-select v-model="submitForm.dicSourceCode" placeholder="请选择">
+                  <el-option
+                    v-for="item in dicSourceList"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.name">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目编号：">
+                <span>{{this.$route.params.objectId ? submitForm.projectCode : '（保存时自动生成）'}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="商机阶段：" prop="dicStageCode">
+                <el-select v-model="submitForm.dicStageCode" placeholder="请选择">
+                  <el-option
+                    v-for="item in dicStageList"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.name">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="客户名称：" prop="customerManagementName">
+                <el-input v-model="submitForm.customerManagementName" readonly placeholder="请选择客户">
+                  <el-button slot="append" icon="el-icon-search" @click="showCustomerDialog"></el-button>
+                </el-input>
+              </el-form-item>
+              <customer-radio-dialog :showVisible="showCustomerVisible" @selected="selectedCustomer" @showDialog="showCustomerDialog"></customer-radio-dialog>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="商机状态：" prop="status">
+                <el-select v-model="submitForm.status" placeholder="请选择">
+                  <el-option
+                    v-for="item in opportunityStates"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目所在地：" prop="provinceId">
+                <el-cascader class=""
+                             :props="{ expandTrigger: 'hover' }"
+                             :options="addressOptions"
+                             v-model="selectedAddressOptions"
+                             @change="handleCityChange">
+                </el-cascader>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="招标类型：" prop="tenderType">
+                <el-select v-model="submitForm.tenderType" placeholder="请选择">
+                  <el-option
+                    v-for="item in tenderTypes"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目详细地址：" prop="address">
+                <el-input v-model="submitForm.address" clearable placeholder="请输入项目详细地址">
+                  <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="发布时间：" prop="publishTime">
+                <el-date-picker
+                  v-model="submitForm.publishTime"
+                  type="datetime"
+                  value-format="yyyy-MM-dd HH:mm:ss">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目规模：" prop="projectScale">
+                <el-input v-model="submitForm.projectScale" clearable placeholder="请输入项目规模">
+                  <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="报名截止时间：" prop="signUpEndTime">
+                <el-date-picker
+                  v-model="submitForm.signUpEndTime"
+                  type="datetime"
+                  value-format="yyyy-MM-dd HH:mm:ss">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目金额估计(元)：" prop="projectAmount">
+                <el-input v-model="submitForm.projectAmount" clearable placeholder="请输入项目金额估计">
+                  <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="项目预计收入(元)：" prop="projectedRevenue">
+                <el-input v-model="submitForm.projectedRevenue" clearable placeholder="请输入项目预计收入">
+                  <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                </el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="负责人：" prop="chargePersonName">
+                <!--<el-select v-model="submitForm.chargePersonId" placeholder="请选择">-->
+                  <!--<el-option-->
+                    <!--v-for="item in users"-->
+                    <!--:key="item.objectId"-->
+                    <!--:label="item.name"-->
+                    <!--:value="item.objectId">-->
+                  <!--</el-option>-->
+                <!--</el-select>-->
+                <el-input v-model="submitForm.chargePersonName" placeholder="请选择负责人" readonly>
+                  <el-button type="primary" slot="append" @click="showUserDialog">选择</el-button>
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="联系人：" prop="contacts">
+                <el-input v-model="submitForm.contacts" clearable placeholder="请输入联系人">
+                  <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                </el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="所属部门：" prop="departmentName">
+                <el-input class="deptInput" v-model="submitForm.departmentName" auto-complete="off" placeholder="请选择所属部门" readonly="readonly" clearable @click.native="showDepartmentTree">
+                  <i slot="suffix" class="el-input__icon el-icon-arrow-down"></i>
+                </el-input>
+                <tree-options :initData="submitForm.departmentId" @selectSuccess="selectedDepatment" :isShowOptions="isShowDptTree"></tree-options>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label=" 联系电话：" prop="contactNum">
+                <el-input v-model="submitForm.contactNum" clearable placeholder="请输入联系电话">
+                  <i class="el-icon-edit el-input__icon" slot="suffix"></i>
+                </el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-form-item label="项目内容：">
+              <editor ref="ueditor" class="ueditor"></editor>
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-form-item label="附件：">
+              <upload-file @uploadSuccess="uploadSuccess" @deleteSuccess="deleteSuccess"
+                           :fileArrays="submitForm.fileInformations"
+                           fileType="9"
+                           isImage="0"
+                           fileMaxNum="5">
+              </upload-file>
+            </el-form-item>
+          </el-row>
+        </div>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit" v-loading="loading">保存</el-button>
+          <el-button class="cancel" @click="cancel">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+    <select-user-dialog :showVisible="showUserVisible" :isComponyId="1" @selected="selectedUser" @showDialog="showUserDialog"></select-user-dialog>
+  </div>
+</template>
+<script>
+import * as region from '@/assets/js/region'
+import { validWhoInteger } from '../../../assets/js/validate'
+import { dataDictionary } from '@/api/system'
+// import { dataDictionary, user } from '@/api/system'
+import { business } from '@/api/customer'
+import Editor from '@/components/ueditor/ueditor.vue'
+import UploadFile from '@/components/upload/publicFileUpload'
+import TreeOptions from '@/pages/system/department/tree/tree_options'
+import CustomerRadioDialog from '@/pages/customer/customer/dialog/radio_dialog.vue'
+import {trimStr} from '@/assets/js/common'
+import selectUserDialog from '@/pages/system/users/search_user_radio'
+
+export default {
+  components: {
+    Editor,
+    UploadFile,
+    TreeOptions,
+    CustomerRadioDialog,
+    selectUserDialog
+  },
+  data () {
+    // 验证编号
+    let validCode = (rule, value, callback) => {
+      if (value && trimStr(value)) {
+        const code = trimStr(value)
+        if (code.length < 1 || code.length > 100) {
+          callback(new Error('长度在1~100个字符'))
+        } else {
+          let query = {
+            enterpriseId: this.$store.getters.authUser.enterpriseId,
+            projectCode: code,
+            isDelete: 0
+          }
+          if (this.$route.params.objectId) {
+            query.excludeId = this.$route.params.objectId
+          }
+          business.isNoRepeated(query).then(res => {
+            if (!res.data.data) {
+              callback(new Error('项目编号重复，请重新填写'))
+            } else {
+              callback()
+            }
+          })
+        }
+      } else {
+        callback()
+      }
+    }
+    // 验证名称
+    let validName = (rule, value, callback) => {
+      if (value && trimStr(value)) {
+        const name = trimStr(value)
+        if (name.length < 1 || name.length > 200) {
+          callback(new Error('长度在1~200个字符'))
+        } else {
+          let query = {
+            enterpriseId: this.$store.getters.authUser.enterpriseId,
+            projectName: name,
+            isDelete: 0
+          }
+          if (this.$route.params.objectId) {
+            query.excludeId = this.$route.params.objectId
+          }
+          business.isNoRepeated(query).then(res => {
+            if (!res.data.data) {
+              callback(new Error('项目名称重复，请重新填写'))
+            } else {
+              callback()
+            }
+          })
+        }
+      } else {
+        callback(new Error('项目名称不能为空'))
+      }
+    }
+    return {
+      loading: false,
+      submitForm: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        content: '',
+        status: 0,
+        chargePersonId: this.$store.getters.authUser.userId,
+        chargePersonName: this.$store.getters.authUser.userName,
+        departmentId: this.$store.getters.authUser.departmentId,
+        departmentName: this.$store.getters.authUser.departmentListNames,
+        departmentListIds: this.$store.getters.authUser.departmentListIds,
+        fileInformations: []
+      },
+      // 商机状态
+      opportunityStates: [{
+        value: 0,
+        label: '未评估'
+      }, {
+        value: 1,
+        label: '评估中'
+      }, {
+        value: 2,
+        label: '跟进中'
+      }, {
+        value: 3,
+        label: '赢单'
+      }, {
+        value: 4,
+        label: '输单'
+      }, {
+        value: 5,
+        label: '商机关闭'
+      }],
+      // 招标类型
+      tenderTypes: [{
+        value: 1,
+        label: '工程'
+      }, {
+        value: 2,
+        label: '货物'
+      }, {
+        value: 3,
+        label: '服务'
+      }],
+      // 地址三级联动
+      addressOptions: region.CityInfo,
+      selectedAddressOptions: [],
+      // 商机来源字典项Id
+      dicSourceId: 10004,
+      // 商机来源集合
+      dicSourceList: [],
+      // 商机阶段字典项Id
+      dicStageId: 10005,
+      // 商机阶段集合
+      dicStageList: [],
+      // 负责人集合
+      // users: [],
+      // 负责人
+      showUserVisible: false,
+      // 是否展示部门树
+      isShowDptTree: false,
+      // 是否显示联系人新增按钮
+      showAddContact: true,
+      // 是否展示客户
+      showCustomerVisible: false,
+      // 表单验证验证
+      rules: {
+        projectName: [
+          { required: true, message: '项目名称不能为空', trigger: 'blur' },
+          { validator: validName, trigger: 'blur' }
+        ],
+        projectCode: [
+          { validator: validCode, trigger: 'blur' }
+        ],
+        customerManagementName: [
+          { required: true, message: '客户名称不能为空', trigger: 'change' }
+        ],
+        projectScale: [
+          { min: 1, max: 500, message: '长度在1~500个字符', trigger: 'blur' }
+        ],
+        projectAmount: [
+          {validator: validWhoInteger, trigger: 'blur'},
+          { min: 1, max: 20, message: '长度在1~20个字符', trigger: 'blur' }
+        ],
+        projectedRevenue: [
+          { required: true, message: '项目预计收入不能为空', trigger: 'blur' },
+          { validator: validWhoInteger, trigger: 'blur' },
+          { min: 1, max: 20, message: '长度在1~20个字符', trigger: 'blur' }
+        ],
+        chargePersonName: [
+          { required: true, message: '负责人不能为空', trigger: 'change' }
+        ],
+        departmentName: [
+          { required: true, message: '所属部门不能为空', trigger: 'change' }
+        ],
+        address: [
+          { min: 1, max: 100, message: '长度在1~100个字符', trigger: 'blur' }
+        ],
+        contacts: [
+          { min: 1, max: 100, message: '长度在1~100个字符', trigger: 'blur' }
+        ],
+        contactNum: [
+          { min: 1, max: 100, message: '长度在1~100个字符', trigger: 'blur' }
+        ],
+        content: [
+          { required: true, message: '项目内容不能为空', trigger: ['blur'] }
+        ],
+        provinceId: [
+          { required: true, message: '所在地区不能为空', trigger: ['blur', 'change'] }
+        ]
+      },
+      // 富文本编辑器
+      editread: false
+    }
+  },
+  watch: {
+    // 负责人名称
+    // 'submitForm.chargePersonId' (value) {
+    //   if (this.users.length && value) {
+    //     this.$set(this.submitForm, 'chargePersonName', this.users.find(item => item.objectId === value).name)
+    //   }
+    // }
+  },
+  methods: {
+    // 初始化数据
+    initData () {
+      business.queryOneByCode(this.$route.params.code).then(res => {
+        this.submitForm = res.data.data
+        if (this.submitForm.provinceId) {
+          this.wrapRegionAddress()
+        }
+        return this.submitForm
+      }).then((result) => {
+        this.$refs.ueditor.setContent(result.content || '')
+        this.$refs.submitForm.clearValidate()
+      })
+    },
+    // 初始化商机来源
+    initSource () {
+      let query = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        dictionaryDirectoryId: this.dicSourceId
+      }
+      dataDictionary.getDetailList(query).then(res => {
+        this.dicSourceList = res.data.dictionaryDetails
+      })
+    },
+    // 初始化商机阶段
+    initStage () {
+      let query = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        dictionaryDirectoryId: this.dicStageId
+      }
+      dataDictionary.getDetailList(query).then(res => {
+        this.dicStageList = res.data.dictionaryDetails
+      })
+    },
+    // 负责人初始化
+    // initUsers () {
+    //   let query = {
+    //     enterpriseId: this.$store.getters.authUser.enterpriseId,
+    //     isDelete: 0,
+    //     type: 2,
+    //     pageNum: 1,
+    //     pageSize: 100
+    //   }
+    //   user.queryList(query).then(res => {
+    //     this.users = res.data.data
+    //   })
+    // },
+    // 客户弹框打开/关闭
+    showCustomerDialog () {
+      this.showCustomerVisible = !this.showCustomerVisible
+    },
+    // 选择客户
+    selectedCustomer (obj) {
+      this.$set(this.submitForm, 'customerManagementCode', obj.code)
+      this.$set(this.submitForm, 'customerManagementName', obj.name)
+      // 地址三级联动
+      if (obj.provinceId) {
+        this.$set(this.submitForm, 'provinceId', obj.provinceId)
+        this.$set(this.submitForm, 'cityId', obj.cityId)
+        this.$set(this.submitForm, 'countyId', obj.countyId)
+        this.$refs.submitForm.clearValidate('provinceId')
+        this.wrapRegionAddress()
+      }
+      // 负责人
+      this.$set(this.submitForm, 'chargePersonId', obj.chargePersonId)
+      this.$set(this.submitForm, 'chargePersonName', obj.chargePersonName)
+      // 所属部门
+      this.$set(this.submitForm, 'departmentId', obj.departmentId)
+      this.$set(this.submitForm, 'departmentName', obj.departmentName)
+      this.$set(this.submitForm, 'departmentListIds', obj.departmentListIds)
+    },
+    // 包装三级联动地址信息
+    wrapRegionAddress () {
+      this.selectedAddressOptions = [this.submitForm.provinceId, this.submitForm.cityId, this.submitForm.countyId]
+    },
+    // 部门树展开/关闭
+    showDepartmentTree () {
+      this.isShowDptTree = !this.isShowDptTree
+    },
+    // 选择部门
+    selectedDepatment (deptTreeNode) {
+      this.submitForm.departmentName = deptTreeNode.departmentListNames
+      this.submitForm.departmentId = deptTreeNode.id
+      this.submitForm.departmentListIds = deptTreeNode.departmentListIds
+      this.isShowDptTree = false
+    },
+    handleCityChange (value) {
+      // 数组动态添加，如果视图没反应，则用$set方法
+      this.$set(this.submitForm, 'provinceId', value[0])
+      this.$set(this.submitForm, 'cityId', value[1])
+      this.$set(this.submitForm, 'countyId', value[2])
+    },
+    // 上传附件
+    uploadSuccess (file) {
+      this.submitForm.fileInformations.push(file)
+    },
+    deleteSuccess (fileId) {
+      this.submitForm.fileInformations = this.submitForm.fileInformations.filter(item => item.relativePath !== fileId)
+    },
+    // 保存数据
+    submit () {
+      this.$refs['submitForm'].validate((valid) => {
+        if (valid) {
+          this.$confirm('确认要保存吗?', '提示', {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            if (this.$refs.ueditor.getContent()) {
+              this.submitForm.content = this.$refs.ueditor.getContent()
+            }
+            this.loading = true
+            business.update(this.submitForm).then(res => {
+              this.loading = false
+              if (res.data.resCode === '0000') {
+                this.$store.commit('delete_tabs', this.$route.fullPath)
+                this.$router.push({path: '/customerMan/business'})
+              }
+            })
+          }).catch(() => {
+            this.loading = false
+            return false
+          })
+        }
+      })
+    },
+    // 取消
+    cancel () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.push({path: '/customerMan/business'})
+    },
+    // 选择负责人弹框打开
+    showUserDialog () {
+      this.showUserVisible = !this.showUserVisible
+    },
+    selectedUser (obj) {
+      this.submitForm.chargePersonName = obj.name
+      this.submitForm.chargePersonId = obj.objectId
+    }
+  },
+  mounted () {
+    // 初始化商机来源
+    this.initSource()
+    // 初始化商机阶段
+    this.initStage()
+    // 初始化负责人
+    // this.initUsers()
+    // 初始化数据
+    if (this.$route.params.objectId) {
+      this.initData()
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_customer_add {
+    .el-cascader,.el-select{
+      width: 100%;
+    }
+    .el-textarea__inner{
+      height: 120px;
+    }
+    .part{
+      overflow: hidden;
+      margin: 12px auto;
+    }
+    .part h3{
+      height: 36px;
+      line-height: 36px;
+      color: #111111;
+      font-size: 16px;
+      border-bottom: 1px solid #dcdfe6;
+      margin-bottom: 30px;
+    }
+    .part h3 span{
+      margin-top: 18px;
+      display: inline-block;
+      background: #ffffff;
+      padding: 0 10px;
+      float: left;
+    }
+    .addbutton{
+      width: 100%;
+      margin-top: 10px;
+      height: 52px;
+      line-height: 52px;
+      text-align: center;
+      border: 1px dashed #d2d2d2;
+      color: #d2d2d2;
+      background: #ffffff;
+      font-weight: bold;
+      cursor: pointer;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .addbutton:hover{
+      border: 1px dashed #34abff;
+      color: #34abff;
+    }
+    .addcon .el-form-item__content{
+      margin-left: 0px;
+    }
+  }
+</style>

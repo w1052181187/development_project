@@ -1,0 +1,4 @@
+import aptitude from './aptitude'
+export default [
+  ...aptitude
+]

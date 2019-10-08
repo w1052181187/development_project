@@ -1,0 +1,12 @@
+export default[
+  {
+    path: '/office/collaboration',
+    name: '工作协同',
+    meta: {
+      title: '模板管理',
+      active: '/office/collaboration'
+      // permission: 'admin'
+    },
+    component: () => import(/* webpackChunkName: 'office' */ '@/pages/office/collaboration/index')
+  }
+]

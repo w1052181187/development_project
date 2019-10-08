@@ -1,0 +1,158 @@
+<template>
+  <div class="communicate-box">
+    <div class="basic-approve-title">沟通记录</div>
+    <el-button type="primary" class="addbutton" @click="showCommunicateDialog">
+      <span >发起沟通</span>
+    </el-button>
+    <el-table
+      :data="tableData"
+      border
+      style="width: 100%" header-cell-class-name="tableheader">
+      <el-table-column
+        type="index"
+        label="序号"
+        width="60"
+        :index="indexMethod"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        prop="projectCode"
+        label="沟通时间"
+        width="160"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="tenderProjectName"
+        label="沟通双方"
+        width="180"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="tenderProjectAddress"
+        label="沟通内容"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        label="操作" align="center" width="100">
+        <template slot-scope="scope">
+          <el-button type="text" size="small" @click="showReplyDialog(scope.row)">回复</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!--  沟通记录弹框 -->
+    <el-dialog
+      title="与发起人沟通"
+      :visible.sync="communicateVisable"
+      @closed="closeCommunicate"
+      width="30%">
+      <el-form :model="communicateForm" ref="communicateForm" label-width="82px">
+        <el-form-item label="沟通内容:">
+          <el-input type="textarea" v-model="communicateForm.content" :autosize="{ minRows: 4 }"></el-input>
+        </el-form-item>
+      </el-form>
+      <div class="footer-box">
+        <el-button type="primary" @click="submitComminucate('communicateForm')">确 定</el-button>
+        <el-button @click="communicateVisable = false">取 消</el-button>
+      </div>
+    </el-dialog>
+    <!--  沟通记录弹框 -->
+    <el-dialog
+      title="回复"
+      :visible.sync="replyVisable"
+      @closed="closeReply"
+      width="30%">
+      <el-form :model="replyForm" :rules="replyRules" ref="replyForm" label-width="82px">
+        <el-form-item label="回复内容:" prop="content">
+          <el-input type="textarea" v-model="replyForm.content" :autosize="{ minRows: 4 }"></el-input>
+        </el-form-item>
+        <el-form-item label="如需补充资料，请在此处上传:" label-width="200px">
+          <upload-file @uploadSuccess="uploadOtherSuccess" @deleteSuccess="deleteSuccess"
+                       :fileArrays="replyForm.fileInformationList"
+                       :fileType="9"
+                       isImage="0">
+          </upload-file>
+        </el-form-item>
+      </el-form>
+      <div class="footer-box">
+        <el-button type="primary" @click="submitReply('replyForm')">确 定</el-button>
+        <el-button @click="replyVisable = false">取 消</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import uploadFile from '@/components/upload/publicFileUpload'
+export default {
+  name: 'communicateRecord',
+  components: {
+    uploadFile
+  },
+  props: ['tableData'],
+  data () {
+    return {
+      communicateVisable: false,
+      communicateForm: {},
+      replyVisable: false,
+      replyForm: {
+        fileInformationList: []
+      },
+      replyRules: {
+        content: [
+          { required: true, message: '回复内容不能为空', trigger: ['blur', 'change'] }
+        ]
+      }
+    }
+  },
+  methods: {
+    indexMethod (index) {
+      return index + 1
+    },
+    showCommunicateDialog () {
+      this.communicateVisable = true
+    },
+    closeCommunicate () {
+      this.communicateForm = {}
+    },
+    submitComminucate (formName) {},
+    showReplyDialog (row) {
+      this.replyVisable = true
+    },
+    closeReply () {
+      this.replyForm = {}
+      this.$refs['replyForm'].resetFields()
+    },
+    // 上传附件
+    uploadOtherSuccess (file) {
+      this.replyForm.fileInformationList = [file]
+    },
+    deleteSuccess (fileId) {
+      this.replyForm.fileInformationList = this.replyForm.fileInformationList.filter(item => item.relativePath !== fileId)
+    },
+    submitReply (formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+        } else {
+          return false
+        }
+      })
+    }
+  }
+}
+</script>
+
+<style scoped>
+  .communicate-box {
+    padding: 16px 20px;
+    box-sizing: border-box;
+  }
+  .footer-box{
+    text-align: center;
+    margin-top: 30px;
+  }
+  .addbutton{
+    color: #fff;
+    background-color: #409EFF;
+    border-color: #409EFF;
+    float: right;
+  }
+</style>

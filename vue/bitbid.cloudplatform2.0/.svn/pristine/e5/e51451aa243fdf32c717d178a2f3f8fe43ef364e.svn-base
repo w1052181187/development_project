@@ -1,0 +1,101 @@
+export default [
+  {
+    path: '/websiteManage/company',
+    name: '公司概况',
+    meta: {
+      title: '公司概况',
+      active: '/websiteManage/company'
+    },
+    component: resolve => require(['@/pages/websiteManage/company/index'], resolve)
+  },
+  {
+    path: '/websiteManage/company/updateProfile',
+    name: '修改公司简介',
+    meta: {
+      title: '修改公司简介',
+      active: '/websiteManage/company'
+    },
+    component: resolve => require(['@/pages/websiteManage/company/updateProfile'], resolve)
+  },
+  {
+    path: '/websiteManage/company/detailProfile',
+    name: '查看公司简介',
+    meta: {
+      title: '查看公司简介',
+      active: '/websiteManage/company'
+    },
+    component: resolve => require(['@/pages/websiteManage/company/detailProfile'], resolve)
+  },
+  {
+    path: '/websiteManage/company/updateTeam',
+    name: '修改团队介绍',
+    meta: {
+      title: '修改团队介绍',
+      active: '/websiteManage/company'
+    },
+    component: resolve => require(['@/pages/websiteManage/company/updateTeam'], resolve)
+  },
+  {
+    path: '/websiteManage/company/detailTeam',
+    name: '查看团队介绍',
+    meta: {
+      title: '查看团队介绍',
+      active: '/websiteManage/company'
+    },
+    component: resolve => require(['@/pages/websiteManage/company/detailTeam'], resolve)
+  },
+  {
+    path: '/websiteManage/company/updateHonor',
+    name: '修改资质荣誉',
+    meta: {
+      title: '修改资质荣誉',
+      active: '/websiteManage/company'
+    },
+    component: resolve => require(['@/pages/websiteManage/company/updateHonor'], resolve)
+  },
+  {
+    path: '/websiteManage/company/detailHonor',
+    name: '查看资质荣誉',
+    meta: {
+      title: '查看资质荣誉',
+      active: '/websiteManage/company'
+    },
+    component: resolve => require(['@/pages/websiteManage/company/detailHonor'], resolve)
+  },
+  {
+    path: '/websiteManage/company/updateAddress',
+    name: '修改公司地址',
+    meta: {
+      title: '修改公司地址',
+      active: '/websiteManage/company'
+    },
+    component: resolve => require(['@/pages/websiteManage/company/updateAddress'], resolve)
+  },
+  {
+    path: '/websiteManage/company/detailAddress',
+    name: '查看公司地址',
+    meta: {
+      title: '查看公司地址',
+      active: '/websiteManage/company'
+    },
+    component: resolve => require(['@/pages/websiteManage/company/detailAddress'], resolve)
+  },
+  {
+    path: '/websiteManage/company/updateContact',
+    name: '修改联系方式',
+    meta: {
+      title: '修改联系方式',
+      active: '/websiteManage/company'
+    },
+    component: resolve => require(['@/pages/websiteManage/company/updateContact'], resolve)
+  },
+  {
+    path: '/websiteManage/company/detailContact',
+    name: '查看联系方式',
+    meta: {
+      title: '查看联系方式',
+      active: '/websiteManage/company'
+    },
+    component: resolve => require(['@/pages/websiteManage/company/detailContact'], resolve)
+  }
+]

@@ -1,0 +1,29 @@
+export default[
+  {
+    path: '/todoList/initiate',
+    name: '代办事项-我发起的',
+    meta: {
+      title: '代办事项-我发起的',
+      active: '/todoList/initiate'
+    },
+    component: resolve => require(['@/pages/todoList/initiate/index'], resolve)
+  },
+  {
+    path: '/todoList/need',
+    name: '代办事项-待我审批',
+    meta: {
+      title: '代办事项-待我审批',
+      active: '/todoList/need'
+    },
+    component: resolve => require(['@/pages/todoList/need/index'], resolve)
+  },
+  {
+    path: '/todoList/approved',
+    name: '代办事项-我已审批',
+    meta: {
+      title: '代办事项-我已审批',
+      active: '/todoList/approved'
+    },
+    component: resolve => require(['@/pages/todoList/approved/index'], resolve)
+  }
+]

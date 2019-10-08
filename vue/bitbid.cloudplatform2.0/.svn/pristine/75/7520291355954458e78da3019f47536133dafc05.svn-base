@@ -1,0 +1,38 @@
+import request from '@/utils/axios/up-axios'
+
+export const role = {
+  queryList (params) {
+    return request({
+      url: '/roles',
+      method: 'get',
+      params
+    })
+  },
+  queryOne (params) {
+    return request({
+      url: `/roles/${params}`,
+      method: 'get'
+    })
+  },
+  update (data) {
+    return request({
+      url: '/roles',
+      method: 'post',
+      data
+    })
+  },
+  logoff (params) {
+    return request({
+      url: `/roles/${params}`,
+      method: 'delete'
+    })
+  },
+  /** 判断角色名称是否重复 */
+  isNoRepeated (params) {
+    return request({
+      url: '/roles/isNoRepeated',
+      method: 'get',
+      params
+    })
+  }
+}

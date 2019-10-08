@@ -1,0 +1,277 @@
+<template>
+  <div class="cloudcontent" id="cloud_projectProcess">
+    <!--面包屑-->
+    <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb_box">
+      <el-breadcrumb-item :to="{ path: '/index' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/processManage/projectProcess' }">项目进度管理</el-breadcrumb-item>
+      <el-breadcrumb-item class="active_bread">修改</el-breadcrumb-item>
+    </el-breadcrumb>
+    <!--面包屑-->
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目名称："  prop="tenderProjectName">
+              <el-input v-model="updateForm.tenderProjectName"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目编号："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目类型："  prop="name">
+              <el-select v-model="value" placeholder="请选择">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目预算（元）："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="资金来源："  prop="name">
+              <div class="zjbox" v-for="(item, index) in zj" :key="item.value">
+                <el-input placeholder="请输入内容" v-model="updateForm.input" class="input-with-select" >
+                  <el-select v-model="item.select" slot="prepend" placeholder="请选择">
+                    <el-option label="自有资金" value="1"></el-option>
+                    <el-option label="吸收资金" value="2"></el-option>
+                    <el-option label="专项资金" value="3"></el-option>
+                    <el-option label="其他资金" value="4"></el-option>
+                  </el-select>
+                  <el-button slot="append">%</el-button>
+                </el-input>
+                <el-button class="addbutton" v-if="index === 0" @click="additem">添加</el-button>
+                <el-button class="addbutton" v-if="index !== 0" @click="delitem">删除</el-button>
+                <div class="radiobox" v-if="Number(item.select) === 1">
+                  <div>
+                    国有资金控股：
+                    <el-radio v-model="radio" label="1">是</el-radio>
+                    <el-radio v-model="radio" label="2">否</el-radio>
+                  </div>
+                  <div>
+                    国有资金占主导地位：
+                    <el-radio v-model="radio" label="1">是</el-radio>
+                    <el-radio v-model="radio" label="2">否</el-radio>
+                  </div>
+                </div>
+              </div>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="批准文号："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="招标方式："  prop="name">
+              <el-select v-model="typeValue" placeholder="请选择">
+                <el-option
+                  v-for="item in typeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="是否资格预审："  prop="tenderProjectCode">
+              <el-select v-model="isCheckValue" placeholder="请选择">
+                <el-option
+                  v-for="item in isCheckOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="是否允许联合体投标："  prop="tenderProjectCode">
+              <el-select v-model="isAllowValue" placeholder="请选择">
+                <el-option
+                  v-for="item in isAllowOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="招标人："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="监督部门名称："  prop="tenderProjectCode">
+              <el-input v-model="updateForm.tenderProjectCode"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="招标内容与范围及招标方案说明：">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="附件：">
+              <upload-file @uploadSuccess="uploadOtherSuccess" @deleteSuccess="deleteSuccess"
+                           :fileArrays="updateForm.fileInformations"
+                           fileType="9"
+                           isImage="0">
+              </upload-file>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary">提交</el-button>
+          <el-button type="primary">保存</el-button>
+          <el-button class="cancal">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import uploadFile from '@/components/upload/publicFileUpload'
+export default {
+  components: {
+    editor,
+    uploadFile
+  },
+  data () {
+    return {
+      updateForm: {
+        input: '',
+        fileInformations: []
+      },
+      rules: {},
+      // 项目类型
+      options: [{
+        value: '1',
+        label: '工程'
+      }, {
+        value: '2',
+        label: '货物'
+      }, {
+        value: '3',
+        label: '服务'
+      }],
+      value: '',
+      // 资金来源
+      zj: [
+        {select: '', input: ''}
+      ],
+      // 招标方式
+      typeOptions: [{
+        value: '1',
+        label: '公开招标'
+      }, {
+        value: '2',
+        label: '邀请招标'
+      }, {
+        value: '3',
+        label: '竞争性谈判'
+      }, {
+        value: '4',
+        label: '单一来源采购'
+      }, {
+        value: '5',
+        label: '询价采购'
+      }, {
+        value: '6',
+        label: '竞争性磋商'
+      }],
+      typeValue: '',
+      // 是否资格预审
+      isCheckOptions: [{
+        value: '1',
+        label: '是'
+      }, {
+        value: '2',
+        label: '否'
+      }],
+      isCheckValue: '',
+      // 是否允许联合体投标
+      isAllowOptions: [{
+        value: '1',
+        label: '是'
+      }, {
+        value: '2',
+        label: '否'
+      }],
+      isAllowValue: '',
+      // 富文本
+      editread: false,
+      content: ''
+    }
+  },
+  methods: {
+    // 上传附件
+    uploadOtherSuccess (file) {
+      this.updateForm.fileInformations.push(file)
+    },
+    deleteSuccess (fileId) {
+      this.updateForm.fileInformations = this.updateForm.fileInformations.filter(item => item.relativePath !== fileId)
+    },
+    additem () {
+      this.zj.push(
+        {select: ''}
+      )
+    },
+    delitem () {}
+  }
+}
+</script>
+<style lang="less">
+  #cloud_projectProcess {
+    .el-select{
+      width: 100%;
+    }
+    .zjbox{
+      margin-bottom: 20px;
+    }
+    .input-with-select{
+      width: 320px;
+    }
+    .input-with-select .el-input-group__prepend,.el-input-group__append{
+      background-color: #fff;
+    }
+    .input-with-select .el-input-group__prepend .el-select{
+      width: 130px;
+    }
+    .addbutton{
+      background: #6582f8;
+      border-color: #6582f8;
+      color: #ffffff;
+      margin-left: 10px;
+    }
+    .addbutton span{
+      color: #ffffff;
+    }
+  }
+</style>

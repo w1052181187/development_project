@@ -1,0 +1,47 @@
+export default[
+  {
+    path: '/biddingSources/announcement',
+    name: '比选公告',
+    meta: {
+      title: '比选公告',
+      active: '/biddingSources/announcement'
+    },
+    component: () => import(/* webpackChunkName: 'agency' */ '@/pages/biddingSources/announcement/index')
+  },
+  {
+    path: '/biddingSources/announcementList',
+    name: '比选公告列表',
+    meta: {
+      title: '比选公告列表',
+      active: '/biddingSources/announcementList'
+    },
+    component: () => import(/* webpackChunkName: 'agency' */ '@/pages/biddingSources/announcement/announcementList')
+  },
+  {
+    path: '/biddingSources/announcementDetail/:relatedCode',
+    name: '公告详情',
+    meta: {
+      title: '公告详情',
+      active: '/biddingSources/announcementDetail'
+    },
+    component: () => import(/* webpackChunkName: 'agency' */ '@/pages/biddingSources/announcement/announcementDetail')
+  },
+  {
+    path: '/biddingSources/competitorDetail/:objectId',
+    name: '竞争对手详情',
+    meta: {
+      title: '竞争对手详情',
+      active: '/biddingSources/competitorDetail'
+    },
+    component: () => import(/* webpackChunkName: 'agency' */ '@/pages/biddingSources/announcement/competitorDetail')
+  },
+  {
+    path: '/biddingSources/buildProject',
+    name: '拟在建项目',
+    meta: {
+      title: '拟在建项目',
+      active: '/biddingSources/buildProject'
+    },
+    component: () => import(/* webpackChunkName: 'agency' */ '@/pages/biddingSources/buildProject/index')
+  }
+]

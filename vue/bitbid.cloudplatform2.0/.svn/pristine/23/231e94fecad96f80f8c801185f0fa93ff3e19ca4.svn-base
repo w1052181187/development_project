@@ -1,0 +1,236 @@
+<template>
+  <div class="cloudcontent"  id="cloud_initiate">
+    <div class="topmain">
+      <div class="seacher_box advancedsearch_box">
+        <el-form :model="searchForm" ref="searchForm" label-width="85px" :validate-on-rule-change="true">
+          <el-row>
+            <el-col style="width: 320px; float: left;">
+              <el-form-item label="模板名称：" prop="messageLike">
+                <el-input class="search" v-model="searchForm.messageLike" placeholder="请输入模板名称"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col style="width: 160px; float: left;">
+              <el-button  type="primary" @click="search('searchForm')">查询</el-button>
+              <el-button  @click="reset('searchForm')">重置</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+    </div>
+    <div class="main">
+      <div class="box">
+        <p>最近使用</p>
+        <ul>
+          <li v-for="(item, index) in recentList" :key="index" @click="addBtn">
+            <img :src="item.imgSrc">
+            <span>{{item.name}}</span>
+          </li>
+        </ul>
+      </div>
+      <div class="box">
+        <p>全部</p>
+        <ul>
+          <li v-for="(item, index) in allList" :key="index" @click="addBtn">
+            <img :src="item.imgSrc">
+            <span>{{item.name}}</span>
+          </li>
+        </ul>
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="total"
+          :page-size='pageSize'
+          :current-page.sync="currentPage"
+          @current-change="handleCurrentChange"
+          @next-click="handleCurrentNext">
+        </el-pagination>
+        <!--分页-->
+      </div>
+      <div class="box">
+        <p>推荐</p>
+        <ul>
+          <li v-for="(item, index) in recommendList" :key="index" @click="addBtn">
+            <img :src="item.imgSrc">
+            <span>{{item.name}}</span>
+          </li>
+        </ul>
+        <!--分页-->
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="recommend.total"
+          :page-size='recommend.pageSize'
+          :current-page.sync="recommend.currentPage"
+          @current-change="recommendHandleCurrentChange"
+          @next-click="recommendHandleCurrentNext">
+        </el-pagination>
+        <!--分页-->
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {
+  },
+  data () {
+    return {
+      searchForm: {},
+      recentList: [
+        {
+          name: '用章申请',
+          imgSrc: '../../static/images/office/icon1.png'
+        },
+        {
+          name: '用章申请',
+          imgSrc: '../../static/images/office/icon1.png'
+        },
+        {
+          name: '用章申请',
+          imgSrc: '../../static/images/office/icon1.png'
+        },
+        {
+          name: '用章申请',
+          imgSrc: '../../static/images/office/icon1.png'
+        },
+        {
+          name: '用章申请',
+          imgSrc: '../../static/images/office/icon1.png'
+        }
+      ],
+      allList: [
+        {
+          name: '借款申请',
+          imgSrc: '../../static/images/office/icon2.png'
+        },
+        {
+          name: '借款申请',
+          imgSrc: '../../static/images/office/icon2.png'
+        },
+        {
+          name: '借款申请',
+          imgSrc: '../../static/images/office/icon2.png'
+        },
+        {
+          name: '借款申请',
+          imgSrc: '../../static/images/office/icon2.png'
+        },
+        {
+          name: '借款申请',
+          imgSrc: '../../static/images/office/icon2.png'
+        },
+        {
+          name: '借款申请',
+          imgSrc: '../../static/images/office/icon2.png'
+        },
+        {
+          name: '借款申请',
+          imgSrc: '../../static/images/office/icon2.png'
+        },
+        {
+          name: '借款申请',
+          imgSrc: '../../static/images/office/icon2.png'
+        },
+        {
+          name: '借款申请',
+          imgSrc: '../../static/images/office/icon2.png'
+        },
+        {
+          name: '借款申请',
+          imgSrc: '../../static/images/office/icon2.png'
+        }
+      ],
+      recommendList: [
+        {
+          name: '办公用品领用申请',
+          imgSrc: '../../static/images/office/icon3.png'
+        },
+        {
+          name: '办公用品领用申请',
+          imgSrc: '../../static/images/office/icon3.png'
+        },
+        {
+          name: '办公用品领用申请',
+          imgSrc: '../../static/images/office/icon3.png'
+        }
+      ],
+      // 当前页
+      currentPage: 1,
+      pageNo: 0,
+      total: 0, // 总条数
+      pageSize: 10, // 每页展示条数
+      // 推荐当前页
+      recommend: {
+        currentPage: 1,
+        pageNo: 0,
+        total: 0, // 总条数
+        pageSize: 10 // 每页展示条数
+      }
+    }
+  },
+  methods: {
+    // 查询
+    search () {},
+    // 重置
+    reset () {
+      this.$refs['searchForm'].resetFields()
+    },
+    // 全部列表分页
+    handleCurrentChange (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+    },
+    handleCurrentNext (nowNum) {
+      this.currentPage = nowNum
+      this.pageNo = (nowNum - 1) * this.pageSize
+    },
+    // 推荐列表分页
+    recommendHandleCurrentChange (nowNum) {
+      this.recommend.currentPage = nowNum
+      this.recommend.pageNo = (nowNum - 1) * this.recommend.pageSize
+    },
+    recommendHandleCurrentNext (nowNum) {
+      this.recommend.currentPage = nowNum
+      this.recommend.pageNo = (nowNum - 1) * this.recommend.pageSize
+    },
+    addBtn () {
+      this.$router.push({path: `/office/workApproval/add`})
+    }
+  },
+  mounted () {}
+}
+</script>
+<style lang="less">
+  #cloud_initiate{
+    .box{
+      width: 100%;
+      overflow: hidden;
+      border-bottom: 1px solid #dcdfe6;
+      margin-bottom: 10px;
+    }
+    .box > p{
+      font-weight: bold;
+      line-height: 32px;
+    }
+    .box > ul{
+      overflow: hidden;
+      margin: 0 auto;
+    }
+    .box > ul li{
+      width: 11.5%;
+      float: left;
+      margin: 20px 0.5%;
+      text-align: center;
+      cursor: pointer;
+    }
+    .box > ul li span{
+      width: 100%;
+      line-height: 32px;
+      display: block;
+    }
+    .box:last-child{
+      border-bottom: 0;
+    }
+  }
+</style>

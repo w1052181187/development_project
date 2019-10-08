@@ -1,0 +1,11 @@
+export default[
+  {
+    path: '/system/department',
+    name: '部门管理',
+    meta: {
+      title: '部门管理',
+      active: '/system/department'
+    },
+    component: () => import(/* webpackChunkName: 'system' */ '@/pages/system/department/index')
+  }
+]

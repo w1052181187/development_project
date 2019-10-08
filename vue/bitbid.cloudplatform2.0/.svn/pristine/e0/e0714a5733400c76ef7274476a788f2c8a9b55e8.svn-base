@@ -1,0 +1,99 @@
+import request from '@/utils/axios/up-axios'
+
+export const department = {
+  /**
+   * 查询单一部门
+   * @param params
+   */
+  queryOne (params) {
+    return request({
+      url: `/departments/one/${params}`,
+      method: 'get'
+    })
+  },
+  /**
+   * 查询部门树
+   * @param data
+   */
+  queryList (params) {
+    return request({
+      url: `/departments/${params}`,
+      method: 'get'
+    })
+  },
+  /**
+   * 从某个节点查询包含该节点以及之下的所有部门
+   * @param data
+   */
+  queryListByStartId (params) {
+    return request({
+      url: `/departments/listByStartId/${params}`,
+      method: 'get'
+    })
+  },
+  /**
+   * 新增/修改部门
+   * @param data
+   */
+  update (data) {
+    return request({
+      url: '/departments',
+      method: 'put',
+      data
+    })
+  },
+  /**
+   * 删除部门
+   * @param data
+   */
+  delete (data) {
+    return request({
+      url: `/departments/${data}`,
+      method: 'delete'
+    })
+  },
+  /**
+   * 判断同级部门是否名称重复
+   * @param params
+   */
+  isNoRepeated (params) {
+    return request({
+      url: `/departments/isNoRepeated`,
+      method: 'get',
+      params
+    })
+  },
+  /**
+   * 获取截止到某一级的所有名称，用'-'分割departmentName
+   * @param params
+   */
+  queryParentsNames (params) {
+    return request({
+      url: `/departments/queryParentsNames`,
+      method: 'get',
+      params
+    })
+  },
+  /**
+   * 获取截止到某一级的所有Id，用'-'分割
+   * @param params
+   */
+  queryParentsIds (params) {
+    return request({
+      url: `/departments/queryParentsIds`,
+      method: 'get',
+      params
+    })
+  },
+  /**
+   * 获取截止到某一级的所有Id和名称,用'-'分割，Id和名称用|||分开，例:0-10001-20002|||部门1-部门2-部门3
+   * @param params
+   */
+  queryParentsIdsAndNames (params) {
+    return request({
+      url: `/departments/queryParentsIdsAndNames`,
+      method: 'get',
+      params
+    })
+  }
+}

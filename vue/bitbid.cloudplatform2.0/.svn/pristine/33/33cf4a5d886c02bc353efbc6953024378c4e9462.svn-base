@@ -1,0 +1,47 @@
+export default [
+  {
+    path: '/resource/aptitude',
+    name: '资质管理',
+    meta: {
+      title: '资质管理',
+      active: '/resource/aptitude'
+    },
+    component: () => import(/* webpackChunkName: 'resource' */ '@/pages/resource/aptitude/index')
+  },
+  {
+    path: '/resource/aptitude/add',
+    name: '资质管理-添加',
+    meta: {
+      title: '资质管理-添加',
+      active: '/resource/aptitude'
+    },
+    component: () => import(/* webpackChunkName: 'resource' */ '@/pages/resource/aptitude/add')
+  },
+  {
+    path: '/resource/aptitude/update',
+    name: '资质管理-修改',
+    meta: {
+      title: '资质管理-修改',
+      active: '/resource/aptitude'
+    },
+    component: () => import(/* webpackChunkName: 'resource' */ '@/pages/resource/aptitude/update')
+  },
+  {
+    path: '/resource/aptitude/detail/:objectId',
+    name: '资质管理-详情',
+    meta: {
+      title: '资质管理-详情',
+      active: '/resource/aptitude'
+    },
+    component: () => import(/* webpackChunkName: 'resource' */ '@/pages/resource/aptitude/detail')
+  },
+  {
+    path: '/resource/aptitude/record/:code',
+    name: '资质管理-合作记录',
+    meta: {
+      title: '资质管理-合作记录',
+      active: '/resource/aptitude'
+    },
+    component: () => import(/* webpackChunkName: 'resource' */ '@/pages/resource/aptitude/record')
+  }
+]

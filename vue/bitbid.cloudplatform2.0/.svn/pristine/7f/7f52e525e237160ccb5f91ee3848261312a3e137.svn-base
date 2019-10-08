@@ -1,0 +1,124 @@
+<template>
+  <div class="cloudcontent" id="add_template">
+    <div class="main">
+      <el-form :model="submitForm" label-width="120px">
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="评估模板名称："  prop="name">
+              <span>{{submitForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="状态："  prop="name">
+              <span>{{submitForm.status === 1 ? '启用' : '禁用'}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <div class="top_txt">
+          <span>评估项：</span>
+        </div>
+        <el-table
+          :data="itemGroup"
+          border
+          v-loading="loading"
+          header-cell-class-name="tableheader">
+          <el-table-column
+            type="index"
+            label="序号"
+            width="80"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="评估项分组"
+            align="center"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="children"
+            label="评估项"
+            align="center"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <el-table :data="scope.row.children" :show-header="false">
+                <el-table-column
+                  prop="name"
+                  align="center"
+                  show-overflow-tooltip>
+                </el-table-column>
+              </el-table>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-form-item class="submit-radio">
+          <el-button class="cancal" @click="cancel">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script>
+import {template} from '@/api/customer/template'
+export default {
+  data () {
+    return {
+      submitForm: {
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        itemIds: []
+      },
+      itemGroup: [],
+      loading: false
+    }
+  },
+  methods: {
+    // 初始化
+    initData () {
+      this.loading = true
+      template.queryOne(this.$route.query.objectId).then(res => {
+        this.loading = false
+        this.submitForm = res.data.data
+        this.wrapParentList(this.submitForm.evaluationItems)
+      })
+    },
+    // 包装提交的评估项，父为主体
+    wrapParentList (selectItemsList) {
+      if (selectItemsList && selectItemsList.length) {
+        selectItemsList.forEach(item => {
+          let childFlag = false
+          if (this.itemGroup.length) {
+            this.itemGroup.forEach(parent => {
+              if (parent.objectId === item.parentId) {
+                parent.children.push(item)
+                childFlag = true
+              }
+            })
+          }
+          if (!childFlag) {
+            this.itemGroup.push({
+              objectId: item.parentId,
+              name: item.parent.name,
+              children: [item]
+            })
+          }
+        })
+      }
+    },
+    // 取消
+    cancel () {
+      this.$store.commit('delete_tabs', this.$route.path)
+      this.$router.push({path: '/customer/template'})
+    }
+  },
+  mounted () {
+    this.initData()
+  }
+}
+</script>
+
+<style lang="less">
+  .top_txt{
+    font-size: 14px;
+    margin: 12px auto;
+  }
+</style>

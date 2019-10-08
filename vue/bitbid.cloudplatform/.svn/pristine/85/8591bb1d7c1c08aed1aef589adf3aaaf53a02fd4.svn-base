@@ -1,0 +1,15 @@
+import userindex from '@/pages/dailyManage/users/index'
+import assignroles from '@/pages/dailyManage/users/assignroles'
+
+export default[
+  {
+    path: '/dailyManage/users',
+    name: 'cloud-users',
+    component: userindex
+  },
+  {
+    path: '/dailyManage/users/assignroles',
+    name: 'cloud-users-assignroles',
+    component: assignroles
+  }
+]

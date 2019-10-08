@@ -1,0 +1,131 @@
+<template>
+  <div class="cloudcontent" id="cloud_history">
+    <div class="main">
+      <p class="title">版本历程</p>
+      <div class="historylist">
+        <span class="year">——  2019</span>
+        <el-tabs tab-position="left">
+          <el-tab-pane label="07.31">
+            <h4>首页</h4>
+            <p>新增“待开标”提醒、开标日程安排以及开标日历</p>
+            <p>新增知会功能，在业务关键节点，系统自动发消息提醒相关人员</p>
+            <h4>日常管理</h4>
+            <p>新增通知公告功能</p>
+            <p>新增公司动态功能</p>
+            <h4>项目管理</h4>
+            <p>新增项目资料完整度统计</p>
+            <p>优化项目全貌功能，通过图形化展现形式多维度统计项目情况</p>
+            <p>新增标段进度一览表</p>
+            <p>优化废标功能</p>
+            <p>优化项目总结模块的专家评价功能</p>
+            <p>新增历史项目维护功能</p>
+            <p>部分交互体验方面的优化</p>
+            <h4>招标寻源</h4>
+            <p>新增拟在建项目模块</p>
+            <h4>档案管理</h4>
+            <p>新增档案目录设置功能</p>
+            <p>新增档案移交功能</p>
+            <p>新增电子档案与实物档案的匹配信息</p>
+            <p>新增档案查阅记录</p>
+            <p>优化档案查询方式</p>
+            <h4>系统管理</h4>
+            <p>增加编号规则自定义功能（含客户编号、商机编号、项目编号、档案编号）。</p>
+          </el-tab-pane>
+          <el-tab-pane label="07.05">
+            <h3>项目结算、专家管理、比选公告功能上线。</h3>
+            <h4>项目结算</h4>
+            <p>实现从项目的维度，对项目各项收支的记录与汇总统计功能，辅助进行项目成本核算。</p>
+            <h4>专家管理</h4>
+            <p>帮助代理机构建立自己的专家库，实现对专家分类管理功能、专家评价功能以及合作项目查看功能。</p>
+            <h4>比选公告</h4>
+            <p>比选公告来源于互联网（以及比比网）公开信息，经过智能引擎技术、数据处理技术以及适当的人工干预，从而形成有效的比选信息。</p>
+          </el-tab-pane>
+          <el-tab-pane label="06.15">
+            <h3>云平台正式上线。云平台立足招标代理行业，为招标公司提供一站式企业管理平台，帮助企业提高日常管理、项目管控以及业绩提升。</h3>
+            <h4>用户注册</h4>
+            <h4>系统管理</h4>
+            <p>含企业信息、部门管理、用户管理、角色管理、项目流程配置、审批配置、数据字典设置。</p>
+            <h4>待办事项</h4>
+            <p>用户可在本模块集中处理待审批事项、查看已审批事项以及发起的所有事项。</p>
+            <h4>客户管理</h4>
+            <p>围绕客户开发、客户经营两方面进行客户管理功能设计，实现招标代理对业主的全面掌控。</p>
+            <h4>商机管理</h4>
+            <p>从商机开发、商机分析、商机评估、商机跟进、商机确认五方面实现对商机的全面管理。未来将依托比比网大数据实现对商机的智能分析，帮助企业提升项目成交率。</p>
+            <h4>项目管理</h4>
+            <p>从项目立项、项目分配、项目进度到项目总结、项目结算、项目归档，实现对项目的全生命周期管理。</p>
+            <h4>资源管理</h4>
+            <p>实现对招标代理机构内部各类资源的管理，如开评标室、资质、专家。</p>
+            <h4>系统管理</h4>
+            <p>档案管理</p>
+            <h4>系统管理</h4>
+            <p>建立统一的项目档案目录，规范管理项目资料，实现自动归档、以及档案资源信息共享。</p>
+            <h4>统计分析</h4>
+            <p>从客户、项目、财务等方面进行多维度数据分析，旨在对繁杂分散的数据进行集中有效的梳理、统计，为企业管理者、决策者提供数据支持。</p>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  components: {},
+  data () {
+    return {
+    }
+  },
+  created () {
+  },
+  methods: {
+  },
+  mounted () {
+  }
+}
+</script>
+<style lang="less">
+  #cloud_history{
+    p.title{
+      padding-left: 12px;
+      border-left: 4px solid #4a8cea;
+      color: #000000;
+      margin-bottom: 20px;
+    }
+    .historylist{
+      margin-top: 10px;
+      position: relative;
+    }
+    .historylist span.year{
+      position: absolute;
+      left: 0;
+      top: 10px;
+      font-weight: bold;
+    }
+    .historylist .el-tabs{
+      margin-left: 14px;
+    }
+    .el-tabs .el-tabs__header{
+      padding-top: 30px;
+    }
+    .el-tabs__nav-wrap::after{
+      background-color: #ffffff;
+    }
+    .el-tabs__active-bar{
+      background-color: #ffffff;
+    }
+    .el-tabs__content{
+      margin-left: 20px;
+    }
+    .el-tabs__content h3{
+      line-height: 36px;
+    }
+    .el-tabs__content h4{
+      line-height: 28px;
+      margin: 10px 0;
+    }
+    .el-tabs__content p{
+      padding-left: 12px;
+      line-height: 24px;
+      background: url("../../../static/images/head/dian.png") left top 10px no-repeat;
+    }
+  }
+</style>

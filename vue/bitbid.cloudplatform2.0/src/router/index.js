@@ -1,0 +1,140 @@
+import VueRouter from 'vue-router'
+import NProgress from 'nprogress'
+import store from '../store'
+import 'nprogress/nprogress.css'
+
+import notfound from '../components/error/notfound.vue'
+import Home from '../pages/home.vue'
+import homechild from './home'
+import userProfile from './userProfile'
+import project from './project'
+import archives from './archives'
+import knowledge from './knowledge'
+import todoList from './todoList'
+import system from './system'
+import websiteManage from './websiteManage'
+import customer from './customer'
+import resource from './resource'
+import agency from './agency'
+import office from './office'
+import biddingsSources from './biddingsSources'
+import orderManagement from './orderManagement'
+import dailyManagement from './dailyManagement'
+import noPermission from '../components/error/noPermission'
+const router = new VueRouter({
+  mode: 'history',
+  routes: [
+    { path: '/',
+      component: Home,
+      redirect: 'main',
+      children: [
+        {
+          path: 'main',
+          name: '首页',
+          meta: {
+            active: '/main',
+            tabActive: '/main',
+            title: '首页',
+            permission: 'business'
+          },
+          component: () => import(/* webpackChunkName: 'index' */ '@/pages/index')
+        },
+        ...homechild,
+        ...project,
+        ...archives,
+        ...knowledge,
+        ...todoList,
+        ...system,
+        ...websiteManage,
+        ...customer,
+        ...resource,
+        ...agency,
+        ...biddingsSources,
+        ...orderManagement,
+        ...dailyManagement,
+        ...office
+      ]
+    },
+    {
+      path: '/no-auth',
+      name: 'noauth',
+      component: noPermission,
+      meta: {
+        layout: 'noPermission',
+        title: '无权限'
+      }
+    },
+    {
+      path: '*',
+      name: 'notFound',
+      component: notfound
+    },
+    ...userProfile
+  ]
+})
+
+router.beforeEach((to, from, next) => {
+  let url = to.path
+  if (url.slice(-1) === '/' && url !== '/') {
+    next({path: to.path.slice(0, -1)})
+    return false
+  }
+  NProgress.start()
+  // token权限拦截
+  if (!to.meta.noRequireAuth) {
+    if (store.getters.token) {
+      // if (!store.getters.authUser) {
+      //   store.dispatch('GetLoginInfo').then(() => {
+      //     next()
+      //   })
+      // } else {
+      //   next()
+      // }
+      // 权限啰嗦判断，非动态路由生成情况下先这么做, 之后改为动态路由生成
+      // 公共路由，后期改为判断to.meta.permission,如果没有则是不需要权限认证，随便去
+      if (!store.getters.authUser) {
+        store.dispatch('GetLoginInfo').then(() => {
+          if (!to.meta.permission || store.getters.permissions.includes(to.meta.permission)) {
+            next()
+          } else {
+            if (url === '/main' && store.getters.authUser.userType === 1) {
+              next('/system/enterprise')
+            } else {
+              next('/no-auth')
+            }
+          }
+        })
+      } else {
+        if (!to.meta.permission || store.getters.permissions.includes(to.meta.permission)) {
+          next()
+        } else {
+          if (url === '/main' && store.getters.authUser.userType === 1) {
+            next('/system/enterprise')
+          } else {
+            next('/no-auth')
+          }
+        }
+      }
+    } else {
+      next({
+        path: '/login'
+        // 将刚刚要去的路由path（却无权限）作为参数，方便登录成功后直接跳转到该路由
+        // query: { redirect: to.fullPath }
+      })
+    }
+  } else {
+    // 判断是否已经登录，如果已经登录跳转首页
+    if (store.getters.token) {
+      next('/main')
+    } else {
+      next()
+    }
+  }
+})
+
+router.afterEach((to, from) => {
+  document.title = to.meta.title || ''
+  NProgress.done()
+})
+
+export default router

@@ -1,0 +1,370 @@
+<template>
+  <div id="bidannodetail" class="smaincontent">
+    <div class="headertitle">
+      <!--面包屑-->
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/main' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item>公告管理</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/annomanage/bidanno' }">招标公告</el-breadcrumb-item>
+        <el-breadcrumb-item>{{tenderBulletin.noticeNature !== '4' ? '查看招标公告' : '查看废标公告' }}</el-breadcrumb-item>
+      </el-breadcrumb>
+      <!--面包屑-->
+      <div class="returnboxbig">
+        <template>
+          <el-button @click="close">返回</el-button>
+        </template>
+      </div>
+    </div>
+    <div class="contentbigbox">
+      <template>
+        <el-form :model="tenderBulletin" ref="tenderBulletins">
+          <table class="detailtable">
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td>招标公告编号：</td>
+              <td colspan="2">
+                <span :title="tenderBulletin.tenderExpandsInfo.bulletinCode">{{tenderBulletin.tenderExpandsInfo.bulletinCode}}</span>
+              </td>
+              <td>招标方式：</td>
+              <td  colspan="2">
+                <span v-if="tenderBulletin.tenderExpandsInfo.tenderMode === 1">公开招标</span>
+                <span v-if="tenderBulletin.tenderExpandsInfo.tenderMode === 2">邀请招标</span>
+                <span v-if="tenderBulletin.tenderExpandsInfo.tenderMode === 9">其他</span>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td>项目编号：</td>
+              <td colspan="2">
+                <span :title="tenderBulletin.tenderBulletinExpandsInfo.projectCode">{{tenderBulletin.tenderBulletinExpandsInfo.projectCode}}</span>
+              </td>
+              <td>项目名称：</td>
+              <td colspan="2">
+                <span :title="tenderBulletin.tenderBulletinExpandsInfo.projectName">{{tenderBulletin.tenderBulletinExpandsInfo.projectName}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>招标项目编号：</td>
+              <td colspan="2">
+                <span :title="tenderBulletin.tenderProjectCode">{{tenderBulletin.tenderProjectCode}}</span>
+              </td>
+              <td>招标项目名称：</td>
+              <td colspan="2">
+                <span :title="tenderBulletin.tenderExpandsInfo.tenderProjectName">{{tenderBulletin.tenderExpandsInfo.tenderProjectName}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>项目行业：</td>
+              <td  colspan="2">
+                <span>{{industryStr}}</span>
+              </td>
+              <td>行政区域：</td>
+              <td  colspan="2">
+                <span>{{regionStr}}</span>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td>项目实施地：</td>
+              <td colspan="2">
+                <span :title="tenderBulletin.tenderBulletinExpandsInfo.projectImplementationSite">{{tenderBulletin.tenderBulletinExpandsInfo.projectImplementationSite}}</span>
+              </td>
+              <td>是否接受联合体：</td>
+              <td  colspan="2">
+                <span v-if="tenderBulletin.syndicatedFlag === '0'">否</span>
+                <span v-else>是</span>
+              </td>
+            </tr>
+            <tr>
+              <td>标段（包）编号：</td>
+              <td colspan="2">
+                <span :title="tenderBulletin.bidSectionCodes">{{tenderBulletin.bidSectionCodes}}</span>
+              </td>
+              <td>标段（包）名称：</td>
+              <td colspan="2">
+                <span :title="tenderBulletin.tenderBulletinExpandsInfo.bidSectionNames">{{tenderBulletin.tenderBulletinExpandsInfo.bidSectionNames}}</span>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td>项目类型：</td>
+              <td colspan="2">
+                <span v-if="tenderBulletin.tenderExpandsInfo.projectType === 1">工程</span>
+                <span v-if="tenderBulletin.tenderExpandsInfo.projectType === 2">货物</span>
+                <span v-if="tenderBulletin.tenderExpandsInfo.projectType === 3">服务</span>
+              </td>
+              <td>资金来源：</td>
+              <td colspan="2">
+                <span v-if="tenderBulletin.tenderBulletinExpandsInfo.fundSource === '1'">自有资金</span>
+                <span v-if="tenderBulletin.tenderBulletinExpandsInfo.fundSource === '2'">专项资金</span>
+                <span v-if="tenderBulletin.tenderBulletinExpandsInfo.fundSource === '3'">吸收资金</span>
+                <span v-if="tenderBulletin.tenderBulletinExpandsInfo.fundSource === '4'">其他</span>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td>项目规模：</td>
+              <td colspan="2">
+                <span>{{tenderBulletin.tenderBulletinExpandsInfo.projectScale}}</span>
+              </td>
+              <td>招标项目核准部门：</td>
+              <td colspan="2">
+                <span :title="tenderBulletin.tenderBulletinExpandsInfo.approvedDepartment">{{tenderBulletin.tenderBulletinExpandsInfo.approvedDepartment}}</span>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td>招标项目核准文号：</td>
+              <td colspan="2">
+                <span :title="tenderBulletin.tenderBulletinExpandsInfo.approvedNumber">{{tenderBulletin.tenderBulletinExpandsInfo.approvedNumber}}</span>
+              </td>
+              <td>招标项目核准文件：</td>
+              <td colspan="2">
+                <filedownload :fileObject="fileApproveObject"></filedownload>
+              </td>
+            </tr>
+            <tr>
+              <td>公告名称：</td>
+              <td colspan="2">
+                <span :title="tenderBulletin.noticeName">{{tenderBulletin.noticeName}}</span>
+              </td>
+              <td>公告性质：</td>
+              <td colspan="2">
+                <span v-if="tenderBulletin.noticeNature === '1'">正常公告</span>
+                <span v-if="tenderBulletin.noticeNature === '2'">变更公告</span>
+                <span v-if="tenderBulletin.noticeNature === '3'">重发公告</span>
+                <span v-if="tenderBulletin.noticeNature === '4'">废标公告</span>
+                <span v-if="tenderBulletin.noticeNature === '9'">其他</span>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td>公告类型：</td>
+              <td colspan="2">
+                <span v-if="tenderBulletin.bulletinType === '1'">招标公告</span>
+                <span v-if="tenderBulletin.bulletinType === '2'">资格预审公告</span>
+              </td>
+              <td>代理机构联系人：</td>
+              <td colspan="2">
+                <span :title="tenderBulletin.tenderExpandsInfo.tenderAgencyContacts">{{tenderBulletin.tenderExpandsInfo.tenderAgencyContacts}}</span>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td>联系方式：</td>
+              <td colspan="2">
+                <span>{{tenderBulletin.tenderExpandsInfo.contactInformation}}</span>
+              </td>
+              <td>业主名称：</td>
+              <td colspan="2">
+                <span :title="tenderBulletin.tenderExpandsInfo.ownerName">{{tenderBulletin.tenderExpandsInfo.ownerName}}</span>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.tenderExpandsInfo.tenderOrganizeForm !== 1 && tenderBulletin.noticeNature !== '4'">
+              <td>招标代理机构名称：</td>
+              <td colspan="2">
+                <span :title="tenderBulletin.tenderExpandsInfo.tenderAgencyName">{{tenderBulletin.tenderExpandsInfo.tenderAgencyName}}</span>
+              </td>
+              <td>委托代理协议附件：</td>
+              <td  colspan="2">
+                <filedownload :fileObject="fileAgentObject"></filedownload>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td>招标文件获取开始时间：</td>
+              <td  colspan="2">
+                <span>{{tenderBulletin.docGetStartTime}}</span>
+              </td>
+              <td>招标文件获取截止时间：</td>
+              <td  colspan="2">
+                <span>{{tenderBulletin.docGetEndTime}}</span>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td>招标文件获取方法：</td>
+              <td colspan="2">
+                <span :title="tenderBulletin.tenderDocGetMethod">{{tenderBulletin.tenderDocGetMethod}}</span>
+              </td>
+              <td>投标文件递交方法：</td>
+              <td colspan="2">
+                <span :title="tenderBulletin.bidDocReferMethod">{{tenderBulletin.bidDocReferMethod}}</span>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td>投标文件递交截止时间：</td>
+              <td colspan="2">
+                <span>{{tenderBulletin.biddocReferEndTime}}</span>
+              </td>
+              <td>公告结束日期：</td>
+              <td colspan="2">
+                <span>{{tenderBulletin.tenderBulletinExpandsInfo.bulletinEndDate}}</span>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td>开标时间：</td>
+              <td colspan="2">
+                <span>{{tenderBulletin.bidOpenTime}}</span>
+              </td>
+              <td>项目建立时间：</td>
+              <td colspan="2">
+                <span>{{tenderBulletin.tenderBulletinExpandsInfo.projectCreateDate}}</span>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature !== '4'">
+              <td>版本号：</td>
+              <td colspan="2">
+                <span>{{tenderBulletin.tenderExpandsInfo.versionNum}}</span>
+              </td>
+              <td>招标组织形式：</td>
+              <td colspan="2">
+                <span v-if="tenderBulletin.tenderExpandsInfo.tenderOrganizeForm === 1">自行招标</span>
+                <span v-if="tenderBulletin.tenderExpandsInfo.tenderOrganizeForm === 2">委托招标</span>
+                <span v-if="tenderBulletin.tenderExpandsInfo.tenderOrganizeForm === 9">其他</span>
+              </td>
+            </tr>
+            <tr>
+              <template v-if="tenderBulletin.noticeNature !== '4'">
+                <td>招标项目建立时间：</td>
+                <td colspan="2">
+                  <span>{{tenderBulletin.tenderBulletinExpandsInfo.tenderProjectCreateDate}}</span>
+                </td>
+              </template>
+              <td>公告发布时间：</td>
+              <td colspan="2">
+                <span>{{tenderBulletin.noticeSendTime}}</span>
+              </td>
+            </tr>
+            <tr v-if="fileObject !== null">
+              <td>公告附件：</td>
+              <td colspan="5">
+                <filedownload :fileObject="fileObject"></filedownload>
+              </td>
+            </tr>
+            <tr>
+              <td>公告内容：</td>
+              <td colspan="5">
+                <editor ref="ueditor" class="ueditor" :editread="true"></editor>
+              </td>
+            </tr>
+            <tr v-if="tenderBulletin.noticeNature === '2'">
+              <td>变更公告内容：</td>
+              <td colspan="5">
+                <editor ref="change_ueditor" class="ueditor" :editread="true"></editor>
+              </td>
+            </tr>
+            <approverecord v-if="tenderBulletin.status === 2 || tenderBulletin.status === 3" :code="tenderBulletin.code"></approverecord>
+          </table>
+        </el-form>
+      </template>
+    </div>
+  </div>
+</template>
+<script>
+import * as industry from '@/assets/js/industry'
+import * as region from '@/assets/js/region'
+import editor from '@/components/ueditor/ueditor.vue'
+import filedownload from '@/components/file-download'
+import approverecord from '@/components/approve-record.vue'
+import {bidanno} from '@/api'
+export default {
+  components: {
+    editor,
+    filedownload,
+    approverecord
+  },
+  data () {
+    return {
+      industryList: industry.industry,
+      regionStr: '',
+      industryStr: '',
+      fileObject: {},
+      fileApproveObject: {},
+      fileAgentObject: {},
+      addressOptions: region.CityInfo,
+      tenderBulletin: {
+        tenderExpandsInfo: {
+        },
+        noticeNature: '',
+        tenderBulletinExpandsInfo: {}
+      },
+      status: null
+    }
+  },
+  methods: {
+    detail () {
+      bidanno.detail(this.$route.params.objectId).then((res) => {
+        // 行业
+        this.industryList.map((item) => {
+          if (item.value === res.data.tenderBulletin.tenderExpandsInfo.industryTypeFirst) {
+            this.industryStr = item.label
+          }
+        })
+        // 行政区域
+        this.addressOptions.map((item) => {
+          if (item.value === res.data.tenderBulletin.tenderExpandsInfo.provinceId) {
+            this.regionStr += item.label
+            item.children.map((ite) => {
+              if (ite.value === res.data.tenderBulletin.tenderExpandsInfo.cityId) {
+                this.regionStr += ite.label
+              }
+            })
+          }
+        })
+        this.tenderBulletin = res.data.tenderBulletin
+        this.tenderBulletin.fileInformations.map((item) => {
+          if (item.businessType === '1') {
+            this.fileApproveObject = item
+          } else if (item.businessType === '2') {
+            this.fileAgentObject = item
+          } else if (item.businessType === '9') {
+            this.fileObject = item
+          }
+        })
+        return this.tenderBulletin
+      }).then((result) => {
+        if (result.noticeNature === '2') {
+          this.$refs.ueditor.setContent(result.originalBulletinContent)
+          this.$refs.change_ueditor.setContent(result.noticeContent)
+        } else {
+          this.$refs.ueditor.setContent(result.noticeContent)
+        }
+      })
+    },
+    // 时间戳转换
+    timestampToTime (row) {
+      var date = new Date(row) // 时间戳为10位需*1000，时间戳为13位的话不需乘1000
+      var Y = date.getFullYear() + '-'
+      var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
+      var D = date.getDate() + ' '
+      var h = date.getHours() + ':'
+      var m = date.getMinutes() + ':'
+      var s = date.getSeconds()
+      return Y + M + D + h + m + s
+    },
+    close () {
+      this.$router.push({path: '/annomanage/bidanno', query: {status: this.status}})
+    }
+  },
+  mounted () {
+    this.status = this.$route.query.status ? this.$route.query.status : this.$route.query.status === 0 ? this.$route.query.status : null
+    this.detail()
+  }
+}
+</script>
+<style lang="less">
+  #bidannodetail{
+    .select {
+      float: left;
+      width: 100%;
+    }
+    .el-cascader{
+      float: left;
+      width: 100%;
+    }
+    .el-date-editor{
+      float: left;
+      width: 100%;
+    }
+    .el-date-editor.el-input, .el-date-editor.el-input__inner{
+      width: 100%;
+    }
+    .el-form-item{
+      margin-bottom: 0px;
+    }
+    .el-radio{
+      float: left;
+    }
+  }
+</style>

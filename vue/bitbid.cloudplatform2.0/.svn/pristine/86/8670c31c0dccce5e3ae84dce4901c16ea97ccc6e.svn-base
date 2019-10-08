@@ -1,0 +1,165 @@
+<template>
+  <div class="cloudcontent">
+    <div class="main">
+      <el-form :model="updateForm" :rules="rules" ref="updateForm" :validate-on-rule-change="true">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目编号：">
+              <el-input v-model="bidSection.tenderProjectCode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目名称：">
+              <el-input v-model="bidSection.tenderProjectName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="标段编号：">
+              <el-input v-model="bidSection.bidSectionCode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标段名称：">
+              <el-input v-model="bidSection.bidSectionName" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="投标人："  prop="bidderName">
+              <el-input v-model="updateForm.bidderName"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" class="ueditor_box">
+            <el-form-item label="通知内容：" class="bitianicon">
+              <editor ref="ueditor" class="ueditor" :editread="editread" :content="content"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="通知书附件：">
+              <upload-file @uploadSuccess="uploadOtherSuccess" @deleteSuccess="deleteSuccess"
+                           :fileArrays="updateForm.fileInformationList"
+                           fileType="9"
+                           isImage="0">
+              </upload-file>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item class="submit-radio">
+          <el-button type="primary" @click="submit('updateForm', 1)" :loading="isSubmiting">提交</el-button>
+          <el-button type="primary" @click="submit('updateForm', 0)" :loading="isSaving">保存</el-button>
+          <el-button class="cancal" @click="close">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import editor from '@/components/ueditor/ueditor.vue'
+import uploadFile from '@/components/upload/publicFileUpload'
+import {resultInfo, bidSection} from '@/api/project'
+export default {
+  components: {
+    editor,
+    uploadFile
+  },
+  name: '',
+  data () {
+    return {
+      isSaving: false,
+      isSubmiting: false,
+      updateForm: {
+        fileInformationList: []
+      },
+      rules: {
+        bidderName: {required: true, message: '请填写投标人', trigger: 'blur'}
+      },
+      // 富文本
+      editread: false,
+      content: '',
+      bidSection: {}
+    }
+  },
+  methods: {
+    // 上传附件
+    uploadOtherSuccess (file) {
+      this.updateForm.fileInformationList.push(file)
+    },
+    deleteSuccess (fileId) {
+      this.updateForm.fileInformationList = this.updateForm.fileInformationList.filter(item => item.relativePath !== fileId)
+    },
+    // 提交/保存
+    submit (form, status) {
+      if (!this.$refs.ueditor.getContent()) {
+        this.$message({
+          message: '请填写通知内容！',
+          type: 'warning'
+        })
+        return
+      }
+      this.$refs[form].validate((vaild) => {
+        if (vaild) {
+          let msg = Object.is(status, 1) ? '确定要提交吗?' : '确定要保存吗?'
+          this.$confirm(msg, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            beforeClose: (action, instance, done) => {
+              done()
+            }
+          }).then(() => {
+            if (Object.is(status, 0)) {
+              this.isSaving = true
+              this.updateForm.auditStatus = 0
+            } else if (Object.is(status, 1)) {
+              this.isSubmiting = true
+              this.updateForm.auditStatus = 4
+              this.updateForm.submitTime = new Date().getTime()
+            }
+            this.updateForm.tenderSystemCode = this.$route.query.tenderSystemCode
+            this.updateForm.sectionSystemCode = this.$route.query.sectionSystemCode
+            this.updateForm.type = 4
+            this.updateForm.content = this.$refs.ueditor.getContent()
+            resultInfo.update(this.updateForm).then((res) => {
+              this.isSaving = false
+              this.isSubmiting = false
+              if (res.data.resCode === '0000') {
+                this.close()
+              }
+            })
+          }).catch(() => {
+            this.isSaving = false
+            this.isSubmiting = false
+            return false
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    // 取消
+    close () {
+      this.$store.commit('delete_tabs', this.$route.fullPath)
+      this.$router.go(-1)
+    },
+    // 查询当前标段信息
+    getBidSection () {
+      bidSection.getOne(this.$route.query.sectionSystemCode).then(res => {
+        this.bidSection = res.data.bidSection
+      })
+    }
+  },
+  mounted () {
+    this.getBidSection()
+  }
+}
+</script>
+
+<style scoped>
+</style>

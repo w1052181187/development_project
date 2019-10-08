@@ -1,0 +1,365 @@
+<template>
+  <div class="cloudcontent" id="cloud_customer_add">
+    <div class="main">
+      <el-form :model="addForm" ref="addForm" :validate-on-rule-change="true">
+        <div class="part">
+          <h3><span>基本信息</span></h3>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="客户编号：" prop="code">
+                <el-input v-model="addForm.code"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="统一社会信用代码：" prop="code">
+                <el-input v-model="addForm.code"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="客户名称：" prop="name">
+                <el-input v-model="addForm.name"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="法定代表人：" prop="code">
+                <el-input v-model="addForm.code"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="公司类型：" prop="code">
+                <el-checkbox-group v-model="addForm.code">
+                  <el-checkbox label="国企"></el-checkbox>
+                  <el-checkbox label="股份"></el-checkbox>
+                  <el-checkbox label="私企"></el-checkbox>
+                  <el-checkbox label="外资"></el-checkbox>
+                  <el-checkbox label="港资"></el-checkbox>
+                  <el-checkbox label="台资"></el-checkbox>
+                </el-checkbox-group>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="客户来源：" prop="code">
+                <el-select v-model="addForm.code" placeholder="请选择">
+                  <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="所在地：" prop="code">
+                <el-cascader class=""
+                             expand-trigger="hover"
+                             :options="addressOptions"
+                             v-model="addForm.selectedCityOptions"
+                             @change="handleCityChange">
+                </el-cascader>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="客户价值：" prop="code">
+                <el-select v-model="addForm.code" placeholder="请选择">
+                  <el-option
+                    v-for="item in valueOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="所属行业：" prop="code">
+                <el-select v-model="addForm.code" placeholder="请选择">
+                  <el-option
+                    v-for="item in industryeOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="客户状态：" prop="code">
+                <el-select v-model="addForm.code" placeholder="请选择">
+                  <el-option
+                    v-for="item in statusOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="详细地址：" prop="code">
+                <el-input v-model="addForm.code"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="联系电话：" prop="code">
+                <el-input v-model="addForm.code"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="注册资金（元）：" prop="code">
+                <el-input v-model="addForm.code"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="传真：" prop="code">
+                <el-input v-model="addForm.code"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="员工人数：" prop="code">
+                <el-input v-model="addForm.code"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="负责人：" prop="code">
+                <el-input v-model="addForm.code"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="客户网址：" prop="code">
+                <el-input v-model="addForm.code"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="所属部门：" prop="code">
+                <el-input v-model="addForm.code"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-form-item label="经营范围：" prop="code">
+              <el-input type="textarea"  v-model="addForm.code"></el-input>
+            </el-form-item>
+          </el-row>
+        </div>
+        <div class="part">
+          <h3><span>联系人</span></h3>
+          <el-table
+            class="addcon"
+            :data="addForm.contactList"
+            border
+            style="width: 100%" header-cell-class-name="tableheader">
+            <el-table-column
+              type="index"
+              label="序号"
+              width="60"
+              align="center">
+            </el-table-column>
+            <el-table-column
+              label="姓名"
+              show-overflow-tooltip>
+              <template slot-scope='scope'>
+                <el-form-item>
+                  <el-input v-model="scope.row.name"></el-input>
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="联系方式"
+              show-overflow-tooltip>
+              <template slot-scope='scope'>
+                <el-form-item>
+                  <el-input v-model="scope.row.contact"></el-input>
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="职务"
+              show-overflow-tooltip>
+              <template slot-scope='scope'>
+                <el-form-item>
+                  <el-input v-model="scope.row.job"></el-input>
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="角色"
+              show-overflow-tooltip>
+              <template slot-scope='scope'>
+                <el-form-item>
+                  <el-input v-model="scope.row.role"></el-input>
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="操作" align="center" width="100">
+              <template slot-scope="scope">
+                <el-button type="text" size="small" @click="delContactBtn(scope.$index)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div class="addbutton"><span @click="addContact">+ 新增联系人</span></div>
+        </div>
+        <el-form-item class="submit-radio">
+          <el-button type="primary">保存</el-button>
+          <el-button class="cancal">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script>
+import * as region from '@/assets/js/region'
+export default {
+  components: {
+  },
+  data () {
+    return {
+      addForm: {
+        contactList: []
+      },
+      // 客户来源
+      options: [{
+        value: '1',
+        label: '主动咨询'
+      }, {
+        value: '2',
+        label: '网络获得'
+      }, {
+        value: '3',
+        label: '朋友介绍'
+      }, {
+        value: '4',
+        label: '其他'
+      }],
+      value: '',
+      // 地址三级联动
+      addressOptions: region.CityInfo,
+      selectedcityOptions: [],
+      // 客户价值
+      valueOptions: [{
+        value: '1',
+        label: 'VIP客户'
+      }, {
+        value: '2',
+        label: '主要客户'
+      }, {
+        value: '3',
+        label: '普通客户'
+      }, {
+        value: '4',
+        label: '小客户'
+      }, {
+        value: '5',
+        label: '潜在客户'
+      }],
+      // 所属行业
+      industryeOptions: [{
+        value: '1',
+        label: '能源行业'
+      }, {
+        value: '2',
+        label: '医药行业'
+      }, {
+        value: '3',
+        label: '食品行业'
+      }, {
+        value: '4',
+        label: '其他'
+      }],
+      // 客户状态
+      statusOptions: [{
+        value: '1',
+        label: '成交'
+      }, {
+        value: '2',
+        label: '未成交'
+      }
+      ]
+    }
+  },
+  methods: {
+    handleCityChange () {},
+    addContact () {
+      this.addForm.contactList.push({
+        name: '',
+        contact: '',
+        job: '',
+        role: ''
+      })
+    },
+    delContactBtn () {
+    }
+  }
+}
+</script>
+<style lang="less">
+  #cloud_customer_add {
+    .el-cascader,.el-select{
+      width: 100%;
+    }
+    .el-textarea__inner{
+      height: 120px;
+    }
+    .main{
+      margin: 0px;
+    }
+    .part{
+      overflow: hidden;
+      margin: 12px auto;
+    }
+    .part h3{
+      height: 36px;
+      line-height: 36px;
+      color: #111111;
+      font-size: 16px;
+      border-bottom: 1px solid #eeeeee;
+      margin-bottom: 30px;
+    }
+    .part h3 span{
+      margin-top: 18px;
+      display: inline-block;
+      background: #ffffff;
+      padding: 0 10px;
+      float: left;
+    }
+    .addbutton{
+      width: 100%;
+      margin-top: 10px;
+      height: 52px;
+      line-height: 52px;
+      text-align: center;
+      border: 1px dashed #d2d2d2;
+      color: #d2d2d2;
+      background: #ffffff;
+      font-weight: bold;
+      cursor: pointer;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .addbutton:hover{
+      border: 1px dashed #34abff;
+      color: #34abff;
+    }
+    .addcon .el-form-item__content{
+      margin-left: 0px;
+    }
+  }
+</style>
