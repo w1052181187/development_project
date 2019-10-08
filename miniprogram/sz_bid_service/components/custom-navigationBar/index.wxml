@@ -1,6 +1,0 @@
-<!--components/custom-navigationBar/index.wxml-->
-<view class="custom-navigationBar" style="padding-top:{{statusBarHeight}}px">
-  <image src='../../images/back.png' wx:if='{{isShowBack}}' bindtap='handleBackClick'></image>
-  <text>{{title}}</text>
-</view>
-<view class="empty-custom-navigationBar" style="padding-top:{{statusBarHeight}}px"></view>

@@ -1,9 +1,0 @@
-<!--course.wxml-->
-<import src="../item-course/item-course.wxml" />
-
-<view class='root'>
-  <view wx:for="{{courseList}}" wx:key="{{item.id}}" data-code="{{item.code}}" bindtap="handleItemClick">
-    <template is="courseItem" data="{{...item, baseImageUrl}}" />
-  </view>
-  <text class="list-no-data" hidden='{{courseList.length < totalNum}}'>没有更多数据</text>
-</view>

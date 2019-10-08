@@ -1,7 +1,0 @@
-{
-  "usingComponents": {
-    "load-more-view": "/components/load-more-view/index"
-  },
-  "navigationBarTitleText": "项目",
-  "enablePullDownRefresh": true
-}

@@ -1,7 +1,0 @@
-/* components/circle-progress/circle-progress.wxss */
-.circle_box .circle_draw {
-  position: relative; 
-}
-.circle_bg {
-  position: absolute;
-}

@@ -1,6 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "no-more-data": "/components/no-more-data/index"
-  }
-}

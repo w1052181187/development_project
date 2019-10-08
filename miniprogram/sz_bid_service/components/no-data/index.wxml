@@ -1,6 +1,0 @@
-<!--components/no-data/index.wxml-->
-<!-- 无数据 无网络 无消息组件 -->
-<view class='no-data-root'>
-  <image src='{{imageSrc}}'></image>
-  <text>{{content}}</text>
-</view>
