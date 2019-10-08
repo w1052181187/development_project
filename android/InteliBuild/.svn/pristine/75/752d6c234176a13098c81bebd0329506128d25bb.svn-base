@@ -1,0 +1,61 @@
+package com.bibinet.intelibuild.project.view.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.EditText;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.net.emit.ResetPasswordActivityView;
+import com.bibinet.intelibuild.project.view.expand.TitleActivity;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+/**
+ * 修改密码页面
+ * Created by bibinet on 2017-12-27.
+ */
+
+public class PasswordUpdateActivity extends TitleActivity implements ResetPasswordActivityView {
+    @BindView(R.id.act_password_update_old)
+    EditText oldPasswordET;
+    @BindView(R.id.act_password_update_new)
+    EditText newPasswordET;
+    @BindView(R.id.act_password_update_new_confirm)
+    EditText newConfirmPasswordET;
+
+    @Override
+    public void onResetPasswordSucess() {
+
+    }
+
+    @Override
+    public void onResetPasswordFailed(String msg) {
+
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_password_update;
+    }
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+
+    }
+
+    @OnClick(R.id.act_password_update_confirm)
+    void confirm(){
+
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_password_update;
+    }
+
+    public static void start(Context context) {
+        context.startActivity(new Intent(context, PasswordUpdateActivity.class));
+    }
+}

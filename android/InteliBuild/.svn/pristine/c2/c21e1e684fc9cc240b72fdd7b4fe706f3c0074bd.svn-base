@@ -1,0 +1,119 @@
+package com.bibinet.intelibuild.project.net.rewrite;
+
+import android.widget.Toast;
+
+import com.bibinet.intelibuild.project.model.BaseModel;
+import com.bibinet.intelibuild.project.util.ToastUtils;
+import com.bibinet.intelibuild.project.view.dialog.WaitDialog;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
+import static com.bibinet.intelibuild.project.util.ObjectUtils.isNull;
+
+public abstract class ResultCallback<T extends BaseModel> implements Callback {
+
+    private WaitDialog waitDialog;
+    private Gson gson;
+
+    public ResultCallback(WaitDialog waitDialog) {
+        this();
+        this.waitDialog = waitDialog;
+        this.waitDialog.open();
+    }
+
+    public ResultCallback() {
+        this.gson = new Gson();
+    }
+
+    @Override
+    public final void onFailure(Call call, IOException e) {
+        if (waitDialog != null) {
+            waitDialog.close();
+        }
+        String error = e.getMessage();
+        onFail("网络异常");
+    }
+
+    protected abstract void onFail(String error);
+
+    @Override
+    public final void onResponse(Call call, Response response) throws IOException {
+        if (waitDialog != null) {
+            waitDialog.close();
+        }
+        if (response.code() == 200) {
+            String json = response.body().string();
+            if(isNull(json)){
+                onFail("数据异常");
+                return;
+            }
+            if (json.substring(0, 1).equals("[")) {
+                List<T> list = new ArrayList<T>();
+                try {
+                    Gson gson = new Gson();
+                    JsonArray arry = new JsonParser().parse(json).getAsJsonArray();
+                    for (JsonElement jsonElement : arry) {
+                        Class<T> entityClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+                        list.add(gson.fromJson(jsonElement, entityClass));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (isNull(list)) {
+                    if (waitDialog != null) {
+                        waitDialog.close();
+                    }
+                    onFail("数据异常");
+                    return;
+                }
+                onSuccess(list, response);
+            } else {
+                Class<T> entityClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+                T model = gson.fromJson(json, entityClass);
+                if (isNull(model)) {
+                    if (waitDialog != null) {
+                        waitDialog.close();
+                    }
+                    onFail("数据异常");
+                    return;
+                }
+                if (!isNull(model.getResCode()) && !isNull(model.getResMessage())) {
+                    if (waitDialog != null) {
+                        waitDialog.close();
+                    }
+                    onFail(model.getResMessage());
+                    return;
+                }
+                onSuccess(model, response);
+            }
+
+        } else {
+            onFail("网络繁忙");
+            if (waitDialog != null) {
+                waitDialog.close();
+            }
+        }
+    }
+
+    protected void onSuccess(T model, Response response) {
+
+    }
+
+    protected void onSuccess(List<T> model, Response response) {
+
+    }
+}

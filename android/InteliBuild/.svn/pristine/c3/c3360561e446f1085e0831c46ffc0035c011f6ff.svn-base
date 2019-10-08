@@ -1,0 +1,12 @@
+package com.bibinet.intelibuild.project.net.emit;
+
+import com.bibinet.intelibuild.project.model.UserModel;
+
+/**
+ * Created by bibinet on 2017-12-18.
+ */
+
+public interface LoginEmit {
+    void onLoginSuccess(UserModel userModel);
+    void onLoginFail(String msg);
+}

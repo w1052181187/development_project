@@ -1,0 +1,143 @@
+package com.bibinet.intelibuild.ocr.manager;
+
+import android.app.Activity;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.widget.TextView;
+
+import com.baidu.ocr.sdk.OCR;
+import com.baidu.ocr.sdk.OnResultListener;
+import com.baidu.ocr.sdk.exception.OCRError;
+import com.baidu.ocr.sdk.model.AccessToken;
+import com.baidu.ocr.sdk.model.GeneralParams;
+import com.baidu.ocr.sdk.model.GeneralResult;
+import com.baidu.ocr.sdk.model.WordSimple;
+import com.bibinet.intelibuild.project.application.IntelBuildApplication;
+import com.bibinet.intelibuild.project.bean.OcrBean;
+import com.bibinet.intelibuild.project.model.OcrModel;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.util.RegexUtils;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by bibinet on 2017-12-21.
+ */
+
+public class OcrManager {
+    private static final int TYPE_IMAGE = 0;
+    private static final int TYPE_TEXT = 1;
+    private static final int TYPE = TYPE_IMAGE;
+
+    public static void initOcrToken() {
+        OCR.getInstance().initAccessToken(new OnResultListener<AccessToken>() {
+            @Override
+            public void onResult(AccessToken accessToken) {
+                String token = accessToken.getAccessToken();
+                Log.i("TAG", "licence方式获取token成功");
+            }
+
+            @Override
+            public void onError(OCRError error) {
+                error.printStackTrace();
+                Log.i("TAG", "licence方式获取token失败");
+            }
+        }, IntelBuildApplication.context);
+    }
+
+    private OcrIndentifyView ocrIndentifyView;
+
+    //选择不同的识别模块
+    public void recGeneral(final OcrIndentifyView ocrIndentifyView, String filePath) {
+        this.ocrIndentifyView = ocrIndentifyView;
+        GeneralParams param = new GeneralParams();
+        param.setDetectDirection(true);
+        param.setImageFile(new File(filePath));
+        switch (TYPE) {
+            case TYPE_IMAGE:
+                OCR.getInstance().recognizeWebimage(param, listener);
+                break;
+            case TYPE_TEXT:
+                OCR.getInstance().recognizeGeneral(param, listener);
+                break;
+
+        }
+    }
+
+    private OcrModel ocrModel;
+
+    public OcrManager(OcrModel ocrModel) {
+        this.ocrModel = ocrModel;
+    }
+
+    OnResultListener listener = new OnResultListener<GeneralResult>() {
+        @Override
+        public void onResult(GeneralResult result) {
+            List<OcrBean> ocrBeanList = new ArrayList<OcrBean>();
+            //执行策略 对结果进行解析
+            final StringBuilder sb = new StringBuilder();
+            for (WordSimple word : result.getWordList()) {
+                sb.append(word.getWords());
+                sb.append("\n");
+            }
+            LogUtils.e("123=", sb.toString() + "-");
+            //模拟一个OcrModel列表 -- 多个 从后台取到的协议生成的
+            //根据拿到的model（协议，取值）
+            for (int i = 0; i < ocrModel.getBody().getConfigList().size(); i++) {
+                OcrBean ocrBean = new OcrBean();
+                OcrModel.Config config = ocrModel.getBody().getConfigList().get(i);
+                LogUtils.e("x", "-" + config.getMapper().getPosition());
+                try {
+                    String word = result.getWordList().get(Integer.valueOf(config.getMapper().getPosition())).getWords();
+                    int end = Integer.valueOf(config.getMapper().getCount()) == -1 ? word.length() : Integer.valueOf(config.getMapper().getStart()) + Integer.valueOf(config.getMapper().getCount());
+                    word = word.substring(Integer.valueOf(config.getMapper().getStart()), end);
+                    String wordD = RegexUtils.getNumberHasPoint(word);
+                    LogUtils.e("2xx=", word + "-" + wordD);
+                    ocrBean.setValue(wordD);
+                    ocrBean.setKey("");
+                    ocrBean.setConditionType(config.getMapper().getConditionType());
+                    ocrBean.setUnit(config.getUnit());
+                    ocrBean.setUnitType(config.getType());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ocrBean.setValue("0.0");
+                    ocrBean.setKey("");
+                    ocrBean.setConditionType(config.getMapper().getConditionType());
+                    ocrBean.setUnit(config.getUnit());
+                    ocrBean.setUnitType(config.getType());
+                }
+                ocrBeanList.add(ocrBean);
+            }
+            ocrIndentifyView.onOcrIndentifySucess(ocrBeanList);
+        }
+
+        @Override
+        public void onError(final OCRError error) {
+            ocrIndentifyView.onOcrIndentifyFailed(error.getMessage());
+        }
+    };
+
+    public static String getRealPathFromURI(Activity activity, Uri contentURI) {
+        String result;
+        Cursor cursor = activity.getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
+    }
+
+    public interface OcrIndentifyView {
+        void onOcrIndentifySucess(List<OcrBean> dataList);
+
+        void onOcrIndentifyFailed(String error);
+    }
+}

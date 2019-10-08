@@ -1,0 +1,177 @@
+package com.bibinet.intelibuild.project.bean;
+
+import com.bibinet.intelibuild.project.model.OcrImgModel;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class OcrCheckBean implements Serializable{
+    private String sampleId;
+    private String dataFrom;
+    private List<Value> valueList;
+    private String snCode;
+
+    private OcrImgModel fileInformation;
+    private String description;//修改原因
+    private boolean ifTakePhotoAgain;//是否重新拍照
+
+    public OcrImgModel getFileInformation() {
+        return fileInformation;
+    }
+
+    public void setFileInformation(OcrImgModel fileInformation) {
+        this.fileInformation = fileInformation;
+    }
+
+    public String getSampleId() {
+        return sampleId;
+    }
+
+    public void setSampleId(String sampleId) {
+        this.sampleId = sampleId;
+    }
+
+    public String getDataFrom() {
+        return dataFrom;
+    }
+
+    public void setDataFrom(String dataFrom) {
+        this.dataFrom = dataFrom;
+    }
+
+    public List<Value> getValueList() {
+        return valueList;
+    }
+
+    public void setValueList(List<Value> valueList) {
+        this.valueList = valueList;
+    }
+
+    public String getSnCode() {
+        return snCode;
+    }
+
+    public void setSnCode(String snCode) {
+        this.snCode = snCode;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isIfTakePhotoAgain() {
+        return ifTakePhotoAgain;
+    }
+
+    public void setIfTakePhotoAgain(boolean ifTakePhotoAgain) {
+        this.ifTakePhotoAgain = ifTakePhotoAgain;
+    }
+
+    public class Value implements Serializable{
+        private String value;
+        private String unitType;
+        private String conditionType;
+        private String inspectionDataId;//检测数据id
+        private String inspectionDetailId;//检测数据id
+        //TODO
+        private boolean detected;//状态
+        private boolean result;
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        public String getUnitType() {
+            return unitType;
+        }
+
+        public void setUnitType(String unitType) {
+            this.unitType = unitType;
+        }
+
+        public String getConditionType() {
+            return conditionType;
+        }
+
+        public void setConditionType(String conditionType) {
+            this.conditionType = conditionType;
+        }
+
+        @Override
+        public String toString() {
+            return "Value{" +
+                    "value='" + value + '\'' +
+                    ", unitType='" + unitType + '\'' +
+                    ", conditionType='" + conditionType + '\'' +
+                    '}';
+        }
+
+        public boolean isDetected() {
+            return detected;
+        }
+
+        public void setDetected(boolean detected) {
+            this.detected = detected;
+        }
+
+        public String getInspectionDataId() {
+            return inspectionDataId;
+        }
+
+        public void setInspectionDataId(String inspectionDataId) {
+            this.inspectionDataId = inspectionDataId;
+        }
+
+        public String getInspectionDetailId() {
+            return inspectionDetailId;
+        }
+
+        public void setInspectionDetailId(String inspectionDetailId) {
+            this.inspectionDetailId = inspectionDetailId;
+        }
+
+        public boolean isResult() {
+            return result;
+        }
+
+        public void setResult(boolean result) {
+            this.result = result;
+        }
+    }
+    /*
+    {	"sampleId": "222",
+	"dataFrom": "0",
+	"maxValue": "",
+	"minValue": "",
+	"valueList": [
+		{
+			"value": "18.8",
+			"unitType": "7",
+			"conditionType":"0"
+		},
+		{
+			"value": "0.0001 ",
+			"unitType": "2",
+			"conditionType":"1"
+		}
+]
+}
+    */
+
+    @Override
+    public String toString() {
+        return "OcrCheckBean{" +
+                "sampleId='" + sampleId + '\'' +
+                ", dataFrom='" + dataFrom + '\'' +
+                ", valueList=" + valueList +
+                '}';
+    }
+}

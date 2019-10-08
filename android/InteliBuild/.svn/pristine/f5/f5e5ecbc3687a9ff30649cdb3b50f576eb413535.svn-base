@@ -1,0 +1,79 @@
+package com.bibinet.intelibuild.project.view.manager;
+
+import com.bibinet.intelibuild.project.bean.ProductInfoBean;
+import com.bibinet.intelibuild.project.model.ContractInfoModel;
+import com.bibinet.intelibuild.project.model.ProductInfoModel;
+import com.bibinet.intelibuild.project.net.emit.ContractInfoEmit;
+import com.bibinet.intelibuild.project.net.emit.ProductInfoEmit;
+import com.bibinet.intelibuild.project.net.firing.ContractInfoFiring;
+import com.bibinet.intelibuild.project.net.firing.ProductInfoFiring;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.util.ToastUtils;
+import com.bibinet.intelibuild.project.view.activity.ProductInfoActivity;
+import com.bibinet.intelibuild.project.view.dialog.WaitDialog;
+
+/**
+ * 产品以及相关数据的请求整合类
+ * Created by bibinet on 2018-1-10.
+ */
+
+public class ProductInfoManager  implements ProductInfoEmit, ContractInfoEmit {
+
+    private ProductInfoActivity productInfoActivity;
+
+    private ProductInfoBean productInfoBean;
+
+    //请求部分
+    private ProductInfoFiring productInfoFiring;
+    private ContractInfoFiring contractInfoFiring;
+
+    private WaitDialog waitDialog;
+
+    public ProductInfoManager(ProductInfoActivity productInfoActivity) {
+        this.productInfoActivity = productInfoActivity;
+        waitDialog = new WaitDialog(productInfoActivity);
+
+        productInfoBean = new ProductInfoBean();
+
+        //初始化实例对象
+        productInfoFiring = new ProductInfoFiring(this);
+        contractInfoFiring = new ContractInfoFiring(this);
+    }
+
+    public void requestData(String productCode){
+        productInfoFiring.getProductInfo(productCode);
+        waitDialog.open();
+    }
+
+    @Override
+    public void onGetProductInfoSuccess(ProductInfoModel productInfoModel) {
+        productInfoBean.setProductInfoModel(productInfoModel);
+
+        String contractId = productInfoModel.getContractId();
+        LogUtils.e("xcvxcv", "xidfi=" + contractId);
+        contractInfoFiring.getContractInfo(contractId);
+    }
+
+    @Override
+    public void onGetProductInfoFail(String error) {
+        waitDialog.close();
+        ToastUtils.looperShow(error);
+    }
+
+    @Override
+    public void onGetContractInfoSuccess(ContractInfoModel contractInfoModel) {
+        productInfoBean.setContractInfoModel(contractInfoModel);
+        LogUtils.e("xcvxcv", "xidfxxxxxxi=" + contractInfoModel.getName());
+
+        productInfoActivity.success(productInfoBean);
+        waitDialog.close();
+    }
+
+    @Override
+    public void onGetContractInfoFail(String error) {
+        waitDialog.close();
+        ToastUtils.looperShow(error);
+    }
+
+
+}

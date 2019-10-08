@@ -1,0 +1,78 @@
+package com.bibinet.intelibuild.project.view.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.serialport.SerialPort;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.bean.SampleInfoBean;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.util.ToastUtils;
+import com.bibinet.intelibuild.project.view.base.BaseActivity;
+import com.bibinet.intelibuild.project.view.expand.TitleActivity;
+import com.bibinet.intelibuild.serialport.SerialPortConfig;
+import com.bibinet.intelibuild.serialport.SerialPortManager;
+import com.bumptech.glide.Glide;
+
+import java.io.IOException;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+/**
+ * 串口设备连接
+ * Created by bibinet on 2017-12-27.
+ */
+
+public class SerialPortActivity extends TitleActivity {
+    private final static String TAG = "TAG";
+    @BindView(R.id.iv1)
+    ImageView iv1;
+    @BindView(R.id.iv2)
+    ImageView iv2;
+    @BindView(R.id.iv3)
+    ImageView iv3;
+
+    @OnClick({R.id.act_serial_port_confirm})
+    void confirm(View view) {
+        //检测设备是否连接
+        boolean isOpen = SerialPortManager.getInstance().openDevice();
+        if(isOpen){
+            ToastUtils.show("连接成功");
+            SerialPortResultActivity.start(this, sampleInfoBean);
+            finish();
+        }else{
+            ToastUtils.show("连接异常");
+        }
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_connection_device;
+    }
+
+    private SampleInfoBean sampleInfoBean;
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+        sampleInfoBean = (SampleInfoBean) getIntent().getSerializableExtra(TAG);
+        Glide.with(this).load(R.mipmap.connect).into(iv2);
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_serial_port;
+    }
+
+    public static void start(Context context, SampleInfoBean sampleInfoBean) {
+        Intent intent = new Intent(context, SerialPortActivity.class);
+        intent.putExtra(TAG, sampleInfoBean);
+        context.startActivity(intent);
+    }
+}

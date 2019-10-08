@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="transparent">#00000000</color>
+
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+
+    <color name="col_font_big">#333333</color>
+    <color name="col_font_middle">#666666</color>
+    <color name="col_font_small">#999999</color>
+
+    <color name="col_exit_login_background">@color/white</color>
+    <color name="col_wait_background">#50000000</color>
+    <color name="col_title_txt">@color/white</color>
+
+    <color name="col_main_blue">#2778ff</color>
+    <color name="col_login_top_background">@color/col_main_blue</color>
+    <color name="col_login_main_background">@color/white</color>
+    <color name="col_login_btn_background">@color/col_main_blue</color>
+    <color name="col_login_input_txt_off">#999999</color>
+    <color name="col_login_input_txt_on">@color/col_font_big</color>
+    <color name="col_home_txt">@color/col_font_middle</color>
+    <color name="col_login_line">#dbdbdb</color>
+
+    <color name="col_exit_login_confirm_txt">@color/col_font_middle</color>
+    <color name="col_exit_login_on_txt">#fa3232</color>
+    <color name="col_exit_login_off_txt">@color/col_main_blue</color>
+    <color name="col_exit_login_line">#dbdbdb</color>
+
+    <color name="col_show_account_txt">@color/col_font_big</color>
+
+    <color name="col_product_info_tag_txt">@color/col_font_middle</color>
+    <color name="col_product_info_txt">@color/col_font_big</color>
+    <color name="col_product_info_line">#dfdfdf</color>
+
+    <color name="col_confirm_btn">@color/col_main_blue</color>
+
+    <color name="col_product_check_select_tag_txt">@color/col_font_middle</color>
+
+    <color name="col_main_background">#ebebeb</color>
+
+</resources>

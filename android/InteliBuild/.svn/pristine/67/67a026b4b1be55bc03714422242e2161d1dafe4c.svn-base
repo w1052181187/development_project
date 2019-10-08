@@ -1,0 +1,13 @@
+package com.bibinet.intelibuild.project.net.emit;
+
+import com.bibinet.intelibuild.project.model.IsSampleCheckModel;
+import com.bibinet.intelibuild.project.model.SampleModel;
+
+/**
+ * Created by bibinet on 2018-1-13.
+ */
+
+public interface IsSamplingCheckEmit {
+    void onIsSamplingCheckSuccess(IsSampleCheckModel isSampleCheckModel);
+    void onIsSamplingCheckFail(String error);
+}

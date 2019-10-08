@@ -1,0 +1,84 @@
+package com.bibinet.intelibuild.project.util;
+
+/**
+ * Created by shuyu on 2016/8/10.
+ */
+
+
+import android.content.Context;
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
+
+import com.bibinet.intelibuild.project.application.IntelBuildApplication;
+
+
+public class ScreenUtils {
+
+
+    /**
+     * sp閺夌儐鍏涚拹鐒
+     */
+    public static int sp2px(Context context, float spValue) {
+        float fontScale = context.getResources().getDisplayMetrics().density;
+        return (int) (spValue * fontScale + 0.5f);
+    }
+
+    /**
+     * px閺夌儐鍏涚拹鐒
+     */
+    public static int px2sp(Context context, float pxValue) {
+        final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
+        return (int) (pxValue / fontScale + 0.5f);
+    }
+
+    /**
+     * dip閺夌儐鍏涚拹鐑禭
+     */
+    public static int dip2px(Context context, float dipValue) {
+        float fontScale = context.getResources().getDisplayMetrics().density;
+        return (int) (dipValue * fontScale + 0.5f);
+    }
+
+    /**
+     * dip閺夌儐鍏涚拹鐑禭
+     */
+    public static int dip2px(float dipValue) {
+        float fontScale = IntelBuildApplication.context.getResources().getDisplayMetrics().density;
+        return (int) (dipValue * fontScale + 0.5f);
+    }
+
+    /**
+     * 闁哄秷顫夊畵渚�骞嶇�ｎ偅绨氶柣銊ュ閸ㄥ孩娼忛妸褍鑺冲ù鐙呮嫹 px(闁稿秴绻掔粈锟�) 闁汇劌瀚畷鐔告媴閿燂拷 閺夌儐鍓氶崹姘▔閿燂拷 dp
+     */
+    public static int px2dip(Context context, float pxValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f);
+    }
+
+    /**
+     * 闁兼儳鍢茶ぐ鍥╀沪韫囨挾顔庨柣銊ュ椤旀梹鎯旈々鏉�
+     *
+     * @param context 濞戞挸锕ｇ粭鍛村棘閿燂拷
+     * @return 閻忕偛绻愮粻椋庯拷鍦幐x
+     */
+    public static int getScreenWidth(Context context) {
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics outMetrics = new DisplayMetrics();// 闁告帗绋戠紓鎾寸閸℃洜顏辩�殿喚濮峰▍褏鐥敓锟�
+        windowManager.getDefaultDisplay().getMetrics(outMetrics);// 缂備焦鐟у▍褏鐥宀婂晭缂傚喚鍠栭鏃�顨囬敓锟�
+        return outMetrics.widthPixels;
+    }
+
+    /**
+     * 闁兼儳鍢茶ぐ鍥╀沪韫囨挾顔庨柣銊ュ閻濐喗鎯旈々鏉�
+     *
+     * @param context 濞戞挸锕ｇ粭鍛村棘閿燂拷
+     * @return 閻忕偛绻愮粻閿嬵殗濮掞箾
+     */
+    public static int getScreenHeight(Context context) {
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics outMetrics = new DisplayMetrics();// 闁告帗绋戠紓鎾寸閸℃洜顏辩�殿喚濮峰▍褏鐥敓锟�
+        windowManager.getDefaultDisplay().getMetrics(outMetrics);// 缂備焦鐟у▍褏鐥宀婂晭缂傚喚鍠栭鏃�顨囬敓锟�
+        return outMetrics.heightPixels;
+    }
+
+}

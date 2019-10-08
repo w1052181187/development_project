@@ -1,0 +1,76 @@
+package com.bibinet.intelibuild.project.net.firing;
+
+import android.app.Activity;
+import android.util.Log;
+
+import com.bibinet.intelibuild.project.application.IntelBuildApplication;
+import com.bibinet.intelibuild.project.bean.UserBean;
+import com.bibinet.intelibuild.project.model.UserModel;
+import com.bibinet.intelibuild.project.net.base.BaseFiring;
+import com.bibinet.intelibuild.project.net.base.BasePresenter;
+import com.bibinet.intelibuild.project.net.emit.LoginEmit;
+import com.bibinet.intelibuild.project.net.rewrite.ResultCallback;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.util.SPHelper;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
+import static com.bibinet.intelibuild.project.util.ObjectUtils.isNull;
+
+/**
+ * Created by bibinet on 2017-12-18.
+ */
+
+public class LoginFiring extends BaseFiring {
+    private LoginEmit loginEmit;
+
+    public LoginFiring(LoginEmit loginEmit) {
+        super(loginEmit);
+        this.loginEmit = loginEmit;
+    }
+
+    public void login(UserBean userBean) {
+        baseReady.baseReady(urlConfig.URL_LOGIN, baseReady.POST, userBean, new ResultCallback<UserModel>(waitDialog) {
+            @Override
+            protected void onFail(String error) {
+                LogUtils.e("TAG", "shibai");
+                loginEmit.onLoginFail(error);
+            }
+
+            @Override
+            protected void onSuccess(UserModel model, Response response) {
+                setToken(response);
+                loginEmit.onLoginSuccess(model);
+            }
+        });
+    }
+
+    public void loginAuto(final UserBean userBean) {
+        baseReady.baseReady(urlConfig.URL_LOGIN, baseReady.POST, userBean, new ResultCallback<UserModel>() {
+
+            @Override
+            protected void onFail(String error) {
+                loginEmit.onLoginFail(error);
+            }
+
+            @Override
+            protected void onSuccess(UserModel model, Response response) {
+                LogUtils.e("TAG", "成功");
+                setToken(response);
+                loginEmit.onLoginSuccess(model);
+            }
+        });
+    }
+
+    private void setToken(Response response){
+        String token = response.header("Token");
+        if(!isNull(token)){
+//            IntelBuildApplication.setToken(token);
+            SPHelper.getInst().saveString(SPHelper.KEY_LOGIN_TOKEN, token);
+        }
+    }
+}

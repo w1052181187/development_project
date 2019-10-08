@@ -1,0 +1,23 @@
+package com.bibinet.intelibuild.project.safe;
+
+import android.util.Base64;
+
+import static com.bibinet.intelibuild.project.util.ObjectUtils.isNull;
+
+public class Base64Safe {
+    public static String on(String str){
+        if(isNull(str)){
+            return str;
+        }
+        String decodedString =new String(Base64.decode(str,Base64.DEFAULT));
+        return decodedString;
+    }
+
+    public static String off(String str){
+        if(isNull(str)){
+            return str;
+        }
+        String encodedString = Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
+        return encodedString;
+    }
+}

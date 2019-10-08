@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ebebeb"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="9dp"
+                android:background="@drawable/homerange_shape"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:layout_marginTop="4dp"
+                        android:src="@mipmap/img_write_tag_success"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp" />
+                    <TextView
+                        android:layout_marginTop="8dp"
+                        android:text="写入成功"
+                        android:textSize="16sp"
+                        android:textColor="@color/col_font_middle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="9dp"
+                android:background="@drawable/homerange_shape"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="45dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:text="合同号"
+                        android:textColor="@color/col_product_info_tag_txt" />
+
+                    <TextView
+                        android:id="@+id/act_product_check_write_contract_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="16dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="right"
+                        android:maxWidth="210dp"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="8dp"
+                        android:text=""
+                        android:textColor="@color/col_product_info_txt"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:background="@color/col_product_info_line" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="45dp">
+
+                    <TextView
+                        android:textSize="14sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:text="合同名称"
+                        android:textColor="@color/col_product_info_tag_txt" />
+
+                    <TextView
+                        android:id="@+id/act_product_check_write_contract_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="16dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="right"
+                        android:maxWidth="210dp"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="8dp"
+                        android:text=""
+                        android:textColor="@color/col_product_info_txt"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="9dp"
+                android:layout_marginRight="9dp"
+                android:background="@drawable/homerange_shape"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="45dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:text="产品名称"
+                        android:textSize="14sp"
+                        android:textColor="@color/col_product_info_tag_txt" />
+
+                    <TextView
+                        android:id="@+id/act_product_check_write_product_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="16dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="right"
+                        android:maxWidth="210dp"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="8dp"
+                        android:text=""
+                        android:textColor="@color/col_product_info_txt"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:background="@color/col_product_info_line" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="45dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:text="样品编号"
+                        android:textSize="14sp"
+                        android:textColor="@color/col_product_info_tag_txt" />
+
+                    <TextView
+                        android:id="@+id/act_product_check_write_sample_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="16dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="right"
+                        android:maxWidth="210dp"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="8dp"
+                        android:text=""
+                        android:textColor="@color/col_product_info_txt"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="9dp"
+                android:background="@drawable/homerange_shape"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="45dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:text="检验项目"
+                        android:textSize="14sp"
+                        android:textColor="@color/col_product_info_txt"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/act_product_check_write_check_project"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="16dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="right"
+                        android:maxWidth="210dp"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="8dp"
+                        android:text=""
+                        android:textColor="@color/col_product_info_txt"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:background="@color/col_product_info_line" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="45dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:text="执行标准"
+                        android:textSize="14sp"
+                        android:textColor="@color/col_product_info_tag_txt" />
+
+                    <TextView
+                        android:id="@+id/act_product_check_write_standard_of_execution"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="16dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="right"
+                        android:maxWidth="210dp"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="8dp"
+                        android:text=""
+                        android:textColor="@color/col_product_info_txt"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:background="@color/col_product_info_line" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="45dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:text="检验仪器"
+                        android:textSize="14sp"
+                        android:textColor="@color/col_product_info_tag_txt" />
+
+                    <TextView
+                        android:id="@+id/act_product_check_write_check_instrument"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="16dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="right"
+                        android:maxWidth="210dp"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="8dp"
+                        android:text=""
+                        android:textColor="@color/col_product_info_txt"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/act_product_check_result_confirm"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/col_confirm_btn"
+            android:gravity="center"
+            android:text="写入下一个样品标签数据"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+    </LinearLayout>
+</RelativeLayout>

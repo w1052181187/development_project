@@ -1,0 +1,10 @@
+package com.bibinet.intelibuild.project.net.emit;
+
+/**
+ * Created by bibinet on 2018-1-5.
+ */
+
+public interface ResetPasswordActivityView {
+    void onResetPasswordSucess();
+    void onResetPasswordFailed(String msg);
+}

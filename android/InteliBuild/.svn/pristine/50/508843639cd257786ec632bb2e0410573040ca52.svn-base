@@ -1,0 +1,55 @@
+package com.bibinet.intelibuild.project.model;
+
+import com.bibinet.intelibuild.project.bean.OcrCheckBean;
+
+import java.util.List;
+
+public class OcrCheckModel extends BaseModel{
+    private String sampleId;
+    private String dataFrom;
+    private List<OcrCheckBean.Value> valueList;
+
+    private boolean last;
+    private boolean finalResult;
+
+    public boolean isLast() {
+        return last;
+    }
+
+    public void setLast(boolean last) {
+        this.last = last;
+    }
+
+    public boolean isFinalResult() {
+        return finalResult;
+    }
+
+    public void setFinalResult(boolean finalResult) {
+        this.finalResult = finalResult;
+    }
+
+    public String getSampleId() {
+        return sampleId;
+    }
+
+    public void setSampleId(String sampleId) {
+        this.sampleId = sampleId;
+    }
+
+    public String getDataFrom() {
+        return dataFrom;
+    }
+
+    public void setDataFrom(String dataFrom) {
+        this.dataFrom = dataFrom;
+    }
+
+    public List<OcrCheckBean.Value> getValueList() {
+        return valueList;
+    }
+
+    public void setValueList(List<OcrCheckBean.Value> valueList) {
+        this.valueList = valueList;
+    }
+
+}

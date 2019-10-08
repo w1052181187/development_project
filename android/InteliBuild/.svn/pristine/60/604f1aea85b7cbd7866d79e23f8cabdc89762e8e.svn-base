@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="dim_title_txt">16sp</dimen>
+    <dimen name="dim_product_item_min_height">45dp</dimen>
+    <dimen name="dim_bottom_bar_height">48dp</dimen>
+</resources>

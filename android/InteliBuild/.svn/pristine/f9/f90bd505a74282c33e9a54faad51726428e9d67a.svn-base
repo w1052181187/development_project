@@ -1,0 +1,8 @@
+package com.bibinet.intelibuild.project.net.emit;
+
+import com.bibinet.intelibuild.project.model.VideoUploadResultModel;
+
+public interface UploadVideoEmit {
+    void onUploadSuccess(VideoUploadResultModel model);
+    void onUploadFail(String msg);
+}

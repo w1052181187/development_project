@@ -1,0 +1,52 @@
+package com.bibinet.intelibuild.project.manager;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.pm.FeatureInfo;
+import android.content.pm.PackageManager;
+import android.hardware.Camera;
+import android.hardware.camera2.CameraManager;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.os.Build;
+
+import com.bibinet.intelibuild.R;
+
+
+public class BeepManager {
+    private Context context;
+
+    public BeepManager(Context context) {
+        this.context = context;
+    }
+
+    public void labelScanBeep() {
+        SoundPool mSoundPool;
+        if (Build.VERSION.SDK_INT >= 21) {
+            SoundPool.Builder builder = new SoundPool.Builder();
+            //传入音频数量
+            builder.setMaxStreams(2);
+            //AudioAttributes是一个封装音频各种属性的方法
+            AudioAttributes.Builder attrBuilder = new AudioAttributes.Builder();
+            //设置音频流的合适的属性
+            attrBuilder.setLegacyStreamType(AudioManager.STREAM_MUSIC);
+            //加载一个AudioAttributes
+            builder.setAudioAttributes(attrBuilder.build());
+            mSoundPool = builder.build();
+        }
+        //当系统的SDK版本小于21时
+        else {//设置最多可容纳2个音频流，音频的品质为5
+            mSoundPool = new SoundPool(2, AudioManager.STREAM_SYSTEM, 5);
+        }
+        final int sourceid = mSoundPool.load(context, R.raw.beep, 1);
+        mSoundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+
+            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                // TODO Auto-generated method stub
+                soundPool.play(sourceid, 1, 1, 1, 0, 1);
+            }
+        });
+    }
+
+}

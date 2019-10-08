@@ -1,0 +1,102 @@
+package com.bibinet.intelibuild.project.view.dialog;
+
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.Window;
+import android.view.WindowManager;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.view.base.BaseDialog;
+import com.bibinet.intelibuild.project.view.custom.PickerView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+/**
+ * 选择打印采样品数量弹窗
+ * Created by Wh on 2016/8/19.
+ */
+public class ProductCheckSelectDialog extends BaseDialog implements DialogInterface.OnDismissListener {
+    public interface OnProductCheckSelectDialogListener {
+        void onConfirm(String selectText);
+    }
+
+    private OnProductCheckSelectDialogListener onProductCheckSelectDialogListener;
+
+    private List<String> dataList;
+
+    @BindView(R.id.dia_product_check_select_pick_view)
+    PickerView pickerView;
+
+    public ProductCheckSelectDialog(Context context) {
+        super(context);
+    }
+
+    @Override
+    protected void onBaseCreate(Bundle savedInstanceState) {
+        setOnDismissListener(this);
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.dialog_product_check_select;
+    }
+
+    @OnClick(R.id.dia_product_check_select_cancel)
+    void cancelDialog() {
+        dismiss();
+    }
+
+    private boolean isOpen = false;
+
+    @Override
+    public synchronized void show() {
+        if (!isOpen) {
+            super.show();
+            isOpen = true;
+        }
+    }
+
+    public void open(int count, OnProductCheckSelectDialogListener onProductCheckSelectDialogListener) {
+        this.onProductCheckSelectDialogListener = onProductCheckSelectDialogListener;
+        List<String> stringList = new ArrayList<String>();
+        for (int i = 1; i <= count; i++) {
+            stringList.add(i + "");
+        }
+        pickerView.setData(stringList);
+
+        show();
+    }
+
+    @Override
+    protected void initDialog() {
+        super.initDialog();
+        Window window = getWindow();
+        window.setWindowAnimations(R.style.sty_dia_exit_login);
+        window.setGravity(Gravity.BOTTOM); //可设置dialog的位置
+        window.getDecorView().setPadding(0, 0, 0, 0); //消除边距
+
+        WindowManager.LayoutParams lp = window.getAttributes();
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;   //设置宽度充满屏幕
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        //lp.alpha = 0.85f; // 透明度
+        window.setAttributes(lp);
+    }
+
+    @OnClick(R.id.dia_product_check_select_confirm)
+    void confirm() {
+        String selectText = pickerView.getCurrentText();
+        onProductCheckSelectDialogListener.onConfirm(selectText);
+        dismiss();
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        isOpen = false;
+    }
+}

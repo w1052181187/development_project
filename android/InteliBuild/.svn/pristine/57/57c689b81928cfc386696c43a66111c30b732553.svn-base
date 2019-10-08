@@ -1,0 +1,33 @@
+package com.bibinet.intelibuild.project.net.firing;
+
+import com.bibinet.intelibuild.project.model.OcrModel;
+import com.bibinet.intelibuild.project.net.base.BaseFiring;
+import com.bibinet.intelibuild.project.net.emit.GetOcrProtocolEmit;
+import com.bibinet.intelibuild.project.net.rewrite.ResultCallback;
+
+import okhttp3.Response;
+
+/**
+ * Created by bibinet on 2018-1-13.
+ */
+
+public class ProtocolFiring extends BaseFiring {
+    private GetOcrProtocolEmit getOcrProtocolEmit;
+
+    public ProtocolFiring(GetOcrProtocolEmit getOcrProtocolEmit) {
+        this.getOcrProtocolEmit = getOcrProtocolEmit;
+    }
+    public void getProtocol(String protocolId){
+        baseReady.baseReady(urlConfig.setValue(urlConfig.URL_GET_PROTOCOL_INFO, protocolId), baseReady.GET, null, new ResultCallback<OcrModel>() {
+
+            @Override
+            protected void onFail(String error) {
+                getOcrProtocolEmit.onGetProtocolFail(error);
+            }
+
+            protected void onSuccess(OcrModel model, Response response) {
+                getOcrProtocolEmit.onGetProtocolSuccess(model);
+            }
+        });
+    }
+}

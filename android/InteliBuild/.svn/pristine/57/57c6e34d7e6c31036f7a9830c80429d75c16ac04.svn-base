@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f4f4f4"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@mipmap/img_open_monitor_success_background">
+
+        <LinearLayout
+            android:layout_marginTop="90dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:src="@mipmap/img_open_monitor_success_icon"
+                android:layout_width="50dp"
+                android:layout_height="50dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="监控开启成功"
+                android:textColor="@color/white"
+                android:layout_marginTop="15dp"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/act_open_monitor_start_scan_tag"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="15dp"
+            android:layout_above="@+id/fra_open_monitor_hint"
+            android:layout_centerHorizontal="true"
+            android:src="@mipmap/img_open_monitor_success_scan" />
+
+        <TextView
+            android:id="@+id/fra_open_monitor_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="22dp"
+            android:textColor="@color/white"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:text="@string/str_scan_project_hint" />
+    </RelativeLayout>
+
+</LinearLayout>

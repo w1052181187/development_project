@@ -1,0 +1,40 @@
+package com.bibinet.intelibuild.project.net.firing;
+
+import com.bibinet.intelibuild.project.application.IntelBuildApplication;
+import com.bibinet.intelibuild.project.bean.MonitorDevBean;
+import com.bibinet.intelibuild.project.model.MonitorDevLoginModel;
+import com.bibinet.intelibuild.project.model.UserModel;
+import com.bibinet.intelibuild.project.net.base.BaseFiring;
+import com.bibinet.intelibuild.project.net.emit.MonitorDevLoginEmit;
+import com.bibinet.intelibuild.project.net.rewrite.ResultCallback;
+import com.bibinet.intelibuild.project.util.LogUtils;
+
+import okhttp3.Response;
+
+import static com.bibinet.intelibuild.project.util.ObjectUtils.isNull;
+
+public class MonitorDeviceLoginFiring extends BaseFiring {
+    private MonitorDevLoginEmit devLoginEmit;
+
+        public MonitorDeviceLoginFiring(MonitorDevLoginEmit emit) {
+        super(emit);
+        this.devLoginEmit = emit;
+    }
+
+    public void getDeviceInfo(MonitorDevBean bean) {
+        baseReady.baseReady(urlConfig.setValue(urlConfig.URL_GET_MONITOR_DEVICE_INFO, bean.getSN()), baseReady.GET, null, new ResultCallback<MonitorDevLoginModel>(waitDialog) {
+            @Override
+            protected void onFail(String error) {
+                LogUtils.e("TAG", "shibai");
+                devLoginEmit.onLoginMonitorDevFail(error);
+            }
+
+            @Override
+            protected void onSuccess(MonitorDevLoginModel model, Response response) {
+                devLoginEmit.onLoginMonitorDevSuccess(model);
+            }
+        });
+    }
+
+
+}

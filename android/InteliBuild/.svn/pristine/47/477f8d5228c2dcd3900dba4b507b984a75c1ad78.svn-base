@@ -1,0 +1,32 @@
+package com.bibinet.intelibuild.project.net.base;
+
+import android.content.Context;
+
+import com.bibinet.intelibuild.project.net.UrlConfig;
+import com.bibinet.intelibuild.project.view.dialog.WaitDialog;
+import com.google.gson.Gson;
+
+/**
+ * Created by bibinet on 2017-12-18.
+ */
+
+public class BasePresenter {
+    protected Gson gson;
+    protected WaitDialog waitDialog;
+    protected BaseReady baseReady;
+    protected UrlConfig urlConfig;
+
+    public BasePresenter(Object context) {
+        this();
+        if(context != null){
+            waitDialog = new WaitDialog((Context) context);
+        }
+    }
+
+    public BasePresenter() {
+        this.gson = new Gson();
+        this.baseReady = new BaseReady(gson);
+        this.urlConfig = new UrlConfig();
+    }
+
+}

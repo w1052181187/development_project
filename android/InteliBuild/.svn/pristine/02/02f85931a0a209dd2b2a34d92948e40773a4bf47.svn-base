@@ -1,0 +1,96 @@
+package com.bibinet.intelibuild.project.view.manager;
+
+import com.bibinet.intelibuild.project.bean.SampleInfoBean;
+import com.bibinet.intelibuild.project.model.ContractInfoModel;
+import com.bibinet.intelibuild.project.model.ProductInfoModel;
+import com.bibinet.intelibuild.project.model.SampleModel;
+import com.bibinet.intelibuild.project.net.emit.ContractInfoEmit;
+import com.bibinet.intelibuild.project.net.emit.GetSamplingEmit;
+import com.bibinet.intelibuild.project.net.emit.ProductInfoEmit;
+import com.bibinet.intelibuild.project.net.firing.ContractInfoFiring;
+import com.bibinet.intelibuild.project.net.firing.ProductInfoFiring;
+import com.bibinet.intelibuild.project.net.firing.SamplingFiring;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.util.ToastUtils;
+import com.bibinet.intelibuild.project.view.activity.SampleInfoActivity;
+import com.bibinet.intelibuild.project.view.dialog.WaitDialog;
+
+/**
+ * 样品以及相关数据的请求整合类
+ * Created by bibinet on 2018-1-10.
+ */
+
+public class SampleInfoManager implements ProductInfoEmit, ContractInfoEmit, GetSamplingEmit {
+
+    private SampleInfoActivity sampleInfoActivity;
+
+    private SampleInfoBean sampleInfoBean;
+
+    //请求部分
+    private ProductInfoFiring productInfoFiring;
+    private ContractInfoFiring contractInfoFiring;
+    private SamplingFiring samplingFiring;
+
+    private WaitDialog waitDialog;
+
+    public SampleInfoManager(SampleInfoActivity sampleInfoActivity) {
+        this.sampleInfoActivity = sampleInfoActivity;
+        waitDialog = new WaitDialog(sampleInfoActivity);
+
+        sampleInfoBean = new SampleInfoBean();
+
+        //初始化实例对象
+        productInfoFiring = new ProductInfoFiring(this);
+        contractInfoFiring = new ContractInfoFiring(this);
+        samplingFiring = new SamplingFiring(this);
+    }
+
+    public void requestData(String sampleCode){
+        samplingFiring.getSamplingInfo(sampleCode);
+        waitDialog.open();
+    }
+
+    @Override
+    public void onGetSamplingSuccess(SampleModel samplingModel) {
+        sampleInfoBean.setSampleModel(samplingModel);
+        String productId = samplingModel.getProductInstanceId();
+
+        productInfoFiring.getProductInfo(productId);
+    }
+
+    @Override
+    public void onGetSamplingFail(String error) {
+        waitDialog.close();
+        ToastUtils.looperShow(error);
+    }
+
+    @Override
+    public void onGetProductInfoSuccess(ProductInfoModel productInfoModel) {
+        sampleInfoBean.setProductInfoModel(productInfoModel);
+
+        String contractId = productInfoModel.getContractId();
+        LogUtils.e("xcvxcv", "xidfi=" + contractId);
+        contractInfoFiring.getContractInfo(contractId);
+    }
+
+    @Override
+    public void onGetProductInfoFail(String error) {
+        waitDialog.close();
+        ToastUtils.looperShow(error);
+    }
+
+    @Override
+    public void onGetContractInfoSuccess(ContractInfoModel contractInfoModel) {
+        sampleInfoBean.setContractInfoModel(contractInfoModel);
+        LogUtils.e("xcvxcv", "xidfxxxxxxi=" + contractInfoModel.getName());
+
+        sampleInfoActivity.success(sampleInfoBean);
+        waitDialog.close();
+    }
+
+    @Override
+    public void onGetContractInfoFail(String error) {
+        waitDialog.close();
+        ToastUtils.looperShow(error);
+    }
+}

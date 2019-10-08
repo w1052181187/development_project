@@ -1,0 +1,47 @@
+package com.bibinet.intelibuild.project.view.base;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+
+import butterknife.ButterKnife;
+
+import static com.bibinet.intelibuild.project.util.ObjectUtils.isNull;
+
+public abstract class BasePop extends PopupWindow{
+    public BasePop(Context context){
+        setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+        setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        View view = LayoutInflater.from(context).inflate(getLayoutId(),null);
+        setContentView(view);
+        //点击popupWindow以外的区域自动关闭popupWindow
+        setOutsideTouchable(true);
+        setFocusable(true);
+        setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        //setOnDismissListener(this);
+        //setAnimationStyle(R.anim.tr_void);
+        ButterKnife.bind(this, view);
+        onBaseCreate(context);
+    }
+
+    public void show(View v, int x, int y){
+        showAsDropDown(v, x, y);
+    }
+
+    protected abstract void onBaseCreate(Context context);
+
+    protected abstract int getLayoutId();
+
+    protected void setTextView(TextView textView, String value){
+        if(textView!=null && !isNull(value)){
+            textView.setText(value);
+        }else{
+            textView.setText("");
+        }
+    }
+}

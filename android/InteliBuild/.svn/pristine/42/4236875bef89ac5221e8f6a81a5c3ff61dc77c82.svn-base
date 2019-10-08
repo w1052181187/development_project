@@ -1,0 +1,103 @@
+package com.bibinet.intelibuild.project.video.util;
+
+import android.app.Activity;
+import android.content.Context;
+
+import com.bibinet.intelibuild.project.application.IntelBuildApplication;
+import com.bibinet.intelibuild.project.net.firing.UploadVideoFiring;
+import com.bibinet.intelibuild.project.util.FileUtils;
+import com.company.NetSDK.INetSDK;
+import com.company.NetSDK.NET_DEVICEINFO_Ex;
+
+public class VideoMananger {
+
+    public final static String recordFile = FileUtils.createInnerAppFile(IntelBuildApplication.getInstance(),
+            FileUtils.MONITOR_VIDEO_FILE_NAME);
+
+    private int streamType = 3;
+    private long mRealHandle;
+    private static VideoMananger mVideoManager;
+
+    public static VideoMananger getInst() {
+        if (mVideoManager == null) {
+            synchronized (VideoMananger.class){
+                if (mVideoManager == null) {
+                    mVideoManager = new VideoMananger();
+                }
+            }
+        }
+        return mVideoManager;
+    }
+
+    public boolean restartRecord() {
+        if (mRealHandle == 0) {
+            return false;
+        }
+        INetSDK.StopSaveRealData(mRealHandle);
+        INetSDK.StopRealPlayEx(IntelBuildApplication.getInstance().getLoginHandle());
+        initRealRecord();
+        return INetSDK.SaveRealData(mRealHandle, recordFile);
+    }
+
+    private void initRealRecord() {
+        int channelNum = IntelBuildApplication.getInstance().getChannelNum() - 1;
+        mRealHandle = INetSDK.RealPlayEx(IntelBuildApplication.getInstance().getLoginHandle(),
+                channelNum, streamType);
+        IntelBuildApplication.getInstance().setmRealPlayHandle(mRealHandle);
+    }
+
+    public boolean startRecord(){
+        mRealHandle = IntelBuildApplication.getInstance().getmRealPlayHandle();
+
+        if (mRealHandle == 0) {
+            initRealRecord();
+        }
+
+        if (mRealHandle == 0) {
+            return false;
+        }
+
+        if (!INetSDK.SaveRealData(mRealHandle, recordFile)){
+            ToolKits.writeErrorLog("record file:"+recordFile);
+            return  restartRecord();
+        }
+        return true;
+    }
+
+    public boolean stopRecord(){
+        if (mRealHandle == 0) {
+            return false;
+        }
+        if (!INetSDK.StopSaveRealData(mRealHandle)){
+            return false;
+        }
+        if (INetSDK.StopRealPlayEx(IntelBuildApplication.getInstance().getLoginHandle())){
+            mRealHandle = 0;
+            IntelBuildApplication.getInstance().setmRealPlayHandle(mRealHandle);
+        }
+        if (INetSDK.Logout(IntelBuildApplication.getInstance().getLoginHandle())){
+            IntelBuildApplication.getInstance().setLoginHandle(0);
+        }
+        return true;
+    }
+
+//    public boolean record(Context context, boolean recordFlag){
+//
+//        if (mRealHandle == 0)
+//            return false;
+////        ToolKits.writeLog("ExternalFilesDir:"+mContext.getExternalFilesDir(null).getAbsolutePath());
+//        boolean isRecording = recordFlag;
+//        if(isRecording){
+//
+//            if (!INetSDK.SaveRealData(mRealHandle, recordFile)){
+//                ToolKits.writeErrorLog("record file:"+recordFile);
+//                INetSDK.StopSaveRealData(mRealHandle);
+//                return false;
+//            }
+//        }else {
+//            INetSDK.StopSaveRealData(mRealHandle);
+//        }
+//        return true;
+//    }
+
+}

@@ -1,0 +1,14 @@
+package com.bibinet.intelibuild.project.util;
+
+import android.os.Build;
+
+public class ApiUtils {
+
+    public static boolean is19() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            return true;
+        }
+        return false;
+    }
+
+}

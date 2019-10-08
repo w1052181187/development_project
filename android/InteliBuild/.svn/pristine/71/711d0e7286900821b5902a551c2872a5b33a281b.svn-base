@@ -1,0 +1,32 @@
+package com.bibinet.intelibuild.project.bean;
+
+import com.bibinet.intelibuild.project.model.ContractInfoModel;
+import com.bibinet.intelibuild.project.model.ProductInfoModel;
+
+import java.io.Serializable;
+
+/**
+ * Created by bibinet on 2018-1-13.
+ */
+
+public class ProductInfoBean implements Serializable {
+    private ProductInfoModel productInfoModel;
+    private ContractInfoModel contractInfoModel;
+
+
+    public ProductInfoModel getProductInfoModel() {
+        return productInfoModel;
+    }
+
+    public void setProductInfoModel(ProductInfoModel productInfoModel) {
+        this.productInfoModel = productInfoModel;
+    }
+
+    public ContractInfoModel getContractInfoModel() {
+        return contractInfoModel;
+    }
+
+    public void setContractInfoModel(ContractInfoModel contractInfoModel) {
+        this.contractInfoModel = contractInfoModel;
+    }
+}

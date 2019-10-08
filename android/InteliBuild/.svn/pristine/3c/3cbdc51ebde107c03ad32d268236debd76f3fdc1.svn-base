@@ -1,0 +1,8 @@
+package com.bibinet.intelibuild.project.net.emit;
+
+import com.bibinet.intelibuild.project.model.MonitorDevLoginModel;
+
+public interface MonitorDevLoginEmit {
+    void onLoginMonitorDevSuccess(MonitorDevLoginModel devLoginModel);
+    void onLoginMonitorDevFail(String msg);
+}

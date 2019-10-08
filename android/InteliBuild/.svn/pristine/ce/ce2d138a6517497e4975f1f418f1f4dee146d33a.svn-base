@@ -1,0 +1,19 @@
+package com.bibinet.intelibuild.project.util;
+
+import android.text.TextUtils;
+
+public class ObjectUtils {
+    public static boolean isNull(String str){
+        if(str == null || TextUtils.isEmpty(str)){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isNull(Object o){
+        if(o == null){
+            return true;
+        }
+        return false;
+    }
+}

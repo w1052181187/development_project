@@ -1,0 +1,119 @@
+package com.bibinet.intelibuild.project.view.manager;
+
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.bean.SampleInfoBean;
+import com.bibinet.intelibuild.project.model.ContractInfoModel;
+import com.bibinet.intelibuild.project.model.InspectionModel;
+import com.bibinet.intelibuild.project.model.ProductInfoModel;
+import com.bibinet.intelibuild.project.model.SampleModel;
+import com.bibinet.intelibuild.project.net.emit.ContractInfoEmit;
+import com.bibinet.intelibuild.project.net.emit.GetSamplingEmit;
+import com.bibinet.intelibuild.project.net.emit.ProductInfoEmit;
+import com.bibinet.intelibuild.project.net.firing.ContractInfoFiring;
+import com.bibinet.intelibuild.project.net.firing.ProductInfoFiring;
+import com.bibinet.intelibuild.project.net.firing.SamplingFiring;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.util.ToastUtils;
+import com.bibinet.intelibuild.project.view.activity.OcrResultActivity;
+import com.bibinet.intelibuild.project.view.activity.SampleInfoActivity;
+import com.bibinet.intelibuild.project.view.dialog.WaitDialog;
+import com.scwang.smartrefresh.layout.util.DensityUtil;
+
+import java.util.List;
+
+import static com.bibinet.intelibuild.project.util.ObjectUtils.isNull;
+
+/**
+ * Ocr结果的处理类，用于不同情况界面的展示以及部分请求
+ * Created by bibinet on 2018-1-10.
+ */
+
+public class OcrResultManager {
+
+    private OcrResultActivity ocrResultActivity;
+
+    private SampleInfoBean sampleInfoBean;
+
+    //请求部分
+    private ProductInfoFiring productInfoFiring;
+    private ContractInfoFiring contractInfoFiring;
+    private SamplingFiring samplingFiring;
+
+    private WaitDialog waitDialog;
+
+    public OcrResultManager(OcrResultActivity ocrResultActivity, SampleInfoBean sampleInfoBean) {
+        this.ocrResultActivity = ocrResultActivity;
+        waitDialog = new WaitDialog(ocrResultActivity);
+        this.sampleInfoBean = sampleInfoBean;
+
+
+        //初始化实例对象
+        //productInfoFiring = new ProductInfoFiring(this);
+        //contractInfoFiring = new ContractInfoFiring(this);
+        //samplingFiring = new SamplingFiring(this);
+    }
+
+    public void setConditionRequirement(LinearLayout conditionIntroLL, LinearLayout standardIntroLL, TextView conditionStandardTV, View conditionStandardV) {
+        List<InspectionModel.Condition> condition = sampleInfoBean.getInspectionModel().getConditions();
+        List<InspectionModel.Requirement> requirement = sampleInfoBean.getInspectionModel().getRequirements();
+        if (isSingle()) {
+            conditionStandardV.setVisibility(View.GONE);
+            conditionStandardTV.setVisibility(View.VISIBLE);
+            StringBuffer buffer = new StringBuffer();
+            if (!isNull(condition) && condition.size() > 0) {
+                for (int i = 0; i < condition.size(); i++) {
+                    buffer.append(condition.get(i).getName() + "：" + condition.get(i).getDigitalName() + " ");
+                }
+            }
+            if (!isNull(requirement) && requirement.size() > 0) {
+                for (int i = 0; i < requirement.size(); i++) {
+                    buffer.append(requirement.get(i).getName() + "：" + requirement.get(i).getDigitalName() + " ");
+                }
+            }
+            conditionStandardTV.setText(buffer.toString());
+        } else {
+            conditionStandardV.setVisibility(View.VISIBLE);
+            conditionStandardTV.setVisibility(View.GONE);
+
+            //添加要展示的标准和要求
+            if (!isNull(condition) && condition.size() > 0) {
+                for (int i = 0; i < condition.size(); i++) {
+                    conditionIntroLL.addView(getShowView(condition.get(i).getName() + "：" + condition.get(i).getDigitalName()));
+                }
+            }
+            if (!isNull(requirement) && requirement.size() > 0) {
+                for (int i = 0; i < requirement.size(); i++) {
+                    standardIntroLL.addView(getShowView(requirement.get(i).getName() + "：" + requirement.get(i).getDigitalName()));
+                }
+            }
+        }
+    }
+
+    private boolean isSingle() {
+        List<InspectionModel.Condition> condition = sampleInfoBean.getInspectionModel().getConditions();
+        List<InspectionModel.Requirement> requirement = sampleInfoBean.getInspectionModel().getRequirements();
+        if (isNull(condition) || condition.size() <= 0 || isNull(requirement) || requirement.size() <= 0) {
+            return true;
+        }
+        return false;
+    }
+
+    private TextView getShowView(String txt) {
+        TextView tv = new TextView(ocrResultActivity);
+        tv.setText(txt);
+        tv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        int pxLR = DensityUtil.dp2px(3);
+        int pxTB = DensityUtil.dp2px(6);
+        tv.setPadding(pxLR, pxTB, pxLR, pxTB);
+        tv.setTextColor(ocrResultActivity.getResources().getColor(R.color.col_font_big));
+        tv.setTextSize(13);
+        tv.setGravity(Gravity.CENTER);
+        return tv;
+    }
+}

@@ -1,0 +1,257 @@
+package com.bibinet.intelibuild.project.view.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.widget.Toast;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.application.IntelBuildApplication;
+import com.bibinet.intelibuild.project.bean.MonitorDevBean;
+import com.bibinet.intelibuild.project.model.MonitorDevLoginModel;
+import com.bibinet.intelibuild.project.net.emit.MonitorDevLoginEmit;
+import com.bibinet.intelibuild.project.net.firing.MonitorDeviceLoginFiring;
+import com.bibinet.intelibuild.project.util.SPHelper;
+import com.bibinet.intelibuild.project.video.util.ToolKits;
+import com.bibinet.intelibuild.project.video.util.VideoMananger;
+import com.bibinet.intelibuild.project.video.util.module.IPLoginModule;
+import com.bibinet.intelibuild.project.view.dialog.WaitDialog;
+import com.bibinet.intelibuild.project.view.expand.TitleActivity;
+import com.bibinet.intelibuild.project.view.fragment.OpenMonitorFragment;
+import com.company.NetSDK.INetSDK;
+import com.google.gson.Gson;
+import com.uuzuche.lib_zxing.activity.CaptureFragment;
+import com.uuzuche.lib_zxing.activity.CodeUtils;
+import com.uuzuche.lib_zxing.decoding.CaptureActivityHandler;
+
+import butterknife.OnClick;
+
+
+/**
+ * 扫描开启监控页面
+ * Created by bibinet on 2018-1-4.
+ */
+
+public class OpenMonitorActivity extends TitleActivity implements MonitorDevLoginEmit{
+
+    private static final String PAGE_ID = "PAGE_ID";
+
+    private CaptureFragment captureFragment;
+
+    public boolean isOpen = false;
+    private IPLoginModule mLoginModule;
+    private WaitDialog waitDialog;
+
+    @OnClick(R.id.act_capture_light)
+    void light() {
+        if (!isOpen) {
+            CodeUtils.isLightEnable(true);
+            isOpen = true;
+        } else {
+            CodeUtils.isLightEnable(false);
+            isOpen = false;
+        }
+    }
+
+    private int pageId;
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+        pageId = getIntent().getIntExtra(PAGE_ID, -1);
+        captureFragment = new CaptureFragment();
+        // 为二维码扫描界面设置定制化界面
+        CodeUtils.setFragmentArgs(captureFragment, R.layout.view_qrcode);
+        captureFragment.setAnalyzeCallback(analyzeCallback);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_my_container, captureFragment).commit();
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_scan_monitor;
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_open_monitor;
+    }
+
+    public static void start(Context context, int pageId) {
+        //需要摄像头权限
+        Intent intent = new Intent(context, OpenMonitorActivity.class);
+        intent.putExtra(PAGE_ID, pageId);
+        context.startActivity(intent);
+    }
+
+    /**
+     * 二维码解析回调函数
+     */
+    CodeUtils.AnalyzeCallback analyzeCallback = new CodeUtils.AnalyzeCallback() {
+        @Override
+        public void onAnalyzeSuccess(Bitmap mBitmap, String result) {
+            Intent resultIntent = new Intent();
+            Bundle bundle = new Bundle();
+            bundle.putInt(CodeUtils.RESULT_TYPE, CodeUtils.RESULT_SUCCESS);
+            bundle.putString(CodeUtils.RESULT_STRING, result);
+            resultIntent.putExtras(bundle);
+
+            onResult(bundle);
+        }
+
+        @Override
+        public void onAnalyzeFailed() {
+            Intent resultIntent = new Intent();
+            Bundle bundle = new Bundle();
+            bundle.putInt(CodeUtils.RESULT_TYPE, CodeUtils.RESULT_FAILED);
+            bundle.putString(CodeUtils.RESULT_STRING, "");
+            resultIntent.putExtras(bundle);
+
+            onResult(bundle);
+        }
+    };
+
+    //处理二维码回调结果
+    private void onResult(Bundle bundle){
+        Handler captureActivityHandler = captureFragment.getHandler();
+        if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_SUCCESS) {
+            String result = bundle.getString(CodeUtils.RESULT_STRING);
+//            getSupportFragmentManager().beginTransaction().
+//                    add(R.id.act_open_monitor_success_main, new OpenMonitorFragment().setInt(pageId)).commit();
+
+
+            Gson gson = new Gson();
+            MonitorDevBean bean = null;
+            try {
+                bean = gson.fromJson(result,MonitorDevBean.class);
+            } catch (Exception e){
+                bean = null;
+            }
+
+            if (bean != null) {
+                SPHelper.getInst().saveString(SPHelper.KEY_CHECK_MONTIOR_SN, bean.getSN());
+                getVideoDeviceInfo(bean);
+            } else {
+                Toast.makeText(this, "请扫描监控二维码！", Toast.LENGTH_LONG).show();
+                captureActivityHandler.sendEmptyMessage(com.uuzuche.lib_zxing.R.id.restart_preview);
+            }
+
+
+        } else if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_FAILED) {
+            //Toast.makeText(this, "解析二维码失败", Toast.LENGTH_LONG).show();
+            ToolKits.showMessage(this,"无法识别二维码");
+            captureActivityHandler.sendEmptyMessage(com.uuzuche.lib_zxing.R.id.restart_preview);
+        }
+
+    }
+
+    private void getVideoDeviceInfo(MonitorDevBean result) {
+        waitDialog = new WaitDialog(this);
+        MonitorDeviceLoginFiring deviceLoginFiring = new MonitorDeviceLoginFiring(this);
+        deviceLoginFiring.getDeviceInfo(result);
+
+    }
+
+    @Override
+    public void onLoginMonitorDevSuccess(MonitorDevLoginModel devLoginModel) {
+        mLoginModule = new IPLoginModule();
+
+        IntelBuildApplication.getInstance().setChannelNum(devLoginModel.getChannelNum());
+//
+        LoginTask loginTask = new LoginTask(devLoginModel.getCameraIp(), devLoginModel.getCameraPort(),
+                devLoginModel.getUsername(), devLoginModel.getPassword());
+//        LoginTask loginTask = new LoginTask("192.168.2.246", "37777", "admin", "qaz123456789");
+        loginTask.execute();
+    }
+
+    // LoginTask
+    private class LoginTask extends AsyncTask<String, Integer, Boolean> {
+
+        String ip;
+        String port;
+        String username;
+        String password;
+
+        public LoginTask(String ip, String port, String username, String password) {
+            this.ip = ip;
+            this.port = port;
+            this.username = username;
+            this.password = password;
+        }
+
+        @Override
+        protected void onPreExecute(){
+            waitDialog.open();
+            super.onPreExecute();
+
+        }
+        @Override
+        protected Boolean doInBackground(String... params) {
+            return mLoginModule.login(ip, port, username, password);
+        }
+        @Override
+        protected void onPostExecute(final Boolean result){
+            waitDialog.close();
+            if (result) {
+                IntelBuildApplication.getInstance().setLoginHandle(mLoginModule.getLoginHandle());
+                handleRecord();
+
+            } else {
+                handRecordStartFail();
+            }
+        }
+    }
+
+    /**
+     * 录像开启
+     */
+    private void handleRecord() {
+        if (!VideoMananger.getInst().startRecord()) {
+//            ToolKits.showMessage(this, INetSDK.);
+            handRecordStartFail();
+//            new HintFailDialog(OpenMonitorActivity.this,
+//                    "请先开启监控！", "确定",
+//                    new HintFailDialog.OnHintFailDialogListener() {
+//
+//                        @Override
+//
+//                        public void onClick(Dialog dialog) {
+//                            if (VideoMananger.getInst().restartRecord(OpenMonitorActivity.this)) {
+//                                handRecordStartSuccess();
+//                            } else {
+//                                handRecordStartFail();
+//                            }
+//                        }
+//                    })
+//                    .show();
+        } else {
+            handRecordStartSuccess();
+        }
+
+
+    }
+
+    private void handRecordStartSuccess() {
+        getSupportFragmentManager().beginTransaction().add(R.id.act_open_monitor_success_main, new OpenMonitorFragment().setInt(pageId)).commit();
+        //成功后关闭灯光
+        if(isOpen){
+            CodeUtils.isLightEnable(false);
+            isOpen = false;
+        }
+    }
+
+    @Override
+    public void onLoginMonitorDevFail(String msg) {
+        handRecordStartFail();
+    }
+
+    private void handRecordStartFail() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ToolKits.showMessage(OpenMonitorActivity.this, "监控开启失败，请重新扫描！");
+            }
+        });
+    }
+}

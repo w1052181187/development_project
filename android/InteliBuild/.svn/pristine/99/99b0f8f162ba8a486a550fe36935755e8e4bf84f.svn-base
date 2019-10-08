@@ -1,0 +1,98 @@
+package com.bibinet.intelibuild.project.manager;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.pm.FeatureInfo;
+import android.content.pm.PackageManager;
+import android.hardware.Camera;
+import android.hardware.camera2.CameraManager;
+import android.os.Build;
+
+
+public class LightManager {
+
+    private CameraManager manager;// 声明CameraManager对象
+    private Camera m_Camera = null;// 声明Camera对象
+
+    private Context context;
+
+    @SuppressLint("NewApi")
+    public LightManager(Context context) {
+        manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
+        this.context = context;
+    }
+
+    /**
+     * 手电筒控制方法
+     *
+     * @param lightStatus
+     * @return
+     */
+    public void lightSwitch(final boolean lightStatus, Camera m_Camera) {
+        if (lightStatus) { // 关闭手电筒
+            if (false) {
+                try {
+                    manager.setTorchMode("0", false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                if (m_Camera != null) {
+                    Camera.Parameters mParameters;
+                    mParameters = m_Camera.getParameters();
+                    mParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                    m_Camera.setParameters(mParameters);
+                    //m_Camera.release();
+                    m_Camera.startPreview();
+                    //m_Camera.stopPreview();
+                    //m_Camera.release();
+                    //m_Camera = null;
+                }
+            }
+            isOpen = false;
+        } else {
+            // 打开手电筒
+            if (false) {
+                try {
+                    manager.setTorchMode("0", true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                final PackageManager pm = context.getPackageManager();
+                final FeatureInfo[] features = pm.getSystemAvailableFeatures();
+                for (final FeatureInfo f : features) {
+                    if (PackageManager.FEATURE_CAMERA_FLASH.equals(f.name)) { // 判断设备是否支持闪光灯
+                        if (null == m_Camera) {
+                            m_Camera = Camera.open();
+                        }
+                        final Camera.Parameters parameters = m_Camera.getParameters();
+                        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                        m_Camera.setParameters(parameters);
+                        m_Camera.startPreview();
+                    }
+                }
+            }
+            isOpen = true;
+        }
+    }
+
+    private boolean isOpen = false;
+
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    /**
+     * 判断Android系统版本是否 >= M(API23)
+     */
+    private boolean isM() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+}

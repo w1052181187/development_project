@@ -1,0 +1,279 @@
+package com.bibinet.intelibuild.project.adapter;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.bean.OcrBean;
+import com.bibinet.intelibuild.project.bean.OcrCheckBean;
+import com.bibinet.intelibuild.project.model.InspectionModel;
+import com.bibinet.intelibuild.project.model.OcrCheckModel;
+import com.bibinet.intelibuild.project.model.OcrCheckRecordModel;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.view.activity.OcrResultActivity;
+
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+import static com.bibinet.intelibuild.project.util.ObjectUtils.isNull;
+
+public class OcrResultCheckAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private final int TYPE_VALUE_OFF = 0;
+    private final int TYPE_VALUE_ON = 1;
+    private final int TYPE_START = 2;
+    private final int TYPE_WAIT = 3;
+
+    private Context context;
+
+    private InspectionModel inspectionModel;
+    private OcrResultActivity ocrResultActivity;
+    private List<OcrBean> ocrBeanList;
+    private List<OcrCheckRecordModel> dataList;
+    private boolean isChecked;
+
+    public void setOcrBeanList(List<OcrBean> ocrBeanList) {
+        this.ocrBeanList = ocrBeanList;
+    }
+
+    public OcrResultCheckAdapter(Context context, InspectionModel inspectionModel, List<OcrBean> ocrBeanList, List<OcrCheckRecordModel> dataList) {
+        this.context = context;
+        this.inspectionModel = inspectionModel;
+        //强转context 该适配器的context必须是OcrResultActivity 否则报异常
+        this.ocrResultActivity = (OcrResultActivity) context;
+        //取值信息，展示结果值用
+        this.ocrBeanList = ocrBeanList;
+        this.dataList = dataList;
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.adapter_ocr_result_check, parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        ViewHolder viewHolder = (ViewHolder) holder;
+        //进度条展示
+        if (position == 0) {
+            viewHolder.topV.setVisibility(View.INVISIBLE);
+        } else {
+            viewHolder.topV.setVisibility(View.VISIBLE);
+        }
+        if (position == getItemCount() - 1) {
+            viewHolder.bottomV.setVisibility(View.INVISIBLE);
+        } else {
+            viewHolder.bottomV.setVisibility(View.VISIBLE);
+        }
+
+
+        int checkCount = isChecked ? dataList.size() - 1 : dataList.size();
+
+        //当检测记录为空时，复位（用于pda检测后，重新修改后显示开始校验）
+        if (checkCount < 0) {
+            checkCount = 0;
+        }
+        if (checkCount > position) {
+            OcrCheckRecordModel model = dataList.get(position);
+            setState(viewHolder, TYPE_VALUE_OFF);
+            //添加历史检测结果，分条件和要求
+            if (isNull(model.getCondition())) {
+                viewHolder.conditionTV.setText("无条件");
+                viewHolder.conditionTV.setVisibility(View.GONE);
+                viewHolder.lineV.setVisibility(View.GONE);
+            } else {
+                StringBuffer buffer = new StringBuffer();
+                for (int i = 0; i < model.getCondition().size(); i++) {
+                    OcrCheckRecordModel.OcrCheckRecordChildModel m = model.getCondition().get(i);
+                    buffer.append(m.getValue() + "" + m.getUnit() + " ");
+                }
+                viewHolder.lineV.setVisibility(View.VISIBLE);
+                viewHolder.conditionTV.setVisibility(View.VISIBLE);
+                viewHolder.conditionTV.setText(buffer.toString());
+            }
+            if (isNull(model.getRequirement())) {
+                viewHolder.standardTV.setText("无要求");
+                viewHolder.standardTV.setVisibility(View.GONE);
+                viewHolder.lineV.setVisibility(View.GONE);
+            } else {
+                StringBuffer buffer = new StringBuffer();
+                for (int i = 0; i < model.getRequirement().size(); i++) {
+                    OcrCheckRecordModel.OcrCheckRecordChildModel m = model.getRequirement().get(i);
+                    buffer.append(m.getValue() + "" + m.getUnit() + " ");
+                }
+                viewHolder.standardTV.setVisibility(View.VISIBLE);
+                viewHolder.standardTV.setText(buffer.toString());
+            }
+        } else if (checkCount == position) {
+            if (valueList == null) {
+                setState(viewHolder, TYPE_START);
+            } else {
+                setState(viewHolder, TYPE_VALUE_ON);
+            }
+        } else {
+            setState(viewHolder, TYPE_WAIT);
+        }
+    }
+
+    private void setState(ViewHolder viewHolder, int type) {
+        switch (type) {
+            case TYPE_VALUE_OFF:
+                viewHolder.conditionTV.setVisibility(View.VISIBLE);
+                viewHolder.standardTV.setVisibility(View.VISIBLE);
+                viewHolder.waitV.setVisibility(View.GONE);
+                viewHolder.startV.setVisibility(View.GONE);
+                viewHolder.conditionTV.setTextColor(Color.parseColor("#666666"));
+                viewHolder.standardTV.setTextColor(Color.parseColor("#666666"));
+                break;
+            case TYPE_VALUE_ON:
+                viewHolder.waitV.setVisibility(View.GONE);
+                viewHolder.startV.setVisibility(View.GONE);
+                if (valueList != null) {
+                    viewHolder.conditionTV.setVisibility(View.VISIBLE);
+                    viewHolder.standardTV.setVisibility(View.VISIBLE);
+                    viewHolder.lineV.setVisibility(View.VISIBLE);
+                    //设置条件的当前结果,设置要求的当前结果
+                    StringBuffer htmlC = new StringBuffer();
+                    StringBuffer htmlR = new StringBuffer();
+                    for (int i = 0; i < valueList.size(); i++) {
+                        //拼接格式，值，单位 根据结果显示不同的颜色
+                        //LogUtils.e("xx", "con="+valueList.get(i).getConditionType());
+                        if (valueList.get(i).isResult()) {
+                            if (valueList.get(i).getConditionType().equals("0")) {
+                                htmlC.append("<font color='#00ff00'>" + ocrBeanList.get(i).getValue() + "" + ocrBeanList.get(i).getUnit() + "</font> ");
+                            } else {
+                                htmlR.append("<font color='#00ff00'>" + ocrBeanList.get(i).getValue() + "" + ocrBeanList.get(i).getUnit() + "</font> ");
+                            }
+                        } else {
+                            if (valueList.get(i).getConditionType().equals("0")) {
+                                htmlC.append("<font color='#ff0000'>" + ocrBeanList.get(i).getValue() + "" + ocrBeanList.get(i).getUnit() + "</font> ");
+                            } else {
+                                htmlR.append("<font color='#ff0000'>" + ocrBeanList.get(i).getValue() + "" + ocrBeanList.get(i).getUnit() + "</font> ");
+                            }
+                        }
+                    }
+                    if (htmlC.toString().equals("")) {
+                        viewHolder.conditionTV.setVisibility(View.GONE);
+                        viewHolder.lineV.setVisibility(View.GONE);
+                    } else {
+                        viewHolder.lineV.setVisibility(View.VISIBLE);
+                        viewHolder.conditionTV.setVisibility(View.VISIBLE);
+                        viewHolder.conditionTV.setText(Html.fromHtml(htmlC.toString()));
+                    }
+                    if (htmlR.toString().equals("")) {
+                        viewHolder.standardTV.setVisibility(View.GONE);
+                        viewHolder.lineV.setVisibility(View.GONE);
+                    } else {
+                        viewHolder.standardTV.setVisibility(View.VISIBLE);
+                        viewHolder.standardTV.setText(Html.fromHtml(htmlR.toString()));
+                    }
+                } else {
+                    viewHolder.conditionTV.setVisibility(View.GONE);
+                    viewHolder.standardTV.setVisibility(View.GONE);
+                    viewHolder.lineV.setVisibility(View.GONE);
+                }
+                break;
+            case TYPE_WAIT:
+                viewHolder.conditionTV.setVisibility(View.GONE);
+                viewHolder.standardTV.setVisibility(View.GONE);
+                viewHolder.lineV.setVisibility(View.GONE);
+                viewHolder.waitV.setVisibility(View.VISIBLE);
+                viewHolder.startV.setVisibility(View.GONE);
+                break;
+            case TYPE_START:
+                viewHolder.conditionTV.setVisibility(View.GONE);
+                viewHolder.standardTV.setVisibility(View.GONE);
+                viewHolder.lineV.setVisibility(View.GONE);
+                viewHolder.waitV.setVisibility(View.GONE);
+                viewHolder.startV.setVisibility(View.VISIBLE);
+                //根据检测中更新不同的状态
+                if (isChecking) {
+                    viewHolder.startV.setTextColor(Color.parseColor("#ffa422"));
+                    viewHolder.startV.setText("正在检测中...");
+                    viewHolder.startV.setEnabled(false);
+                } else {
+                    viewHolder.startV.setTextColor(Color.parseColor("#2879ff"));
+                    viewHolder.startV.setText("开始校验");
+                    viewHolder.startV.setEnabled(true);
+                }
+                break;
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return inspectionModel.getIntExecutionTimes();
+    }
+
+    private boolean isChecking;
+
+    public void updateChecking(boolean isChecking) {
+        //更新界面展示 检测状态
+        this.isChecking = isChecking;
+        handler.sendEmptyMessage(4039);
+    }
+
+    private List<OcrCheckBean.Value> valueList;
+
+    //设置当前及检测的值
+    public void setCheckValue(List<OcrCheckBean.Value> valueList) {
+        this.valueList = valueList;
+        isChecking = false;
+        handler.sendEmptyMessage(4039);
+    }
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            notifyDataSetChanged();
+        }
+    };
+
+    public void setChecked(boolean b) {
+        this.isChecked = b;
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.ada_ocr_result_check_top)
+        View topV;
+        @BindView(R.id.ada_ocr_result_check_bottom)
+        View bottomV;
+
+        @BindView(R.id.ada_ocr_result_check_result_condition)
+        TextView conditionTV;
+
+        @BindView(R.id.ada_ocr_result_check_result_standard)
+        TextView standardTV;
+
+        @BindView(R.id.ada_ocr_result_check_wait_state)
+        View waitV;
+
+        @BindView(R.id.ada_ocr_result_check_start_btn)
+        TextView startV;
+
+        @BindView(R.id.ada_ocr_result_check_line)
+        View lineV;
+
+        @OnClick(R.id.ada_ocr_result_check_start_btn)
+        void check() {
+            //执行当前检测
+            ocrResultActivity.check();
+        }
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
+}

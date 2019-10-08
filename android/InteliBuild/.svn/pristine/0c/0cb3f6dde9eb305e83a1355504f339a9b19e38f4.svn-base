@@ -1,0 +1,237 @@
+package com.bibinet.intelibuild.project.view.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.application.IntelBuildApplication;
+import com.bibinet.intelibuild.project.manager.PermissionManager;
+import com.bibinet.intelibuild.project.model.BaseModel;
+import com.bibinet.intelibuild.project.model.InspectionModel;
+import com.bibinet.intelibuild.project.model.SampleModel;
+import com.bibinet.intelibuild.project.model.VideoUploadResultModel;
+import com.bibinet.intelibuild.project.net.emit.UploadVideoEmit;
+import com.bibinet.intelibuild.project.net.firing.UploadVideoFiring;
+import com.bibinet.intelibuild.project.util.FileUtils;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.video.util.VideoMananger;
+import com.bibinet.intelibuild.project.video.util.module.IPLoginModule;
+import com.bibinet.intelibuild.project.view.base.BaseActivity;
+import com.bibinet.intelibuild.project.view.dialog.ExitLoginDialog;
+import com.bibinet.intelibuild.project.view.pop.ShowAccountPop;
+import com.bumptech.glide.Glide;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+import static com.bibinet.intelibuild.project.util.ObjectUtils.isNull;
+
+/**
+ * 主页面
+ * Created by bibinet on 2017-12-18.
+ */
+
+public class MainActivity extends BaseActivity implements UploadVideoEmit{
+
+    private boolean isCanExit = false;
+    private ShowAccountPop showAccountPop;
+    private ExitLoginDialog exitLoginDialog;
+
+    @BindView(R.id.act_main_show_account)
+    View showAccountV;
+    private IPLoginModule mLoginModule;
+
+    //采样
+    @OnClick(R.id.act_main_sampling)
+    void sampling() {
+        permissionsManager.getPermission(PermissionManager.CameralPermissson, R.id.act_main_sampling);
+    }
+
+    //请求权限成功回调
+    @Override
+    public void onRequestPermissionSuccess(int requestCode, int pageId) {
+        OpenMonitorActivity.start(this, pageId);
+    }
+
+    //检测
+    @OnClick(R.id.act_main_check)
+    void check() {
+        permissionsManager.getPermission(PermissionManager.CameralPermissson, R.id.act_main_check);
+    }
+
+    //历史检测
+    @OnClick(R.id.act_main_history)
+    void history() {
+        //ProductCheckSelectActivity.start(this);
+        //LabelScanActivity.start(this, R.id.act_main_sampling);
+        //ProductInfoActivity.start(this, ProductInfoActivity.TYPE_ENSURE, "338");
+        //SampleInfoActivity.start(this, SampleInfoActivity.TYPE_ENSURE, "168");
+//        new ProductCheckSelectDialog(this).open(3, new ProductCheckSelectDialog.OnProductCheckSelectDialogListener() {
+//            @Override
+//            public void onConfirm(String selectText) {
+//
+//            }
+//        });
+        //OcrResultActivity.start(this, 12345);
+        //根据检测类型调用 不同的检测方式 ocr或串口
+        //OcrModel ocrModel = new Gson().fromJson(data, OcrModel.class);
+        //OcrDistinguishActivity.start(this, null, null);
+        //SerialPortActivity.start(this);
+        //ProductCheckWriteActivity.start(this);
+        //OcrTestActivity.start(this, "");
+        List<InspectionModel> dataList = new ArrayList<InspectionModel>();
+        for (int i = 0; i < 4; i++) {
+            InspectionModel model = new InspectionModel();
+            model.setName("第度覅大概地方分方法大点肌肤");
+            List<SampleModel> dList = new ArrayList<SampleModel>();
+            for (int j = 0; j < i + 1; j++) {
+                dList.add(new SampleModel());
+            }
+            model.setSamples(dList);
+            dataList.add(model);
+        }
+        ProductCheckRecordActivity.start(this, dataList);
+    }
+
+    //退出登录
+    @OnClick(R.id.act_main_exit)
+    void exit() {
+        if (isNull(exitLoginDialog)) {
+            exitLoginDialog = new ExitLoginDialog(this);
+        }
+        exitLoginDialog.show();
+    }
+
+    //扫码
+    @OnClick(R.id.act_main_sao)
+    void sao() {
+
+    }
+
+    //展示账号
+    @OnClick(R.id.act_main_show_account)
+    void showAccount() {
+        if (isNull(showAccountPop)) {
+            showAccountPop = new ShowAccountPop(this);
+        }
+        showAccountPop.show(showAccountV, 0, 0);
+    }
+
+    //实现再按一次退出
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+            if (isCanExit) {
+                return super.onKeyDown(keyCode, event);
+            }
+            Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+            isCanExit = true;
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    isCanExit = false;
+                }
+            }, 2000);
+        }
+        return true;
+    }
+
+    public static void start(Context context) {
+        context.startActivity(new Intent(context, MainActivity.class));
+    }
+
+    @Override
+    protected void onBaseCreate(Bundle savedInstanceState) {
+
+        //TODO 视频录像
+        mLoginModule = new IPLoginModule();
+
+//        LoginTask loginTask = new LoginTask();
+//        loginTask.execute();
+    }
+
+    @Override
+    public void onUploadSuccess(VideoUploadResultModel model) {
+
+    }
+
+    @Override
+    public void onUploadFail(String msg) {
+
+    }
+
+    /// LoginTask
+    private class LoginTask extends AsyncTask<String, Integer, Boolean> {
+        @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+
+        }
+        @Override
+        protected Boolean doInBackground(String... params) {
+            return mLoginModule.login("192.168.2.246", "37777", "admin", "qaz123456789");
+        }
+        @Override
+        protected void onPostExecute(Boolean result){
+            if (result) {
+                IntelBuildApplication.getInstance().setLoginHandle(mLoginModule.getLoginHandle());
+//
+//                startActivity(new Intent(IPLoginActivity.this, FunctionListActivity.class));
+
+                try {
+                    VideoMananger.getInst().startRecord();
+                    Thread.sleep(60 * 1000);
+                    VideoMananger.getInst().stopRecord();
+                    UploadVideoFiring firing = new UploadVideoFiring(MainActivity.this);
+                    firing.uploadVideo(VideoMananger.recordFile, "538");
+
+//                    File source = new File(FileUtils.createInnerAppFile(MainActivity.this,"dav"));
+//                    File target = new File(FileUtils.createInnerAppFile(MainActivity.this,"mp4"));// 转MP4
+//                    System.out.println(source.length());
+//
+//                    AudioAttributes audio = new AudioAttributes();
+//                    audio.setCodec(AudioAttributes.DIRECT_STREAM_COPY);
+//                    audio.setBitRate(new Integer(64000));
+//                    audio.setChannels(new Integer(1));
+//                    audio.setSamplingRate(new Integer(22050));
+//                    VideoAttributes video = new VideoAttributes();
+//                    video.setCodec("libxvid");// 转MP4
+//                    video.setBitRate(new Integer(180000));// 180kb/s比特率
+//                    video.setFrameRate(new Integer(1));// 1f/s帧频，1是目前测试比较清楚的，越大越模糊
+//                    EncodingAttributes attrs = new EncodingAttributes();
+//                    attrs.setFormat("mp4");// 转MP4
+//                    attrs.setAudioAttributes(audio);
+//                    attrs.setVideoAttributes(video);
+//                    Encoder encoder = new Encoder();
+//                    encoder.encode(source, target, attrs);
+//                    Log.e("video_encode","success");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+                Log.e("video_login_err",mLoginModule.errorCode() + "");
+//                ToolKits.showMessage(this, getErrorCode(getResources(), mLoginModule.errorCode()));
+            }
+        }
+    }
+
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_main;
+    }
+
+}

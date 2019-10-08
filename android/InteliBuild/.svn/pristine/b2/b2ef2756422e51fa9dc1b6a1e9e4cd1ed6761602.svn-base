@@ -1,0 +1,12 @@
+package com.bibinet.intelibuild.project.net.emit;
+
+import com.bibinet.intelibuild.project.model.SampleModel;
+
+/**
+ * Created by bibinet on 2018-1-13.
+ */
+
+public interface GetSamplingEmit {
+    void onGetSamplingSuccess(SampleModel samplingModel);
+    void onGetSamplingFail(String error);
+}

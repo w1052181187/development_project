@@ -1,0 +1,79 @@
+<resources>
+    <string name="app_name">智能监造</string>
+
+    <string name="str_wait">请稍后</string>
+
+    <string name="str_login_input_account">请输入账号</string>
+    <string name="str_login_input_password">请输入密码</string>
+    <string name="str_login_confirm">登录</string>
+
+    <string name="str_exit_login_confirm">你确定退出登录吗？</string>
+    <string name="str_exit_login_on">确定</string>
+    <string name="str_exit_login_off">取消</string>
+    <string name="str_login_empty_name">帐号不能为空</string>
+    <string name="str_login_empty_password">密码不能为空</string>
+
+    <string name="str_password_update">修改密码</string>
+    <string name="str_password_old">请输入当前密码</string>
+    <string name="str_password_new">请输入新密码 (6—10个字符)</string>
+    <string name="str_password_new_confirm">确认密码</string>
+    <string name="str_password_confirm">确认提交</string>
+
+    <string name="str_scan_light_on">轻点照亮</string>
+    <string name="str_scan_light_off">轻点关闭</string>
+    <string name="str_scan_monitor">扫描监控二维码</string>
+    <string name="str_open_monitor_hint">对准二维码/标签到框内即可扫描</string>
+
+    <string name="str_scan_project_hint">请扫描产品标签</string>
+    <string name="str_scan_project_tag">扫描产品标签</string>
+    <string name="str_scan_sample_tag">扫描样品标签</string>
+    <string name="str_scan_sample_hint">请扫描样品标签</string>
+
+    <string name="str_product_info_ensure">产品信息确认</string>
+    <string name="str_sample_info_ensure">样品信息确认</string>
+    <string name="str_product_select_check">选择检测项目</string>
+    <string name="str_sampling_success">标签打印成功，采样完成！</string>
+    <string name="str_sampling_fail">标签打印失败，请</string>
+    <string name="str_countdown_home">后返回首页</string>
+    <string name="str_hint">提示</string>
+    <string name="str_camera_ocr">OCR拍照</string>
+    <string name="str_ocr_result">识别结果</string>
+    <string name="str_ocr_image">识别图片</string>
+
+    <string name="str_label_scan_hint">请靠近电子标签进行扫描</string>
+
+
+    <string name="camera_permission_required">本功能需要相机权限！</string>
+
+    <string name="str_connection_device">连接设备</string>
+    <string name="str_sample_check">样品检测</string>
+
+    <string name="str_write_data_confirm">写入数据确认</string>
+    <string name="str_write_data_hint">写入提示</string>
+
+
+    //摄像头登录
+    <string name="NET_ERROR">未知错误</string>
+    <string name="NET_USER_FLASEPWD_TRYTIME">输入密码错误超过限制次数</string>
+
+    <string name="NET_LOGIN_ERROR_PASSWORD">密码不正确</string>
+
+    <string name="NET_LOGIN_ERROR_USER">帐户不存在</string>
+
+    <string name="NET_LOGIN_ERROR_TIMEOUT">等待登录返回超时</string>
+
+    <string name="NET_LOGIN_ERROR_RELOGGIN">帐号已登录</string>
+
+    <string name="NET_LOGIN_ERROR_LOCKED">帐号已被锁定</string>
+
+    <string name="NET_LOGIN_ERROR_BLACKLIST">帐号已被列为黑名单</string>
+
+    <string name="NET_LOGIN_ERROR_BUSY">资源不足,系统忙</string>
+
+    <string name="NET_LOGIN_ERROR_CONNECT">登录设备超时,请检查网络并重试</string>
+
+    <string name="NET_LOGIN_ERROR_NETWORK">网络连接失败</string>
+
+
+
+</resources>

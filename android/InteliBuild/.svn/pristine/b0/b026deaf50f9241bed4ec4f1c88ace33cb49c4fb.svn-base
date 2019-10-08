@@ -1,0 +1,141 @@
+package com.bibinet.intelibuild.project.net.firing;
+
+import com.bibinet.intelibuild.project.bean.OcrCheckBean;
+import com.bibinet.intelibuild.project.model.InspectionModel;
+import com.bibinet.intelibuild.project.model.IsSampleCheckModel;
+import com.bibinet.intelibuild.project.model.OcrCheckModel;
+import com.bibinet.intelibuild.project.model.OcrCheckRecordModel;
+import com.bibinet.intelibuild.project.model.SampleModel;
+import com.bibinet.intelibuild.project.net.base.BaseFiring;
+import com.bibinet.intelibuild.project.net.emit.GetCheckResultEmit;
+import com.bibinet.intelibuild.project.net.emit.GetSamplingEmit;
+import com.bibinet.intelibuild.project.net.emit.IsSamplingCheckEmit;
+import com.bibinet.intelibuild.project.net.emit.SetSamplingEmit;
+import com.bibinet.intelibuild.project.net.rewrite.ResultCallback;
+import com.bibinet.intelibuild.project.util.LogUtils;
+
+import java.util.List;
+
+import okhttp3.Response;
+
+/**
+ * Created by bibinet on 2018-1-13.
+ */
+
+public class SamplingFiring extends BaseFiring {
+    private SetSamplingEmit setSamplingEmit;
+    private GetSamplingEmit getSamplingEmit;
+    private IsSamplingCheckEmit isSamplingCheckEmit;
+    private GetCheckResultEmit getCheckResultEmit;
+
+    public SamplingFiring(SetSamplingEmit setSamplingEmit) {
+        super(setSamplingEmit);
+        this.setSamplingEmit = setSamplingEmit;
+    }
+
+    public SamplingFiring(GetSamplingEmit getSamplingEmit) {
+        this.getSamplingEmit = getSamplingEmit;
+    }
+
+    public SamplingFiring(IsSamplingCheckEmit isSamplingCheckEmit) {
+        this.isSamplingCheckEmit = isSamplingCheckEmit;
+    }
+
+    public SamplingFiring(GetCheckResultEmit getCheckResultEmit) {
+        this.getCheckResultEmit = getCheckResultEmit;
+    }
+
+
+    public void getSamplingInfo(String objectId) {
+        baseReady.baseReady(urlConfig.setValue(urlConfig.URL_GET_SAMPLING_INFO, objectId), baseReady.GET, null, new ResultCallback<SampleModel>() {
+            @Override
+            protected void onFail(String error) {
+                getSamplingEmit.onGetSamplingFail(error);
+            }
+
+            @Override
+            protected void onSuccess(SampleModel model, Response response) {
+                getSamplingEmit.onGetSamplingSuccess(model);
+            }
+        });
+    }
+
+    public void setSamplingByInspection(List<InspectionModel> sampling) {
+        String s = gson.toJson(sampling);
+        LogUtils.e("jiresu", "xx-" + s);
+        baseReady.baseReady(urlConfig.URL_SET_INSPECTION, baseReady.PUT, sampling, new ResultCallback<InspectionModel>(waitDialog) {
+            @Override
+            protected void onFail(String error) {
+                setSamplingEmit.onSetSamplingFail(error);
+            }
+
+            @Override
+            protected void onSuccess(List<InspectionModel> model, Response response) {
+                LogUtils.e("model+=", "sdfsdfsd=" + model);
+                setSamplingEmit.onSetSamplingSuccess(null);
+            }
+        });
+    }
+
+    public void setSampling(SampleModel sampleModel) {
+        String s = gson.toJson(sampleModel);
+        LogUtils.e("jiresu", "xx-" + s);
+        baseReady.baseReady(urlConfig.URL_SET_SAMPLING, baseReady.POST, sampleModel, new ResultCallback<SampleModel>() {
+            @Override
+            protected void onFail(String error) {
+                setSamplingEmit.onSetSamplingFail(error);
+            }
+
+            @Override
+            protected void onSuccess(SampleModel model, Response response) {
+                LogUtils.e("model+=", "sdfsdfsd=" + model);
+                setSamplingEmit.onSetSamplingSuccess(model);
+            }
+        });
+    }
+
+    public void isSampleCheck(String sampleId) {
+        baseReady.baseReady(urlConfig.setValue(urlConfig.URL_IS_SAMPLING_CHECK, sampleId), baseReady.GET, null, new ResultCallback<IsSampleCheckModel>() {
+            @Override
+            protected void onFail(String error) {
+                isSamplingCheckEmit.onIsSamplingCheckFail(error);
+            }
+
+            @Override
+            protected void onSuccess(IsSampleCheckModel model, Response response) {
+                LogUtils.e("model+=", "sdfsdfsd=" + model);
+                isSamplingCheckEmit.onIsSamplingCheckSuccess(model);
+            }
+        });
+    }
+
+    public void getCheckResult(OcrCheckBean ocrCheckBean) {
+        baseReady.baseReady(urlConfig.URL_GET_CHECK_RESULT_INFO, baseReady.POST, ocrCheckBean, new ResultCallback<OcrCheckModel>() {
+
+            @Override
+            protected void onFail(String error) {
+                getCheckResultEmit.onGetCheckResultFail(error);
+            }
+
+            @Override
+            protected void onSuccess(OcrCheckModel model, Response response) {
+                getCheckResultEmit.onGetCheckResultSuccess(model);
+            }
+        });
+    }
+
+
+    public void getCheckRecord(String itemId) {
+        baseReady.baseReady(urlConfig.setValue(urlConfig.URL_GET_CHECK_RECORD_INFO, itemId), baseReady.GET, null, new ResultCallback<OcrCheckRecordModel>() {
+            @Override
+            protected void onFail(String error) {
+                getCheckResultEmit.onGetCheckResultRecordFail(error);
+            }
+
+            @Override
+            protected void onSuccess(List<OcrCheckRecordModel> model, Response response) {
+                getCheckResultEmit.onGetCheckResultRecordSuccess(model);
+            }
+        });
+    }
+}

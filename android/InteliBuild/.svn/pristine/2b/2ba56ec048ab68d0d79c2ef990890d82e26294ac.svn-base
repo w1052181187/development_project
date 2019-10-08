@@ -1,0 +1,50 @@
+package com.bibinet.intelibuild.project.net;
+
+
+import com.bibinet.intelibuild.project.application.Constants;
+
+/**
+ * Created by Wh on 2017-7-13.
+ */
+
+public class UrlConfig {
+    public static String TYPE_BASE_MOCK = "https://www.easy-mock.com/mock/5a6021718b8c542ed4d49a29/supervision";
+    public static String TYPE_BASE_TEST = "http://192.168.1.18:8001/api";
+    public static String TYPE_BASE_TEST_DOUDOU = "http://192.168.1.78:8080/api";
+    public static String TYPE_BASE_TEST_ZHIYUN = "http://192.168.1.74:8080/api";
+    private static String TYPE_BASE_FORMAL = "";
+
+
+    private String getBaseHeader(){
+        return TYPE_BASE_TEST;
+//        return TYPE_BASE_TEST_DOUDOU;
+    }
+    //信息订阅相关
+    public final String URL_LOGIN = getBaseHeader() + "/authenticate";  //登录接口
+
+
+    public final String URL_GET_PRODUCT_INFO = getBaseHeader() + "/product/instances/{objectId}";  //得到产品信息
+    public final String URL_GET_CONTRACT_INFO = getBaseHeader() + "/contracts/{contractId}";  //得到合同信息
+    public final String URL_GET_SAMPLING_INFO = getBaseHeader() + "/samples/{sampleId}";  //得到采样品信息
+    public final String URL_SET_SAMPLING = getBaseHeader() + "/samples";  //打印采样品 预留
+    public final String URL_IS_SAMPLING_CHECK = getBaseHeader()+ "/samples/prepare/{sampleId}";  //采样品是否已检测
+    public final String URL_SET_INSPECTION = getBaseHeader() + "/inspection/instances";  //更新检验品状态 包括状态和采样
+
+    public final String URL_GET_PROTOCOL_INFO = getBaseHeader() + "/protocols/{protocolId}";  //得到协议信息
+    public final String URL_GET_CHECK_RESULT_INFO = getBaseHeader() + "/samples/inspect";  //ocr检测接口
+
+    public final String URL_GET_CHECK_RECORD_INFO = getBaseHeader() + "/inspection/data/groupBySample_date?inspectionInstanceId={objectId}";  //ocr检测记录接口
+
+    public final String URL_SET_CHECK_IMG = getBaseHeader() + "/file/upload";  //上传ocr图片接口
+
+    public final String URL_GET_MONITOR_DEVICE_INFO = getBaseHeader() + "/camera/{SN}";  //获取监控器信息
+    public final String URL_UPLOAD_VIDEO = getBaseHeader() + "/inspection/instances/updateOneSource/{sampleId}";  //上传视频录像
+
+    public final String URL_UPLOAD_SN = getBaseHeader() + "/inspection/instances/saveLiveUrl";  //修改
+    public final String URL_UPDATE_STATUS = getBaseHeader() + "/updateStatus/{objectId}";  //修改
+
+    public String setValue(String url, String value){
+        return url.substring(0, url.indexOf("{")) + value;
+    }
+
+}

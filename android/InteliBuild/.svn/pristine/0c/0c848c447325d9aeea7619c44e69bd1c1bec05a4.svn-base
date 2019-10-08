@@ -1,0 +1,32 @@
+package com.bibinet.intelibuild.project.model;
+
+public class UserModel extends BaseModel{
+    private String objectId;
+    private String name;
+    private String account;
+
+    public String getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+}

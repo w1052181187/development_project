@@ -1,0 +1,82 @@
+package com.bibinet.intelibuild.project.view.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.View;
+import android.widget.TextView;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.application.Constants;
+import com.bibinet.intelibuild.project.bean.SampleInfoBean;
+import com.bibinet.intelibuild.project.util.ToastUtils;
+import com.bibinet.intelibuild.project.view.base.BaseActivity;
+import com.bibinet.intelibuild.project.view.expand.TitleActivity;
+import com.bibinet.intelibuild.project.view.fragment.SampleInfoEnsureFragment;
+import com.bibinet.intelibuild.project.view.manager.SampleInfoManager;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+/**
+ * 显示样品信息界面
+ * Created by bibinet on 2018-1-12.
+ */
+
+public class SampleInfoActivity extends TitleActivity{
+    private static final String TYPE_START = "TYPE_START";
+    private static final String SAMPLE_CODE = "SAMPLE_CODE";
+
+    public static final int TYPE_ENSURE = 0;
+    public static final int TYPE_SHOW = 1;
+
+    private SampleInfoManager sampleInfoManager;
+
+    private void initResult(SampleInfoBean sampleInfoBean) {
+        Fragment fragment = null;
+        switch (getIntent().getIntExtra(TYPE_START, TYPE_SHOW)) {
+            case TYPE_ENSURE:
+                fragment = new SampleInfoEnsureFragment().setSampleInfoBean(sampleInfoBean);
+                break;
+            case TYPE_SHOW:
+                break;
+        }
+        try {
+            getSupportFragmentManager().beginTransaction().add(R.id.act_sample_info_main, fragment).commit();
+        } catch (Exception e) {
+
+        }
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_sample_info_ensure;
+    }
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+        sampleInfoManager = new SampleInfoManager(this);
+
+        String sampleCode = getIntent().getStringExtra(SAMPLE_CODE);
+        //LogUtils.e("productCode=" , "-"+productCode);
+        sampleInfoManager.requestData(sampleCode);
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_sample_info;
+    }
+
+    public static void start(Context context, int startType, String sampleCode) {
+        Intent intent = new Intent(context, SampleInfoActivity.class);
+        intent.putExtra(TYPE_START, startType);
+        intent.putExtra(SAMPLE_CODE, sampleCode);
+        context.startActivity(intent);
+    }
+
+
+    public void success(SampleInfoBean sampleInfoBean){
+        initResult(sampleInfoBean);
+    }
+}

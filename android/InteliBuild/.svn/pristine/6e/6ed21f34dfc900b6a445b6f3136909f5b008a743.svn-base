@@ -1,0 +1,41 @@
+package com.bibinet.intelibuild.project.model;
+
+import java.io.Serializable;
+
+public class ContractInfoModel extends BaseModel implements Serializable{
+
+    public static final String STATE_DRAFT = "0";  //草稿
+    public static final String STATE_NOT_CONFIGURE = "1";  //待设置监造指标
+    public static final String STATE_PENDING = "2";  //待监造
+    public static final String STATE_ONGOING = "3";  //监造中
+    public static final String STATE_FINISH = "4";  //监造完成
+
+    private String name;
+    private String code;
+    private String status;
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+}

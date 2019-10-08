@@ -1,0 +1,104 @@
+package com.bibinet.intelibuild.project.model;
+
+import com.bibinet.intelibuild.project.bean.SamplingBean;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by bibinet on 2018-1-5.
+ */
+
+public class SampleModel extends BaseModel implements Serializable{
+    private String objectId;  //唯一标识
+    private String name;   //采样名称 + 标签最大循环数
+    private String code;   //当前采样的标志（第几个）
+    private String type;   //上层type
+    private String productInstanceId;  //产品id
+    private String inspectionInstanceId;  //检测品id 上层id
+    private String materialId;   //上层id
+    private String productName;  //产品名称
+    private String length;       //当前选择标签数
+    private String executionTime;  //时间戳
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getProductInstanceId() {
+        return productInstanceId;
+    }
+
+    public void setProductInstanceId(String productInstanceId) {
+        this.productInstanceId = productInstanceId;
+    }
+
+    public String getInspectionInstanceId() {
+        return inspectionInstanceId;
+    }
+
+    public void setInspectionInstanceId(String inspectionInstanceId) {
+        this.inspectionInstanceId = inspectionInstanceId;
+    }
+
+    public String getMaterialId() {
+        return materialId;
+    }
+
+    public void setMaterialId(String materialId) {
+        this.materialId = materialId;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getLength() {
+        return length;
+    }
+
+    public void setLength(String length) {
+        this.length = length;
+    }
+
+    public String getExecutionTime() {
+        return executionTime;
+    }
+
+    public void setExecutionTime(String executionTime) {
+        this.executionTime = executionTime;
+    }
+
+    public String getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
+    }
+}

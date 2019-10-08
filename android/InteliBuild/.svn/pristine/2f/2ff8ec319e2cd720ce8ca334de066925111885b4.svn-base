@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2017 Baidu, Inc. All Rights Reserved.
+ */
+package com.bibinet.intelibuild.ocr.ui.util;
+
+import android.app.Activity;
+import android.content.res.Resources;
+import android.util.DisplayMetrics;
+import android.view.Display;
+
+import java.lang.reflect.Method;
+
+public class DimensionUtil {
+
+    public static int dpToPx(int dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    }
+
+    private static int height;
+
+    /**
+     * 获取屏幕尺寸，但是不包括虚拟功能高度
+     *
+     * @return
+     */
+    public static void setNoHasVirtualKey(Activity activity) {
+        int dpi = 0;
+        Display display = activity.getWindowManager().getDefaultDisplay();
+        DisplayMetrics dm = new DisplayMetrics();
+        @SuppressWarnings("rawtypes")
+        Class c;
+        try {
+            c = Class.forName("android.view.Display");
+            @SuppressWarnings("unchecked")
+            Method method = c.getMethod("getRealMetrics", DisplayMetrics.class);
+            method.invoke(display, dm);
+            height = dm.heightPixels;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static int getNoHasVirtualKey() {
+        return height;
+    }
+}

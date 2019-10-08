@@ -1,0 +1,37 @@
+package com.bibinet.intelibuild.project.view.custom;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.support.annotation.Nullable;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+
+import com.bibinet.intelibuild.project.util.ScreenUtils;
+
+public class DashedView extends LinearLayout {
+
+    public DashedView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        int hpx = ScreenUtils.dip2px(2);
+        for(int i=0 ; i<100 ; i++){
+            View view = new View(context);
+            if(i % 2 ==0){
+                view.setBackgroundColor(Color.parseColor("#dddddd"));
+            }else{
+                view.setBackgroundColor(Color.WHITE);
+            }
+            int or = getOrientation();
+            if(or == VERTICAL){
+                view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, hpx));
+            }else{
+                view.setLayoutParams(new ViewGroup.LayoutParams(hpx, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            addView(view);
+        }
+    }
+
+}

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="220dp"
+    android:background="@drawable/shape_sampling_result_background"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/dia_sample_damage_hint_img"
+        android:layout_width="60dp"
+        android:src="@mipmap/mieshi"
+        android:layout_marginTop="15dp"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/dia_sample_damage_hint_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/str_hint"
+        android:layout_below="@+id/dia_sample_damage_hint_img"
+        android:layout_centerHorizontal="true"
+        android:textSize="14sp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/col_font_big"
+        />
+    <TextView
+        android:id="@+id/dia_sample_damage_hint_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/str_sampling_fail"
+        android:layout_below="@+id/dia_sample_damage_hint_title"
+        android:layout_marginTop="6dp"
+        android:layout_centerHorizontal="true"
+        android:textSize="12sp"
+        android:textColor="@color/col_font_middle"
+        />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dia_sample_damage_hint_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="15dp"
+        >
+        <TextView
+            android:id="@+id/dia_sample_damage_hint_ensure"
+            android:layout_width="66dp"
+            android:layout_height="30dp"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:textColor="@color/col_main_blue"
+            android:background="@drawable/shape_hint_confirm_background"
+            android:text="@string/str_exit_login_on" />
+        />
+
+        <TextView
+            android:id="@+id/dia_sample_damage_hint_home"
+            android:layout_width="66dp"
+            android:layout_height="30dp"
+            android:layout_toRightOf="@+id/dia_sample_damage_hint_ensure"
+            android:text="返回首页"
+            android:layout_marginLeft="12sp"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:textColor="@color/col_login_input_txt_off"
+            android:background="@drawable/shape_hint_backhome_background"
+            />
+    </RelativeLayout>
+
+</RelativeLayout>

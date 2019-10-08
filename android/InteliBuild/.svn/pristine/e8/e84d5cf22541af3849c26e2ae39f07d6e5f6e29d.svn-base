@@ -1,0 +1,12 @@
+package com.bibinet.intelibuild.project.net.emit;
+
+import com.bibinet.intelibuild.project.model.ContractInfoModel;
+
+/**
+ * Created by bibinet on 2017-12-18.
+ */
+
+public interface ContractInfoEmit {
+    void onGetContractInfoSuccess(ContractInfoModel contractInfoModel);
+    void onGetContractInfoFail(String error);
+}

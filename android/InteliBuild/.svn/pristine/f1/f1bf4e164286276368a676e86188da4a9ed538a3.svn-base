@@ -1,0 +1,47 @@
+package com.bibinet.intelibuild.project.model;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class OcrCheckRecordModel extends BaseModel implements Serializable{
+
+    private List<OcrCheckRecordChildModel> condition;  //标准
+    private List<OcrCheckRecordChildModel> requirement; //要求
+
+    public List<OcrCheckRecordChildModel> getCondition() {
+        return condition;
+    }
+
+    public void setCondition(List<OcrCheckRecordChildModel> condition) {
+        this.condition = condition;
+    }
+
+    public List<OcrCheckRecordChildModel> getRequirement() {
+        return requirement;
+    }
+
+    public void setRequirement(List<OcrCheckRecordChildModel> requirement) {
+        this.requirement = requirement;
+    }
+
+    public class OcrCheckRecordChildModel{
+        private String value;
+        private String unit;
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        public String getUnit() {
+            return unit;
+        }
+
+        public void setUnit(String unit) {
+            this.unit = unit;
+        }
+    }
+}

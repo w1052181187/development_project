@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:gravity="center"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_marginBottom="11dp"
+        android:id="@+id/ada_product_check_select"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_weight="1"
+        android:background="@drawable/select_product_check_select_item_background"
+        android:clickable="true">
+
+        <ImageView
+            android:id="@+id/ada_product_check_select_sign"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:visibility="gone"
+            android:layout_marginLeft="1dp"
+            android:layout_marginTop="1dp"
+            android:src="@mipmap/img_sampling_ok" />
+
+        <TextView
+            android:id="@+id/ada_product_check_select_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="7dp"
+            android:layout_alignParentRight="true"
+            android:text="1"
+            android:textColor="#2878FF"
+            android:textSize="11sp"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/ada_product_check_select_img"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/selectcheck_selector5"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/ada_product_check_select_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:layout_below="@+id/ada_product_check_select_img"
+            android:layout_centerHorizontal="true"
+            android:text="抗拉强度"
+            android:maxLines="2"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="4dp"
+            android:textColor="@color/product_check_select_name_color_sel"
+            android:textSize="13sp" />
+
+        <ImageView
+            android:id="@+id/ada_product_check_select_mark"
+            android:layout_width="11dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            android:layout_marginBottom="1dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:src="@mipmap/xuanzhong"
+            android:visibility="gone" />
+    </RelativeLayout>
+</LinearLayout>

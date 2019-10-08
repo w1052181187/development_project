@@ -1,0 +1,69 @@
+package com.bibinet.intelibuild.project.view.fragment;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.view.activity.LabelScanActivity;
+import com.bibinet.intelibuild.project.view.activity.ProductInfoActivity;
+import com.bibinet.intelibuild.project.view.base.BaseFragment;
+
+import butterknife.BindString;
+import butterknife.BindView;
+import butterknife.OnClick;
+
+/**
+ * 打开监控成功界面
+ * Created by bibinet on 2018-1-10.
+ */
+
+public class OpenMonitorFragment extends BaseFragment {
+
+    private final String PAGE_ID = "PAGE_ID";
+
+    @BindView(R.id.fra_open_monitor_hint)
+    TextView hintTV;
+
+    @BindString(R.string.str_scan_project_hint)
+    String projectHint;
+
+    @BindString(R.string.str_scan_sample_hint)
+    String sampleHint;
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.fragment_open_monitor;
+    }
+
+    @Override
+    protected void onBaseViewCreated(View view, Bundle savedInstanceState) {
+        switch (getInt()){
+            case R.id.act_main_sampling:
+                hintTV.setText(projectHint);
+                break;
+            case R.id.act_main_check:
+                hintTV.setText(sampleHint);
+                break;
+        }
+    }
+
+    public int getInt(){
+        return getInt(PAGE_ID);
+    }
+
+    public OpenMonitorFragment setInt(int value){
+        setInt(PAGE_ID, value);
+        Bundle b = new Bundle();
+        b.putInt(PAGE_ID, value);
+        setArguments(b);
+        return this;
+    }
+
+    @OnClick(R.id.act_open_monitor_start_scan_tag)
+    void startScanTag(){
+        //先跳过扫描电子标签那部 直接走后续
+        LabelScanActivity.start(getActivity(), getInt());
+        getActivity().finish();
+    }
+}

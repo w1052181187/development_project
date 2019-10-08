@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#2878FF"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:background="#2878FF" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/app_name"
+                android:textColor="@color/col_title_txt"
+                android:textSize="@dimen/dim_title_txt" />
+
+            <RelativeLayout
+                android:id="@+id/act_main_show_account"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="18dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_centerInParent="true"
+                    android:src="@mipmap/img_home_account" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/act_main_sao"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="18dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_centerInParent="true"
+                    android:src="@mipmap/img_home_sao" />
+            </RelativeLayout>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ebebeb">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp" />
+
+        <ImageView
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/img_home_top" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="467dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="-25dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="40dp"
+            android:layout_below="@id/view"
+            android:background="@drawable/homerange_shape"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:id="@+id/act_main_sampling"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:clickable="true"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/iv1"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_alignStart="@+id/textView"
+                        android:src="@mipmap/time" />
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:textColor="@color/col_home_txt"
+                        android:layout_below="@id/iv1"
+                        android:layout_centerHorizontal="true"
+                        android:text="采样"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0.5dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="18dp"
+                    android:background="#E0E0E0" />
+
+                <LinearLayout
+                    android:id="@+id/act_main_check"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:clickable="true"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/iv2"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_centerHorizontal="true"
+                        android:src="@mipmap/clock" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="@color/col_home_txt"
+                        android:text="检测"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:background="#E0E0E0" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:id="@+id/act_main_history"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/iv5"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_centerHorizontal="true"
+                        android:src="@mipmap/previous" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:layout_below="@id/iv5"
+                        android:layout_centerHorizontal="true"
+                        android:text="历史检测"
+                        android:textColor="@color/col_home_txt"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0.5dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="18dp"
+                    android:background="#E0E0E0" />
+
+                <LinearLayout
+                    android:id="@+id/act_main_exit"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/iv6"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_centerHorizontal="true"
+                        android:src="@mipmap/shield" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:layout_below="@id/iv6"
+                        android:layout_centerHorizontal="true"
+                        android:text="退出"
+                        android:textColor="@color/col_home_txt"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

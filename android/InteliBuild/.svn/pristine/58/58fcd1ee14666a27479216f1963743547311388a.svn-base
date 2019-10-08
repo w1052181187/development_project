@@ -1,0 +1,18 @@
+package com.bibinet.intelibuild.project.util;
+
+import android.os.Looper;
+import android.widget.Toast;
+
+import com.bibinet.intelibuild.project.application.IntelBuildApplication;
+
+public class ToastUtils {
+    public static void show(String str) {
+        Toast.makeText(IntelBuildApplication.context, str, Toast.LENGTH_SHORT).show();
+    }
+
+    public static void looperShow(String str) {
+        Looper.prepare();
+        Toast.makeText(IntelBuildApplication.context, str, Toast.LENGTH_SHORT).show();
+        Looper.loop();
+    }
+}

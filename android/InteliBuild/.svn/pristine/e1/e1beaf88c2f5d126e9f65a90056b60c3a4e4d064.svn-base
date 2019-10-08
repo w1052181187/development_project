@@ -1,0 +1,33 @@
+package com.bibinet.intelibuild.project.util;
+
+import android.content.Context;
+
+import com.bibinet.intelibuild.project.application.IntelBuildApplication;
+
+public class SPHelper extends BaseSPHelper{
+
+	
+	public static final String KEY_CHECK_MONTIOR_SN = "check_sn";
+	public static final String KEY_LOGIN_TOKEN = "login_token";
+
+	private static SPHelper helper;
+	
+	public SPHelper(Context context) {
+		super(context);
+	}
+	
+	public static SPHelper getInst(){
+		if(helper == null){
+			synchronized (SPHelper.class) {
+				if(helper == null){
+					helper = new SPHelper(IntelBuildApplication.getInstance());
+				}
+			}
+		}
+		return helper;
+	}
+	
+	public void removeByKey(String key){
+		helper.getSharedPreferences().edit().remove(key).commit();
+	}
+}

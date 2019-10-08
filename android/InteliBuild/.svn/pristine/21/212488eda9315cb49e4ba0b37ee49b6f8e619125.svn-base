@@ -1,0 +1,12 @@
+package com.bibinet.intelibuild.project.net.emit;
+
+import com.bibinet.intelibuild.project.model.OcrModel;
+
+/**
+ * Created by bibinet on 2018-1-12.
+ */
+
+public interface GetOcrProtocolEmit {
+    void onGetProtocolSuccess(OcrModel ocrModel);
+    void onGetProtocolFail(String error);
+}

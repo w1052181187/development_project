@@ -1,0 +1,246 @@
+package com.bibinet.intelibuild.project.view.expand;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
+import android.view.View;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.manager.BeepManager;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.util.ToastUtils;
+import com.bibinet.intelibuild.project.view.activity.LabelScanActivity;
+import com.bibinet.intelibuild.project.view.activity.ProductInfoActivity;
+import com.bibinet.intelibuild.project.view.dialog.WaitDialog;
+import com.speedata.libuhf.IUHFService;
+import com.speedata.libuhf.UHFManager;
+import com.speedata.libuhf.bean.SpdInventoryData;
+import com.speedata.libuhf.bean.SpdReadData;
+import com.speedata.libuhf.bean.SpdWriteData;
+import com.speedata.libuhf.interfaces.OnSpdInventoryListener;
+import com.speedata.libuhf.interfaces.OnSpdReadListener;
+import com.speedata.libuhf.interfaces.OnSpdWriteListener;
+import com.speedata.libuhf.utils.StringUtils;
+
+import java.math.BigDecimal;
+
+import butterknife.BindView;
+
+/**
+ * 提供标签写入功能的activity，不用来显示页面，用于继承
+ * Created by bibinet on 2018-1-8.
+ */
+
+public abstract class LabelWriteActivity extends TitleActivity implements OnSpdInventoryListener, OnSpdWriteListener, OnSpdReadListener {
+    private static final String TYPE = "TYPE";
+
+    private final int maxCount = 0;
+    private int currentValue = 0;
+
+    private IUHFService iuhfService;
+
+    private Handler initHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == 1001) {
+                LogUtils.e("xx", "xxxxxxxxx");
+                return;
+            }
+            iuhfService.openDev();
+            iuhfService.setOnInventoryListener(LabelWriteActivity.this);
+            iuhfService.setOnReadListener(LabelWriteActivity.this);
+            iuhfService.setOnWriteListener(LabelWriteActivity.this);
+            iuhfService.inventoryStart();
+            //waitDialog.close();
+            //stopHandler.sendEmptyMessageDelayed(3065, 5000);
+        }
+    };
+
+    private Handler stopHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            iuhfService.inventoryStop();
+            onWriteLabelDataFail("请靠近电子标签进行写入操作！");
+        }
+    };
+
+    private int type;
+
+    @Override
+    protected final void onTitleCreate(Bundle savedInstanceState) {
+        type = getIntent().getIntExtra(TYPE, R.id.act_main_sampling);
+        beepManager = new BeepManager(this);
+        onLabelWriteCreate(savedInstanceState);
+    }
+
+    protected abstract void onLabelWriteCreate(Bundle savedInstanceState);
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (iuhfService != null) {
+            iuhfService.closeDev();
+        }
+    }
+
+    private Handler readHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            int readArea = iuhfService.readArea(3, 0, 8, "00000000");
+            if (readArea != 0) {
+                //参数错误
+                //ToastUtils.looperShow("读取失败");
+                LogUtils.e("dfdsfsxixixi", " 读卡失败了");
+                //ToastUtils.show("识别失败，请重新识别！");
+                onWriteLabelDataFail("读取标签失败");
+            } else {
+                LogUtils.e("dfdsfsxixixi", " 读卡成功了");
+            }
+        }
+    };
+
+    protected abstract void onWriteLabelDataFail(String error);
+
+    @Override
+    public void getInventoryData(final SpdInventoryData var1) {
+        //盘点回调 显示结果
+        currentValue++;
+        if (currentValue > maxCount) {
+            //选卡
+            String epc = var1.epc;
+            LogUtils.e("epc", " edd-" + epc);
+            iuhfService.inventoryStop();
+            int res = iuhfService.selectCard(1, epc, true);
+            if (res != 0) {
+                //参数错误
+                //ToastUtils.looperShow("读取失败");
+                LogUtils.e("dfdsfsxixixi", " 选卡失败了-" + res);
+                onWriteLabelDataFail("选取标签失败");
+            } else {
+                LogUtils.e("dfdsfsxixixi", " 选卡成功了-" + res);
+            }
+            //hh.sendEmptyMessage(2000);
+            readHandler.sendEmptyMessageDelayed(2000, 150);
+        }
+    }
+
+    private String getPrettyNumber(String number) {
+        String plainString = BigDecimal.valueOf(Double.parseDouble(number))
+                .stripTrailingZeros().toPlainString();
+        if (plainString.equals("0.0")) {
+            plainString = "0";
+        }
+        return plainString;
+    }
+
+    private BeepManager beepManager;
+
+    @Override
+    public void getReadData(SpdReadData var1) {
+        LogUtils.e("dfdsfsxixixi", var1 + "---");
+        LogUtils.e("dfdsfsxixixi", var1.getStatus() + "---");
+
+        if (var1.getStatus() == 0) {
+            beepManager.labelScanBeep();
+            String readHexString = StringUtils.byteToHexString(var1.getReadData(), var1.getDataLen());
+            LogUtils.e("dfdsfsxixixi", readHexString + "---");
+            if (!readHexString.replace("0", "").equals("")) {
+                onWriteLabelDataFail("该标签已写入数据，请选择其他空标签");
+            } else {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(150);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        String sp = "01";
+                        for(int i=0 ; i<32 - id.length() - 2 ; i++){
+                            sp = sp + "0";
+                        }
+                        id = sp + id;
+                        byte [] b = StringUtils.stringToByte(id);
+                        LogUtils.e("data", "id="+id+"-"+b.length);
+                        int writeArea = iuhfService.writeArea(3, 0, 8, "00000000", b);
+                        if (writeArea != 0) {
+                            onWriteLabelDataFail("写入失败1");
+                        }
+                    }
+                }).start();
+            }
+        } else {
+            //replaceHandler.sendEmptyMessageDelayed(1004, 1500);
+            //ToastUtils.looperShow("读取失败，请重新读取！");
+            onWriteLabelDataFail("标签读取失败");
+        }
+    }
+
+    private Handler replaceHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            LogUtils.e("exit", "exit");
+            iuhfService.closeDev();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        iuhfService = UHFManager.getUHFService(LabelWriteActivity.this);
+                        initHandler.sendEmptyMessage(1000);
+                    } catch (Exception e) {
+                        initHandler.sendEmptyMessage(1001);
+                        ToastUtils.looperShow("写入模块不存在，请确定是否是正确的设备");
+                    }
+                }
+            }).start();
+        }
+    };
+
+    @Override
+    public void getWriteData(SpdWriteData var1) {
+        LogUtils.e("huidiaoiaoxie", "-"+var1.getStatus());
+        byte[] epcData = var1.getEPCData();
+        String hexString = StringUtils.byteToHexString(epcData, var1.getEPCLen());
+        if (var1.getStatus() == 0) {
+            //状态判断，已经写卡成功了就不返回错误码了
+            onWriteLabelDataSuccess(hexString);
+        } else {
+            onWriteLabelDataFail("写入失败");
+        }
+    }
+
+    protected abstract void onWriteLabelDataSuccess(String result);
+
+    private String id;
+
+    private boolean isInit = true;
+
+    protected void writeLabelData(String sampleId) {
+        this.id = sampleId;
+        if(isInit){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        iuhfService = UHFManager.getUHFService(LabelWriteActivity.this);
+                        initHandler.sendEmptyMessage(1000);
+                    } catch (Exception e) {
+                        initHandler.sendEmptyMessage(1001);
+                        ToastUtils.looperShow("写入模块不存在，请确定是否是正确的设备");
+                    }
+                }
+            }).start();
+            isInit = false;
+        }else{
+            replaceHandler.sendEmptyMessageDelayed(1004, 0);
+        }
+
+    }
+}

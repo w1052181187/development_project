@@ -1,0 +1,55 @@
+package com.bibinet.intelibuild.project.net.firing;
+
+import com.bibinet.intelibuild.project.bean.OcrCheckBean;
+import com.bibinet.intelibuild.project.bean.SamplingModifyBean;
+import com.bibinet.intelibuild.project.model.InspectionModel;
+import com.bibinet.intelibuild.project.model.IsSampleCheckModel;
+import com.bibinet.intelibuild.project.model.OcrCheckModel;
+import com.bibinet.intelibuild.project.model.OcrCheckRecordModel;
+import com.bibinet.intelibuild.project.model.SampleModel;
+import com.bibinet.intelibuild.project.net.base.BaseFiring;
+import com.bibinet.intelibuild.project.net.emit.GetCheckResultEmit;
+import com.bibinet.intelibuild.project.net.emit.GetSamplingEmit;
+import com.bibinet.intelibuild.project.net.emit.IsSamplingCheckEmit;
+import com.bibinet.intelibuild.project.net.emit.ModifySamplingEmit;
+import com.bibinet.intelibuild.project.net.emit.SetSamplingEmit;
+import com.bibinet.intelibuild.project.net.rewrite.ResultCallback;
+import com.bibinet.intelibuild.project.util.LogUtils;
+
+import java.io.IOException;
+import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
+/**
+ * Created by bibinet on 2018-1-13.
+ */
+
+public class SamplingModifyFiring extends BaseFiring {
+
+    private ModifySamplingEmit modifySamplingEmit;
+
+    public SamplingModifyFiring(ModifySamplingEmit modifySamplingEmit) {
+        this.modifySamplingEmit = modifySamplingEmit;
+    }
+
+
+    public void modifySampling(SamplingModifyBean bean) {
+        baseReady.baseReady(urlConfig.URL_UPLOAD_SN, baseReady.POST, bean, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                modifySamplingEmit.onModifytSamplingFail(e.getMessage());
+            }
+
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseStr = response.body().string();
+                modifySamplingEmit.onModifySamplingSuccess(responseStr);
+            }
+        });
+    }
+
+}

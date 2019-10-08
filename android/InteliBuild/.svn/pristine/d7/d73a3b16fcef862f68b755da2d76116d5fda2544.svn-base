@@ -1,0 +1,59 @@
+package com.bibinet.intelibuild.project.bean;
+
+import com.bibinet.intelibuild.project.model.ContractInfoModel;
+import com.bibinet.intelibuild.project.model.InspectionModel;
+import com.bibinet.intelibuild.project.model.ProductInfoModel;
+import com.bibinet.intelibuild.project.model.SampleModel;
+
+import java.io.Serializable;
+
+/**
+ * Created by bibinet on 2018-1-13.
+ */
+
+public class SampleInfoBean implements Serializable {
+    private ProductInfoModel productInfoModel;
+    private ContractInfoModel contractInfoModel;
+    private SampleModel sampleModel;
+
+    private InspectionModel inspectionModel;
+
+
+    public InspectionModel getInspectionModel() {
+        return inspectionModel;
+    }
+
+    public void setInspectionModel(InspectionModel inspectionModel) {
+        this.inspectionModel = inspectionModel;
+    }
+
+    public SampleModel getSampleModel() {
+        return sampleModel;
+    }
+
+    public void setSampleModel(SampleModel sampleModel) {
+        this.sampleModel = sampleModel;
+    }
+
+    public ProductInfoModel getProductInfoModel() {
+        return productInfoModel;
+    }
+
+    public void setProductInfoModel(ProductInfoModel productInfoModel) {
+        this.productInfoModel = productInfoModel;
+        //这里找到对应的检测品实体
+        for(InspectionModel inspectionModel : productInfoModel.getInspectionItems()){
+            if(inspectionModel.getObjectId().equals(sampleModel.getInspectionInstanceId())){
+                this.inspectionModel = inspectionModel;
+            }
+        }
+    }
+
+    public ContractInfoModel getContractInfoModel() {
+        return contractInfoModel;
+    }
+
+    public void setContractInfoModel(ContractInfoModel contractInfoModel) {
+        this.contractInfoModel = contractInfoModel;
+    }
+}

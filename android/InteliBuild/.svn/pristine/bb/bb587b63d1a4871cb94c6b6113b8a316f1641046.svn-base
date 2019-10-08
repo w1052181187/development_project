@@ -1,0 +1,36 @@
+package com.bibinet.intelibuild.project.storage;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
+
+import com.bibinet.intelibuild.project.application.IntelBuildApplication;
+import com.bibinet.intelibuild.project.safe.Base64Safe;
+import com.bibinet.intelibuild.project.util.LogUtils;
+
+public class SharedStorage {
+    private static final String SHARED_USER = "SHARED_USER";
+    private static final String SHARED_USER_CURRENT_USER_NAME = "SHARED_USER_CURRENT_USER_NAME";
+    private static final String SHARED_USER_CURRENT_USER_PASSWORD = "SHARED_USER_CURRENT_USER_PASSWORD";
+
+    public static void setCurrentUser(String userName, String userPassword){
+        SharedPreferences sp = IntelBuildApplication.context.getSharedPreferences(SHARED_USER, Context.MODE_PRIVATE);
+        LogUtils.e("set", "userName="+userName+",userPassword="+userPassword);
+        userName = Base64Safe.off(userName);
+        userPassword = Base64Safe.off(userPassword);
+        LogUtils.e("set2", "userName="+userName+",userPassword="+userPassword);
+        sp.edit().putString(SHARED_USER_CURRENT_USER_NAME, userName).commit();
+        sp.edit().putString(SHARED_USER_CURRENT_USER_PASSWORD, userPassword).commit();
+    }
+
+    public static String [] getCurrentUser(){
+        SharedPreferences sp = IntelBuildApplication.context.getSharedPreferences(SHARED_USER, Context.MODE_PRIVATE);
+        String name = sp.getString(SHARED_USER_CURRENT_USER_NAME, null);
+        String password = sp.getString(SHARED_USER_CURRENT_USER_PASSWORD, null);
+        LogUtils.e("get", "userName="+name+",userPassword="+password);
+        name = Base64Safe.on(name);
+        password = Base64Safe.on(password);
+        LogUtils.e("get2", "userName="+name+",userPassword="+password);
+        return new String[]{name, password};
+    }
+}

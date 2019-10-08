@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:background="@color/col_main_background">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/act_ocr_result_update_condition_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp">
+
+            </android.support.v7.widget.RecyclerView>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="9dp"
+                android:background="@drawable/homerange_shape">
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_margin="5dp"
+                    android:id="@+id/act_ocr_result_update_standard_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </android.support.v7.widget.RecyclerView>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="9dp"
+                android:background="@drawable/homerange_shape"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="43dp">
+
+                    <View
+                        android:id="@+id/view"
+                        android:layout_width="3dp"
+                        android:layout_height="16dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/shape_product_check_select_scale_background" />
+
+                    <TextView
+                        android:id="@+id/act_sample_check_select_product_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:layout_toRightOf="@id/view"
+                        android:gravity="center"
+                        android:text="修改检测结果"
+                        android:textColor="#333333"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:background="@color/col_product_info_line" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/dim_product_item_min_height"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/dim_product_item_min_height"
+                            android:layout_marginLeft="16dp"
+                            android:gravity="center"
+                            android:text="标准要求"
+                            android:textColor="#666666" />
+                        <TextView
+                            android:id="@+id/act_ocr_result_update_condition_standard"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="16dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:gravity="center"
+                            android:textColor="#333333"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/act_ocr_result_update_condition_standard_main"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="@dimen/dim_product_item_min_height"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:id="@+id/act_ocr_result_update_condition_intro_main"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                        </LinearLayout>
+
+                        <com.bibinet.intelibuild.project.view.custom.DashedView
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:orientation="vertical" />
+
+                        <LinearLayout
+                            android:id="@+id/act_ocr_result_update_standard_intro_main"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:background="@color/col_product_info_line" />
+
+                <!--<RelativeLayout-->
+                    <!--android:visibility="gone"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:minHeight="@dimen/dim_product_item_min_height">-->
+
+                    <!--<TextView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginLeft="16dp"-->
+                        <!--android:layout_alignParentLeft="true"-->
+                        <!--android:layout_centerVertical="true"-->
+                        <!--android:gravity="center"-->
+                        <!--android:text="检测值"-->
+                        <!--android:textColor="#666666" />-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/checkData"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginRight="16dp"-->
+                        <!--android:layout_alignParentRight="true"-->
+                        <!--android:layout_centerVertical="true"-->
+                        <!--android:gravity="center"-->
+                        <!--android:text="203 2000 1003 4934"-->
+                        <!--android:textColor="#333333"-->
+                        <!--android:textSize="14sp" />-->
+                <!--</RelativeLayout>-->
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="14dp"
+                android:text="确认识别结果正确后，可开始校验"
+                android:textSize="12sp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="86dp">
+
+                <EditText
+                    android:id="@+id/fixResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="9dp"
+                    android:layout_marginRight="9dp"
+                    android:background="@drawable/homerange_shape"
+                    android:gravity="start"
+                    android:hint="请输入修改原因"
+                    android:maxLength="300"
+                    android:paddingBottom="27dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingTop="8dp"
+                    android:text=""
+                    android:textSize="13sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="13dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="可输入"
+                        android:textColor="@color/col_font_small"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/lastText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="300"
+                        android:textColor="@color/col_font_small"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="字"
+                        android:textColor="@color/col_font_small"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="85dp"
+                android:layout_margin="9dp"
+                android:background="@drawable/homerange_shape"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/act_ocr_result_update_show_img"
+                    android:layout_width="104dp"
+                    android:layout_height="54dp"
+                    android:layout_marginRight="12dp"
+                    android:layout_centerInParent="true"
+                    android:scaleType="centerCrop" />
+
+                <TextView
+                    android:id="@+id/act_ocr_result_update_show_img_txt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="点击查看图片" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dim_bottom_bar_height"
+                android:layout_marginBottom="10dp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dim_bottom_bar_height"
+        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true">
+
+        <TextView
+            android:id="@+id/act_ocr_result_update_confirm"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/col_confirm_btn"
+            android:gravity="center"
+            android:text="提交"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/act_ocr_result_update_go_back"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#FFFFFF"
+            android:gravity="center"
+            android:text="返回"
+            android:textColor="#333333"
+            android:textSize="16sp" />
+    </LinearLayout>
+</RelativeLayout>

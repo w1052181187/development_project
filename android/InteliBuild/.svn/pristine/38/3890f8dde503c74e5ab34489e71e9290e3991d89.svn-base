@@ -1,0 +1,12 @@
+package com.bibinet.intelibuild.project.net.emit;
+
+import com.bibinet.intelibuild.project.model.BaseModel;
+
+/**
+ * Created by bibinet on 2018-1-13.
+ */
+
+public interface ModifySamplingEmit {
+    void onModifySamplingSuccess(String str);
+    void onModifytSamplingFail(String error);
+}

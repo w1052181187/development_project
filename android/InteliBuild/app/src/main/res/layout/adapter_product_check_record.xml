@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="2dp"
+    android:paddingRight="2dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/ada_product_check_record_name"
+        android:layout_width="wrap_content"
+        android:text="电阻"
+        android:layout_marginTop="18dp"
+        android:layout_marginBottom="12dp"
+        android:layout_centerHorizontal="true"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textColor="@color/col_font_middle"
+        android:textSize="14sp"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:id="@+id/ada_product_check_record_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="3"
+            android:textColor="@color/col_font_big"
+            android:textSize="30sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="个"
+            android:textColor="@color/col_font_middle"
+            android:textSize="14sp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:visibility="gone"
+        android:background="#eaedf2" />
+</RelativeLayout>

@@ -1,0 +1,10 @@
+package com.bibinet.intelibuild.project.net.emit;
+
+/**
+ * Created by bibinet on 2018-1-29.
+ */
+
+public interface SetProductStatusEmit {
+    void onSetProductStatusSuccess();
+    void onSetProductStatusFail(String error);
+}

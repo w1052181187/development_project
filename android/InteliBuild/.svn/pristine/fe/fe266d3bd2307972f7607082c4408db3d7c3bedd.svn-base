@@ -1,0 +1,86 @@
+package com.bibinet.intelibuild.project.view.dialog;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.widget.TextView;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.view.base.BaseDialog;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+/**
+ * 提示失败弹窗
+ * Created by bibinet on 2017-5-3.
+ */
+
+public class HintSampleDamageDialog extends BaseDialog {
+
+    @BindView(R.id.dia_sample_damage_hint_title)
+    TextView hintTitleTV;
+    @BindView(R.id.dia_sample_damage_hint_content)
+    TextView hintTV;
+
+    private OnSampleDamageDialogListener onHintFailDialogListener;
+
+    private String hintContent;
+    private String hintTitle;
+
+    public HintSampleDamageDialog(Context context,OnSampleDamageDialogListener onHintFailDialogListener) {
+        super(context);
+        this.onHintFailDialogListener = onHintFailDialogListener;
+    }
+
+    public void setHintTitle(String title) {
+        this.hintTitle = title;
+    }
+
+    public void setHintContent(String content) {
+        this.hintContent = content;
+    }
+
+    @Override
+    protected void onBaseCreate(Bundle savedInstanceState) {
+        if (!TextUtils.isEmpty(hintContent)) {
+            hintTV.setText(hintContent);
+        }
+        if (!TextUtils.isEmpty(hintTitle)) {
+            hintTitleTV.setText(hintTitle);
+        }
+
+    }
+
+    @OnClick(R.id.dia_sample_damage_hint_ensure)
+    void confirm(){
+        if(onHintFailDialogListener != null){
+            onHintFailDialogListener.onEnsure(getContext());
+        }
+        dismiss();
+    }
+
+    @OnClick(R.id.dia_sample_damage_hint_home)
+    void backHome(){
+        if(onHintFailDialogListener != null){
+            onHintFailDialogListener.onBackHome(getContext());
+        }
+        dismiss();
+    }
+
+    @Override
+    protected void initDialog() {
+        super.initDialog();
+        setCanceledOnTouchOutside(false);
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.dialog_sample_damage_hint;
+    }
+
+    public interface OnSampleDamageDialogListener{
+        void onEnsure(Context context);
+        void onBackHome(Context context);
+    }
+}

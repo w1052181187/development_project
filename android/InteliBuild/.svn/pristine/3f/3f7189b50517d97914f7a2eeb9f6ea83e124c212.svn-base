@@ -1,0 +1,181 @@
+package com.bibinet.intelibuild.project.model;
+
+import com.bibinet.intelibuild.project.bean.OcrCheckBean;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class OcrModel extends BaseModel implements Serializable {
+
+    //本地（是否重新拍照）
+    private boolean isPhoto;
+    //本地（是否交验过）
+    private boolean isCheck;
+    private List<OcrCheckBean.Value> valueList;
+
+    private Body body;
+    private Head headers;
+
+    public Body getBody() {
+        return body;
+    }
+
+    public void setBody(Body body) {
+        this.body = body;
+    }
+
+    public Head getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(Head headers) {
+        this.headers = headers;
+    }
+
+    public boolean isPhoto() {
+        return isPhoto;
+    }
+
+    public void setPhoto(boolean photo) {
+        isPhoto = photo;
+    }
+
+    public boolean isCheck() {
+        return isCheck;
+    }
+
+    public void setCheck(boolean check) {
+        isCheck = check;
+    }
+
+    public List<OcrCheckBean.Value> getValueList() {
+        return valueList;
+    }
+
+    public void setValueList(List<OcrCheckBean.Value> valueList) {
+        this.valueList = valueList;
+    }
+
+    public class Head implements Serializable{
+        private String type;
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+    }
+
+    public class Body implements Serializable{
+        private List<Config> configList;
+
+        public List<Config> getConfigList() {
+            return configList;
+        }
+
+        public void setConfigList(List<Config> configList) {
+            this.configList = configList;
+        }
+    }
+
+    public class Config implements Serializable{
+        private String unit; //单位
+        private String type; //单位类型
+        private Mapper mapper;
+
+        public Mapper getMapper() {
+            return mapper;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public void setMapper(Mapper mapper) {
+            this.mapper = mapper;
+        }
+
+        public String getUnit() {
+            return unit;
+        }
+
+        public void setUnit(String unit) {
+            this.unit = unit;
+        }
+    }
+
+    public class Mapper implements Serializable{
+        private String position; //对应位置
+        private String start; //起始标签
+        private String count; //取值个数
+        private String conditionType; //类型 0:条件 1：标准
+
+        public String getConditionType() {
+            return conditionType;
+        }
+
+        public void setConditionType(String conditionType) {
+            this.conditionType = conditionType;
+        }
+
+        public String getStart() {
+            return start;
+        }
+
+        public void setStart(String start) {
+            this.start = start;
+        }
+
+        public String getCount() {
+            return count;
+        }
+
+        public void setCount(String count) {
+            this.count = count;
+        }
+
+        public String getPosition() {
+            return position;
+        }
+
+        public void setPosition(String position) {
+            this.position = position;
+        }
+    }
+    /*
+    "headers": {
+        "type": 0,
+        "relatedId": "15"
+    },
+    "body": {
+        "configList": [
+            {
+                "parent": null,
+                "children": null,
+                "element": null,
+                "parserRule": null,
+                "relatedId": null,
+                "unit": "℃",
+                "type": "1",
+                "defaultValue": null,
+                "mapper": {
+                    "min": "3",
+                    "max": "5",
+                    "start": "0",
+                    "count": "-1",
+                    "force": "false",
+                    "conditionType": "0",
+                    "position": "0"
+                    }
+                }
+            ]
+        }
+    }
+    */
+}

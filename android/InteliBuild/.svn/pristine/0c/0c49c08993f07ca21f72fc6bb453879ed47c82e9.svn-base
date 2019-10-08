@@ -1,0 +1,411 @@
+package com.bibinet.intelibuild.project.view.activity;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.adapter.OcrResultAdapter;
+import com.bibinet.intelibuild.project.adapter.OcrResultCheckAdapter;
+import com.bibinet.intelibuild.project.bean.OcrBean;
+import com.bibinet.intelibuild.project.bean.OcrCheckBean;
+import com.bibinet.intelibuild.project.bean.SampleInfoBean;
+import com.bibinet.intelibuild.project.model.OcrCheckModel;
+import com.bibinet.intelibuild.project.model.OcrCheckRecordModel;
+import com.bibinet.intelibuild.project.model.OcrImgModel;
+import com.bibinet.intelibuild.project.model.OcrModel;
+import com.bibinet.intelibuild.project.model.VideoUploadResultModel;
+import com.bibinet.intelibuild.project.net.emit.GetCheckResultEmit;
+import com.bibinet.intelibuild.project.net.emit.UploadVideoEmit;
+import com.bibinet.intelibuild.project.net.firing.OcrFiring;
+import com.bibinet.intelibuild.project.net.firing.UploadVideoFiring;
+import com.bibinet.intelibuild.project.util.Common;
+import com.bibinet.intelibuild.project.util.FileUtils;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.util.SPHelper;
+import com.bibinet.intelibuild.project.util.ToastUtils;
+import com.bibinet.intelibuild.project.video.util.VideoMananger;
+import com.bibinet.intelibuild.project.view.dialog.WaitDialog;
+import com.bibinet.intelibuild.project.view.expand.TitleActivity;
+import com.bibinet.intelibuild.project.view.manager.OcrResultManager;
+import com.google.gson.Gson;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+/**
+ * Ocr识别结果页面，该页面做检测工作
+ * Created by bibinet on 2018-1-3.
+ */
+
+public class OcrResultActivity extends TitleActivity implements GetCheckResultEmit,UploadVideoEmit {
+    private static final int MSG_UPADATE_CHECK_RECORD = 10;
+    @BindView(R.id.act_ocr_result_condition_main)
+    RecyclerView conditionRV;
+    @BindView(R.id.act_ocr_result_standard_main)
+    RecyclerView standardRV;
+    @BindView(R.id.act_ocr_result_condition_standard)
+    TextView conditionStandardTV;   //标准或要求，单一展示
+    @BindView(R.id.act_ocr_result_condition_standard_main)
+    View conditionStandardV;
+
+    @BindView(R.id.act_ocr_result_check_main)
+    RecyclerView checkRV;
+    @BindView(R.id.act_ocr_result_check)
+    LinearLayout checkLL;
+
+    private static final String TAG_VALUE = "TAG_VALUE";
+    private static final String TAG_RESULT = "TAG_RESULT";
+    private static final String TAG_OCR = "TAG_OCR";
+//    private static final int REQUEST_CODE_CAMERA = 1;
+//    private static final int REQUEST_CODE_PICK_IMAGE = 2;
+
+    @BindView(R.id.act_ocr_result_product_name)
+    TextView productNameTV;
+    @BindView(R.id.act_ocr_result_sample_no)
+    TextView sampleNoTV;
+    @BindView(R.id.act_ocr_result_check_project)
+    TextView checkProjcetTV;
+
+    @BindView(R.id.closeRemind)
+    ImageView closeRemind;
+    @BindView(R.id.errorDescrp)
+    RelativeLayout errorDescrp;
+    @BindView(R.id.act_ocr_result_show)
+    ImageView resultShowIV;
+
+    private List<OcrBean> ocrBeanList;
+    private SampleInfoBean sampleInfoBean;
+
+    private OcrResultCheckAdapter ocrResultCheckAdapter;
+
+    private OcrModel ocrModel;
+    private WaitDialog mWaitDialog;
+
+    //展示标准和要求的控件
+    @BindView(R.id.act_ocr_result_standard_intro_main)
+    LinearLayout standardIntroLL;
+    @BindView(R.id.act_ocr_result_condition_intro_main)
+    LinearLayout conditionIntroLL;
+
+    private OcrFiring ocrFiring;
+    private OcrResultManager ocrResultManager;
+//    private String realOcrResult;//将Ocr获取到的结果转换为实际结果
+//    private String checkUnit = RegexUtils.containsWich(Constants.ocrDoStand);
+//    private String selectedOcrUnit = "KΩ";//设置默认选中的numberpicker的单位
+//    private boolean isFixData = false;//是否对识别结果进行过修改
+    private boolean isCheck = false;//是否校验过
+//    private String ocrResultInfo;
+//    private String fixValue;
+
+    @BindView(R.id.act_ocr_result_confirm)
+    TextView confirmTV;
+    private String reason;
+    private String monitorSn;
+    private ArrayList<OcrBean> detected;
+
+    @OnClick(R.id.act_ocr_result_update_value)
+    void updateValue() {
+        OcrResultUpdateActivity.start(this, sampleInfoBean, ocrBeanList);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == OcrResultUpdateActivity.REQUEST_CODE && resultCode == OcrResultUpdateActivity.RESULT_CODE) {
+            //得到修改结果的值，替换原来的取值，重新设置适配器
+            ocrBeanList = (List<OcrBean>) data.getSerializableExtra(OcrResultUpdateActivity.TAG_VALUE);
+            reason = data.getStringExtra(OcrResultUpdateActivity.TAG_REASON);
+            detected = (ArrayList<OcrBean>) data.getSerializableExtra(OcrResultUpdateActivity.TAG_DETECTED);
+            conditionRV.setAdapter(new OcrResultAdapter(this, conditionRV, ocrBeanList, OcrResultAdapter.TYPE_CONDITION));
+            standardRV.setAdapter(new OcrResultAdapter(this, standardRV, ocrBeanList, OcrResultAdapter.TYPE_STANDARD));
+            handleIsFixed(detected);
+        }
+    }
+
+    /***
+     * 处理检测结果是否修改过
+     * @param detected
+     */
+    private void handleIsFixed(ArrayList<OcrBean> detected) {
+       for (OcrBean bean : detected) {
+           if (bean.isDetected()) {
+               ocrResultCheckAdapter.setCheckValue(null);
+               break;
+           }
+       }
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_ocr_result;
+    }
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+        //初始化请求对象
+        mWaitDialog = new WaitDialog(this);
+        ocrFiring = new OcrFiring(this);
+        //获取传入的信息
+        ocrBeanList = (List<OcrBean>) getIntent().getSerializableExtra(TAG_RESULT);
+        sampleInfoBean = (SampleInfoBean) getIntent().getSerializableExtra(TAG_VALUE);
+        ocrModel = (OcrModel) getIntent().getSerializableExtra(TAG_OCR);
+//        isPhoto = getIntent().getBooleanExtra(Consts.TAG_IS_PHOTO,false);
+//        curCheckPos = getIntent().getIntExtra(Consts.TAG_CUR_CHECK_POS,0);
+
+        ocrResultManager = new OcrResultManager(this, sampleInfoBean);
+
+        //获取检测记录
+
+        ocrFiring.getCheckRecord(sampleInfoBean.getInspectionModel().getObjectId());
+
+        //设置条件，要求的适配器，适配器内部设置配置
+        conditionRV.setAdapter(new OcrResultAdapter(this, conditionRV, ocrBeanList, OcrResultAdapter.TYPE_CONDITION));
+        standardRV.setAdapter(new OcrResultAdapter(this, standardRV, ocrBeanList, OcrResultAdapter.TYPE_STANDARD));
+
+        //RecyclerView嵌套 适配滚动
+        conditionRV.setHasFixedSize(true);
+        conditionRV.setNestedScrollingEnabled(false);
+        standardRV.setHasFixedSize(true);
+        standardRV.setNestedScrollingEnabled(false);
+        checkRV.setHasFixedSize(true);
+        checkRV.setNestedScrollingEnabled(false);
+
+        //设置产品名称
+        setTextView(productNameTV, sampleInfoBean.getProductInfoModel().getName());
+        //设置样品编号
+        setTextView(sampleNoTV, sampleInfoBean.getSampleModel().getName());
+        //设置检测项目
+        setTextView(checkProjcetTV, sampleInfoBean.getInspectionModel().getName());
+
+        //设置标准和条件
+        ocrResultManager.setConditionRequirement(conditionIntroLL, standardIntroLL, conditionStandardTV, conditionStandardV);
+        //选择检测值 横向或者纵向显示
+        if (isSingle()) {
+            checkLL.setOrientation(LinearLayout.HORIZONTAL);
+        } else {
+            checkLL.setOrientation(LinearLayout.VERTICAL);
+        }
+
+        monitorSn = SPHelper.getInst().getString(SPHelper.KEY_CHECK_MONTIOR_SN);
+        detected = new ArrayList<>();
+    }
+
+    private boolean isSingle() {
+        if (ocrBeanList.size() <= 1) {
+            return true;
+        }
+        return false;
+    }
+
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_ocr_result;
+    }
+
+    public static void start(Context context, List<OcrBean> ocrBeanList, OcrModel ocrModel, SampleInfoBean sampleInfoBean) {
+        Intent intent = new Intent(context, OcrResultActivity.class);
+        intent.putExtra(TAG_RESULT, (Serializable) ocrBeanList);
+        intent.putExtra(TAG_VALUE, (SampleInfoBean) sampleInfoBean);
+        intent.putExtra(TAG_OCR, (OcrModel) ocrModel);
+        context.startActivity(intent);
+    }
+
+    @OnClick(R.id.act_ocr_result_confirm)
+    void confirm() {
+        if (!isCheck) {
+            ToastUtils.show("请先校验");
+            return;
+        }
+        if(isLast){
+            closeMonitor();
+        }else{
+//            curCheckPos += 1;
+            LabelScanActivity.start(this, R.id.act_main_sampling);
+        }
+    }
+
+    private void closeMonitor() {
+        mWaitDialog.setHintMessage("数据上传中，请稍后");
+        mWaitDialog.setCancelable(false);
+        mWaitDialog.open();
+        VideoMananger.getInst().stopRecord();
+        UploadVideoFiring firing = new UploadVideoFiring(this);
+        firing.uploadVideo(VideoMananger.recordFile, sampleInfoBean.getSampleModel().getObjectId());
+    }
+
+    @OnClick(R.id.act_ocr_result_again)
+    void again() {
+        ocrModel.setPhoto(true);
+        OcrDistinguishActivity.start(this, ocrModel, sampleInfoBean);
+        finish();
+    }
+
+    //适配器内部点击 检测按钮 回调结果
+    //先上传图片，图片上传成功后拿到返回的实体，进行检测操作，将实体拼接到检测实体里
+    public void check() {
+        //拿到该路径下的文件进行上传操作
+        ocrResultCheckAdapter.updateChecking(true);
+        ocrFiring.setCheckImg(FileUtils.getSaveFile(getApplicationContext()).getAbsolutePath());
+    }
+
+    private OcrCheckModel ocrCheckModel;
+
+    @Override
+    public void onGetCheckResultSuccess(OcrCheckModel ocrCheckModel) {
+        isCheck = true;
+        ocrModel.setCheck(true);
+        ocrModel.setValueList(ocrCheckModel.getValueList());
+        this.ocrCheckModel = ocrCheckModel;
+        //根据检测结果渲染页面
+        ocrResultCheckAdapter.setCheckValue(ocrCheckModel.getValueList());
+        //判断是否是最后一次 展示最终结果
+        handlerFinalResult.sendEmptyMessage(1023);
+    }
+
+    private Handler handlerFinalResult = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (ocrCheckModel.isLast()) {
+                resultShowIV.setVisibility(View.VISIBLE);
+                resultShowIV.setSelected(ocrCheckModel.isFinalResult());
+            } else {
+                resultShowIV.setVisibility(View.GONE);
+            }
+        }
+    };
+
+    @Override
+    public void onGetCheckResultFail(String error) {
+        //请求错误 重置检测按钮，不设置检测结果
+        ocrResultCheckAdapter.updateChecking(false);
+        LogUtils.e("error", "xxx");
+        ToastUtils.looperShow(error);
+    }
+
+    private List<OcrCheckRecordModel> dataList;
+
+    //请求检测记录成功 设置适配器
+    @Override
+    public void onGetCheckResultRecordSuccess(final List<OcrCheckRecordModel> dataList) {
+        //设置检测结果适配器，配置
+        this.dataList = dataList;
+        handler.sendEmptyMessage(MSG_UPADATE_CHECK_RECORD);
+    }
+
+    private boolean isLast = false;
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+
+            checkRV.setLayoutManager(new LinearLayoutManager(OcrResultActivity.this));
+            ocrResultCheckAdapter = new OcrResultCheckAdapter(OcrResultActivity.this, sampleInfoBean.getInspectionModel(), ocrBeanList, dataList);
+            int checkCount = dataList.size();
+            if (ocrModel.isPhoto() && ocrModel.isCheck()) {
+                //如果校验过之后重新拍照
+                checkCount -= 1;
+                ocrResultCheckAdapter.setChecked(true);
+            }
+
+            checkRV.setAdapter(ocrResultCheckAdapter);
+            //更新按钮状态
+
+            if (checkCount >= sampleInfoBean.getInspectionModel().getIntExecutionTimes() - 1) {
+                isLast = true;
+                confirmTV.setText("回到首页");
+            }else{
+                isLast = false;
+                confirmTV.setText("下一个样品检测");
+            }
+        }
+    };
+
+    @Override
+    public void onGetCheckResultRecordFail(String error) {
+        ToastUtils.looperShow(error);
+    }
+
+    @Override
+    public void onSetCheckImgSuccess(OcrImgModel ocrImgModel) {
+        requestData(ocrImgModel);
+    }
+
+    @Override
+    public void onSetCheckImgFail(String error) {
+        //请求错误 重置检测按钮，不设置检测结果
+        ocrResultCheckAdapter.updateChecking(false);
+        ToastUtils.looperShow(error);
+    }
+
+
+    private void requestData(OcrImgModel ocrImgModel) {
+        OcrCheckBean ocrCheckBean = new OcrCheckBean();
+        ocrCheckBean.setSnCode(monitorSn);
+        //设置上传成功的图片返回的数据
+        ocrCheckBean.setFileInformation(ocrImgModel);
+        //数据来源 ocr，串口 ocr=0
+        ocrCheckBean.setDataFrom("0");
+        //采样品id
+        ocrCheckBean.setSampleId(sampleInfoBean.getSampleModel().getObjectId());
+        //检测值列表 从识别的模块里取到值，从协议里取到其他附加参数
+        //需要的值 都封装在 OcrBean中，取值的数量 就是OcrBean的数量
+        List<OcrCheckBean.Value> valueList = new ArrayList<OcrCheckBean.Value>();
+        boolean isDetected;
+        for (int i = 0; i < ocrBeanList.size(); i++) {
+            //设置每个识别的值和附加参数
+            OcrCheckBean.Value value = ocrCheckBean.new Value();
+            //检测值
+            value.setValue(ocrBeanList.get(i).getValue());
+            //值类型 标准，条件
+            value.setConditionType(ocrBeanList.get(i).getConditionType());
+            //单位类型 来源于协议
+            value.setUnitType(ocrBeanList.get(i).getUnitType());
+            isDetected = !Common.isListEmpty(detected) && i < detected.size();
+            if ((ocrModel.isPhoto() || isDetected) && ocrModel.isCheck() && i < ocrModel.getValueList().size()) {
+                value.setInspectionDataId(ocrModel.getValueList().get(i).getInspectionDataId());
+                value.setInspectionDetailId(ocrModel.getValueList().get(i).getInspectionDataId());
+            }
+
+            if (isDetected) {
+                value.setDetected(detected.get(i).isDetected());
+            }
+            valueList.add(value);
+        }
+        ocrCheckBean.setDescription(reason);
+        ocrCheckBean.setIfTakePhotoAgain(ocrModel.isPhoto());
+        ocrCheckBean.setValueList(valueList);
+        String js = new Gson().toJson(ocrCheckBean);
+        ocrResultCheckAdapter.setOcrBeanList(ocrBeanList);
+        ocrFiring.getCheckResult(ocrCheckBean);
+    }
+
+    @Override
+    public void onUploadSuccess(VideoUploadResultModel model) {
+        mWaitDialog.close();
+        FileUtils.deleteFile(VideoMananger.recordFile);
+        MainActivity.start(this);
+    }
+
+    @Override
+    public void onUploadFail(String msg) {
+        mWaitDialog.close();
+    }
+}

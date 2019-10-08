@@ -1,0 +1,191 @@
+package com.bibinet.intelibuild.project.view.activity;
+
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.adapter.OcrResultUpdateAdapter;
+import com.bibinet.intelibuild.project.bean.OcrBean;
+import com.bibinet.intelibuild.project.bean.SampleInfoBean;
+import com.bibinet.intelibuild.project.builder.EditWatcher;
+import com.bibinet.intelibuild.project.net.emit.FixOcrResultActivityView;
+import com.bibinet.intelibuild.project.util.FileUtils;
+import com.bibinet.intelibuild.project.view.expand.TitleActivity;
+import com.bibinet.intelibuild.project.view.manager.OcrResultUpdateManager;
+import com.scwang.smartrefresh.layout.util.DensityUtil;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+import static com.bibinet.intelibuild.project.util.ObjectUtils.isNull;
+
+/**
+ * 修改ocr识别结果页面
+ * Created by bibinet on 2018-1-3.
+ */
+
+public class OcrResultUpdateActivity extends TitleActivity implements FixOcrResultActivityView {
+    public static final String TAG_VALUE = "TAG_VALUE";
+    public static final String TAG_DATA = "TAG_DATA";
+    public static final int REQUEST_CODE = 1001;
+    public static final int RESULT_CODE = 1002;
+    public static final String TAG_REASON = "TAG_REASON";
+    public static final String TAG_DETECTED = "TAG_DETECTED";
+
+//    @BindView(R.id.checkData)
+//    TextView checkData;
+
+    @BindView(R.id.fixResult)
+    EditText fixResult;
+    @BindView(R.id.lastText)
+    TextView lastText;
+    @BindView(R.id.act_ocr_result_update_show_img)
+    ImageView ocrPic;
+    @BindView(R.id.act_ocr_result_update_condition_main)
+    RecyclerView conditionRV;
+    @BindView(R.id.act_ocr_result_update_standard_main)
+    RecyclerView standardRV;
+    @BindView(R.id.act_ocr_result_update_condition_standard)
+    TextView conditionStandardTV;   //标准或要求，单一展示
+    @BindView(R.id.act_ocr_result_update_condition_standard_main)
+    View conditionStandardV;
+
+    //展示标准和要求的控件
+    @BindView(R.id.act_ocr_result_update_standard_intro_main)
+    LinearLayout standardIntroLL;
+    @BindView(R.id.act_ocr_result_update_condition_intro_main)
+    LinearLayout conditionIntroLL;
+
+    private OcrResultUpdateAdapter conditionAdapter;
+    private OcrResultUpdateAdapter standardAdapter;
+
+    //展示完整图片
+    @OnClick({R.id.act_ocr_result_update_show_img, R.id.act_ocr_result_update_show_img_txt})
+    void showImg() {
+        startActivity(new Intent(this, ImageShowActivity.class));
+    }
+
+    private OcrResultUpdateManager ocrResultUpdateManager;
+
+    private SampleInfoBean sampleInfoBean;
+
+    public static void start(OcrResultActivity ocrResultActivity, SampleInfoBean sampleInfoBean, List<OcrBean> value) {
+        Intent intent = new Intent(ocrResultActivity, OcrResultUpdateActivity.class);
+        intent.putExtra(TAG_VALUE, (Serializable) value);
+        intent.putExtra(TAG_DATA, (Serializable) sampleInfoBean);
+        ocrResultActivity.startActivityForResult(intent, REQUEST_CODE);
+    }
+
+    @Override
+    public void onPostFixResultSucess() {
+
+    }
+
+    @Override
+    public void onPostFixResultFailed(String msg) {
+
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_ocr_result;
+    }
+
+    private List<OcrBean> ocrBeanList;
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+        ocrBeanList = (List<OcrBean>) getIntent().getSerializableExtra(TAG_VALUE);
+        sampleInfoBean = (SampleInfoBean) getIntent().getSerializableExtra(TAG_DATA);
+        ocrResultUpdateManager = new OcrResultUpdateManager(this, sampleInfoBean);
+        String picFile = FileUtils.getSaveFile(getApplicationContext()).getAbsolutePath();
+        Bitmap bitmap = BitmapFactory.decodeFile(picFile);
+        ocrPic.setImageBitmap(bitmap);
+        //ocrResult.setSelection(fixResult.getText().length());
+        //ocrResult.requestFocus();
+        fixResult.addTextChangedListener(new EditWatcher() {
+            @Override
+            public void afterTextChanged(Editable editable) {
+                lastText.setText(String.valueOf(300 - editable.toString().length()));
+            }
+        });
+
+        conditionAdapter = new OcrResultUpdateAdapter(this, conditionRV, ocrBeanList, TYPE_CONDITION);
+        conditionRV.setAdapter(conditionAdapter);
+        standardAdapter = new OcrResultUpdateAdapter(this, standardRV, ocrBeanList, TYPE_STANDARD);
+        standardRV.setAdapter(standardAdapter);
+
+        //RecyclerView嵌套 适配滚动
+        conditionRV.setHasFixedSize(true);
+        conditionRV.setNestedScrollingEnabled(false);
+        standardRV.setHasFixedSize(true);
+        standardRV.setNestedScrollingEnabled(false);
+
+        ocrResultUpdateManager.setConditionRequirement(conditionIntroLL, standardIntroLL, conditionStandardTV, conditionStandardV);
+    }
+
+    private TextView getShowView(String txt) {
+        TextView tv = new TextView(this);
+        tv.setText(txt);
+        tv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        int pxLR = DensityUtil.dp2px(3);
+        int pxTB = DensityUtil.dp2px(6);
+        tv.setPadding(pxLR, pxTB, pxLR, pxTB);
+        tv.setTextColor(getResources().getColor(R.color.col_font_big));
+        tv.setTextSize(13);
+        tv.setGravity(Gravity.CENTER);
+        return tv;
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_ocr_result_update;
+    }
+
+    public final int TYPE_CONDITION = 0;
+    public final int TYPE_STANDARD = 1;
+
+    @OnClick(R.id.act_ocr_result_update_go_back)
+    void goBack() {
+        finish();
+    }
+
+    @OnClick(R.id.act_ocr_result_update_confirm)
+    void confirm() {
+//        for (int i = 0; i < ocrBeanList.size(); i++) {
+//            LogUtils.e("i", "i=" + i + "oc=" + ocrBeanList.get(i).getValue());
+//        }
+        Intent intent = new Intent();
+        intent.putExtra(TAG_VALUE, (Serializable) ocrBeanList);
+        intent.putExtra(TAG_REASON, fixResult.getText().toString());
+        ArrayList<OcrBean> list = new ArrayList<>();
+        ArrayList<OcrBean> condition = conditionAdapter.getDetectedMap();
+        if (!condition.isEmpty()) {
+            list.addAll(condition);
+        }
+
+        ArrayList<OcrBean> standard = standardAdapter.getDetectedMap();
+        if (!standard.isEmpty()) {
+            list.addAll(standard);
+        }
+        intent.putExtra(TAG_DETECTED, list);
+
+        setResult(RESULT_CODE, intent);
+        finish();
+    }
+}

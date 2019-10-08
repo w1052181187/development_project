@@ -1,0 +1,49 @@
+package com.bibinet.intelibuild.project.model;
+
+public class MonitorDevLoginModel extends BaseModel{
+    private String cameraIp;
+    private String cameraPort;
+    private String username;
+    private String password;
+    private int channelNum;
+
+    public String getCameraIp() {
+        return cameraIp;
+    }
+
+    public void setCameraIp(String cameraIp) {
+        this.cameraIp = cameraIp;
+    }
+
+    public String getCameraPort() {
+        return cameraPort;
+    }
+
+    public void setCameraPort(String cameraPort) {
+        this.cameraPort = cameraPort;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public int getChannelNum() {
+        return channelNum;
+    }
+
+    public void setChannelNum(int channelNum) {
+        this.channelNum = channelNum;
+    }
+}

@@ -1,0 +1,11 @@
+package com.bibinet.intelibuild.serialport;
+
+import android.serialport.SerialPort;
+
+public class SerialPortConfig {
+    public static final String DEV = "/dev/";
+    public static String PORT = DEV + "ttyMT3";
+    public static int BAUDRATE = 9600;
+    public static int STOP_BIT = 1;
+    public static int CHECK_BIT = 0;
+}

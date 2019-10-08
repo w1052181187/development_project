@@ -1,0 +1,243 @@
+package com.bibinet.intelibuild.project.view.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v7.widget.AppCompatImageView;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.application.Constants;
+import com.bibinet.intelibuild.project.bean.SampleInfoBean;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.util.NumberUtils;
+import com.bibinet.intelibuild.project.view.base.BaseActivity;
+import com.bibinet.intelibuild.project.view.expand.TitleActivity;
+import com.bibinet.intelibuild.serialport.SerialPortManager;
+
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+/**
+ * 串口检测结果页面，该页面进行检测
+ * Created by bibinet on 2018-1-3.
+ */
+
+public class SerialPortResultActivity extends TitleActivity implements SerialPortManager.OnReadResultListener {
+    @BindView(R.id.act_serial_port_result_check_value)
+    LinearLayout checkLL;
+    @BindView(R.id.act_serial_port_result_confirm)
+    Button confirmB;
+    @BindView(R.id.checkProductNmber)
+    TextView numberTV;
+
+    @BindView(R.id.act_serial_port_result_contract_no)
+    TextView contractNoTV;
+    @BindView(R.id.act_serial_port_result_contract_name)
+    TextView contractNameTV;
+    @BindView(R.id.act_serial_port_result_product_name)
+    TextView productNameTV;
+    @BindView(R.id.act_serial_port_result_sample_no)
+    TextView sampleNoTV;
+
+//    @BindView(R.id.firstChcekNumb)
+//    TextView firstChcekNumb;
+//    @BindView(R.id.secondChcekNumb)
+//    TextView secondChcekNumb;
+//    @BindView(R.id.thridChcekNumb)
+//    TextView thridChcekNumb;
+//    @BindView(R.id.nextProductCheck)
+//    Button nextProductCheck;
+    @BindView(R.id.image_result)
+    ImageView imageResult;
+    //    //private SerialPortActivityPresenter serialPortActivityPresenter;
+    private final static String TAG = "TAG";
+
+    private ArrayList<String> dataList;
+
+    private boolean isChecking = true;
+
+    @OnClick(R.id.act_serial_port_result_confirm)
+    void confirm() {
+        if (isChecking) {
+            return;
+        }
+        if (dataList.size() >= 2) {
+            //销毁该页面 上个页面是首页
+            SerialPortManager.getInstance().closeDevice();
+            finish();
+        } else {
+            getIntent().putStringArrayListExtra("data", dataList);
+            startActivity(getIntent());
+            finish();
+        }
+    }
+
+    private SampleInfoBean sampleInfoBean;
+
+//    @OnClick({R.id.title_imageleft, R.id.nextProductCheck})
+//    public void onViewClicked(View view) {
+//        switch (view.getId()) {
+//            case R.id.title_imageleft:
+//                finish();
+//                break;
+//            case R.id.nextProductCheck:
+//                if (isCorrect.equals("false")) {
+//                    finish();
+//                    return;
+//                }
+//                if (Constants.SerialCheckNumber == 1) {
+//                    doPostData("1", firstChcekNumb.getText().toString());
+//                    Constants.SerialCheckNumber++;
+//                    Intent intent = new Intent(this, RfidScanActivity.class);
+//                    startActivity(intent);
+//                } else if (Constants.SerialCheckNumber == 2) {
+//                    doPostData("2", secondChcekNumb.getText().toString());
+//                    Constants.SerialCheckNumber++;
+//                    Intent intent = new Intent(this, RfidScanActivity.class);
+//                    startActivity(intent);
+//                } else {
+//                    doPostData("3", thridChcekNumb.getText().toString());
+//                    ProductInfoEnsureActivity.isFirstConnect = false;
+//                    ClearDataUtils.clearSerialData();
+//                    finish();
+//                }
+//                break;
+//        }
+//    }
+
+//    private void doPostData(String checkNumber,String checkData) {
+//        serialPortActivityPresenter.postSerialData(this,"userId",checkNumber,proFileNumber.getText().toString(),productFile.getText().toString(),productName.getText().toString(),
+//                productNumb.getText().toString(),checkProjcet.getText().toString(),doStandard.getText().toString(),checkData,isCorrect);
+//    }
+
+//    @Override
+//    public void onPostSerialPortActivitySucess() {
+//        //如果样品检测不合格，则终止检测
+//        if (isCorrect.equals("false")) {
+//            nextProductCheck.setText("完成样品检测");
+//            return;
+//        }
+//        if (Constants.SerialCheckNumber == 1) {
+//            checkProductNmber.setText("第一个样品检测");
+//            nextProductCheck.setText("下一个样品检测");
+//        } else if (Constants.SerialCheckNumber == 2) {
+//            checkProductNmber.setText("第二个样品检测");
+//            nextProductCheck.setText("下一个样品检测");
+//        } else {
+//            checkProductNmber.setText("第三个样品检测");
+//            nextProductCheck.setText("完成样品检测");
+//        }
+//    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_sample_check;
+    }
+
+    private void addChecking() {
+        TextView textView = new TextView(this);
+        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        textView.setText("正在检测中...");
+        textView.setTextColor(Color.parseColor("#ffa422"));
+        textView.setTextSize(14);
+        textView.setGravity(Gravity.CENTER);
+        checkLL.addView(textView);
+    }
+
+    private void addDataView(String result) {
+        TextView textView = new TextView(this);
+        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        textView.setText(result);
+        textView.setTextColor(Color.parseColor("#666666"));
+        textView.setTextSize(14);
+        textView.setGravity(Gravity.CENTER);
+        checkLL.addView(textView);
+    }
+
+    private void addDataCurrentView(String result) {
+        TextView textView = new TextView(this);
+        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        textView.setText(result);
+        if (Integer.valueOf(result.trim()) >= 200) {
+            textView.setTextColor(Color.parseColor("#00ff00"));
+        } else {
+            textView.setTextColor(Color.parseColor("#ff0000"));
+        }
+        textView.setTextSize(14);
+        textView.setGravity(Gravity.CENTER);
+        checkLL.addView(textView, checkLL.getChildCount() - 1);
+    }
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+        //根据实体初始化界面
+        sampleInfoBean = (SampleInfoBean) getIntent().getSerializableExtra(TAG);
+        contractNoTV.setText(sampleInfoBean.getProductInfoModel().getContractCode());
+        contractNameTV.setText(sampleInfoBean.getContractInfoModel().getName());
+        productNameTV.setText(sampleInfoBean.getProductInfoModel().getName());
+        sampleNoTV.setText(sampleInfoBean.getSampleModel().getName());
+
+        dataList = getIntent().getStringArrayListExtra("data");
+        if (dataList == null) {
+            dataList = new ArrayList<String>();
+        }
+        //添加已经检测的值
+        for (int i = 0; i < dataList.size(); i++) {
+            addDataView(dataList.get(i));
+        }
+        //添加当前检测中 模拟两次 如果 数据已经有两个了 就可以不用继续了
+        LogUtils.e("xx", dataList.size() + "");
+        if (dataList.size() > 0) {
+            //终结页面 回首页
+            confirmB.setText("检测完成");
+        } else {
+            confirmB.setText("下一个样品检测");
+        }
+        if (dataList.size() > 1) {
+
+        } else {
+            //继续下一个样品检测
+            addChecking();
+            SerialPortManager.getInstance().read(this);
+        }
+        numberTV.setText("第" + NumberUtils.numberArab2CN(dataList.size() + 1) + "个样品检测");
+        imageResult.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_serial_port_result;
+    }
+
+    public static void start(Context context, SampleInfoBean sampleInfoBean) {
+        Intent intent = new Intent(context, SerialPortResultActivity.class);
+        intent.putExtra(TAG, sampleInfoBean);
+        context.startActivity(intent);
+    }
+
+    @Override
+    public void onResult(String result) {
+        LogUtils.e("xx", "-" + result);
+        String res = new String(result);
+        dataList.add(res);
+        SerialPortManager.getInstance().pause();
+        TextView textView = (TextView) checkLL.getChildAt(checkLL.getChildCount() - 1);
+        textView.setVisibility(View.INVISIBLE);
+        addDataCurrentView(result);
+        isChecking = false;
+    }
+
+}

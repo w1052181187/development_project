@@ -1,0 +1,322 @@
+package com.bibinet.intelibuild.project.view.custom;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Paint.Align;
+import android.graphics.Paint.FontMetricsInt;
+import android.graphics.Paint.Style;
+import android.os.Handler;
+import android.os.Message;
+import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.View;
+
+public class PickerView extends View {
+    public static final String TAG = "PickerView";
+    /**
+     * text֮�����minTextSize֮��
+     */
+    public static final float MARGIN_ALPHA = 2.8f;
+    /**
+     * �Զ��ع����м���ٶ�
+     */
+    public static final float SPEED = 2;
+
+    private List<String> mDataList;
+    /**
+     * ѡ�е�λ�ã����λ����mDataList������λ�ã�һֱ����
+     */
+    private int mCurrentSelected;
+    private Paint mPaint;
+
+    private float mMaxTextSize = 80;
+    private float mMinTextSize = 40;
+
+    private float mMaxTextAlpha = 255;
+    private float mMinTextAlpha = 120;
+
+    private int mColorText = 0x333333;
+
+    private int mViewHeight;
+    private int mViewWidth;
+
+    private float mLastDownY;
+    /**
+     * �����ľ���
+     */
+    private float mMoveLen = 0;
+    private boolean isInit = false;
+    private onSelectListener mSelectListener;
+    private Timer timer;
+    private MyTimerTask mTask;
+
+    private int outWidth = 0;
+    private int outHeight = 0;
+
+    Handler updateHandler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (Math.abs(mMoveLen) < SPEED) {
+                mMoveLen = 0;
+                if (mTask != null) {
+                    mTask.cancel();
+                    mTask = null;
+                    performSelect();
+                }
+            } else
+                // ����mMoveLen / Math.abs(mMoveLen)��Ϊ�˱���mMoveLen�������ţ���ʵ���Ϲ����¹�
+                mMoveLen = mMoveLen - mMoveLen / Math.abs(mMoveLen) * SPEED;
+            invalidate();
+        }
+
+    };
+
+    public PickerView(Context context) {
+        super(context);
+        init();
+
+        List<String> data = new ArrayList<String>();
+        for (int i = 0; i < 10; i++) {
+            data.add(i + "+");
+        }
+        setData(data);
+    }
+
+    public void setWidthHeight(int outWidth, int outHeight) {
+        this.outHeight = outHeight;
+        this.outWidth = outWidth;
+    }
+
+    public PickerView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
+    public String getCurrentText() {
+        return mDataList.get(mCurrentSelected);
+    }
+
+    public void setOnSelectListener(onSelectListener listener) {
+        mSelectListener = listener;
+    }
+
+    private void performSelect() {
+        if (mSelectListener != null)
+            mSelectListener.onSelect(mDataList.get(mCurrentSelected));
+    }
+
+    private String topString;
+    private String bottomString;
+
+    private boolean isLoop = true;
+
+    public void setData(List<String> datas) {
+        if (datas.size() == 0) {
+            datas.add("----");
+        }
+        topString = datas.get(0);
+        bottomString = datas.get(datas.size() - 1);
+
+        mCurrentSelected = 0;
+
+        mDataList = datas;
+//        mCurrentSelected = datas.size() / 2;
+        invalidate();
+    }
+
+    public void setSelected(int selected) {
+        mCurrentSelected = selected;
+    }
+
+//    private void moveHeadToTail() {
+//        if (!isLoop && getCurrentText().equals(bottomString)) {
+//            return;
+//        }
+//        String head = mDataList.get(0);
+//        mDataList.remove(0);
+//        mDataList.add(head);
+//    }
+
+//    private void moveTailToHead() {
+//        if (!isLoop && getCurrentText().equals(topString)) {
+//            return;
+//        }
+//        String tail = mDataList.get(mDataList.size() - 1);
+//        mDataList.remove(mDataList.size() - 1);
+//        mDataList.add(0, tail);
+//    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        if (outHeight == 0 && outWidth == 0) {
+            mViewHeight = getMeasuredHeight();
+            mViewWidth = getMeasuredWidth();
+        } else {
+            mViewHeight = outHeight;
+            mViewWidth = outWidth;
+        }
+        // ����View�ĸ߶ȼ��������С
+        mMaxTextSize = mViewHeight / 3.5f;
+        mMinTextSize = mMaxTextSize / 1.2f;
+        isInit = true;
+        invalidate();
+    }
+
+    private void init() {
+        timer = new Timer();
+        mDataList = new ArrayList<String>();
+        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaint.setStyle(Style.FILL);
+        mPaint.setTextAlign(Align.CENTER);
+        mPaint.setColor(mColorText);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        // ����index����view
+        if (isInit)
+            drawData(canvas);
+    }
+
+    private void drawData(Canvas canvas) {
+
+        float scale = parabola(mViewHeight / 4.0f, mMoveLen);
+        float size = (mMaxTextSize - mMinTextSize) * scale + mMinTextSize;
+        mPaint.setTextSize(size);
+        mPaint.setAlpha((int) ((mMaxTextAlpha - mMinTextAlpha) * scale + mMinTextAlpha));
+
+        float x = (float) (mViewWidth / 2.0);
+        float y = (float) (mViewHeight / 2.0 + mMoveLen);
+        FontMetricsInt fmi = mPaint.getFontMetricsInt();
+        float baseline = (float) (y - (fmi.bottom / 2.0 + fmi.top / 2.0));
+        baseline -= mViewHeight / 2 + 2 * (fmi.bottom / 2.0 + fmi.top / 2.0);
+        canvas.drawText(mDataList.get(mCurrentSelected), x, baseline, mPaint);
+
+        for (int i = 1; (mCurrentSelected - i) >= 0; i++) {
+            drawOtherText(canvas, i, -1);
+        }
+
+        for (int i = 1; (mCurrentSelected + i) < mDataList.size(); i++) {
+            drawOtherText(canvas, i, 1);
+        }
+
+    }
+
+    /**
+     * @param canvas
+     * @param position ����mCurrentSelected�Ĳ�ֵ
+     * @param type     1��ʾ���»��ƣ�-1��ʾ���ϻ���
+     */
+    private void drawOtherText(Canvas canvas, int position, int type) {
+        float d = (float) (MARGIN_ALPHA * (mMinTextSize / 1.5f) * position + type
+                * mMoveLen);
+        float scale = parabola(mViewHeight / 4.0f, d);
+        float size = (mMaxTextSize - mMinTextSize) * scale + mMinTextSize;
+        mPaint.setTextSize(size);
+        mPaint.setAlpha((int) ((mMaxTextAlpha - mMinTextAlpha) * scale + mMinTextAlpha));
+        float y = (float) (mViewHeight / 2.0 + type * d);
+        FontMetricsInt fmi = mPaint.getFontMetricsInt();
+        float baseline = (float) (y - (fmi.bottom / 2.0 + fmi.top / 2.0));
+        baseline -= mViewHeight / 2 + 2 * (fmi.bottom / 2.0 + fmi.top / 2.0);
+        canvas.drawText(mDataList.get(mCurrentSelected + type * position),
+                (float) (mViewWidth / 2.0), baseline, mPaint);
+    }
+
+    /**
+     * ������
+     *
+     * @param zero �������
+     * @param x    ƫ����
+     * @return scale
+     */
+    private float parabola(float zero, float x) {
+        float f = (float) (1 - Math.pow(x / zero, 2));
+        return f < 0 ? 0 : f;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:  // ������Ļʱ��
+                doDown(event);
+                break;
+            case MotionEvent.ACTION_MOVE:  // �������ƶ�ʱ��
+                doMove(event);
+                break;
+            case MotionEvent.ACTION_UP:    // ��ֹ����ʱ��
+                doUp(event);
+                break;
+        }
+        return true;
+    }
+
+    private void doDown(MotionEvent event) {
+        if (mTask != null) {
+            mTask.cancel();
+            mTask = null;
+        }
+        mLastDownY = event.getY();
+    }
+
+    private void doMove(MotionEvent event) {
+
+        mMoveLen += (event.getY() - mLastDownY);
+
+        if (mMoveLen > MARGIN_ALPHA * (mMinTextSize / 1.5f) / 2) {
+            //moveTailToHead();
+            if (mCurrentSelected > 0) {
+                mCurrentSelected -= 1;
+            }
+            mMoveLen = mMoveLen - MARGIN_ALPHA * (mMinTextSize / 1.5f);
+        } else if (mMoveLen < -MARGIN_ALPHA * (mMinTextSize / 1.5f) / 2) {
+            //moveHeadToTail();
+            if (mCurrentSelected < mDataList.size() - 1) {
+                mCurrentSelected += 1;
+            }
+            mMoveLen = mMoveLen + MARGIN_ALPHA * (mMinTextSize / 1.5f);
+        }
+
+        mLastDownY = event.getY();
+        invalidate();
+    }
+
+    private void doUp(MotionEvent event) {
+        if (Math.abs(mMoveLen) < 0.0001) {
+            mMoveLen = 0;
+            return;
+        }
+        if (mTask != null) {
+            mTask.cancel();
+            mTask = null;
+        }
+        mTask = new MyTimerTask(updateHandler);
+        timer.schedule(mTask, 0, 10);
+    }
+
+    class MyTimerTask extends TimerTask {
+        Handler handler;
+
+        public MyTimerTask(Handler handler) {
+            this.handler = handler;
+        }
+
+        @Override
+        public void run() {
+            handler.sendMessage(handler.obtainMessage());
+        }
+
+    }
+
+    public interface onSelectListener {
+        void onSelect(String text);
+    }
+}

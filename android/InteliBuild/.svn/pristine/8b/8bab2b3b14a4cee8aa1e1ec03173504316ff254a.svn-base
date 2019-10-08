@@ -1,0 +1,198 @@
+package com.bibinet.intelibuild.project.view.activity;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.adapter.ProductCheckSelectAdapter;
+import com.bibinet.intelibuild.project.bean.ProductInfoBean;
+import com.bibinet.intelibuild.project.bean.SampleInfoBean;
+import com.bibinet.intelibuild.project.model.InspectionModel;
+import com.bibinet.intelibuild.project.model.ProductInfoModel;
+import com.bibinet.intelibuild.project.model.SampleModel;
+import com.bibinet.intelibuild.project.net.emit.SetSamplingEmit;
+import com.bibinet.intelibuild.project.net.firing.SamplingFiring;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.util.ToastUtils;
+import com.bibinet.intelibuild.project.view.dialog.HintFailDialog;
+import com.bibinet.intelibuild.project.view.dialog.WaitDialog;
+import com.bibinet.intelibuild.project.view.expand.LabelWriteActivity;
+import com.bibinet.intelibuild.project.view.expand.TitleActivity;
+
+import java.io.Serializable;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+import static com.bibinet.intelibuild.project.util.ObjectUtils.isNull;
+
+/**
+ * 写入采样品标签页面，与写入结果页面是相互循环调用关系
+ * Created by bibinet on 2017-12-23.
+ */
+
+public class ProductCheckWriteActivity extends LabelWriteActivity implements SetSamplingEmit, View.OnClickListener {
+
+    private static final String DATA_MESSAGE = "DATA_MESSAGE";
+    private static final String DATA_SAMPLE = "DATA_SAMPLE";
+    private static final String DATA_CURRENT = "DATA_CURRENT";
+
+    private WaitDialog waitDialog;
+
+    private SamplingFiring samplingFiring;
+
+    @BindView(R.id.act_product_check_write_intro)
+    TextView introTV;
+    @BindView(R.id.act_product_check_write_contract_no)
+    TextView contractNoTV;
+    @BindView(R.id.act_product_check_write_contract_name)
+    TextView contractNameTV;
+    @BindView(R.id.act_product_check_write_product_name)
+    TextView productNameTV;
+    @BindView(R.id.act_product_check_write_sample_no)
+    TextView sampleNoTV;
+    @BindView(R.id.act_product_check_write_check_project)
+    TextView checkProjectTV;
+    @BindView(R.id.act_product_check_write_standard_of_execution)
+    TextView standardOfExecutionTV;
+    @BindView(R.id.act_product_check_write_check_instrument)
+    TextView checkInstrumentTV;
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_write_data_confirm;
+    }
+
+    private List<InspectionModel> inspectionModelList;
+    private ProductInfoBean productInfoBean;
+
+
+    //通过计算得到当前需要写入的 采样品和 数据展示的检验品
+    private SampleModel sampleModel;
+    private InspectionModel inspectionModel;
+
+    private int currentCount;
+    private int maxCount;
+
+    @Override
+    protected void onLabelWriteCreate(Bundle savedInstanceState) {
+        waitDialog = new WaitDialog(this);
+        samplingFiring = new SamplingFiring(this);
+        productInfoBean = (ProductInfoBean) getIntent().getSerializableExtra(DATA_MESSAGE);
+        inspectionModelList = (List<InspectionModel>) getIntent().getSerializableExtra(DATA_SAMPLE);
+        currentCount = getIntent().getIntExtra("DATA_CURRENT", 0);
+
+        //得到当前关联的检验品和采样品
+        //用来计算到第几个sample了
+        int cnt = 0;
+        for (int i = 0; i < inspectionModelList.size(); i++) {
+            for (int j = 0; j < inspectionModelList.get(i).getSamples().size(); j++) {
+                if (cnt == currentCount) {
+                    sampleModel = inspectionModelList.get(i).getSamples().get(j);
+                    inspectionModel = inspectionModelList.get(i);
+                }
+                cnt++;
+            }
+        }
+        maxCount = cnt;
+        introTV.setText("第" + (currentCount + 1) + "个样品标签数据（共" + maxCount + "个）");
+
+        //初始化界面展示
+        contractNoTV.setText(productInfoBean.getProductInfoModel().getContractCode());
+        contractNameTV.setText(productInfoBean.getContractInfoModel().getName());
+        productNameTV.setText(productInfoBean.getProductInfoModel().getName());
+        sampleNoTV.setText(sampleModel.getName());
+        checkProjectTV.setText(inspectionModel.getName());
+
+        //TODO
+//        ProductInfoModel.ActiveExecutiveStandard standard = productInfoBean.getProductInfoModel().getActiveExecutiveStandard();
+//        if (standard != null) {
+//            standardOfExecutionTV.setText(standard.getName());
+//        }
+
+        standardOfExecutionTV.setText(inspectionModel.getMethod());
+        checkInstrumentTV.setText(inspectionModel.getDeviceName());
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_product_check_write;
+    }
+
+    @Override
+    protected void onWriteLabelDataFail(String error) {
+        waitDialog.close();
+        String hint = "请靠近电子标签进行写入操作！";
+        if (error.equals("该标签已写入数据，请选择其他空标签")) {
+            hint = "该标签已写入数据，请选择其他空标签";
+        }
+        final String finalHint = hint;
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                new HintFailDialog(ProductCheckWriteActivity.this, finalHint, "知道了", null).show();
+            }
+        });
+        //ToastUtils.looperShow(error);
+    }
+
+    @Override
+    protected void onWriteLabelDataSuccess(String result) {
+        waitDialog.close();
+        //ToastUtils.looperShow("写入成功");
+        LogUtils.e("00,00", "0-=" + result);
+        //判断是否是最后一个，
+        //是：跳转记录页面
+        //否：跳转结果页面
+        if ((currentCount + 1) == maxCount) {
+            ProductCheckRecordActivity.start(this, inspectionModelList);
+        }else{
+            ProductCheckResultActivity.start(this, productInfoBean, inspectionModelList, currentCount);
+        }
+        finish();
+    }
+
+    public static void start(Context context, ProductInfoBean productInfoBean, List<InspectionModel> inspectionModelList, int currentCount) {
+        Intent intent = new Intent(context, ProductCheckWriteActivity.class);
+        intent.putExtra(DATA_MESSAGE, productInfoBean);
+        intent.putExtra(DATA_SAMPLE, (Serializable) inspectionModelList);
+        intent.putExtra(DATA_CURRENT, currentCount);
+        context.startActivity(intent);
+    }
+
+
+    @OnClick(R.id.act_product_check_write_confirm)
+    void confirm() {
+        //先进行数据上传，然后写入标签
+        //writeLabelData("194");
+        if (isNull(sampleModel.getObjectId())) {
+            samplingFiring.setSampling(sampleModel);
+        } else {
+            writeLabelData(sampleModel.getObjectId());
+        }
+        waitDialog.open();
+    }
+
+    @Override
+    public void onSetSamplingSuccess(SampleModel sampleModel) {
+        this.sampleModel.setObjectId(sampleModel.getObjectId());
+        writeLabelData(this.sampleModel.getObjectId());
+    }
+
+    @Override
+    public void onSetSamplingFail(String error) {
+        ToastUtils.looperShow(error);
+    }
+
+    @Override
+    public void onClick(View v) {
+
+    }
+}

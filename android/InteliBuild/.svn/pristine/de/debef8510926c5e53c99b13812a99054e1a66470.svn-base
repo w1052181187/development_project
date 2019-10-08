@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="220dp"
+    android:background="@drawable/shape_sampling_result_background"
+    android:gravity="center"
+    android:layout_height="135dp">
+
+    <ImageView
+        android:layout_width="60dp"
+        android:src="@mipmap/qin"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/str_sampling_success"
+        android:textSize="14sp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/col_font_big"
+        />
+
+    <LinearLayout
+        android:layout_marginTop="6dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        >
+        <TextView
+            android:id="@+id/dia_sampling_success_countdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4"
+            android:textSize="11sp"
+            android:textColor="#f5ba32"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="s"
+            android:textSize="11sp"
+            android:textColor="@color/col_font_middle"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/str_countdown_home"
+            android:textSize="12sp"
+            android:textColor="@color/col_font_middle"
+            />
+    </LinearLayout>
+
+</LinearLayout>

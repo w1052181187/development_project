@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_exit_login_dialog_background"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:id="@+id/dia_select_service_online"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:text="@string/str_exit_login_confirm"
+                android:textColor="@color/col_exit_login_confirm_txt"
+                android:textSize="16sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/col_exit_login_line"
+                android:layout_height="1dp" />
+
+            <TextView
+                android:id="@+id/di_exit_login_confirm"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:text="@string/str_exit_login_on"
+                android:textColor="@color/col_exit_login_on_txt"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        <TextView
+            android:id="@+id/di_exit_login_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:text="@string/str_exit_login_off"
+            android:textColor="@color/col_exit_login_off_txt"
+            android:background="@drawable/shape_exit_login_dialog_background"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

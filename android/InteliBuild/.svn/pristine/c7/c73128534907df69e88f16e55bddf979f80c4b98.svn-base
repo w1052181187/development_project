@@ -1,0 +1,64 @@
+package com.bibinet.intelibuild.project.net.base;
+
+import android.app.Activity;
+import android.content.Context;
+
+import com.bibinet.intelibuild.project.application.IntelBuildApplication;
+import com.bibinet.intelibuild.project.net.UrlConfig;
+import com.bibinet.intelibuild.project.util.SPHelper;
+import com.google.gson.Gson;
+
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+
+public class BaseReady {
+    private Gson gson;
+
+    public final int GET = 0;
+    public final int POST = 1;
+    public final int PUT = 2;
+    public final int DELETE = 3;
+    public final int PATCH = 4;
+
+    public BaseReady(Gson gson){
+        this.gson = gson;
+    }
+
+    public void baseReady(String url, int type, Object tar, Callback callback){
+        OkHttpClient okHttpClient = new OkHttpClient();
+        //设置请求模式
+        MediaType mediaType = MediaType.parse("application/json");
+
+        Request.Builder builder = null;
+        switch (type){
+            case GET:
+                builder = new Request.Builder().get().url(url);
+                break;
+            case PUT:
+                //从实体类得到请求的json
+                String sPut = gson.toJson(tar);
+                RequestBody requestBodyPut = FormBody.create(mediaType, sPut);
+                builder = new Request.Builder().put(requestBodyPut).url(url);
+                break;
+            case POST:
+                //从实体类得到请求的json
+                String s = gson.toJson(tar);
+                RequestBody requestBody = FormBody.create(mediaType, s);
+                builder = new Request.Builder().post(requestBody).url(url);
+                break;
+            case PATCH:
+                //从实体类得到请求的json
+                String sP = gson.toJson(tar);
+                RequestBody requestBodyP = FormBody.create(mediaType, sP);
+                builder = new Request.Builder().patch(requestBodyP).url(url);
+                break;
+        }
+        builder.addHeader("token", SPHelper.getInst().getString(SPHelper.KEY_LOGIN_TOKEN));
+        okHttpClient.newCall(builder.build()).enqueue(callback);
+    }
+
+}

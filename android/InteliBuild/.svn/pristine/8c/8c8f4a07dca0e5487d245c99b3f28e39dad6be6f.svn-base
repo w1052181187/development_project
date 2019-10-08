@@ -1,0 +1,73 @@
+//package com.bibinet.intelibuild.project.view.dialog;
+//
+//import android.content.Context;
+//import android.os.Bundle;
+//import android.os.Handler;
+//import android.os.Message;
+//import android.support.annotation.NonNull;
+//import android.view.KeyEvent;
+//import android.widget.TextView;
+//
+//import com.bibinet.intelibuild.R;
+//import com.bibinet.intelibuild.project.view.activity.MainActivity;
+//import com.bibinet.intelibuild.project.view.base.BaseDialog;
+//
+//import butterknife.BindView;
+//
+//
+///**
+// * Created by bibinet on 2017-5-3.
+// */
+//
+//public class SamplingSuccessDialog extends BaseDialog {
+//
+//    private long countDownTime = 3 * 1000;
+//
+//    @BindView(R.id.dia_sampling_success_countdown)
+//    TextView countDownTV;
+//
+//    public SamplingSuccessDialog(Context context) {
+//        super(context);
+//        this.context = context;
+//    }
+//
+//    private Context context;
+//    @Override
+//    protected void onBaseCreate(Bundle savedInstanceState) {
+//        handler.sendEmptyMessageDelayed(2000, 0);
+//    }
+//
+//    Handler handler = new Handler(){
+//        @Override
+//        public void handleMessage(Message msg) {
+//            super.handleMessage(msg);
+//            countDownTV.setText(String.valueOf(countDownTime/1000));
+//            countDownTime-=1000;
+//            if(countDownTime>=0){
+//                handler.sendEmptyMessageDelayed(2000, 1000);
+//            }else{
+//                dismiss();
+//                MainActivity.start(context);
+//            }
+//        }
+//    };
+//
+//    @Override
+//    protected int getLayoutId() {
+//        return R.layout.dialog_sampling_success;
+//    }
+//
+//    @Override
+//    protected void initDialog() {
+//        super.initDialog();
+//        setCanceledOnTouchOutside(false);
+//    }
+//
+//    @Override
+//    public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
+//        if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0){
+//            return true;
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
+//}

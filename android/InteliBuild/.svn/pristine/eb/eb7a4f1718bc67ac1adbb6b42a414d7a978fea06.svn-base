@@ -1,0 +1,37 @@
+package com.bibinet.intelibuild.project.bean;
+
+import java.io.Serializable;
+
+/**
+ * Created by bibinet on 2018-1-5.
+ */
+
+public class SamplingModifyBean implements Serializable{
+    private String sampleId;
+    private String snCode;
+    private String executor;
+
+    public String getSampleId() {
+        return sampleId;
+    }
+
+    public void setSampleId(String sampleId) {
+        this.sampleId = sampleId;
+    }
+
+    public String getSnCode() {
+        return snCode;
+    }
+
+    public void setSnCode(String snCode) {
+        this.snCode = snCode;
+    }
+
+    public String getExecutor() {
+        return executor;
+    }
+
+    public void setExecutor(String executor) {
+        this.executor = executor;
+    }
+}

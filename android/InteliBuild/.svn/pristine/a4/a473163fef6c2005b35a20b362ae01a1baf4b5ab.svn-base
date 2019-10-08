@@ -1,0 +1,91 @@
+package com.bibinet.intelibuild.project.view.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.adapter.ProductCheckSelectAdapter;
+import com.bibinet.intelibuild.project.bean.ProductInfoBean;
+import com.bibinet.intelibuild.project.bean.SamplingBean;
+import com.bibinet.intelibuild.project.model.InspectionModel;
+import com.bibinet.intelibuild.project.model.ProductInfoModel;
+import com.bibinet.intelibuild.project.model.SampleModel;
+import com.bibinet.intelibuild.project.net.emit.SetSamplingEmit;
+import com.bibinet.intelibuild.project.net.firing.SamplingFiring;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.util.ToastUtils;
+import com.bibinet.intelibuild.project.view.base.BaseActivity;
+import com.bibinet.intelibuild.project.view.expand.TitleActivity;
+
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+/**
+ * 选择打印采样品界面
+ * Created by bibinet on 2017-12-23.
+ */
+
+public class ProductCheckSelectActivity extends TitleActivity {
+
+    @BindView(R.id.checkRecyclerView)
+    RecyclerView checkRecyclerView;
+    @BindView(R.id.act_product_check_select_product_name)
+    TextView productNameTV;
+
+    private static final String DATA = "DATA";
+
+    private ProductInfoBean productInfoBean;
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_product_select_check;
+    }
+
+    private ProductCheckSelectAdapter adapter;
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+        productInfoBean = (ProductInfoBean) getIntent().getSerializableExtra(DATA);
+        //设置产品名称
+        setTextView(productNameTV, productInfoBean.getProductInfoModel().getName());
+        //设置检验项目适配器
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
+        checkRecyclerView.setLayoutManager(gridLayoutManager);
+        adapter = new ProductCheckSelectAdapter(this, productInfoBean.getProductInfoModel());
+        checkRecyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_product_check_select;
+    }
+
+    public static void start(Context context, ProductInfoBean productInfoBean) {
+        Intent intent = new Intent(context, ProductCheckSelectActivity.class);
+        intent.putExtra(DATA, productInfoBean);
+        context.startActivity(intent);
+    }
+
+
+    @OnClick(R.id.act_product_check_select_confirm)
+    void confirm() {
+        List<InspectionModel> inspectionModelForSampleList = adapter.getInspectionModelForSampleList();
+        //将数据带到下一个写入数据页面 传入的是所有的采样品数据 进行一个个的上传采样品，写入标签
+        if (inspectionModelForSampleList.size() <= 0) {
+            ToastUtils.show("请至少选择一项写入");
+            return;
+        }
+        ProductCheckWriteActivity.start(this, productInfoBean, inspectionModelForSampleList, 0);
+    }
+}

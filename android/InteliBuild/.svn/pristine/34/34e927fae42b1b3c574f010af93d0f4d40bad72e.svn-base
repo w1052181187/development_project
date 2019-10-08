@@ -1,0 +1,235 @@
+package com.bibinet.intelibuild.project.model;
+
+import java.io.Serializable;
+import java.util.List;
+
+/**
+ * Created by bibinet on 2018-1-5.
+ */
+
+public class InspectionModel extends BaseModel implements Serializable{
+    public static final int STATE_NOT_CHECK_OR_SAMPLE = 0;
+    public static final int STATE_YET_SAMPLE = 1;
+    public static final int STATE_YET_CHECK = 2;
+    public static final int STATE_YET_CHECKING = 1;
+    public static final int STATE_YET_CHECK_FAIL = 3;
+
+    private String name;  //检测名称
+    private String executionTimes;  //右上角标签 检测次数
+    private String objectId;
+    private int status;  //状态 0未检测，1检测中 2已检测
+    private int isSampled;  //是否采样 0 未 1 已
+    private String type;  //传给下层
+    private String materialId;  //传给下层
+    private String deviceName;  //检验设备
+    private String productInstanceId; //关联产品id
+    private String inspectionItemId; //未知id
+    private String contractId; //合同id
+    private String method; //未知
+
+
+    public String getProductInstanceId() {
+        return productInstanceId;
+    }
+
+    public void setProductInstanceId(String productInstanceId) {
+        this.productInstanceId = productInstanceId;
+    }
+
+    public String getInspectionItemId() {
+        return inspectionItemId;
+    }
+
+    public void setInspectionItemId(String inspectionItemId) {
+        this.inspectionItemId = inspectionItemId;
+    }
+
+    public String getContractId() {
+        return contractId;
+    }
+
+    public void setContractId(String contractId) {
+        this.contractId = contractId;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
+
+    private List<SampleModel> samples; //已经有的采样 新采样要在旧采样的基础上累加
+
+    public List<SampleModel> getSamples() {
+        return samples;
+    }
+
+    public void setSamples(List<SampleModel> samples) {
+        this.samples = samples;
+    }
+
+    public String getMaterialId() {
+        return materialId;
+    }
+
+    public void setMaterialId(String materialId) {
+        this.materialId = materialId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getExecutionTimes() {
+        return executionTimes;
+    }
+
+    public int getIntExecutionTimes() {
+        return (int) Double.parseDouble(executionTimes);
+    }
+
+    public void setExecutionTimes(String executionTimes) {
+        this.executionTimes = executionTimes;
+    }
+
+    public String getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public List<DeviceModel> devices;
+
+    public List<DeviceModel> getDevices() {
+        return devices;
+    }
+
+    public void setDevices(List<DeviceModel> devices) {
+        this.devices = devices;
+    }
+
+    public int getIsSampled() {
+        return isSampled;
+    }
+
+    public void setIsSampled(int isSampled) {
+        this.isSampled = isSampled;
+    }
+
+    public class DeviceModel implements Serializable{
+        private String objectId;
+
+        private String method; //1，ocr 2，串口
+
+        public String getMethod() {
+            return method;
+        }
+
+        public void setMethod(String method) {
+            this.method = method;
+        }
+
+        public String getObjectId() {
+            return objectId;
+        }
+
+        public void setObjectId(String objectId) {
+            this.objectId = objectId;
+        }
+    }
+
+    private List<Condition> conditions;
+    private List<Requirement> requirements;
+
+    public List<Condition> getConditions() {
+        return conditions;
+    }
+
+    public void setConditions(List<Condition> conditions) {
+        this.conditions = conditions;
+    }
+
+    public List<Requirement> getRequirements() {
+        return requirements;
+    }
+
+    public void setRequirements(List<Requirement> requirements) {
+        this.requirements = requirements;
+    }
+
+    //条件
+    public class Condition implements Serializable{
+        private String name;
+        private String digitalName;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getDigitalName() {
+            return digitalName;
+        }
+
+        public void setDigitalName(String digitalName) {
+            this.digitalName = digitalName;
+        }
+    }
+
+    //要求
+    public class Requirement implements Serializable{
+        private String name;
+        private String digitalName;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getDigitalName() {
+            return digitalName;
+        }
+
+        public void setDigitalName(String digitalName) {
+            this.digitalName = digitalName;
+        }
+    }
+}

@@ -1,0 +1,411 @@
+package com.bibinet.intelibuild.project.view.activity;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.annotation.UiThread;
+import android.view.View;
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.manager.BeepManager;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.util.ToastUtils;
+import com.bibinet.intelibuild.project.view.dialog.HintFailDialog;
+import com.bibinet.intelibuild.project.view.dialog.HintSampleDamageDialog;
+import com.bibinet.intelibuild.project.view.dialog.WaitDialog;
+import com.bibinet.intelibuild.project.view.expand.TitleActivity;
+import com.speedata.libuhf.IUHFService;
+import com.speedata.libuhf.UHFManager;
+import com.speedata.libuhf.bean.SpdInventoryData;
+import com.speedata.libuhf.bean.SpdReadData;
+import com.speedata.libuhf.interfaces.OnSpdInventoryListener;
+import com.speedata.libuhf.interfaces.OnSpdReadListener;
+import com.speedata.libuhf.utils.StringUtils;
+import java.math.BigDecimal;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import butterknife.BindView;
+
+/**
+ * 标签扫描页面，包括产品，样品标签扫描
+ * Created by bibinet on 2018-1-8.
+ */
+
+public class LabelScanActivity extends TitleActivity implements OnSpdInventoryListener, OnSpdReadListener, HintFailDialog.OnHintFailDialogListener {
+    private static final String TYPE = "TYPE";
+    private static final int FLAG_MSG_SAMPLE_DAMAGE = 101;
+
+    private final int maxCount = 0;
+    private int currentValue = 0;
+
+    private WaitDialog waitDialog;
+
+    @BindView(R.id.act_label_scan_light)
+    View lightV;
+    private TimerTask timerTask;
+    private Timer timer;
+
+    //根据类型 设置不同的标题 分产品和样品
+    @Override
+    protected int getTitleString() {
+        int id = 0;
+        switch (type){
+            case R.id.act_main_sampling:
+                id = R.string.str_scan_project_tag;
+                break;
+            case R.id.act_main_check:
+                id = R.string.str_scan_sample_tag;
+                break;
+        }
+
+        return id;
+    }
+
+    private IUHFService iuhfService;
+
+    private Handler initHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == 1001) {
+                waitDialog.close();
+                LogUtils.e("xx", "xxxxxxxxx");
+                return;
+            }
+            iuhfService.openDev();
+//            iuhfService.set_freq_region(0);
+            int freqRegion = iuhfService.getFreqRegion();
+            iuhfService.setOnInventoryListener(LabelScanActivity.this);
+            iuhfService.setOnReadListener(LabelScanActivity.this);
+            iuhfService.inventoryStart();
+            waitDialog.close();
+        }
+    };
+
+    private int type;
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+        type = getIntent().getIntExtra(TYPE, R.id.act_main_sampling);
+        waitDialog = new WaitDialog(this);
+        beepManager = new BeepManager(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        isStart = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isStart = true;
+        lightHandler.sendEmptyMessageDelayed(3001, 150);
+
+        waitDialog.open();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    iuhfService = UHFManager.getUHFService(LabelScanActivity.this);
+                    initHandler.sendEmptyMessage(1000);
+                } catch (Exception e) {
+                    initHandler.sendEmptyMessage(1001);
+                    ToastUtils.looperShow("识别模块不存在，请确定是否是正确的设备");
+                }
+            }
+        }).start();
+
+        startTimer();
+
+    }
+
+    private void startTimer() {
+        if (timerTask == null) {
+            timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    if (isStart) {
+                        readHandler.sendEmptyMessage(FLAG_MSG_SAMPLE_DAMAGE);
+                    }
+                }
+            };
+        }
+        if (timer == null) {
+            timer = new Timer();
+        }
+
+        timer.schedule(timerTask,60 * 1000,60 * 1000);
+    }
+
+    @Override
+    protected void onPause() {
+        isStart = false;
+        stopTimer();
+        super.onPause();
+    }
+
+    private void stopTimer() {
+        if (timerTask != null) {
+            timerTask.cancel();
+            timerTask = null;
+        }
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_label_scan;
+    }
+
+    public static void start(Context context, int type) {
+        Intent intent = new Intent(context, LabelScanActivity.class);
+        intent.putExtra(TYPE, type);
+        context.startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (iuhfService != null) {
+            iuhfService.closeDev();
+        }
+        isStart = false;
+
+    }
+
+    private Handler readHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            //判断标签损坏（由于各种原因导致标签超时（暂定1min）扫描不上，给予提示）
+            if (msg.what == FLAG_MSG_SAMPLE_DAMAGE) {
+                HintSampleDamageDialog damageDialog = new HintSampleDamageDialog(LabelScanActivity.this, new HintSampleDamageDialog.OnSampleDamageDialogListener() {
+                    @Override
+                    public void onEnsure(Context context) {
+
+                    }
+
+                    @Override
+                    public void onBackHome(Context context) {
+                        MainActivity.start(LabelScanActivity.this);
+                    }
+                });
+                damageDialog.setHintContent("是否继续下一个样品检测？");
+                damageDialog.setHintTitle("标签损坏，无法扫描！");
+                damageDialog.show();
+            } else {
+                int readArea = iuhfService.readArea(3, 0, 8, "00000000");
+                if (readArea != 0) {
+                    //参数错误
+                    //ToastUtils.looperShow("读取失败");
+                    LogUtils.e("dfdsfsxixixi", " 读卡失败了");
+                    //ToastUtils.show("识别失败，请重新识别！");
+                } else {
+                    LogUtils.e("dfdsfsxixixi", " 读卡成功了");
+                }
+            }
+        }
+    };
+
+    @Override
+    public void getInventoryData(final SpdInventoryData var1) {
+        //盘点回调 显示结果
+        currentValue++;
+        if (currentValue > maxCount) {
+            //读取数据
+            //ProductInfoActivity.start(this, ProductInfoActivity.TYPE_ENSURE, "");
+            //选卡
+            String epc = var1.epc;
+            LogUtils.e("epc", " edd-" + epc);
+            iuhfService.inventoryStop();
+            int res = iuhfService.selectCard(1, epc, true);
+            if (res != 0) {
+                //参数错误
+                //ToastUtils.looperShow("读取失败");
+                LogUtils.e("dfdsfsxixixi", " 选卡失败了-" + res);
+            } else {
+                LogUtils.e("dfdsfsxixixi", " 选卡成功了-" + res);
+            }
+            //hh.sendEmptyMessage(2000);
+            readHandler.sendEmptyMessageDelayed(2000, 150);
+        }
+//        textView.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                textView.setText("epc=" + var1.epc + "\nrssi" + var1.getRssi() + "\ntid=" + var1.getTid());
+//            }
+//        });
+    }
+
+    private String getPrettyNumber(String number) {
+        String plainString = BigDecimal.valueOf(Double.parseDouble(number))
+                .stripTrailingZeros().toPlainString();
+        if(plainString.equals("0.0")){
+            plainString = "0";
+        }
+        return plainString;
+    }
+
+    private BeepManager beepManager;
+    @Override
+    public void getReadData(SpdReadData var1) {
+
+        if (var1.getStatus() == 0) {
+            beepManager.labelScanBeep();
+            String readHexString = StringUtils.byteToHexString(var1.getReadData(), var1.getDataLen());
+            next(readHexString);
+        } else {
+
+            replaceHandler.sendEmptyMessageDelayed(1004, 1500);
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    switch (type){
+//                        case R.id.act_main_sampling:
+//                            handlProductLableErr();
+//                            break;
+//                        case R.id.act_main_check:
+//                            handlSampleLableErr();
+//                            break;
+//                        default:
+//                            handlProductLableErr();
+//                            break;
+//                    }
+//
+//                }
+//            });
+
+            //ToastUtils.looperShow("读取失败，请重新读取！");
+        }
+
+//        txt.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                txt.setText(new String(var1.getReadData()));
+//            }
+//        });
+    }
+
+    /**
+     * 样品标签损坏
+     */
+    private void handlSampleLableErr() {
+        new HintFailDialog(LabelScanActivity.this,
+                "标签损坏，是否继续下一个样品检测？", "确定",
+                new HintFailDialog.OnHintFailDialogListener() {
+                    @Override
+                    public void onClick(Dialog dialog) {
+                        MainActivity.start(LabelScanActivity.this);
+                    }
+                })
+                .show();
+    }
+
+    /**
+     * 产品标签损坏
+     */
+    private void handlProductLableErr() {
+        new HintFailDialog(LabelScanActivity.this,
+                "标签损坏！", "确定",
+                new HintFailDialog.OnHintFailDialogListener() {
+                    @Override
+                    public void onClick(Dialog dialog) {
+                        replaceHandler.sendEmptyMessageDelayed(1004, 1500);
+                    }
+                })
+                .show();
+    }
+
+    public void next(String readHexString){
+        switch (type){
+            case R.id.act_main_sampling:
+                if(readHexString.startsWith("00")){
+                    LogUtils.e("dfdsfsxixixi", readHexString + "---");
+                    readHexString = readHexString.substring(2, readHexString.length());
+                    LogUtils.e("res=", "res=" + readHexString);
+                    ProductInfoActivity.start(this, ProductInfoActivity.TYPE_ENSURE, getPrettyNumber(readHexString));
+                }else{
+                    this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            new HintFailDialog(LabelScanActivity.this, "当前标签不是正确的产品标签，请选择正确的产品标签进行扫描",
+                                    "重新扫描", LabelScanActivity.this).show();
+                        }
+                    });
+                }
+                break;
+            case R.id.act_main_check:
+                if(readHexString.startsWith("01")){
+                    LogUtils.e("dfdsfsxixixi", readHexString + "---");
+                    readHexString = readHexString.substring(2, readHexString.length());
+                    LogUtils.e("res=", "res=" + readHexString);
+                    SampleInfoActivity.start(this, SampleInfoActivity.TYPE_ENSURE, getPrettyNumber(readHexString));
+                }else{
+                    this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(!isStart){
+                                return;
+                            }
+                            new HintFailDialog(LabelScanActivity.this, "当前标签不是正确的样品标签，请选择正确的样品标签进行扫描", "重新扫描", LabelScanActivity.this).show();
+                        }
+                    });
+                }
+                break;
+        }
+
+    }
+
+    private Handler replaceHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            LogUtils.e("exit", "exit");
+            iuhfService.closeDev();
+            waitDialog.open();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        iuhfService = UHFManager.getUHFService(LabelScanActivity.this);
+                        initHandler.sendEmptyMessage(1000);
+                    } catch (Exception e) {
+                        initHandler.sendEmptyMessage(1001);
+                        ToastUtils.looperShow("识别模块不存在，请确定是否是正确的设备");
+                    }
+                }
+            }).start();
+        }
+    };
+
+    private boolean isStart = false;
+
+    private Handler lightHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(lightV.getVisibility() == View.INVISIBLE){
+                lightV.setVisibility(View.VISIBLE);
+            }else{
+                lightV.setVisibility(View.INVISIBLE);
+            }
+            if(isStart){
+                lightHandler.sendEmptyMessageDelayed(3001, 150);
+            }
+        }
+    };
+
+    //重新扫描
+    @Override
+    public void onClick(Dialog dialog) {
+        replaceHandler.sendEmptyMessageDelayed(1004, 1500);
+    }
+}

@@ -1,0 +1,28 @@
+package com.bibinet.intelibuild.project.model;
+
+import java.io.Serializable;
+
+/**
+ * Created by bibinet on 2018-1-5.
+ */
+
+public class VideoUploadResultModel extends BaseModel implements Serializable{
+    private String sourceUrl;  //唯一标识
+    private boolean videoFlag;
+
+    public String getSourceUrl() {
+        return sourceUrl;
+    }
+
+    public void setSourceUrl(String sourceUrl) {
+        this.sourceUrl = sourceUrl;
+    }
+
+    public boolean isVideoFlag() {
+        return videoFlag;
+    }
+
+    public void setVideoFlag(boolean videoFlag) {
+        this.videoFlag = videoFlag;
+    }
+}

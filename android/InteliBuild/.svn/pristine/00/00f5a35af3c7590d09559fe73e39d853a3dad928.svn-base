@@ -1,0 +1,12 @@
+package com.bibinet.intelibuild.project.net.emit;
+
+import com.bibinet.intelibuild.project.model.ProductInfoModel;
+
+/**
+ * Created by bibinet on 2018-1-12.
+ */
+
+public interface ProductInfoEmit {
+    void onGetProductInfoSuccess(ProductInfoModel productInfoModel);
+    void onGetProductInfoFail(String error);
+}

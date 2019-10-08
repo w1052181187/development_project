@@ -1,0 +1,99 @@
+package com.bibinet.intelibuild.project.view.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.application.Constants;
+import com.bibinet.intelibuild.project.bean.ProductInfoBean;
+import com.bibinet.intelibuild.project.model.ContractInfoModel;
+import com.bibinet.intelibuild.project.model.ProductInfoModel;
+import com.bibinet.intelibuild.project.net.emit.ContractInfoEmit;
+import com.bibinet.intelibuild.project.net.emit.ProductInfoEmit;
+import com.bibinet.intelibuild.project.net.firing.ContractInfoFiring;
+import com.bibinet.intelibuild.project.net.firing.ProductInfoFiring;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.util.ToastUtils;
+import com.bibinet.intelibuild.project.view.base.BaseActivity;
+import com.bibinet.intelibuild.project.view.dialog.WaitDialog;
+import com.bibinet.intelibuild.project.view.expand.TitleActivity;
+import com.bibinet.intelibuild.project.view.fragment.ProductInfoEnsureFragment;
+import com.bibinet.intelibuild.project.view.manager.ProductInfoManager;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+/**
+ * 显示产品信息界面
+ * Created by bibinet on 2018-1-12.
+ */
+
+public class ProductInfoActivity extends TitleActivity {
+
+    private static final String TYPE_START = "TYPE_START";
+    private static final String PRODUCT_CODE = "PRODUCT_CODE";
+
+    public static final int TYPE_ENSURE = 0;
+    public static final int TYPE_SHOW = 1;
+
+
+    private ProductInfoManager productInfoManager;
+
+    public static void start(Context context, int startType, String productCode) {
+        Intent intent = new Intent(context, ProductInfoActivity.class);
+        intent.putExtra(TYPE_START, startType);
+        intent.putExtra(PRODUCT_CODE, productCode);
+        context.startActivity(intent);
+    }
+
+    @Override
+    protected int getTitleString() {
+        return R.string.str_product_info_ensure;
+    }
+
+    //根据结果，加载页面
+    private void initResult(ProductInfoBean productInfoBean){
+        Fragment fragment = null;
+        switch (getIntent().getIntExtra(TYPE_START, TYPE_SHOW)) {
+            case TYPE_ENSURE:
+                fragment = new ProductInfoEnsureFragment().setProductInfoBean(productInfoBean);
+                break;
+            case TYPE_SHOW:
+                break;
+        }
+        try{
+            getSupportFragmentManager().beginTransaction().add(R.id.act_product_info_main, fragment).commit();
+        }catch (Exception e){
+
+        }
+    }
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+        productInfoManager = new ProductInfoManager(this);
+
+        String productCode = getIntent().getStringExtra(PRODUCT_CODE);
+        //根据识别到的id请求产品信息
+        productInfoManager.requestData(productCode);
+    }
+
+    @Override
+    protected int getTitleLayoutId() {
+        return R.layout.activity_product_info;
+    }
+
+    //请求产品相关数据成功回调
+    public void success(ProductInfoBean productInfoBean){
+        initResult(productInfoBean);
+    }
+
+}

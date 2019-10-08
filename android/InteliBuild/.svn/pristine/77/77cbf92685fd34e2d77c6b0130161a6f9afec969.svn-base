@@ -1,0 +1,41 @@
+package com.bibinet.intelibuild.project.net.firing;
+
+import com.bibinet.intelibuild.project.bean.OcrCheckBean;
+import com.bibinet.intelibuild.project.model.BaseModel;
+import com.bibinet.intelibuild.project.model.InspectionModel;
+import com.bibinet.intelibuild.project.model.IsSampleCheckModel;
+import com.bibinet.intelibuild.project.model.OcrCheckModel;
+import com.bibinet.intelibuild.project.model.OcrCheckRecordModel;
+import com.bibinet.intelibuild.project.model.SampleModel;
+import com.bibinet.intelibuild.project.net.base.BaseFiring;
+import com.bibinet.intelibuild.project.net.emit.GetCheckResultEmit;
+import com.bibinet.intelibuild.project.net.emit.GetSamplingEmit;
+import com.bibinet.intelibuild.project.net.emit.IsSamplingCheckEmit;
+import com.bibinet.intelibuild.project.net.emit.SetSamplingEmit;
+import com.bibinet.intelibuild.project.net.rewrite.ResultCallback;
+import com.bibinet.intelibuild.project.util.LogUtils;
+
+import java.util.List;
+
+import okhttp3.Response;
+
+/**
+ * Created by bibinet on 2018-6-6.
+ */
+
+public class ProductUpdateStatusFiring extends BaseFiring {
+
+    public void updateStatus(String objectId) {
+        baseReady.baseReady(urlConfig.setValue(urlConfig.URL_UPDATE_STATUS, objectId), baseReady.GET, null, new ResultCallback<BaseModel>() {
+            @Override
+            protected void onFail(String error) {
+
+            }
+
+            @Override
+            protected void onSuccess(BaseModel model, Response response) {
+            }
+        });
+    }
+
+}

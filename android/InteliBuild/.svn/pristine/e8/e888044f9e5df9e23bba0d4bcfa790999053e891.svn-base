@@ -1,0 +1,50 @@
+package com.bibinet.intelibuild.project.view.custom;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.support.annotation.Nullable;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+
+import com.bibinet.intelibuild.project.util.ScreenUtils;
+
+public class DashedChangeView extends LinearLayout {
+    private Context context;
+
+    private String color;
+
+    public void setLineColor(String color) {
+        removeAllViews();
+        this.color = color;
+        initView();
+    }
+
+    private void initView() {
+        int hpx = ScreenUtils.dip2px(2);
+        for (int i = 0; i < 100; i++) {
+            View view = new View(context);
+            if (i % 2 == 0) {
+                view.setBackgroundColor(Color.parseColor(color));
+            } else {
+                view.setBackgroundColor(Color.WHITE);
+            }
+            int or = getOrientation();
+            if (or == VERTICAL) {
+                view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, hpx));
+            } else {
+                view.setLayoutParams(new ViewGroup.LayoutParams(hpx, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            addView(view);
+        }
+    }
+
+    public DashedChangeView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        this.color = "#dddddd";
+        this.context = context;
+        initView();
+    }
+
+}

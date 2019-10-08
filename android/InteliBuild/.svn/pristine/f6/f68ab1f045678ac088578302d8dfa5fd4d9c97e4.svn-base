@@ -1,0 +1,105 @@
+package com.bibinet.intelibuild.project.net.firing;
+
+import com.bibinet.intelibuild.project.application.IntelBuildApplication;
+import com.bibinet.intelibuild.project.bean.OcrCheckBean;
+import com.bibinet.intelibuild.project.model.InspectionModel;
+import com.bibinet.intelibuild.project.model.IsSampleCheckModel;
+import com.bibinet.intelibuild.project.model.OcrCheckModel;
+import com.bibinet.intelibuild.project.model.OcrCheckRecordModel;
+import com.bibinet.intelibuild.project.model.OcrImgModel;
+import com.bibinet.intelibuild.project.model.SampleModel;
+import com.bibinet.intelibuild.project.net.base.BaseFiring;
+import com.bibinet.intelibuild.project.net.emit.GetCheckResultEmit;
+import com.bibinet.intelibuild.project.net.emit.GetSamplingEmit;
+import com.bibinet.intelibuild.project.net.emit.IsSamplingCheckEmit;
+import com.bibinet.intelibuild.project.net.emit.SetSamplingEmit;
+import com.bibinet.intelibuild.project.net.rewrite.ResultCallback;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.util.SPHelper;
+
+import java.io.File;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+/**
+ * Created by bibinet on 2018-1-13.
+ */
+
+public class OcrFiring extends BaseFiring {
+    private GetCheckResultEmit getCheckResultEmit;
+
+    public OcrFiring(GetCheckResultEmit getCheckResultEmit) {
+        this.getCheckResultEmit = getCheckResultEmit;
+    }
+
+    public void getCheckResult(OcrCheckBean ocrCheckBean) {
+        baseReady.baseReady(urlConfig.URL_GET_CHECK_RESULT_INFO, baseReady.POST, ocrCheckBean, new ResultCallback<OcrCheckModel>() {
+
+            @Override
+            protected void onFail(String error) {
+                getCheckResultEmit.onGetCheckResultFail(error);
+            }
+
+            @Override
+            protected void onSuccess(OcrCheckModel model, Response response) {
+                getCheckResultEmit.onGetCheckResultSuccess(model);
+            }
+        });
+    }
+
+
+    public void getCheckRecord(String itemId) {
+        baseReady.baseReady(urlConfig.setValue(urlConfig.URL_GET_CHECK_RECORD_INFO, itemId), baseReady.GET, null, new ResultCallback<OcrCheckRecordModel>() {
+            @Override
+            protected void onFail(String error) {
+                getCheckResultEmit.onGetCheckResultRecordFail(error);
+            }
+
+            @Override
+            protected void onSuccess(List<OcrCheckRecordModel> model, Response response) {
+                getCheckResultEmit.onGetCheckResultRecordSuccess(model);
+            }
+        });
+    }
+
+    public void setCheckImg(String filePath) {
+        OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(120, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS).build();
+        String url = urlConfig.URL_SET_CHECK_IMG;
+        final MediaType MEDIA_TYPE_DATA = MediaType.parse("multipart/form-data");
+        File file = new File(filePath);
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("filename", file.getName())
+                .addFormDataPart("file", file.getName(),
+                        RequestBody.create(MEDIA_TYPE_DATA, file))
+                .build();
+
+        Request request = new Request.Builder()
+                .addHeader("token", SPHelper.getInst().getString(SPHelper.KEY_LOGIN_TOKEN))
+                .url(url)
+                .post(requestBody)
+                .build();
+
+        client.newCall(request).enqueue(new ResultCallback<OcrImgModel>() {
+            @Override
+            protected void onFail(String error) {
+                getCheckResultEmit.onSetCheckImgFail(error);
+            }
+
+            @Override
+            protected void onSuccess(OcrImgModel model, Response response) {
+                super.onSuccess(model, response);
+                getCheckResultEmit.onSetCheckImgSuccess(model);
+            }
+        });
+    }
+}

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/col_main_background"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/act_product_check_select_confirm"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/col_confirm_btn"
+            android:gravity="center"
+            android:text="写入样品标签数据"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="9dp"
+            android:layout_above="@+id/act_product_check_select_confirm"
+            android:background="@drawable/homerange_shape"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="43dp">
+
+                <View
+                    android:id="@+id/view"
+                    android:layout_width="3dp"
+                    android:layout_height="16dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/shape_product_check_select_scale_background" />
+
+                <TextView
+                    android:id="@+id/act_product_check_select_product_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@id/view"
+                    android:gravity="center"
+                    android:text="耐高温检测项目"
+                    android:textColor="#333333"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/checkRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="1dp"
+                android:paddingRight="2dp" />
+        </LinearLayout>
+
+
+    </RelativeLayout>
+</LinearLayout>

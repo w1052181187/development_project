@@ -1,0 +1,110 @@
+package com.bibinet.intelibuild.project.adapter;
+
+import android.content.Context;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.bean.OcrBean;
+import java.util.ArrayList;
+import java.util.List;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+/**
+ * OCR结果页面用适配器，用来处理显示标准和要求
+ * Created by bibinet on 2017-12-18.
+ */
+
+public class OcrResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    public static final int TYPE_CONDITION = 0;
+    public static final int TYPE_STANDARD = 1;
+
+    private List<OcrBean> dataList;
+    private int type;
+    private Context context;
+
+    public OcrResultAdapter(Context context, RecyclerView recyclerView, List<OcrBean> ocrBeanList, int type) {
+        this.type = type;
+        this.context = context;
+
+        dataList = new ArrayList<OcrBean>();
+        //筛选，判断 条件，标准 分别一排有几个
+        for(int i=0 ; i<ocrBeanList.size() ; i++){
+            if(type == Integer.valueOf(ocrBeanList.get(i).getConditionType())){
+                dataList.add(ocrBeanList.get(i));
+            }
+        }
+        if(dataList.size() == 0){
+            recyclerView.setVisibility(View.GONE);
+            return;
+        }
+        int cou = dataList.size()<=3? dataList.size() : 2;
+        recyclerView.setLayoutManager(new GridLayoutManager(context, cou));
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (type){
+            case TYPE_CONDITION:
+                return new ViewHolderCondition(LayoutInflater.from(context).inflate(R.layout.adapter_ocr_result_condition, parent, false));
+            case TYPE_STANDARD:
+                return new ViewHolderStandard(LayoutInflater.from(context).inflate(R.layout.adapter_ocr_result_standard, parent, false));
+        }
+        return null;
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        OcrBean ocrBean = dataList.get(position);
+        switch (type){
+            case TYPE_CONDITION:
+                ViewHolderCondition viewHolderCondition = (ViewHolderCondition) holder;
+                viewHolderCondition.valueTV.setText(String.valueOf(ocrBean.getValue()==null? 0.0 : ocrBean.getValue()));
+                viewHolderCondition.unitTV.setText(ocrBean.getUnit());
+                break;
+            case TYPE_STANDARD:
+                ViewHolderStandard viewHolderStandard = (ViewHolderStandard) holder;
+                viewHolderStandard.valueTV.setText(String.valueOf(ocrBean.getValue()==null? 0.0 : ocrBean.getValue()));
+                viewHolderStandard.unitTV.setText(ocrBean.getUnit());
+                break;
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return dataList.size();
+    }
+
+    class ViewHolderCondition extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.ada_ocr_result_condition_unit)
+        TextView unitTV;
+
+        @BindView(R.id.ada_ocr_result_condition_value)
+        TextView valueTV;
+
+        public ViewHolderCondition(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
+
+    class ViewHolderStandard extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.ada_ocr_result_standard_unit)
+        TextView unitTV;
+
+        @BindView(R.id.ada_ocr_result_standard_value)
+        TextView valueTV;
+
+        public ViewHolderStandard(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
+}

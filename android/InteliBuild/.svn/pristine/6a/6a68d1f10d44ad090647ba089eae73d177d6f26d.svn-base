@@ -1,0 +1,210 @@
+package com.bibinet.intelibuild.project.view.fragment;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.bean.ProductInfoBean;
+import com.bibinet.intelibuild.project.bean.StatusBean;
+import com.bibinet.intelibuild.project.model.ContractInfoModel;
+import com.bibinet.intelibuild.project.model.ProductInfoModel;
+import com.bibinet.intelibuild.project.net.emit.SetContractStatusEmit;
+import com.bibinet.intelibuild.project.net.emit.SetProductStatusEmit;
+import com.bibinet.intelibuild.project.net.firing.ContractInfoFiring;
+import com.bibinet.intelibuild.project.net.firing.ProductInfoFiring;
+import com.bibinet.intelibuild.project.net.firing.ProductUpdateStatusFiring;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.util.ToastUtils;
+import com.bibinet.intelibuild.project.view.activity.ProductCheckSelectActivity;
+import com.bibinet.intelibuild.project.view.base.BaseFragment;
+import com.bibinet.intelibuild.project.view.dialog.WaitDialog;
+
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+/**
+ * 产品信息确认界面
+ * Created by bibinet on 2017-12-22.
+ */
+
+public class ProductInfoEnsureFragment extends BaseFragment implements SetContractStatusEmit, SetProductStatusEmit {
+    private final String PRODUCT_INFO = "PRODUCT_INFO";
+
+    @BindView(R.id.fra_product_info_contract_no)
+    TextView contractNoTV;
+    @BindView(R.id.fra_product_info_contract_name)
+    TextView contractNameTV;
+    @BindView(R.id.fra_product_info_product_name)
+    TextView productNameTV;
+    @BindView(R.id.fra_product_info_standard_of_execution)
+    TextView standardOfExecutionTV;
+
+    private ContractInfoFiring contractInfoFiring;
+    private ProductInfoFiring productInfoFiring;
+
+    @OnClick(R.id.fra_product_info_ensure_again_scan)
+    void againScan() {
+        getActivity().finish();
+    }
+
+//    @BindView(R.id.sure)
+//    Button sure;
+//    @BindView(R.id.repeatScan)
+//    Button repeatScan;
+    //public static boolean isFirstConnect;
+    //private ProductInfoEnsureActivityPresenter presenter;
+
+    private boolean isContractCorrect = false;
+    private boolean isProductCorrect = false;
+
+    private WaitDialog waitDialog;
+
+    private void updateContractStatus() {
+        if(isContractCorrect){
+            updateProductStatus();
+            return;
+        }
+        String contractStatus = getProductInfoBean().getContractInfoModel().getStatus();
+        //更新当前合同状态
+        switch (contractStatus) {
+            //待监造 更新状态后前进
+            case ContractInfoModel.STATE_PENDING:
+                //更新合同状态
+                if (!isContractCorrect) {
+                    waitDialog.open();
+                    contractInfoFiring.setContractStatus(getProductInfoBean().getProductInfoModel().getContractId(), new StatusBean(ContractInfoModel.STATE_ONGOING));
+                }
+                break;
+            //监造中 直接前进
+            case ContractInfoModel.STATE_ONGOING:
+                isContractCorrect = true;
+                updateProductStatus();
+                break;
+            //其他状态 提示异常 禁止前进
+            default:
+                isContractCorrect = false;
+                updateProductStatus();
+                return;
+        }
+    }
+
+    private void updateProductStatus() {
+        if(isProductCorrect){
+            next();
+            return;
+        }
+        String productStatus = getProductInfoBean().getProductInfoModel().getStatus();
+        //更新当前产品状态
+        switch (productStatus) {
+            //未检测 更新状态后前进
+            case ProductInfoModel.STATE_START:
+                //更新产品状态
+                if (!isProductCorrect) {
+                    waitDialog.open();
+                    productInfoFiring.setProductStatus(getProductInfoBean().getProductInfoModel().getObjectId(), new StatusBean(ProductInfoModel.STATE_ING));
+                }
+                break;
+            //检测中 直接前进
+            case ProductInfoModel.STATE_ING:
+                isProductCorrect = true;
+                next();
+                break;
+            //已检测 提示异常 禁止前进
+            default:
+                isProductCorrect = false;
+                next();
+                break;
+        }
+    }
+
+    private void next() {
+        if (isContractCorrect && isProductCorrect) {
+            ProductCheckSelectActivity.start(getActivity(), getProductInfoBean());
+        } else {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ToastUtils.show("该产品合同状态异常，不能进行后续操作");
+                }
+            });
+
+        }
+    }
+
+    @OnClick(R.id.fra_product_info_ensure_confirm)
+    void coinfirm() {
+        updateContractStatus();
+        //ProductCheckSelectActivity.start(getActivity());
+
+////        if(!contractStatus.equals(ContractInfoModel.STATE_PENDING) && !contractStatus.equals(ContractInfoModel.STATE_ONGOING) || productStatus.equals(ProductInfoModel.STATE_END)){
+////            ToastUtils.show("该产品合同状态异常，不能进行后续操作");
+////            return;
+////        }
+//
+//        if (isContractCorrect && isProductCorrect) {
+//            ProductCheckSelectActivity.start(getActivity());
+//        }
+        new ProductUpdateStatusFiring().updateStatus(getProductInfoBean().getProductInfoModel().getObjectId());
+    }
+
+    public ProductInfoEnsureFragment setProductInfoBean(ProductInfoBean productInfoBean) {
+        setSerializable(PRODUCT_INFO, productInfoBean);
+        return this;
+    }
+
+    public ProductInfoBean getProductInfoBean() {
+        return (ProductInfoBean) getSerializable(PRODUCT_INFO);
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.fragment_product_info_ensure;
+    }
+
+    @Override
+    protected void onBaseViewCreated(View view, Bundle savedInstanceState) {
+        waitDialog = new WaitDialog(getActivity());
+        contractInfoFiring = new ContractInfoFiring(this);
+        productInfoFiring = new ProductInfoFiring(this);
+        //LogUtils.e("xcxcv","-"+contractNoTV+"-"+getProductInfoModel()+"-"+getContractInfoModel());
+        //赋值
+        setTextView(contractNoTV, getProductInfoBean().getProductInfoModel().getContractCode());
+        setTextView(contractNameTV, getProductInfoBean().getContractInfoModel().getName());
+        setTextView(productNameTV, getProductInfoBean().getProductInfoModel().getName());
+        setTextView(standardOfExecutionTV, getProductInfoBean().getProductInfoModel().getStandard());
+        //这个数据实体可能为空，判断一下吧
+//        if(getProductInfoBean().getProductInfoModel().getActiveExecutiveStandard() != null){
+//            setTextView(standardOfExecutionTV, getProductInfoBean().getProductInfoModel().getActiveExecutiveStandard().getName());
+//        }else{
+//            setTextView(standardOfExecutionTV, null);
+//        }
+    }
+
+    @Override
+    public void onSetContractStatusSuccess() {
+        isContractCorrect = true;
+        updateProductStatus();
+    }
+
+    @Override
+    public void onSetContractStatusFail(String error) {
+        waitDialog.close();
+        ToastUtils.looperShow(error);
+    }
+
+    @Override
+    public void onSetProductStatusSuccess() {
+        isProductCorrect = true;
+        waitDialog.close();
+        next();
+    }
+
+    @Override
+    public void onSetProductStatusFail(String error) {
+        waitDialog.close();
+        ToastUtils.looperShow(error);
+    }
+}

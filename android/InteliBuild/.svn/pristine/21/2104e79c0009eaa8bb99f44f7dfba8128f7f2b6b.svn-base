@@ -1,0 +1,95 @@
+package com.bibinet.intelibuild.project.view.custom;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v7.widget.AppCompatImageView;
+import android.util.AttributeSet;
+import android.view.View;
+
+import com.bibinet.intelibuild.R;
+
+
+/**
+ * Created by Wh on 2017-7-13.
+ */
+
+public class WaitView extends View {
+    private boolean isStart = false;
+    private int cnt = 0;
+
+    private final static int csp = 6;
+    private final static int sp = 1;
+
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            setRotation(cnt);
+            cnt+=csp;
+            if(isStart){
+                handler.sendEmptyMessageDelayed(0, sp);
+            }
+        }
+    };
+
+    public synchronized void start(){
+        if(!isStart){
+            isStart = true;
+            handler.sendEmptyMessageDelayed(0,sp);
+        }
+    }
+
+    public synchronized void stop(){
+        isStart = false;
+    }
+
+    private Context context;
+    public WaitView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        this.context = context;
+        paintBig = new Paint();
+        paintBig.setColor(Color.WHITE);
+        paintBig.setAntiAlias(true);
+        paintBig.setStrokeWidth(dip2px(w));
+        paintBig.setStyle(Paint.Style.STROKE);
+
+        paintSmall = new Paint();
+        paintSmall.setColor(Color.BLUE);
+        paintSmall.setAntiAlias(true);
+        paintSmall.setStrokeWidth(dip2px(w));
+        paintSmall.setStyle(Paint.Style.STROKE);
+    }
+
+    private Paint paintBig, paintSmall;
+    private int width, height;
+    private final float w = 0.5f; //dp
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        width = getMeasuredWidth();
+        height = getMeasuredHeight();
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        RectF rf = new RectF();
+        int sp = dip2px(w);
+        rf.left = 0+sp;
+        rf.right = width-sp;
+        rf.top = 0+sp;
+        rf.bottom = height-sp;
+        canvas.drawArc(rf, -90, 360-arc, false, paintBig);
+        canvas.drawArc(rf, 360-arc-90, arc, false, paintSmall);
+    }
+    private final float arc = 60;
+    private int dip2px(float dipValue) {
+        float fontScale = context.getResources().getDisplayMetrics().density;
+        return (int) (dipValue * fontScale + 0.5f);
+    }
+}

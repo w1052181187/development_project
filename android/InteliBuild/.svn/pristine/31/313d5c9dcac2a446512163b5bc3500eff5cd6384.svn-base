@@ -1,0 +1,124 @@
+package com.bibinet.intelibuild.project.model;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class ProductInfoModel extends BaseModel implements Serializable{
+    public static final String STATE_START = "0";  //未检测
+    public static final String STATE_ING = "1";  //检测中
+    public static final String STATE_END = "2";  //已检测
+
+    private String objectId;
+    private String contractId;
+    private String contractCode;
+    private String name;
+    private String model;
+    private String status;
+    private String standard;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getContractId() {
+        return contractId;
+    }
+
+    public void setContractId(String contractId) {
+        this.contractId = contractId;
+    }
+
+    public String getContractCode() {
+        return contractCode;
+    }
+
+    public void setContractCode(String contractCode) {
+        this.contractCode = contractCode;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    private ActiveExecutiveStandard activeExecutiveStandard;
+
+    public ActiveExecutiveStandard getActiveExecutiveStandard() {
+        return activeExecutiveStandard;
+    }
+
+    public void setActiveExecutiveStandard(ActiveExecutiveStandard activeExecutiveStandard) {
+        this.activeExecutiveStandard = activeExecutiveStandard;
+    }
+
+    private List<InspectionModel> inspectionItems;
+
+    public List<InspectionModel> getInspectionItems() {
+        return inspectionItems;
+    }
+
+    public void setInspectionItems(List<InspectionModel> inspectionItems) {
+        this.inspectionItems = inspectionItems;
+    }
+
+    public String getStandard() {
+        return standard;
+    }
+
+    public void setStandard(String standard) {
+        this.standard = standard;
+    }
+
+    public class ActiveExecutiveStandard implements Serializable{
+        private String objectId;
+        private String name;
+        private String enterpriseId;
+
+        public String getObjectId() {
+            return objectId;
+        }
+
+        public void setObjectId(String objectId) {
+            this.objectId = objectId;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getEnterpriseId() {
+            return enterpriseId;
+        }
+
+        public void setEnterpriseId(String enterpriseId) {
+            this.enterpriseId = enterpriseId;
+        }
+    }
+}

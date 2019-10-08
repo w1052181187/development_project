@@ -1,0 +1,13 @@
+package com.bibinet.intelibuild.project.util;
+
+import android.util.Log;
+
+import static com.bibinet.intelibuild.project.application.Constants.IS_TEST;
+
+public class LogUtils {
+    public static void e(String tag, String msg){
+        if(IS_TEST){
+            Log.e(tag, msg);
+        }
+    }
+}

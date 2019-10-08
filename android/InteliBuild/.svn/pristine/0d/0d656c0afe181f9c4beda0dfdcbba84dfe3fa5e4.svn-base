@@ -1,0 +1,74 @@
+package com.bibinet.intelibuild.project.view.dialog;
+
+import android.app.Activity;
+import android.content.Context;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.Window;
+import android.view.WindowManager;
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.application.IntelBuildApplication;
+import com.bibinet.intelibuild.project.storage.SharedStorage;
+import com.bibinet.intelibuild.project.util.SPHelper;
+import com.bibinet.intelibuild.project.util.ScreenUtils;
+import com.bibinet.intelibuild.project.view.activity.LoginActivity;
+import com.bibinet.intelibuild.project.view.base.BaseDialog;
+import butterknife.OnClick;
+
+/**
+ * 退出登录弹窗
+ * Created by Wh on 2016/8/19.
+ */
+public class ExitLoginDialog extends BaseDialog{
+
+    @OnClick(R.id.di_exit_login_cancel)
+    void confirmCancel(){
+        dismiss();
+    }
+
+    private Activity activity;
+
+    @OnClick(R.id.di_exit_login_confirm)
+    void confirm(){
+        dismiss();
+        SharedStorage.setCurrentUser(null, null);
+        ((IntelBuildApplication)activity.getApplication()).setUserModel(null);
+//        IntelBuildApplication.setToken("");
+        SPHelper.getInst().saveString(SPHelper.KEY_LOGIN_TOKEN, "");
+        LoginActivity.start(activity);
+        activity.finish();
+    }
+
+    @Override
+    protected void onBaseCreate(Bundle savedInstanceState) {
+
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.dialog_exit_login;
+    }
+
+
+    public ExitLoginDialog(Context context) {
+        super(context);
+        activity = (Activity) context;
+    }
+
+    @Override
+    protected void initDialog() {
+        super.initDialog();
+        Window window = getWindow();
+        window.setWindowAnimations(R.style.sty_dia_exit_login);
+        window.setGravity(Gravity.BOTTOM); //可设置dialog的位置
+        int mar = ScreenUtils.dip2px(15);
+        int marB = ScreenUtils.dip2px(8);
+        window.getDecorView().setPadding(mar, 0, mar, marB); //消除边距
+
+        WindowManager.LayoutParams lp = window.getAttributes();
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;   //设置宽度充满屏幕
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.alpha = 0.85f; // 透明度
+        window.setAttributes(lp);
+    }
+}

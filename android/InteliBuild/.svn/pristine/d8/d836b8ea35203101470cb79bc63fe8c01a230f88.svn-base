@@ -1,0 +1,21 @@
+package com.bibinet.intelibuild.project.bean;
+
+/**
+ * Created by bibinet on 2018-1-5.
+ */
+
+public class MonitorDevBean {
+    private String SN;
+
+    public MonitorDevBean(String lable) {
+        this.SN = lable;
+    }
+
+    public String getSN() {
+        return SN;
+    }
+
+    public void setSN(String SN) {
+        this.SN = SN;
+    }
+}

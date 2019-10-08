@@ -1,0 +1,85 @@
+package com.bibinet.intelibuild.project.application;
+
+import android.app.Application;
+import android.content.Context;
+import android.support.multidex.MultiDexApplication;
+
+import com.bibinet.intelibuild.ocr.manager.OcrManager;
+import com.bibinet.intelibuild.project.model.UserModel;
+import com.bibinet.intelibuild.project.video.util.NetSDKLib;
+import com.company.NetSDK.NET_DEVICEINFO_Ex;
+
+/**
+ * Created by bibinet on 2017-12-18.
+ */
+
+public class IntelBuildApplication extends MultiDexApplication {
+    public static IntelBuildApplication context;
+
+    private UserModel userModel;
+
+    private static String token = "";
+    private long mloginHandle;
+    private int mChannelNum = 1;
+    private long mRealPlayHandle;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        context = this;
+        //ocr初始化
+        OcrManager.initOcrToken();
+
+        NetSDKLib.getInstance().init();
+        setLoginHandle(0);
+        setmRealPlayHandle(0);
+    }
+
+    public static IntelBuildApplication getInstance(){
+        return context;
+    }
+
+    public UserModel getUserModel() {
+        return userModel;
+    }
+
+    public void setUserModel(UserModel userModel) {
+        this.userModel = userModel;
+    }
+
+    public static String getToken() {
+        return token;
+    }
+
+    public static void setToken(String token) {
+        IntelBuildApplication.token = token;
+    }
+
+    public long getLoginHandle() {
+        return mloginHandle;
+    }
+
+    public void setLoginHandle(long loginHandle) {
+        this.mloginHandle = loginHandle;
+    }
+
+    public void setRealPlayHandle(long realPlayHandle) {
+        this.mRealPlayHandle = realPlayHandle;
+    }
+
+    public void setChannelNum(int channelNum){
+        this.mChannelNum = channelNum;
+    }
+
+    public int getChannelNum() {
+        return mChannelNum;
+    }
+
+    public long getmRealPlayHandle() {
+        return mRealPlayHandle;
+    }
+
+    public void setmRealPlayHandle(long mRealPlayHandle) {
+        this.mRealPlayHandle = mRealPlayHandle;
+    }
+}

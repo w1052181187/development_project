@@ -1,0 +1,80 @@
+package com.bibinet.intelibuild.project.view.dialog;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.widget.TextView;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.view.base.BaseDialog;
+import com.bibinet.intelibuild.project.view.custom.WaitView;
+import butterknife.BindView;
+
+/**
+ * 等待中弹窗
+ * Created by bibinet on 2017-5-3.
+ */
+
+public class WaitDialog extends BaseDialog {
+
+    @BindView(R.id.dia_wait)
+    WaitView waitView;
+    @BindView(R.id.dia_wait_tv)
+    TextView contentView;
+    String mHintMsg;
+
+    public WaitDialog(Context context) {
+        super(context, R.style.sty_dia_wait);
+    }
+
+    @Override
+    protected void onBaseCreate(Bundle savedInstanceState) {
+        if (!TextUtils.isEmpty(mHintMsg)) {
+            contentView.setText(mHintMsg);
+        }
+    }
+
+
+    public void setHintMessage(String hintMsg) {
+        this.mHintMsg = hintMsg;
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.dialog_wait;
+    }
+
+    private boolean isOpen = false;
+
+    public void open() {
+        if(isOpen){
+            return;
+        }
+        isOpen = true;
+        waitView.start();
+        try {
+            show();
+        }catch (Exception e){
+            waitView.stop();
+        }
+    }
+
+    public void close() {
+        isOpen = false;
+        waitView.stop();
+        try {
+            dismiss();
+        }catch (Exception e){
+            waitView.stop();
+        }
+
+    }
+
+    @Override
+    protected void initDialog() {
+        super.initDialog();
+        setCanceledOnTouchOutside(false);
+    }
+
+
+}

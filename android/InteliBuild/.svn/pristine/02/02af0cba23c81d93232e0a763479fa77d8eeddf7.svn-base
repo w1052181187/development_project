@@ -1,0 +1,23 @@
+package com.bibinet.intelibuild.project.net.emit;
+
+import com.bibinet.intelibuild.project.model.OcrCheckModel;
+import com.bibinet.intelibuild.project.model.OcrCheckRecordModel;
+import com.bibinet.intelibuild.project.model.OcrImgModel;
+import com.bibinet.intelibuild.project.model.OcrModel;
+
+import java.util.List;
+
+/**
+ * Created by bibinet on 2018-1-12.
+ */
+
+public interface GetCheckResultEmit {
+    void onGetCheckResultSuccess(OcrCheckModel ocrCheckModel);
+    void onGetCheckResultFail(String error);
+
+    void onGetCheckResultRecordSuccess(List<OcrCheckRecordModel> dataList);
+    void onGetCheckResultRecordFail(String error);
+
+    void onSetCheckImgSuccess(OcrImgModel ocrImgModel);
+    void onSetCheckImgFail(String error);
+}

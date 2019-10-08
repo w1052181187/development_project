@@ -1,0 +1,46 @@
+package com.bibinet.intelibuild.project.view.pop;
+
+import android.app.Activity;
+import android.content.Context;
+import android.widget.TextView;
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.application.IntelBuildApplication;
+import com.bibinet.intelibuild.project.view.activity.PasswordUpdateActivity;
+import com.bibinet.intelibuild.project.view.base.BasePop;
+import butterknife.BindView;
+import butterknife.OnClick;
+
+/**
+ * 展示账号的pop
+ * Created by bibinet on 2018-1-10.
+ */
+
+public class ShowAccountPop extends BasePop {
+
+    @BindView(R.id.p_show_account_name_txt)
+    TextView userNameTV;
+
+    public ShowAccountPop(Context context) {
+        super(context);
+    }
+
+    @OnClick(R.id.p_show_account_password_update)
+    void updatePassword(){
+        PasswordUpdateActivity.start(activity);
+        dismiss();
+    }
+
+    private Activity activity;
+
+    @Override
+    protected void onBaseCreate(Context context) {
+        activity = (Activity) context;
+        setTextView(userNameTV, ((IntelBuildApplication)activity.getApplication()).getUserModel().getName());
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.pop_show_account;
+    }
+
+}

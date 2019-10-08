@@ -1,0 +1,183 @@
+package com.bibinet.intelibuild.project.adapter;
+
+import android.content.Context;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.bean.OcrBean;
+import com.bibinet.intelibuild.project.util.LogUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+import static com.bibinet.intelibuild.project.adapter.OcrResultAdapter.TYPE_CONDITION;
+import static com.bibinet.intelibuild.project.adapter.OcrResultAdapter.TYPE_STANDARD;
+
+/**
+ * Created by Administrator on 2018/4/6/006.
+ */
+
+public class OcrResultUpdateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private ArrayList<OcrBean> dataList;
+    private int type;
+    private Context context;
+//    private HashMap<Integer,ArrayList<Integer>> hashMap;
+
+    public OcrResultUpdateAdapter(Context context, RecyclerView recyclerView, List<OcrBean> ocrBeanList, int type) {
+        this.type = type;
+        this.context = context;
+
+//        hashMap = new HashMap<>();
+        dataList = new ArrayList<OcrBean>();
+        //筛选，判断 条件，标准 分别一排有几个
+        for(int i=0 ; i<ocrBeanList.size() ; i++){
+            if(type == Integer.valueOf(ocrBeanList.get(i).getConditionType())){
+                dataList.add(ocrBeanList.get(i));
+            }
+        }
+
+        if(dataList.size() == 0){
+            recyclerView.setVisibility(View.GONE);
+            return;
+        }
+
+        int cou = dataList.size()<=3? dataList.size() : 2;
+        recyclerView.setLayoutManager(new GridLayoutManager(context, cou));
+
+
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (type){
+            case TYPE_CONDITION:
+                return new ViewHolderCondition(LayoutInflater.from(context).inflate(R.layout.adapter_ocr_result_update_condition, parent, false));
+            case TYPE_STANDARD:
+                return new ViewHolderStandard(LayoutInflater.from(context).inflate(R.layout.adapter_ocr_result_update_standard, parent, false));
+        }
+        return null;
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+        OcrBean ocrBean = dataList.get(position);
+        switch (type){
+            case TYPE_CONDITION:
+                final ViewHolderCondition viewHolderCondition = (ViewHolderCondition) holder;
+                viewHolderCondition.valueTV.setText(String.valueOf(ocrBean.getValue()==null ? 0.0 : ocrBean.getValue()));
+                viewHolderCondition.unitTV.setText(ocrBean.getUnit());
+                viewHolderCondition.valueTV.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        String ss = viewHolderCondition.valueTV.getText().toString();
+                        if(ss.endsWith(".")){
+                            ss = ss.replace(".", "");
+                        }
+
+                        if (!TextUtils.equals(ss, dataList.get(position).getValue())) {
+                            dataList.get(position).setValue(ss);
+                            dataList.get(position).setDetected(true);
+                        } else {
+                            dataList.get(position).setDetected(false);
+                        }
+//                        hashMap.put(TYPE_CONDITION, detecList);
+
+                        LogUtils.e("22", "d="+dataList.get(position).getValue());
+                    }
+                });
+                break;
+            case TYPE_STANDARD:
+                final ViewHolderStandard viewHolderStandard = (ViewHolderStandard) holder;
+                viewHolderStandard.valueTV.setText(String.valueOf(ocrBean.getValue()==null? 0.0 : ocrBean.getValue()));
+                viewHolderStandard.unitTV.setText(ocrBean.getUnit());
+                viewHolderStandard.valueTV.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        String ss = viewHolderStandard.valueTV.getText().toString();
+                        if(ss.endsWith(".")){
+                            ss = ss.replace(".", "");
+                        }
+                        if (!TextUtils.equals(ss, dataList.get(position).getValue())) {
+                            dataList.get(position).setValue(ss);
+                            dataList.get(position).setDetected(true);
+                        } else {
+                            dataList.get(position).setDetected(false);
+                        }
+//                        hashMap.put(TYPE_STANDARD, detecList);
+
+                        LogUtils.e("x", "d="+dataList.get(position).getValue());
+                    }
+                });
+                break;
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return dataList.size();
+    }
+
+    public ArrayList<OcrBean> getDetectedMap() {
+        return dataList;
+    }
+
+    class ViewHolderCondition extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.ada_ocr_result_update_condition_unit)
+        TextView unitTV;
+
+        @BindView(R.id.ada_ocr_result_update_condition_value)
+        EditText valueTV;
+
+        public ViewHolderCondition(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
+
+    class ViewHolderStandard extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.ada_ocr_result_update_standard_unit)
+        TextView unitTV;
+
+        @BindView(R.id.ada_ocr_result_update_standard_value)
+        EditText valueTV;
+
+        public ViewHolderStandard(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
+}

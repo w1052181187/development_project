@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingRight="5dp">
+
+    <LinearLayout
+        android:layout_width="38dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <com.bibinet.intelibuild.project.view.custom.DashedChangeView
+            android:id="@+id/ada_ocr_result_check_top"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical" />
+
+        <View
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@drawable/shape_ocr_result_check_circle" />
+
+        <com.bibinet.intelibuild.project.view.custom.DashedChangeView
+            android:id="@+id/ada_ocr_result_check_bottom"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+                <TextView
+                    android:layout_weight="1"
+                    android:id="@+id/ada_ocr_result_check_result_condition"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="5dp"
+                    android:paddingTop="10dp"
+                    android:text=""
+                    android:textSize="14sp"/>
+
+            <com.bibinet.intelibuild.project.view.custom.DashedView
+                android:id="@+id/ada_ocr_result_check_line"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="9dp"
+                android:layout_marginBottom="9dp"
+                android:visibility="gone"
+                android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/ada_ocr_result_check_result_standard"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:gravity="left"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingTop="10dp"
+                    android:text=""
+                    android:textSize="14sp"/>
+
+        </LinearLayout>
+        <TextView
+            android:id="@+id/ada_ocr_result_check_wait_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="等待校验"
+            android:textColor="@color/col_font_middle"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/ada_ocr_result_check_start_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="开始校验"
+            android:textColor="#2879ff"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+</LinearLayout>

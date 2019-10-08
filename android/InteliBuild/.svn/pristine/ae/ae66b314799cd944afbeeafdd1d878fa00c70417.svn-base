@@ -1,0 +1,64 @@
+package com.bibinet.intelibuild.project.view.dialog;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.os.Bundle;
+import android.widget.TextView;
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.view.base.BaseDialog;
+import butterknife.BindView;
+import butterknife.OnClick;
+
+/**
+ * 提示失败弹窗
+ * Created by bibinet on 2017-5-3.
+ */
+
+public class HintFailDialog extends BaseDialog {
+
+    @BindView(R.id.dia_hint_fail_hint)
+    TextView hintTV;
+    @BindView(R.id.dia_hint_fail_confirm)
+    TextView confirmHintTV;
+
+    private OnHintFailDialogListener onHintFailDialogListener;
+
+    private String hint;
+    private String confirmHint;
+
+    public HintFailDialog(Context context, String hint, String confirmHint, OnHintFailDialogListener onHintFailDialogListener) {
+        super(context);
+        this.hint = hint;
+        this.confirmHint = confirmHint;
+        this.onHintFailDialogListener = onHintFailDialogListener;
+    }
+
+    @Override
+    protected void onBaseCreate(Bundle savedInstanceState) {
+        hintTV.setText(hint);
+        confirmHintTV.setText(confirmHint);
+    }
+
+    @OnClick(R.id.dia_hint_fail_confirm)
+    void confirm(){
+        if(onHintFailDialogListener != null){
+            onHintFailDialogListener.onClick(this);
+        }
+        dismiss();
+    }
+
+    @Override
+    protected void initDialog() {
+        super.initDialog();
+        setCanceledOnTouchOutside(false);
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.dialog_hint_fail;
+    }
+
+    public interface OnHintFailDialogListener{
+        void onClick(Dialog dialog);
+    }
+}

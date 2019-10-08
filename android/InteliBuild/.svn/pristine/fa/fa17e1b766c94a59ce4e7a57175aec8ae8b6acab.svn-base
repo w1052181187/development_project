@@ -1,0 +1,84 @@
+package com.bibinet.intelibuild.project.view.activity;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import com.bibinet.intelibuild.ocr.manager.OcrManager;
+import com.bibinet.intelibuild.ocr.ui.camera.OcrActivity;
+import com.bibinet.intelibuild.project.bean.OcrBean;
+import com.bibinet.intelibuild.project.bean.SampleInfoBean;
+import com.bibinet.intelibuild.project.model.OcrModel;
+import com.bibinet.intelibuild.project.util.FileUtils;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.view.dialog.WaitDialog;
+import java.io.Serializable;
+import java.util.List;
+
+/**
+ * Ocr扫描页面，用于回调处理扫描结果
+ * Created by bibinet on 2017-12-21.
+ */
+
+public class OcrDistinguishActivity extends OcrActivity implements OcrManager.OcrIndentifyView, View.OnClickListener {
+
+    private WaitDialog waitDialog;
+    private OcrManager ocrManager;
+
+    private static final String DATA = "DATA";
+    private static final String OCR = "OCR";
+
+    @Override
+    public void onOcrIndentifySucess(List<OcrBean> ocrBeans) {
+        OcrResultActivity.start(this, ocrBeans, ocrModel, sampleInfoBean);
+        //OcrTestActivity.start(this, info);
+        finish();
+    }
+
+    @Override
+    public void onOcrIndentifyFailed(String error) {
+        LogUtils.e("shibieresu", "error=" + error);
+        waitDialog.close();
+    }
+
+    private OcrModel ocrModel;
+
+    @Override
+    protected void onTitleCreate(Bundle savedInstanceState) {
+        super.onTitleCreate(savedInstanceState);
+        ocrModel = (OcrModel) getIntent().getSerializableExtra(OCR);
+        sampleInfoBean = (SampleInfoBean) getIntent().getSerializableExtra(DATA);
+        ocrManager = new OcrManager(ocrModel);
+        waitDialog = new WaitDialog(this);
+    }
+
+    private SampleInfoBean sampleInfoBean;
+
+    @Override
+    protected void getOutputPath(String absolutePath) {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                waitDialog.open();
+            }
+        });
+        ocrManager.recGeneral(this, absolutePath);
+    }
+
+    @Override
+    public void onClick(View v) {
+        startActivity(getIntent());
+        finish();
+    }
+
+    public static void start(Activity context, OcrModel ocrModel, SampleInfoBean sampleInfoBean) {
+        Intent intent = new Intent(context, OcrDistinguishActivity.class);
+        intent.putExtra(OcrActivity.KEY_OUTPUT_FILE_PATH,
+                FileUtils.getSaveFile(context.getApplication()).getAbsolutePath());
+        intent.putExtra(OcrActivity.KEY_CONTENT_TYPE,
+                OcrActivity.CONTENT_TYPE_GENERAL);
+        intent.putExtra(OCR, (Serializable) ocrModel);
+        intent.putExtra(DATA, (Serializable) sampleInfoBean);
+        context.startActivity(intent);
+    }
+}

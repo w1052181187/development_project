@@ -1,0 +1,13 @@
+package com.bibinet.intelibuild.project.util;
+
+import java.util.List;
+
+public class Common {
+
+    public static boolean isListEmpty(List list){
+        if (list == null || list.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+}

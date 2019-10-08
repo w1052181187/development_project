@@ -1,0 +1,75 @@
+package com.bibinet.intelibuild.project.adapter;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.support.v7.widget.RecyclerView;
+import android.util.SparseBooleanArray;
+import android.util.SparseIntArray;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bibinet.intelibuild.R;
+import com.bibinet.intelibuild.project.model.InspectionModel;
+import com.bibinet.intelibuild.project.model.ProductInfoModel;
+import com.bibinet.intelibuild.project.model.SampleModel;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.view.dialog.ProductCheckSelectDialog;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+/**
+ * Created by bibinet on 2017-12-27.
+ */
+
+public class ProductCheckRecordAdapter extends RecyclerView.Adapter<ProductCheckRecordAdapter.ProductCheckRecordHolder> {
+
+    private Context context;
+
+    private List<InspectionModel> inspectionModelList;
+
+    public ProductCheckRecordAdapter(Context context, List<InspectionModel> inspectionModelList) {
+        this.context = context;
+        this.inspectionModelList = inspectionModelList;
+    }
+
+    @Override
+    public ProductCheckRecordHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.adapter_product_check_record, null);
+        ProductCheckRecordHolder productCheckSelectHolder = new ProductCheckRecordHolder(view);
+        return productCheckSelectHolder;
+    }
+
+    @Override
+    public void onBindViewHolder(final ProductCheckRecordHolder holder, final int position) {
+        InspectionModel model = inspectionModelList.get(position);
+        holder.nameTV.setText(model.getName());
+        holder.countTV.setText(model.getSamples().size() + "");
+    }
+
+    @Override
+    public int getItemCount() {
+        LogUtils.e("xx", "---" + inspectionModelList.size());
+        return inspectionModelList.size();
+    }
+
+
+    class ProductCheckRecordHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.ada_product_check_record_name)
+        TextView nameTV;
+        @BindView(R.id.ada_product_check_record_count)
+        TextView countTV;
+
+
+        public ProductCheckRecordHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
+}

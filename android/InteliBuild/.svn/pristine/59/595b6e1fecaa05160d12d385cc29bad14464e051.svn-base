@@ -1,0 +1,62 @@
+package com.bibinet.intelibuild.project.net.firing;
+
+
+import com.bibinet.intelibuild.project.bean.StatusBean;
+import com.bibinet.intelibuild.project.model.ProductInfoModel;
+import com.bibinet.intelibuild.project.net.base.BaseFiring;
+import com.bibinet.intelibuild.project.net.emit.ProductInfoEmit;
+import com.bibinet.intelibuild.project.net.emit.SetProductStatusEmit;
+import com.bibinet.intelibuild.project.net.rewrite.ResultCallback;
+
+import okhttp3.Response;
+
+import static com.bibinet.intelibuild.project.util.ObjectUtils.isNull;
+
+/**
+ * Created by bibinet on 2018-1-12.
+ */
+
+public class ProductInfoFiring extends BaseFiring {
+    private ProductInfoEmit productInfoEmit;
+    private SetProductStatusEmit setProductStatusEmit;
+
+    public ProductInfoFiring(ProductInfoEmit productInfoEmit) {
+        this.productInfoEmit = productInfoEmit;
+    }
+
+    public ProductInfoFiring(SetProductStatusEmit setProductStatusEmit) {
+        this.setProductStatusEmit = setProductStatusEmit;
+    }
+
+    public void getProductInfo(String objectId){
+        baseReady.baseReady(urlConfig.setValue(urlConfig.URL_GET_PRODUCT_INFO, objectId), baseReady.GET, null, new ResultCallback<ProductInfoModel>() {
+            @Override
+            protected void onFail(String error) {
+                productInfoEmit.onGetProductInfoFail(error);
+            }
+
+            @Override
+            protected void onSuccess(ProductInfoModel model, Response response) {
+                productInfoEmit.onGetProductInfoSuccess(model);
+            }
+        });
+    }
+
+    public void setProductStatus(String contractId, final StatusBean statusBean) {
+        baseReady.baseReady(urlConfig.setValue(urlConfig.URL_GET_PRODUCT_INFO, contractId), baseReady.PATCH, statusBean, new ResultCallback<ProductInfoModel>() {
+            @Override
+            protected void onFail(String error) {
+                setProductStatusEmit.onSetProductStatusFail(error);
+            }
+
+            @Override
+            protected void onSuccess(ProductInfoModel model, Response response) {
+                if(!isNull(model.getStatus()) && model.getStatus().equals(statusBean.getStatus())){
+                    setProductStatusEmit.onSetProductStatusSuccess();
+                }else{
+                    setProductStatusEmit.onSetProductStatusFail("数据异常");
+                }
+            }
+        });
+    }
+}

@@ -1,0 +1,76 @@
+package com.bibinet.intelibuild.project.net.firing;
+
+import com.bibinet.intelibuild.project.model.VideoUploadResultModel;
+import com.bibinet.intelibuild.project.net.base.BaseFiring;
+import com.bibinet.intelibuild.project.net.emit.UploadVideoEmit;
+import com.bibinet.intelibuild.project.net.rewrite.ResultCallback;
+import com.bibinet.intelibuild.project.util.FileUtils;
+import com.bibinet.intelibuild.project.util.LogUtils;
+import com.bibinet.intelibuild.project.util.SPHelper;
+import com.bibinet.intelibuild.project.util.ToastUtils;
+
+import java.io.File;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+/**
+ *
+ */
+
+public class UploadVideoFiring extends BaseFiring {
+    private UploadVideoEmit uploadVideoEmit;
+
+        public UploadVideoFiring(UploadVideoEmit emit) {
+        super(emit);
+        this.uploadVideoEmit = emit;
+    }
+
+    public void uploadVideo(final String fileName, String sampleId) {
+        File file = new File(fileName);
+        if (file.length() == 0) {
+            ToastUtils.show("录像文件为空");
+            return;
+        }
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .build();
+        RequestBody fileBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
+        RequestBody requestBody = new MultipartBody.Builder().
+                setType(MultipartBody.FORM).
+//                addFormDataPart("file", FileUtils.MONITOR_VIDEO_FILE_NAME, fileBody).
+                addFormDataPart("file", "video_temp_" + sampleId + ".dav", fileBody).
+                build();
+        Request.Builder builder = new Request.Builder().post(requestBody).
+                url(urlConfig.setValue(urlConfig.URL_UPLOAD_VIDEO, sampleId));
+        builder.addHeader("token", SPHelper.getInst().getString(SPHelper.KEY_LOGIN_TOKEN));
+        okHttpClient.newCall(builder.build()).enqueue(new ResultCallback<VideoUploadResultModel>() {
+            @Override
+            protected void onFail(String error) {
+                uploadVideoEmit.onUploadFail(error);
+            }
+
+            @Override
+            protected void onSuccess(VideoUploadResultModel model, Response response) {
+                super.onSuccess(model, response);
+                LogUtils.e("upload_flag",model.isVideoFlag() + "");
+                if (model.isVideoFlag()) {
+                    uploadVideoEmit.onUploadSuccess(model);
+                } else {
+                    uploadVideoEmit.onUploadFail(model.isVideoFlag() + "");
+                }
+
+            }
+        });
+
+    }
+
+}
