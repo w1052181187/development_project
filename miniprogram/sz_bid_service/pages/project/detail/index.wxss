@@ -1,0 +1,140 @@
+/* pages/project/detail/index.wxss */
+.title-box {
+  width: 100%;
+  background-color: #fff;
+  padding: 26rpx 22rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: #333;
+  font-size: 32rpx;
+  margin-top: 10rpx;
+  border-bottom: 2rpx solid #f3f4f8;
+}
+
+.title-box .left-line {
+  background-color: #008eff;
+  height: 30rpx;
+  width: 8rpx;
+  border-radius: 4rpx 4rpx;
+  margin-right: 20rpx;
+}
+.project-conbigbox{
+  width: 100%;
+  padding: 0 22rpx;
+  box-sizing: border-box;
+  background: #fff;
+  padding-bottom: 38rpx;
+  padding-top: 28rpx;
+}
+.project-conbox{
+  font-size: 28rpx;
+  color: #666666;
+  margin-bottom: 28rpx;
+}
+.project-conbox text:nth-child(1){
+  min-width: 130rpx;
+  height: 34rpx;
+  white-space: nowrap;
+  display: inline-block;
+  vertical-align: top;
+}
+.process-bigbox{
+  width: 100%;
+  padding: 0 22rpx;
+  box-sizing: border-box;
+  background: #fff;
+  padding-top: 72rpx;
+}
+.process-box{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+/* .top-process-box{
+  
+} */
+.number-process{
+  display: inline-block;
+  width: 40rpx;
+  height: 40rpx;
+  text-align: center;
+  line-height: 40rpx;
+  background: #008eff;
+  font-size: 24rpx;
+  color: #fff;
+  border-radius: 50%;
+}
+.title-process-box {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  margin: 16rpx 0;
+}
+.title-process-box-bg {
+  background: #eee;
+}
+/* .dot {
+  background: red;
+}
+.dot-empty {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  margin-top: 30rpx;
+} */
+.process-rightbox{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 16rpx;
+  box-sizing: border-box;
+  margin-bottom: 20rpx;
+}
+.title-process{
+  flex: 1;
+  font-size: 30rpx;
+  height: 40rpx;
+  color: #666666;
+  padding-right:30rpx;
+}
+.title-process image {
+  width: 36rpx;
+  height: 18rpx;
+  vertical-align: middle;
+  margin-left: 20rpx;
+}
+.time-process{
+  color: #999999;
+  font-size: 24rpx;
+  line-height: 1.6em;
+  text-align: right
+}
+.process-leftbox{
+  padding-top: 16rpx;
+  box-sizing: border-box;
+  margin-right: 16rpx;
+}
+.process-leftbox .line{
+  width: 2rpx;
+  height: 100%;
+  margin: 0 auto;
+  background: #999999;
+}
+.bottom-process-rightbox{
+  display: inline-block;
+  font-size: 26rpx;
+  color: #008eff;
+  vertical-align: top;
+  margin-top: 44rpx;
+}
+.number-process-end{
+  background: #999999;
+}
+.no-process-info{
+  color: #999999;
+  font-size: 32rpx;
+  text-align: center;
+  padding-bottom: 40rpx;
+}

@@ -1,0 +1,38 @@
+<!--pages/project/list/index.wxml-->
+<import src="../item/item.wxml" />
+
+<!-- <custom-navigationBar title='项目' isShowBack='true'></custom-navigationBar> -->
+<view style='height: {{contentHeight}}px'>
+  <!-- <refresh-scollview wx:if='{{isHasNetwork && isShow}}' isShowRefresh='{{isShowRefresh}}' class='container-scroll'
+    height='100%'
+    bindloadMore='loadMore' 
+    bindonRefresh='refresh'
+    isShowLoadMore='{{projectList.length !== 0 && isShowLoadMore}}'
+    hasMoreData='{{projectList.length !== totalNum}}'> -->
+  <block wx:if='{{isHasNetwork && isShow}}'>
+    <block wx:if='{{projectList.length > 0}}'>
+      <!-- 搜索 -->
+      <view class='search-box'>
+        <view class='search'>
+          <input placeholder='输入项目名称关键词进行查询' bindinput ="searchInput"></input>
+          <image src='../../../images/souoshuo.png' bindtap='handleSearch'></image>
+        </view>
+      </view>
+      <!-- 搜索 -->
+      <!-- 项目 -->
+      <view class='project-list' wx:if='{{projectList.length > 0}}'>
+        <view class='project-item'wx:for="{{projectList}}" wx:key="{{item.objectId}}">
+          <template is="projectItem" data="{{...item}}" />
+        </view>
+      </view>
+      <!-- 项目 -->
+      <load-more-view isShowLoadMore='{{true}}'
+      hasMoreData='{{projectList.length !== totalNum}}'></load-more-view>
+    </block>
+    <!-- 无数据 -->
+    <no-data wx:if='{{projectList.length === 0}}' imageSrc='../../images/wushuju.png' content='暂无数据'></no-data>
+  </block>
+  <!-- </refresh-scollview> -->
+  <!-- 无网络 -->
+  <no-data wx:if='{{!isHasNetwork}}' imageSrc='../../images/wuwangluo.png' content='无网络'></no-data>
+</view>

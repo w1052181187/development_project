@@ -1,0 +1,32 @@
+/* components/custom-navigationBar/index.wxss */
+
+.custom-navigationBar {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  height: 45px;
+  background: #f3f4f8;
+  z-index: 999;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-bottom: 2rpx #dfdfe0 solid;
+}
+.custom-navigationBar text {
+  color: #000;
+  font-size: 32rpx;
+  font-weight: 600;
+  width: 100%;
+  text-align: center;
+  flex: 1;
+}
+.custom-navigationBar image {
+  width: 21rpx;
+  height: 33rpx;
+  margin-left: 28rpx
+}
+.empty-custom-navigationBar {
+  height: 45px;
+  width: 100%;
+}

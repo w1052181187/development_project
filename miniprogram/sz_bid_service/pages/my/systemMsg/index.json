@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "load-more-view": "/components/load-more-view/index"
+  },
+  "navigationBarTitleText": "系统消息",
+  "enablePullDownRefresh": true
+}

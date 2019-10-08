@@ -1,0 +1,33 @@
+<!--custom-course.wxml-->
+<import src="../item-teacher/item-teacher.wxml" />
+
+<view class="container">
+  <view class="swiper-tab">
+    <block wx:for='{{tabList}}' wx:key='{{item.id}}'>
+      <view class="swiper-tab-list {{curTab === item.id ? 'on' : ''}}" data-id="{{item.id}}" bindtap="swichNav">
+        {{item.name}}
+      </view>
+    </block>
+  </view>
+    <swiper class='tab-content' style='height: {{listHeight}}rpx'
+            current="{{curTab}}"
+            duration="300"
+            bindchange="switchTab">
+      <!-- <block wx:for="{{tabList}}" wx:key="{{item.id}}"> -->
+        <swiper-item wx:for="{{tabList}}" wx:key="{{item.id}}" item-id="{{item.id}}">
+          <!-- <view class='list' style='height: {{listHeight}}rpx'> -->
+          <scroll-view class='list' scroll-y="true" style='height: {{listHeight}}rpx'>
+            <view class='teacher' wx:for="{{teacherList}}" wx:key="{{item.objectId}}"
+                  data-id="{{item.objectId}}"
+                  bindtap="handleItemClick">
+              <template is="teacherItem" data="{{...item, baseImageUrl}}" />
+              <view class='line'></view>
+            </view>
+            <text class="list-no-data" hidden='{{teacherList.length < totalNum}}'>没有更多数据</text>
+          </scroll-view>
+        </swiper-item>
+      <!-- </block> -->
+    </swiper>
+  <footer bindshowDialog='showDialog'></footer>
+</view>
+<course-dialog wx:if='{{showDialog}}' bindcloseDialog='closeDialog'></course-dialog>

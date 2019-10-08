@@ -1,0 +1,21 @@
+<template name="projectItem">
+  <view class='item'>
+    <view class='top'>
+      <view class='row'>
+        <text>项目编号:</text>
+        <text class='title'>{{faBaoBianHao}}</text>
+        <text class='status' wx:if='{{projectStatus}}'>{{projectStatus}}</text>
+      </view>
+      <view class='row'>
+        <text>项目名称:</text>
+        <text class='title'>{{faBaoMingCheng}}</text>
+      </view>
+      <view class='row'>
+        <text space="emsp">包  组:</text>
+        <text class='title'>{{biaoDuanMingCheng}}</text>
+      </view>
+    </view>
+    <text class='look-btn' data-id='{{biaoduanId}}' bindtap="handleDetailClick">查看详情</text>
+  </view>
+  
+</template>

@@ -1,0 +1,5 @@
+<!--pages/footer/footer.wxml-->
+<view class='footer' bindtap='handleClick'>
+  <image src='../../images/fangan_dingzhi.png'></image>
+  <text>定制我的企业方案</text>
+</view>

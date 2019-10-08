@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "footer": "/components/footer/footer",
+    "course-dialog": "/components/course-dialog/course-dialog"
+  }
+}

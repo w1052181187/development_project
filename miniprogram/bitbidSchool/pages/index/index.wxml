@@ -1,0 +1,23 @@
+<!--index.wxml-->
+<view class='container'>
+  <image src="../../images/shouye_b.png" mode='widthFix' class='top-img'></image>
+  <view class='home-content'>
+    <view class='home-item' bindtap="handleCourseClick">
+      <image class='home-item-img' src='../../images/xuexi.png'></image>
+      <view>
+        <text class='home-item-title'>课程学习</text>
+        <text class='home-item-desc'>免费学习线上课程</text>
+      </view>
+      <image class='home-item-arrow' src='../../images/jiantou_a.png'></image>
+    </view>
+    <view class='home-item' bindtap="handleCustomClick">
+      <image class='home-item-img' src='../../images/dingzhi.png'></image>
+      <view>
+        <text class='home-item-title'>企业定制</text>
+        <text class='home-item-desc'>定制我的线下课程</text>
+      </view>
+      <image class='home-item-arrow' src='../../images/jiantou_a.png'></image>
+    </view>
+  </view>
+
+</view>

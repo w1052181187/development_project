@@ -1,0 +1,121 @@
+/* pages/my/index.wxss */
+.my-bigbox{
+  background:#f3f4f8;
+  width: 100%;
+  height:100vh;
+}
+.my-bannner-bigbox{
+  width: 100%;
+  height: 285rpx;
+  position: relative;
+}
+.my-bannner-bigbox>image{
+  width: 100%;
+  height: 100%;
+}
+.my-bannner-box{
+  width: 100%;
+  height: 100%;
+  padding-left: 19rpx;
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-sizing: border-box;
+}
+.avator-img{
+  width: 153rpx;
+  height: 153rpx;
+  border-radius:50%; 
+}
+.my-bannner-rightbox {
+  display: flex;
+  width: 80%;
+  flex-direction: column;
+  padding-left: 30rpx;
+  box-sizing: border-box;
+}
+.top-right-box{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.bottom-right-box{
+  font-size: 24rpx;
+  color: #fff;
+  padding-top: 25rpx;
+}
+.top-son-left{
+  font-size: 32rpx;
+  color: #fff;
+  flex: 1;
+}
+.top-son-right{
+  display: flex;
+  height: 42rpx;
+  min-width: 165rpx;
+  flex-direction: row;
+  align-items: center;
+  background: #ffffff;
+  border-radius:21rpx 0 0 21rpx;
+  color: #ff950b;
+  font-size: 24rpx;
+  padding-right: 13rpx;
+  box-sizing: border-box;
+}
+.common_level {
+  color: #a0a0a2;
+}
+.top-son-right>image{
+  width: 42rpx;
+  height: 42rpx;
+  margin-right: 20rpx;
+}
+.my-list-bigbox{
+  width: 100%;
+}
+.my-list-box{
+  width: 100%;
+  height: 125rpx;
+  background: #fff;
+  border-bottom: 1rpx solid #e5e5e5;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+  text-align: left;
+}
+.my-list-box-btn::after{
+  border: none;
+}
+.my-list-box-btn{
+  border-radius:0;
+}
+.list-title{
+  font-size: 30rpx;
+  color: #434343;
+  flex: 1;
+  margin-left: 24rpx;
+}
+.list-icon{
+  width: 50rpx;
+  height: 39rpx;
+}
+.jiantou{
+  width: 13rpx;
+  height: 20rpx;
+}
+.exit-btton{
+  width: 100%;
+  height: 88rpx;
+  background: #fff;
+  line-height: 88rpx;
+  font-size: 32rpx;
+  color: #666666;
+  margin-top: 10rpx;
+  text-align: center;
+}
