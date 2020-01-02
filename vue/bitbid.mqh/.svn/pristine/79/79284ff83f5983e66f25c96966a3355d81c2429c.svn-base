@@ -1,0 +1,13 @@
+@import url('./theme.less');
+.themea{
+  .theme(); //默认的样式
+  .leftMenu();
+}
+.themeb{
+  .theme(#009688, #fff);
+  .leftMenu(#06a192,#373641);
+}
+.themec{
+  .theme(#3f51b5, #fff);
+  .leftMenu(#485dd0, #373641);
+}

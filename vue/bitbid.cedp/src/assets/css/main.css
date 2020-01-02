@@ -1,0 +1,415 @@
+﻿body{
+  margin: 0;
+  padding: 0;
+  background: #f3f7fb;
+}
+.content-wrap{
+  font-family: "微软雅黑";
+  font-size: 14px;
+}
+.content-wrap:after {
+  display: block;
+  content: "";
+  clear: both;
+}
+.fl{
+  float: left;
+}
+.fr{
+  float: right;
+}
+.blueBg{
+  background: #2789ba;
+}
+.greenBg{
+  background: #009688;
+}
+.el-cascader, .el-select{
+  width: 100%;
+}
+.el-table td, .el-table th{
+  padding: 5px 0;
+}
+.el-input__inner{
+  line-height: 34px;
+  height: 34px;
+}
+.el-form-item{
+  line-height: 34px;
+  margin-bottom: 18px;
+}
+.el-form-item__label{
+  line-height: 34px;
+}
+.el-form-item__content{
+  line-height: 34px;
+}
+/* 面包屑*/
+.Breadcrumb,.el-breadcrumb{
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.el-breadcrumb__inner a, .el-breadcrumb__inner.is-link{
+  font-weight: normal;
+}
+
+.mainContent{
+  width:100%;
+  background: #ffffff;
+  margin-bottom: 10px;
+}
+.mainContent:after {
+  display: block;
+  content: "";
+  clear: both;
+}
+.mainContent .el-row,.mainContent .el-col{
+  margin: 0;
+}
+.mainContent h3.title{
+  font-size: 14px;
+  font-weight: bold;
+  padding: 0 10px;
+  margin: 0 auto;
+  height: 40px;
+  line-height: 40px;
+  border-bottom: 1px solid #e6e6e6;
+}
+.mainContent .formmain{
+  width: 90%;
+  margin: 20px auto;
+}
+/*企业完善部分*/
+.blueCon .bgColor{
+  background: #2789ba;
+}
+.greenCon .bgColor{
+  background: #009688;
+}
+.blueCon .el-progress-bar__inner{
+  background-color: #2789ba!important;
+}
+.greenCon .el-progress-bar__inner{
+  background-color: #009688!important;
+}
+.blueCon .data_percent .fr .el-progress-circle path:nth-child(2) {
+  stroke: #2789ba;
+  stroke-width: 6.8;
+}
+.greenCon .data_percent .fr .el-progress-circle path:nth-child(2) {
+  stroke: #009688;
+  stroke-width: 6.8;
+}
+.blueCon .el-tabs__item:hover,.blueCon .el-tabs__item.is-active{
+   color: #2789ba;
+ }
+.blueCon .el-tabs__active-bar{
+  background-color: #2789ba;
+}
+.greenCon .el-tabs__item:hover,.greenCon .el-tabs__item.is-active{
+  color: #009688;
+}
+.greenCon .el-tabs__active-bar{
+  background-color: #009688;
+}
+.blueCon .webuploader-pick{
+  background: #2789ba;
+}
+.greenCon .webuploader-pick{
+  background: #009688;
+}
+.blueCon .certificate .webuploader-pick,.blueCon .addData .webuploader-pick{
+  background: #2789ba url("../../../static/images/enterprise/upload.png") 10px center no-repeat;
+}
+.greenCon .certificate .webuploader-pick,.greenCon .addData .webuploader-pick{
+  background: #009688 url("../../../static/images/enterprise/upload.png") 10px center no-repeat;
+}
+.enterInfo p.tips{
+  width: 100%;
+  height: 39px;
+  line-height: 39px;
+  border-bottom: 1px solid #e6e6e6;
+  background: #ffffff;
+}
+.enterInfo p.tips>span{
+  padding-left: 30px;
+  background: url("../../../static/images/enterprise/tan.png") 10px center no-repeat;
+}
+.enterInfo p.tips .handleBtn{
+  width: 54px;
+  height: 30px;
+  line-height: 30px;
+  color: #ffffff;
+  padding: 0;
+  font-size: 12px;
+  float: right;
+  margin: 5px 10px;
+}
+.blueCon p.tips .handleBtn{
+  background: #2789ba;
+  border-color: #2789ba;
+}
+.greenCon p.tips .handleBtn{
+  background: #009688;
+  border-color: #009688;
+}
+.enterInfo .el-textarea textarea{
+  min-height:100px!important;
+}
+
+/*表格列数据*/
+.handle{
+  width: 98%;
+  height: 39px;
+  line-height: 39px;
+  margin: 0 auto;
+  border-bottom: 1px solid #e6e6e6;
+}
+.handle span i{
+  font-style: normal;
+  color: #ff4100;
+  font-size: 12px;
+}
+.handle .handleBtn{
+  padding: 0 10px;
+  height: 30px;
+  line-height: 30px;
+  color: #ffffff;
+  font-size: 12px;
+  float: right;
+  margin: 5px 0px;
+}
+.blueCon .handle .handleBtn{
+  background: #2789ba;
+  border-color: #2789ba;
+}
+.greenCon .handle .handleBtn{
+  background: #009688;
+  border-color: #009688;
+}
+.tablemain{
+  width: 98%;
+  margin: 0 auto;
+}
+.tablemain .el-table{
+  width: 100%;
+}
+.tablemain .el-table td{
+  border-bottom: 1px solid #ffffff;
+  padding: 5px 0 12px 0;
+}
+.tablemain .del span{
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  display: block;
+  background: url("../../../static/images/enterprise/del.png") center center no-repeat;
+}
+/*表格表头*/
+.table_header{
+  background-color: #f2f2f2!important;
+  height: 45px;
+  color: #333333;
+}
+.operation-btn{
+  color: #2789ba;
+}
+/*详情页 调整form每行间距*/
+.details .el-form-item{
+  margin-bottom: 10px;
+}
+/*详情页面底部按钮*/
+.footerDetailBtn{
+  text-align: center;
+  width: 100%;
+  margin: 45px 0 50px 0;
+}
+.blueCon .footerDetailBtn .detailBtn{
+  padding: 0 12px;
+  height: 30px;
+  line-height: 30px;
+  color: #ffffff;
+  font-size: 12px;
+  margin: 0 10px;
+}
+.blueCon .footerDetailBtn .detailBtn{
+  background: #2789ba;
+  border-color: #2789ba;
+}
+.blueCon .footerDetailBtn .returnBtn{
+  color: #333333;
+  background: #FFFFFF;
+  border-color: #DDDDDD;
+}
+
+/** 搜索 **/
+.top-search {
+  background-color: #fff;
+  box-sizing: border-box;
+  padding: 16px 0;
+  /*margin-top: 2px;*/
+  margin-bottom: 16px;
+}
+.top-search .handle-btn {
+  padding-right: 10px;
+  box-sizing: border-box;
+}
+.top-search .handle-btn button {
+  float: right;
+  margin-left: 10px;
+  width: 54px;
+  height: 30px;
+  line-height: 30px;
+  padding: 0;
+  font-size: 12px;
+}
+.top-search .handle-btn .search{
+  color: #fff;
+  background: #2789ba;
+  border-color: #2789ba;
+}
+.top-search .handle-btn .reset{
+  color: #333;
+  background: #fff;
+  border-color: #ddd;
+}
+.greenCon .top-search .handle-btn .search{
+  background: #009688;
+  border-color: #009688;
+}
+/** 搜索 **/
+/** 添加按钮 **/
+.addButton{
+  height: 30px;
+  line-height: 30px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  color: #fff;
+  background: #2789ba;
+  border-color: #2789ba;
+}
+.addButton:hover{
+  color: #fff;
+  background: #2789ba;
+  border-color: #2789ba;
+}
+.greenCon .addButton{
+  height: 30px;
+  line-height: 30px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  color: #fff;
+  background: #009688;
+  border-color: #009688;
+}
+.greenCon .addButton:hover{
+  color: #fff;
+  background: #009688;
+  border-color: #009688;
+}
+/** 添加按钮 **/
+
+/*分页样式*/
+.blueCon .el-pagination.is-background .el-pager li:not(.disabled).active{
+  background-color: #2789ba;
+}
+.blueCon .el-pagination.is-background .el-pager li:not(.disabled).active:hover{
+  color: #fff;
+}
+.blueCon .el-pagination.is-background .el-pager li:not(.disabled):hover {
+  color: #2789ba;
+}
+.blueCon .el-pagination__sizes .el-input .el-input__inner:hover {
+  border-color: #2789ba;
+}
+.greenCon .el-pagination.is-background .el-pager li:not(.disabled).active{
+  background-color: #009688;
+}
+.greenCon .el-pagination.is-background .el-pager li:not(.disabled).active:hover{
+  color: #fff;
+}
+.greenCon .el-pagination.is-background .el-pager li:not(.disabled):hover {
+  color: #009688;
+}
+.greenCon .el-pagination__sizes .el-input .el-input__inner:hover {
+  border-color: #009688;
+}
+/*搜索状态样式*/
+.price-status{
+  color: #333333;
+  margin-right: 20px;
+  cursor: pointer;
+}
+.price-num{
+  color: #999999;
+}
+.curr{
+  color: #2789ba;
+}
+/*公共弹窗样式*/
+.el-dialog{
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+.el-dialog__header{
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  padding: 10px 20px 10px;
+  background: #e6e6e6;
+}
+.el-dialog__header span{
+  font-size: 16px;
+}
+.el-dialog__headerbtn{
+  top: 15px;
+}
+.el-dialog__footer{
+  border-top: 1px solid #e6e6e6;
+  margin: 0 10px;
+}
+.el-dialog__footer .el-button{
+  padding: 8px 15px;
+}
+.el-dialog__footer .el-button--primary{
+  border-color: #2789ba;
+  background: #2789ba;
+}
+.el-dialog__footer .el-button--default{
+  border-color: #dddddd;
+  background: #f7f7f7;
+}
+.el-dialog__footer .el-button--default:hover{
+  color: #2789ba;
+}
+.el-dialog .el-textarea__inner{
+  min-height: 78px!important;
+}
+/*表格报价总额*/
+.moneyOffer{
+  color: #ff5426;
+}
+/*采购商详情页表格按钮*/
+.dynamic-btn{
+  color: #009688;
+}
+.dynamic-btn:focus, .dynamic-btn:hover {
+  color: #009688;
+}
+/*采购商底部操作按钮*/
+.dynamic-blue{
+  background: #009688!important;
+  border-color: #009688!important;
+}
+.dynamic-blue:focus, .dynamic-blue:hover {
+  color: #fff;
+  border-color: #009dff;
+  background-color: #009dff;
+}
+.executeFile .filename{
+  color: #2789ba!important;
+}
+.dynamicFile .filename{
+  color: #009688!important;
+}

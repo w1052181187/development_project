@@ -1,0 +1,375 @@
+<template>
+  <div class="bid-agent" id="bid-agent">
+    <el-form :model="tableForm" :rules="rules" ref="tableForm">
+      <!--<el-form-item label="煤气化模式优惠比例：" prop="ratio">-->
+        <!--<el-input placeholder="请输入内容" v-model="constantMaintenance.description" style="float: left;width: 15%;">-->
+          <!--<template slot="append">%</template>-->
+        <!--</el-input>-->
+        <!--<el-button type="primary" @click="saveRatio" style="float: left; margin-left: 20px;">保 存</el-button>-->
+      <!--</el-form-item>-->
+      <el-table
+        class="bid-table"
+        :data="tableForm.bidAgentTableData"
+        border
+        style="width: 100%">
+        <el-table-column
+          prop="price"
+          label="中标金额范围(万元)"
+          align="center"
+          width="260">
+          <template slot-scope="scope">
+            <el-row :gutter="20" v-if="scope.row.rowType === 'middle' ">
+              <el-col :span="11">
+                <el-form-item :prop="'bidAgentTableData.' + scope.$index + '.priceMin'" :rules='rules.price'>
+                  <el-input
+                    placeholder="请输入内容"
+                    v-model="scope.row.priceMin"
+                    v-if="scope.row.editFlag">
+                  </el-input>
+                  <span style="display:block;float:right;" v-else>{{scope.row.priceMin}}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="1" style="line-height: 35px;">-</el-col>
+              <el-col :span="11">
+                <el-form-item :prop="'bidAgentTableData.' + scope.$index + '.priceMax'" :rules='rules.price'>
+                  <el-input
+                    placeholder="请输入内容"
+                    v-model="scope.row.priceMax"
+                    v-if="scope.row.editFlag">
+                  </el-input>
+                  <span v-else style="display:block;float:left;" >{{scope.row.priceMax}}</span>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row v-else-if="scope.row.rowType === 'firstRow' ">
+              <el-form-item :prop="'bidAgentTableData.' + scope.$index + '.priceMax'" :rules='rules.price'>
+                <span style="display:inline-block;">小于</span>
+                <el-input
+                style="float:right;width:80%;"
+                placeholder="请输入内容"
+                v-model="scope.row.priceMax"
+                v-if="scope.row.editFlag ">
+              </el-input>
+                <span v-else>{{scope.row.priceMax}}</span>
+              </el-form-item>
+            </el-row>
+            <el-row v-else-if="scope.row.rowType === 'lastRow' ">
+              <el-form-item :prop="'bidAgentTableData.' + scope.$index + '.priceMin'" :rules='rules.price'>
+                <span style="display:inline-block;">大于</span>
+                <el-input
+                  style="float:right;width:80%;"
+                  placeholder="请输入内容"
+                  v-model="scope.row.priceMin"
+                  v-if="scope.row.editFlag ">
+                </el-input>
+                <span v-else>{{scope.row.priceMin}}</span>
+              </el-form-item>
+            </el-row>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="rate"
+          label="货物"
+          align="center">
+          <template slot-scope="scope">
+            <el-form-item :prop="'bidAgentTableData.' + scope.$index + '.goodsRate'" :rules='rules.rate'>
+              <el-input placeholder="请输入内容" v-model="scope.row.goodsRate" v-if="scope.row.editFlag">
+                <template slot="append">%</template>
+              </el-input>
+              <span v-else>{{scope.row.goodsRate}}%</span>
+            </el-form-item>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="rate"
+          label="服务"
+          align="center">
+          <template slot-scope="scope">
+            <el-form-item :prop="'bidAgentTableData.' + scope.$index + '.serviceRate'" :rules='rules.rate'>
+              <el-input placeholder="请输入内容" v-model="scope.row.serviceRate" v-if="scope.row.editFlag">
+                <template slot="append">%</template>
+              </el-input>
+              <span v-else>{{scope.row.serviceRate}}%</span>
+            </el-form-item>
+          </template>
+        </el-table-column>
+        <el-table-column
+        prop="rate"
+        label="工程"
+        align="center">
+        <template slot-scope="scope">
+          <el-form-item :prop="'bidAgentTableData.' + scope.$index + '.engineeringRate'" :rules='rules.rate'>
+            <el-input placeholder="请输入内容" v-model="scope.row.engineeringRate" v-if="scope.row.editFlag">
+              <template slot="append">%</template>
+            </el-input>
+            <span v-else>{{scope.row.engineeringRate}}%</span>
+          </el-form-item>
+        </template>
+      </el-table-column>
+        <el-table-column
+          prop="discount"
+          align="center"
+          label="优惠折扣">
+          <template slot-scope="scope">
+            <el-form-item :prop="'bidAgentTableData.' + scope.$index + '.discount'" :rules='rules.discount'>
+              <el-input placeholder="请输入内容" v-model="scope.row.discount" v-if="scope.row.editFlag">
+                <template slot="append">%</template>
+              </el-input>
+              <span v-else>{{scope.row.discount}}%</span>
+            </el-form-item>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作"
+          align="center">
+          <template slot-scope="scope">
+            <el-button type="text" @click="handleTableBtn(scope.row, 'edit', scope.$index)" v-if="scope.row.editFlag === false">编辑</el-button>
+            <el-button type="text" @click="handleTableBtn(scope.row, 'del', scope.$index)" v-if="scope.row.rowType === 'middle'">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-form>
+    <div class="add-row-btn">
+      <el-button icon="el-icon-plus" class="add-button" @click="addTableRow"></el-button>
+    </div>
+    <div style="margin-top: 10px;">
+      <el-input
+        type="textarea"
+        :rows="2"
+        placeholder="请注明数据来源"
+        v-model="dataSource">
+      </el-input>
+    </div>
+    <div class="btns-box">
+      <el-button type="primary" @click="submitForm('tableForm')">保 存</el-button>
+    </div>
+  </div>
+</template>
+<script>
+import { computer, calculatorInfo } from 'api/index'
+import { Message } from 'element-ui'
+export default {
+  name: 'bid-agent',
+  data () {
+    var validateRate = (rule, value, callback) => {
+      if (value && (!(/^100$|^(\d|[1-9]\d)(\.\d+)*$/).test(value))) {
+        callback(new Error('请输入正确费率'))
+      } else {
+        callback()
+      }
+    }
+    var validatePrice = (rule, value, callback) => {
+      if (value && (!(/^\d{1,14}(\.?\d{0,2})?$/).test(value))) {
+        callback(new Error('请输入正确中标价格'))
+      } else {
+        callback()
+      }
+    }
+    var validateDiscount = (rule, value, callback) => {
+      if (value && (!(/^100$|^(\d|[1-9]\d)(\.\d+)*$/).test(value))) {
+        callback(new Error('请输入正确优惠折扣'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      dataSource: '', // 数据来源
+      constantMaintenance: {}, // 优惠比例
+      isEditFlag: false,
+      tableForm: { bidAgentTableData: [{priceMax: 100, rowType: 'firstRow', editFlag: true}, {priceMin: 100000, rowType: 'lastRow', editFlag: true}] },
+      rules: {
+        rate: [
+          {required: true, message: '请输入费率', trigger: 'blur'},
+          {validator: validateRate}
+        ],
+        discount: [
+          {required: true, message: '请输入优惠折扣', trigger: 'blur'},
+          {validator: validateDiscount}
+        ],
+        price: [
+          {required: true, message: '请输入中标金额', trigger: 'blur'},
+          {validator: validatePrice}
+        ]
+      }
+    }
+  },
+  created () {
+    this.init()
+  },
+  methods: {
+    /** 比例保存 */
+    saveRatio () {
+      if (this.constantMaintenance && this.constantMaintenance.description) {
+        if (!this.constantMaintenance.name) {
+          this.constantMaintenance.name = '代理机构计算器煤气化模式优惠比例'
+          this.constantMaintenance.type = '2'
+        }
+        computer.saveDiscountRate(this.constantMaintenance).then((res) => {
+          computer.getDiscountRate({type: '2'}).then((res) => {
+            if (res.data.constantMaintenanceList.length > 0) {
+              this.constantMaintenance = res.data.constantMaintenanceList[0]
+            }
+          })
+        })
+      } else {
+        Message({
+          message: '未设置折扣比率！',
+          type: 'error',
+          duration: 3 * 1000
+        })
+      }
+    },
+    /** 表格操作 */
+    handleTableBtn (row, type, index) {
+      if (type === 'edit') {
+        row.editFlag = true
+        this.tableForm.bidAgentTableData.splice(index, 1, row)
+        this.isEditFlag = true
+      } else if (type === 'del') {
+        this.deleteClick(index, row)
+      }
+    },
+    /** 初始化加载数据 */
+    init () {
+      computer.getList().then((res) => {
+        this.dataSource = ''
+        if (res.data.calculatorInfo) {
+          this.dataSource = res.data.calculatorInfo.dataSource
+        }
+        if (res.data.biddingAgencyRateList.length > 0) {
+          this.tableForm.bidAgentTableData = res.data.biddingAgencyRateList
+          this.tableForm.bidAgentTableData.forEach((item, index) => {
+            if (item.type === 1) { // 第一行
+              item.rowType = 'firstRow'
+            } else if (item.type === 3) { // 最后一行
+              item.rowType = 'lastRow'
+            } else { // 中间行
+              item.rowType = 'middle'
+            }
+            item.editFlag = false
+          })
+        } else {
+          this.isEditFlag = true
+        }
+      })
+      computer.getDiscountRate({type: '2'}).then((res) => {
+        if (res.data.constantMaintenanceList.length > 0) {
+          this.constantMaintenance = res.data.constantMaintenanceList[0]
+        }
+      })
+    },
+    /** 新增表格行 */
+    addTableRow () {
+      let obj = {
+        money: 100,
+        editFlag: true,
+        rowType: 'middle'
+      }
+      this.tableForm.bidAgentTableData.splice(-1, 0, obj)
+      this.isEditFlag = true
+    },
+    /** 弹窗-确定 */
+    confirmDialogBtn () {},
+    /** 保存 */
+    submitForm (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          let data = []
+          let validFlag = true
+          this.tableForm.bidAgentTableData.forEach((item, index) => {
+            item.rank = index + 1
+            if (index === 0) { // 第一行
+              item.type = 1
+              item.priceMin = 0
+            } else if (index === this.tableForm.bidAgentTableData.length - 1) { // 最后一行
+              item.type = 3
+            } else { // 中间行
+              item.type = 2
+            }
+            if (validFlag) {
+              if (index > 0) {
+                if (Number(item.priceMin) !== Number(data[data.length - 1].priceMax)) {
+                  validFlag = false
+                  return false
+                } else {
+                  data.push(item)
+                }
+              } else {
+                data.push(item)
+              }
+            }
+          })
+          if (validFlag) {
+            let obj = {
+              type: 1,
+              dataSource: this.dataSource,
+              biddingAgencyRateList: data
+            }
+            calculatorInfo.save(obj).then((res) => {
+              if (res.data.resCode === '0000') {
+                this.init()
+              }
+            })
+          } else {
+            Message({
+              message: '请检查中标金额范围是否设置正确！',
+              type: 'error',
+              duration: 3 * 1000
+            })
+          }
+        } else {
+          return false
+        }
+      })
+    },
+    // 删除方法
+    deleteClick (index, row) {
+      this.$confirm('此操作永久删除, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 执行删除方法
+        if (row.objectId) {
+          computer.del(row.objectId).then((res) => {
+            if (res.data.resCode === '0000') {
+              this.init()
+              this.isEditFlag = true
+            } else {
+              this.$message({
+                type: 'error',
+                message: '操作失败！'
+              })
+            }
+          })
+        } else {
+          this.tableForm.bidAgentTableData.splice(index, 1)
+          this.isEditFlag = true
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
+    }
+  }
+}
+</script>
+<style lang="less">
+#bid-agent {
+  .add-row-btn {
+    .add-button {
+      width: 100%;
+    }
+  }
+  .bid-table {
+    .el-form-item {
+      margin-bottom: 0;
+    }
+  }
+  .btns-box {
+    margin: 20px;
+  }
+}
+</style>

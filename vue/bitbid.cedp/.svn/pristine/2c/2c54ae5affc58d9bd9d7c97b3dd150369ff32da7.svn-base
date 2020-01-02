@@ -1,0 +1,301 @@
+
+@import './theme/purchase/index.css';
+@import './theme/supplier/index.css';
+
+@purchaseColor: #2789ba;
+@supplierColor: #009688;
+
+body,p,h1,h2,h3,h4,h5,h6,ul,li,ol,dl,dt,dd,input,form{
+  margin:0;
+  list-style:none;/*清除小圆点*/
+  padding:0;
+}
+body{
+  background: #f3f7fb;
+}
+.content-wrap{
+  font-family: "微软雅黑";
+  font-size: 14px;
+}
+.content-wrap:after {
+  display: block;
+  content: "";
+  clear: both;
+}
+.fl{
+  float: left;
+}
+.fr{
+  float: right;
+}
+.blueBg{
+  background: @purchaseColor;
+}
+.greenBg{
+  background: @supplierColor;
+}
+.mainContent{
+  width:100%;
+  background: #ffffff;
+  margin-bottom: 10px;
+}
+.mainContent:after {
+  display: block;
+  content: "";
+  clear: both;
+}
+.mainContent .el-row,.mainContent .el-col{
+  margin: 0;
+}
+.mainContent h3.title{
+  font-size: 14px;
+  font-weight: bold;
+  padding: 0 10px;
+  margin: 0 auto;
+  height: 40px;
+  line-height: 40px;
+  border-bottom: 1px solid #e6e6e6;
+}
+.mainContent .formmain{
+  width: 90%;
+  margin: 20px auto;
+}
+.enterInfo p.tips{
+  width: 100%;
+  height: 39px;
+  line-height: 39px;
+  border-bottom: 1px solid #e6e6e6;
+  background: #ffffff;
+}
+.enterInfo p.tips>span{
+  padding-left: 30px;
+  background: url("../../../static/images/enterprise/tan.png") 10px center no-repeat;
+}
+.enterInfo p.tips .handleBtn{
+  min-width: 54px;
+  height: 30px;
+  line-height: 30px;
+  color: #ffffff;
+  padding: 0 10px;
+  font-size: 12px;
+  float: right;
+  margin: 5px 10px;
+}
+.enterInfo .el-textarea textarea{
+  min-height:100px!important;
+}
+.handle{
+  width: 98%;
+  height: 39px;
+  line-height: 39px;
+  margin: 0 auto;
+  border-bottom: 1px solid #e6e6e6;
+}
+.handle span i{
+  font-style: normal;
+  color: #ff4100;
+  font-size: 12px;
+}
+.handle .handleBtn{
+  padding: 0 10px;
+  height: 30px;
+  line-height: 30px;
+  color: #ffffff;
+  font-size: 12px;
+  float: right;
+  margin: 5px 0px;
+}
+.tablemain{
+  width: 98%;
+  margin: 0 auto;
+}
+.tablemain .del span{
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  display: block;
+  background: url("../../../static/images/enterprise/del.png") center center no-repeat;
+}
+/*表格表头*/
+.table_header{
+  background-color: #f2f2f2!important;
+  height: 45px;
+  color: #333333;
+}
+/*详情页面底部按钮*/
+.footerDetailBtn{
+  text-align: center;
+  width: 100%;
+  margin: 45px 0 50px 0;
+}
+.footerDetailBtn .detailBtn{
+  padding: 0 12px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 12px;
+  margin: 0 10px;
+}
+.footerDetailBtn .returnBtn{
+  color: #333333;
+  background: #FFFFFF;
+  border-color: #DDDDDD;
+}
+
+/** 搜索 **/
+.top-search {
+  background-color: #fff;
+  box-sizing: border-box;
+  padding: 16px 0;
+  /*margin-top: 2px;*/
+  margin-bottom: 16px;
+}
+.top-search .handle-btn {
+  padding-right: 10px;
+  box-sizing: border-box;
+}
+
+/*搜索状态样式*/
+.price-status{
+  color: #333333;
+  margin-right: 20px;
+  cursor: pointer;
+}
+.price-num{
+  color: #999999;
+}
+/*表格报价总额*/
+.moneyOffer{
+  color: #ff5426;
+}
+.top-search .handle-btn button {
+  float: right;
+  margin-left: 10px;
+  width: 54px;
+  height: 30px;
+  line-height: 30px;
+  padding: 0;
+  font-size: 12px;
+}
+/** 修改element组件样式：通过给组件添加类或者直接通过element自带类名修改时，需要写在baseTheme中，其它方式直接写在外面即可，**/
+.baseTheme(@color: #2789ba){
+  .el-cascader, .el-select{
+    width: 100%;
+  }
+  .el-table td, .el-table th{
+    padding: 5px 0;
+  }
+  .el-input__inner{
+    line-height: 34px;
+    height: 34px;
+  }
+  .el-form-item{
+    line-height: 34px;
+    margin-bottom: 18px;
+  }
+  .el-form-item__label{
+    line-height: 34px;
+  }
+  .el-form-item__content{
+    line-height: 34px;
+  }
+  /* 面包屑*/
+  .Breadcrumb,.el-breadcrumb{
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+  .el-breadcrumb__inner a, .el-breadcrumb__inner.is-link{
+    font-weight: normal;
+  }
+  /*表格列数据*/
+  .tablemain .el-table{
+    width: 100%;
+  }
+  .tablemain .el-table td{
+    border-bottom: 1px solid #ffffff;
+    padding: 5px 0 12px 0;
+  }
+
+  /** 添加按钮 **/
+  .addButton{
+    height: 30px;
+    line-height: 30px;
+    box-sizing: border-box;
+    padding: 0 10px;
+  }
+  /*详情页 调整form每行间距*/
+  .details .el-form-item{
+    margin-bottom: 10px;
+  }
+  /*公共弹窗样式*/
+  .el-dialog{
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+  }
+  .el-dialog__header{
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    padding: 10px 20px 10px;
+    background: #e6e6e6;
+  }
+  .el-dialog__header span{
+    font-size: 16px;
+  }
+  .el-dialog__headerbtn{
+    top: 15px;
+  }
+  .el-dialog__footer{
+    border-top: 1px solid #e6e6e6;
+    margin: 0 10px;
+  }
+  .el-dialog__footer .el-button{
+    padding: 8px 15px;
+  }
+  .el-dialog .el-textarea__inner{
+    min-height: 78px!important;
+  }
+  .data_percent .fr .el-progress-circle{
+    width: 83px!important;
+    height: 83px!important;
+  }
+  .data_percent .fr .el-progress-circle path:nth-child(1) {
+    stroke: #e8eaed;
+    stroke-width: 6.8;
+  }
+  .data_percent .fr .el-progress-circle path:nth-child(2) {
+    stroke: @color;
+    stroke-width: 6.8;
+  }
+  .bgColor{
+    background: @color;
+  }
+  .webuploader-pick{
+    background: @color;
+  }
+  .certificate .webuploader-pick,.blueCon .addData .webuploader-pick{
+    background: @color url("../../../static/images/enterprise/upload.png") 10px center no-repeat;
+  }
+  .curr{
+    color: @color;
+  }
+  .filename{
+    color: @color;
+  }
+  .el-cascader-menu__item.is-active {
+    color: @color;
+  }
+}
+
+.custom-purchase {
+  .baseTheme(@purchaseColor);
+  .blueBg{
+    background: @purchaseColor;
+  }
+}
+.custom-supplier {
+  .baseTheme(@supplierColor);
+  .greenBg{
+    background: @supplierColor;
+  }
+}

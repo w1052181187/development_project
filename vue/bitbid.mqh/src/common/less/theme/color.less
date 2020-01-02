@@ -1,0 +1,20 @@
+@import url('./theme.less');
+/* 改变主题色变量 */
+$--color-primary: teal;
+
+/* 改变 icon 字体路径变量，必需 */
+$--font-path: '../node_modules/element-ui/lib/theme-chalk/fonts';
+
+@import '@/node_modules/element-ui/packages/theme-chalk/src/index';
+.themea{
+  .theme(); //默认的样式
+  .leftMenu();
+}
+.themeb{
+  .theme(#009688, #fff);
+  .leftMenu(#06a192,#373641);
+}
+.themec{
+  .theme(#3f51b5, #fff);
+  .leftMenu(#485dd0, #373641);
+}

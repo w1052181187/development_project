@@ -1,0 +1,101 @@
+import request from '@/utils/axios/components-axios'
+
+export const dataDictionary = {
+  /**
+   * 业务模块列表查询
+   * @param {*} query [查询信息]
+   */
+  getModuleList (query) {
+    return request({
+      url: '/businessModule-info',
+      method: 'get',
+      params: query
+    })
+  },
+  /**
+   * 字典目录列表查询
+   * @param {*} query [查询信息]
+   */
+  getDirectoryList (query) {
+    return request({
+      url: '/dictionaryDirectory-info',
+      method: 'get',
+      params: query
+    })
+  },
+  /**
+   * 字典详情列表查询
+   * @param {*} query [查询信息]
+   */
+  getDetailList (query) {
+    return request({
+      url: '/dictionaryDetail-info',
+      method: 'get',
+      params: query
+    })
+  },
+  /**
+   * 字典详情模板列表查询
+   * @param {*} query [查询信息]
+   */
+  getDataTemplate (query) {
+    return request({
+      url: '/dictionaryDetail-info/template',
+      method: 'get',
+      params: query
+    })
+  },
+  /**
+   * 新增/修改字典详情
+   * @param {*} data [主体数据]
+   */
+  updateDetail (data) {
+    return request({
+      url: '/dictionaryDetail-info',
+      method: 'put',
+      data
+    })
+  },
+  /**
+   * 批量新增字典详情
+   * @param {*} data [主体数据]
+   */
+  saveBatchDetail (data) {
+    return request({
+      url: '/dictionaryDetail-info/saveBatch',
+      method: 'put',
+      data
+    })
+  },
+  /**
+   * 批量修改字典详情
+   * @param {*} data [主体数据]
+   */
+  updateBatchDetail (data) {
+    return request({
+      url: '/dictionaryDetail-info/updateBatch',
+      method: 'put',
+      data
+    })
+  },
+  /**
+   * 删除字典详情
+   * @param {[long]} id [主键]
+   */
+  deleteDetailById (id) {
+    return request({
+      url: '/dictionaryDetail-info/' + id,
+      method: 'delete'
+    })
+  },
+  /**
+   * 初始化资质主体
+   * @param {*} data [主体数据]
+   */
+  initZZZT () {
+    return request({
+      url: '/dictionaryDetail-info/ZZZT',
+      method: 'get'
+    })
+  }
+}

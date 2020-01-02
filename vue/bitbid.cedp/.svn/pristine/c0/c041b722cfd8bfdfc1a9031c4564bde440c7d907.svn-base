@@ -1,0 +1,418 @@
+<template>
+  <div id="forgetPwd">
+    <div class="logobigbox">
+      <div class="logobox">
+        <div class="logoboximg fl">
+          <img src="../../../static/images/login_logo.png" alt="">
+        </div>
+        <div class="logoboxlink fr">
+          <el-link href="" :underline="false">首页</el-link>
+          <el-link href="" :underline="false">直采商城</el-link>
+          <el-link href="" :underline="false">采购招标</el-link>
+          <el-link href="" :underline="false">供应商库</el-link>
+          <el-link href="" :underline="false">园区直采</el-link>
+          <el-link href="" :underline="false">询价信息</el-link>
+          <el-link href="" :underline="false">网站导航</el-link>
+        </div>
+      </div>
+    </div>
+    <div class="forgetPwd">
+      <div class="forgetPwd_main">
+        <div class="step_box">
+          <div v-if="active===1">
+            <img src="../../../static/images/pwd_step1.png"/>
+          </div>
+          <div v-if="active===2">
+            <img src="../../../static/images/pwd_step2.png"/>
+          </div>
+          <div v-if="active===3">
+            <img src="../../../static/images/pwd_step3.png"/>
+          </div>
+        </div>
+        <el-form :model="stepFirstForm" :rules="rules" ref="stepFirstForm" label-width="110px" :validate-on-rule-change="true" v-if="this.active === 1">
+          <el-form-item label="手机号码" prop="users">
+            <el-input v-model="stepFirstForm.users"  placeholder="请输入手机号码"></el-input>
+          </el-form-item>
+          <!--<el-form-item label="验证码：" prop="yzm">-->
+            <!--<el-input v-model="stepFirstForm.yzm"  placeholder="请输入验证码"></el-input>-->
+            <!--<img class="yzmimg" src="../../../static/images/pwd_yzm.png"/>-->
+          <!--</el-form-item>-->
+          <el-form-item label="短信验证码" prop="smsCheckCode">
+            <el-input v-model="stepFirstForm.smsCheckCode"  placeholder="请输入短信验证码"></el-input>
+            <el-button type="primary" class="getSmsCheckCode" v-show="show" @click="getCode">获取验证码</el-button>
+            <el-button type="primary" class="getSmsCheckCode" v-show="!show">{{count}} 秒后重新发送</el-button>
+          </el-form-item>
+        </el-form>
+        <el-form :model="stepSecondForm" :rules="rules2" ref="stepSecondForm" label-width="110px"  :validate-on-rule-change="true" v-if="this.active === 2">
+          <el-form-item label="新密码" prop="newPwd">
+            <el-input v-model="stepSecondForm.newPwd"  type="password"  placeholder="请输入新密码"></el-input>
+          </el-form-item>
+          <el-form-item label="确认密码" prop="ConfirmPwd">
+            <el-input v-model="stepSecondForm.ConfirmPwd"  type="password"  placeholder="请重新输入新密码"></el-input>
+          </el-form-item>
+        </el-form>
+        <div class="setsuccess" v-if="this.active === 3">
+          <img src="../../../static/images/pwd_success.png"/>
+          <p><strong>密码修改成功！</strong></p>
+          <p><span>请牢记新密码！</span></p>
+        </div>
+        <div class="loginbtn">
+          <el-button type="primary" @click="nextStep()" v-if="active === 1">修改密码</el-button>
+          <el-button type="primary" @click="nextStep()" v-if="active === 2">重置密码</el-button>
+          <el-button type="primary" class="toLogin" @click="nextStep()" v-if="active === 3">立即登录</el-button>
+        </div>
+      </div>
+    </div>
+    <div class="bottomlink">
+      <el-link href="" :underline="false">比比电子交易平台</el-link> |
+      <el-link href="" :underline="false">比比建材</el-link> |
+      <el-link href="" :underline="false">比比金融</el-link> |
+      <el-link href="" :underline="false">比比招标采购</el-link>
+    </div>
+    <p class="banquan"> <img src="../../../static/images/bq.png"/>晋公网安备 14019202000115号比比网络 版权所有 晋ICP备14002897号-1</p>
+  </div>
+</template>
+<script>
+import $ from 'jquery'
+import {checkRepeatClick, resetClickCount} from '@/assets/js/common'
+import {validateMobilePhone} from '@/assets/js/validate'
+import {base} from '@/api/base'
+export default {
+  data () {
+    // 密码
+    let validatePwd = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('请输入密码'))
+      } else if (this.stepSecondForm.ConfirmPwd !== '') {
+        this.$refs.stepSecondForm.validateField('ConfirmPwd')
+        callback()
+      }
+    }
+    // 确认密码
+    let validateConfirmPwd = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('请再次输入密码'))
+      } else if (value !== this.stepSecondForm.newPwd) {
+        callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
+    }
+    // 手机号码
+    let validPhone = (rule, value, callback) => {
+      if (value && !validateMobilePhone(value)) {
+        callback(new Error('请输入正确的手机号码'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      active: 1,
+      stepFirstForm: {
+        users: '',
+        smsCheckCode: ''
+      },
+      stepSecondForm: {
+        newPwd: '',
+        ConfirmPwd: ''
+      },
+      // 验证
+      rules: {
+        users: [
+          { required: true, message: '手机号码不能为空', trigger: 'blur' },
+          { validator: validPhone, trigger: ['blur', 'change'] }
+        ],
+        // yzm: [
+        //   { required: true, message: '验证码不能为空', trigger: 'blur' }
+        // ],
+        smsCheckCode: [
+          { required: true, message: '短信验证码不能为空', trigger: 'blur' }
+        ]
+      },
+      rules2: {
+        newPwd: [
+          { required: true, message: '新密码不能为空', trigger: 'blur' },
+          {min: 6, max: 20, message: '长度在 6到 20 个字符', trigger: ['blur']},
+          { validator: validatePwd, trigger: ['blur'] }
+        ],
+        ConfirmPwd: [
+          { required: true, message: '确认密码不能为空', trigger: 'blur' },
+          {min: 6, max: 20, message: '长度在 6到 20 个字符', trigger: ['blur']},
+          { validator: validateConfirmPwd, trigger: ['blur'] }
+        ]
+      },
+      isPass: false, // 接口是否通过
+      show: true,
+      count: '',
+      timer: null
+    }
+  },
+  created () {},
+  methods: {
+    mousedownFn: function (e) {
+      this.mouseMoveStata = true
+      this.beginClientX = e.clientX
+    },
+    // 验证码倒计时
+    getCode () {
+      if (checkRepeatClick) {
+        if (!this.stepFirstForm.users) {
+          this.$message({
+            type: 'warning',
+            message: '请输入手机号'
+          })
+          return false
+        } else {
+          let submitForm = {
+            cellPhone: this.stepFirstForm.users,
+            type: 2
+          }
+          base.sendVerCode(submitForm).then((res) => {
+            if (res.data.resCode === '0000') {
+              const TIME_COUNT = 60
+              if (!this.timer) {
+                this.count = TIME_COUNT
+                this.show = false
+                this.timer = setInterval(() => {
+                  if (this.count > 0 && this.count <= TIME_COUNT) {
+                    this.count--
+                  } else {
+                    this.show = true
+                    clearInterval(this.timer)
+                    this.timer = null
+                  }
+                }, 1000)
+              }
+            }
+          })
+        }
+        resetClickCount()
+      }
+    },
+    // 下一步
+    nextStep () {
+      let formName
+      if (this.active === 1) {
+        formName = 'stepFirstForm'
+        this.isPass = false
+        let submitForm = {
+          cellPhone: this.stepFirstForm.users,
+          smsCode: this.stepFirstForm.smsCheckCode
+        }
+        base.authCode(submitForm).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.isPass = true
+          }
+        })
+      } else if (this.active === 2) {
+        this.isPass = false
+        formName = 'stepSecondForm'
+        let submitForm = {
+          account: this.stepFirstForm.users,
+          password: this.stepSecondForm.newPwd
+        }
+        base.resetPwd(submitForm).then((res) => {
+          if (res.data.resCode === '0000') {
+            this.isPass = true
+          }
+        })
+      } else {
+        this.$router.push({path: '/login'})
+      }
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if (!this.isPass) {
+            this.active++
+          }
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  mounted () {
+    $('body').on('mousemove', (e) => {
+      if (this.mouseMoveStata) {
+        var width = e.clientX - this.beginClientX
+        if (width > 0 && width <= this.maxwidth) {
+          $('.handler').css({'left': width})
+          $('.drag_bg').css({'width': width})
+        } else if (width > this.maxwidth) {
+          this.successFunction()
+        }
+      }
+    })
+    $('body').on('mouseup', (e) => {
+      this.mouseMoveStata = false
+      var width = e.clientX - this.beginClientX
+      if (width < this.maxwidth) {
+        $('.handler').css({'left': 0})
+        $('.drag_bg').css({'width': 0})
+      }
+    })
+  }
+}
+</script>
+<style lang="less">
+  #forgetPwd {
+    .login_banner {
+      width: 100%;
+    }
+    .logobigbox {
+      background: #fff;
+      height: 56px;
+      width: 100%;
+    }
+    .logobox {
+      width: 1220px;
+      height: 56px;
+      margin: 0 auto;
+    }
+    .logoboximg {
+      width: 120px;
+      height: 100%;
+      position: relative;
+    }
+    .logoboximg > img {
+      width: 120px;
+      height: 43px;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      margin: auto;
+    }
+    .logoboxlink{
+      margin-top:7px;
+    }
+    .logoboxlink a{
+      display:inline-block;
+      margin: 0 10px;
+      height:46px;
+      line-height:46px;
+      border-bottom:2px solid #ffffff;
+    }
+    .logoboxlink a:hover{
+      color:#009688;
+      border-bottom:2px solid #009688;
+    }
+    // 忘记密码内容区
+    .forgetPwd{
+      width: 1366px;
+      overflow: hidden;
+      margin: 10px auto;
+      background: url("../../../static/images/pwd_bg.png") top center no-repeat;
+    }
+    .forgetPwd_main{
+      width: 1200px;
+      height: 515px;
+      background: #ffffff;
+      margin: 51px auto 0 auto;
+    }
+    .forgetPwd_main .step_box{
+      width: 100%;
+      height: 76px;
+      border: 1px solid #d3def9;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      background: #eef1f8;
+      text-align: center;
+    }
+    .forgetPwd_main .step_box img{
+      margin-top: 20px;
+    }
+    .forgetPwd_main .el-form{
+      width: 480px;
+      margin: 70px auto;
+    }
+    .forgetPwd_main .loginbtn{
+      width: 480px;
+      height: 40px;
+      margin: 0 auto;
+    }
+    .forgetPwd_main .loginbtn .el-button{
+      float: right;
+      width: 370px;
+      height: 40px;
+      background: #009688;
+      border-color: #009688;
+    }
+    .forgetPwd_main .loginbtn .toLogin{
+      margin-right: 55px;
+    }
+    .yzmimg{
+      position: absolute;
+      right: 1px;
+      top: 1px;
+    }
+    .getSmsCheckCode{
+      position: absolute;
+      right: 0;
+      top: 0;
+      background: #009688;
+      border-color: #009688;
+    }
+    .setsuccess{
+      width: 480px;
+      margin: 70px auto;
+      text-align: center;
+    }
+    .setsuccess img{
+      margin: 10px 0;
+    }
+    .setsuccess strong{
+      font-size: 20px;
+    }
+    .setsuccess span{
+      color: #999999;
+      font-size: 12px;
+    }
+      // 步骤条
+    .banquan{
+      text-align: center;
+      line-height: 36px;
+      font-size: 14px;
+      margin:0;
+      padding:0;
+      color:#999999
+    }
+    .banquan img{
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+    .bottomlink{
+      margin-top:10px;
+      overflow:hidden;
+      text-align:center;
+      line-height: 24px;
+      color:#999999
+    }
+    .el-link.el-link--default{
+      color:#999999
+    }
+    /*修改input 高度*/
+    .el-input__inner{
+      height: 40px;
+      line-height: 40px;
+    }
+    .el-input__icon{
+      line-height: 40px;
+    }
+    .el-button{
+      padding: 12px 20px;
+    }
+    .el-form-item__label{
+      line-height: 40px;
+    }
+    .el-form-item__content{
+      line-height: 40px;
+    }
+    .el-form-item{
+      margin-bottom: 22px;
+    }
+    .el-form-item__error{
+      padding-top: 4px;
+    }
+  }
+</style>

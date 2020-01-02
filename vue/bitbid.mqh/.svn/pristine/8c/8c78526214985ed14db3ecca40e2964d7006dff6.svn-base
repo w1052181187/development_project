@@ -1,0 +1,107 @@
+/** 头部样式 */
+.theme(@backcolor:#3F63F7, @fcolor:#fff) {
+  .head-box {
+    height:80px;
+    background-color: @backcolor;
+  }
+  .el-admin {
+    width: 98% !important;
+  }
+  .el-header {
+    width: 1200px;
+    color: @fcolor;
+    line-height: 80px;
+    left: 50%;
+    margin: 0 auto;
+    padding: 0;
+    .head-cont {
+      .head-title {
+        float: left;
+        font-size: 20px;
+        span {
+          font-size: 30px;
+          padding-right: 20px;
+        }
+      }
+      .head-icon {
+        float: right;
+        .skin-change {
+          &:hover {
+            cursor: pointer;
+          }
+        }
+        .head-name {
+          width: 50px;
+          margin-top: 10px;
+        }
+        .head-avatar {
+          display: block;
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          float: right;
+          margin: 10px 20px;
+          img {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            border-radius: 50%;
+          }
+        }
+        .out-btn {
+          float: right;
+          cursor: pointer;
+        }
+        .mqh-icon-wodejuhuasuan {
+          font-size: 40px;
+          color: @backcolor;
+        }
+      }
+    }
+  }
+}
+
+/** 左侧导航 */
+.leftMenu(@backcolor:#5272F7, @nomalcolor:#373641) {
+  .admin-warp {
+    height: 100%;
+  }
+  .admin-cont {
+    height: 100%;
+  }
+  .el-menu-vertical-demo.el-menu {
+    min-height: 905px;
+    height: 100%;
+    text-align: left;
+    padding-left: 0;
+    .el-menu-item {
+      min-width:15px;
+    }
+    li {
+      border-bottom: 1px solid #30343D;
+    }
+    // 一级导航
+    .menu-fisrt.is-active {
+      background-color: @backcolor !important;
+      color: #fff !important;
+    }
+    // 二级导航
+    .is-opened, .is-active {
+      ul li {
+        background-color: @nomalcolor !important;
+      }
+      ul li:hover {
+        background-color: @backcolor !important;
+      }
+      .is-active {
+        background-color: @backcolor !important;
+        color: #fff !important;
+      }
+    }
+  }
+  .grid-content {
+    width: 100%;
+    height: auto;
+  }
+}
+

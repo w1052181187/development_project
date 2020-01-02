@@ -1,0 +1,62 @@
+export default[
+  {
+    path: '/projectExecute',
+    name: 'projectExecute',
+    meta: {
+      active: '/projectExecute',
+      title: '项目执行',
+      layout: 'purchaser'
+    },
+    component: () => import(/* webpackChunkName: 'userProfile' */ '@/pages/project/execute/index')
+  },
+  {
+    path: '/projectExecute/directPurchase/add',
+    name: 'pDirectPurchaseAdd',
+    meta: {
+      active: '/projectExecute',
+      title: '创建直采信息',
+      layout: 'purchaser'
+    },
+    component: () => import(/* webpackChunkName: 'userProfile' */ '@/pages/project/execute/directPurchase/update')
+  },
+  {
+    path: '/projectExecute/directPurchase/update',
+    name: 'pDirectPurchaseUpdate',
+    meta: {
+      active: '/projectExecute',
+      title: '修改直采信息',
+      layout: 'purchaser'
+    },
+    component: () => import(/* webpackChunkName: 'userProfile' */ '@/pages/project/execute/directPurchase/update')
+  },
+  {
+    path: '/projectExecute/directPurchase/detail/:objectId',
+    name: 'pDirectPurchaseDetail',
+    meta: {
+      active: '/projectExecute',
+      title: '查看直采信息',
+      layout: 'purchaser'
+    },
+    component: () => import(/* webpackChunkName: 'userProfile' */ '@/pages/project/execute/directPurchase/detail')
+  },
+  {
+    path: '/projectExecute/directPurchase/offer',
+    name: 'pDirectPurchaseOffer',
+    meta: {
+      active: '/projectExecute',
+      title: '直采报价',
+      layout: 'purchaser'
+    },
+    component: () => import(/* webpackChunkName: 'userProfile' */ '@/pages/project/execute/directPurchase/offerList')
+  },
+  {
+    path: '/projectExecute/directPurchase/offer/detail/:objectId',
+    name: 'pDirectPurchaseOfferDetail',
+    meta: {
+      active: '/projectExecute',
+      title: '查看直采报价',
+      layout: 'purchaser'
+    },
+    component: () => import(/* webpackChunkName: 'userProfile' */ '@/pages/project/execute/directPurchase/offerDetail')
+  }
+]

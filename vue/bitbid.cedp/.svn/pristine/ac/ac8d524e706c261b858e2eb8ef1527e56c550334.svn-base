@@ -1,0 +1,7 @@
+import projectPurchase from './purchaser'
+// import PdirectPurchase from './supplier'
+
+export default[
+  ...projectPurchase
+  // ...PdirectPurchase
+]

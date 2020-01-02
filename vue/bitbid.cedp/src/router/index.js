@@ -1,0 +1,108 @@
+import VueRouter from 'vue-router'
+import NProgress from 'nprogress'
+import store from '../store'
+import 'nprogress/nprogress.css'
+
+import notfound from '../components/error/notfound.vue'
+import noPermission from '../components/error/noPermission'
+import Home from '../pages/home.vue'
+import userProfile from './userProfile'
+import enterpriseManagement from './enterpriseManagement'
+import {enterprise} from '@/api/system'
+import project from './project'
+const router = new VueRouter({
+  mode: 'history',
+  routes: [
+    {
+      path: '/',
+      component: Home,
+      redirect: 'purchaser',
+      children: [
+        {
+          path: 'purchaser',
+          name: '采购商首页',
+          meta: {
+            active: '/purchaser',
+            title: '采购商首页',
+            layout: 'purchaser'
+          },
+          component: () => import(/* webpackChunkName: 'main' */ '@/pages/index')
+        },
+        {
+          path: 'supplier',
+          name: '供应商首页',
+          meta: {
+            active: '/supplier',
+            title: '供应商首页',
+            layout: 'supplier'
+          },
+          component: () => import(/* webpackChunkName: 'main' */ '@/pages/index')
+        },
+        ...enterpriseManagement,
+        ...project
+      ]
+    },
+    {
+      path: '/no-auth',
+      name: 'noauth',
+      component: noPermission,
+      meta: {
+        layout: 'noPermission',
+        title: '无权限'
+      }
+    },
+    {
+      path: '*',
+      name: 'notFound',
+      component: notfound
+    },
+    ...userProfile
+  ]
+})
+
+router.beforeEach((to, from, next) => {
+  let url = to.path
+  if (url.slice(-1) === '/' && url !== '/') {
+    next({path: to.path.slice(0, -1)})
+    return false
+  }
+  NProgress.start()
+  // token权限拦截
+  if (!to.meta.noRequireAuth) {
+    if (store.getters.token) {
+      if (!store.getters.authUser) {
+        store.dispatch('GetLoginInfo').then(() => {
+          enterprise.queryOne(store.getters.authUser.enterpriseId).then((res) => {
+            let enterprise = res.data.enterprise
+            if (!store.getters.certification || (enterprise.status === 1 || enterprise.status === 2 || enterprise.status === 3 || enterprise.status === 5 || enterprise.status === 6)) {
+              next()
+            } else {
+              next('/certification')
+            }
+          })
+        })
+      } else {
+        next()
+      }
+    } else {
+      next({
+        path: '/login'
+        // 将刚刚要去的路由path（却无权限）作为参数，方便登录成功后直接跳转到该路由
+        // query: { redirect: to.fullPath }
+      })
+    }
+  } else {
+    // 判断是否已经登录，如果已经登录跳转首页
+    if (store.getters.token && url !== '/certification') {
+      next('/purchaser')
+    } else {
+      next()
+    }
+  }
+})
+
+router.afterEach((to, from) => {
+  document.title = to.meta.title || ''
+  NProgress.done()
+})
+export default router

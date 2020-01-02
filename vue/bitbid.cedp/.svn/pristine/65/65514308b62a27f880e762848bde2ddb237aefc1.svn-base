@@ -1,0 +1,463 @@
+<template>
+  <div class="enterInfo" id="attachInfo">
+    <p class="tips" v-if="isEdit">
+      <span>编辑状态下，离开此标签未保存的信息将不会被保存</span>
+      <el-button class="handleBtn blue" type="primary" @click="saveAttachInfo('dataForm')">保存</el-button>
+    </p>
+    <p class="tips" v-else>
+      <span>完善企业附加信息，让其他企业更加了解本企业情况</span>
+      <el-button class="handleBtn" type="primary" @click="isEdit = true">编辑</el-button>
+    </p>
+    <el-form :model="dataForm" :rules="rules" ref="dataForm" label-width="120px" :validate-on-rule-change="true">
+      <div class="mainContent">
+        <h3 class="title">公司补充信息</h3>
+        <div class="formmain">
+          <el-row :gutter="60">
+            <el-col :span="12">
+              <el-form-item label="注册资本(万元)" prop="registeredCapitalVo">
+                <el-input  v-if="isEdit" v-model="dataForm.registeredCapitalVo" placeholder="请输入注册资本"></el-input>
+                <span v-else>{{dataForm.registeredCapitalVo}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="实收资本(万元)" prop="paidInCapitalVo">
+                <el-input  v-if="isEdit" v-model="dataForm.paidInCapitalVo" placeholder="请输入实收资本(万元)"></el-input>
+                <span v-else>{{dataForm.paidInCapitalVo}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="60">
+            <el-col :span="12">
+              <el-form-item label="开户行" prop="bankName">
+                <el-input  v-if="isEdit" v-model="dataForm.bankName" placeholder="请输入开户行"></el-input>
+                <span v-else>{{dataForm.bankName}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="营业期限" prop="uscCode">
+                <el-date-picker
+                  v-model="dataForm.operationTimeList"
+                  type="daterange"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期" :disabled="!isEdit">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="60">
+            <el-col :span="12">
+              <el-form-item label="工程建设类别" prop="projectConstructionType">
+                <el-select v-if="isEdit" v-model="dataForm.projectConstructionType" placeholder="请选择工程建设类别">
+                  <el-option
+                    v-for="item in constructionTypeOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+                <span v-else>{{constructionValue}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="银行账号" prop="bankAccount">
+                <el-input  v-if="isEdit" v-model="dataForm.bankAccount" placeholder="请输入银行账号"></el-input>
+                <span v-else>{{dataForm.bankAccount}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="60">
+            <el-col :span="12">
+              <el-form-item label="公司网址" prop="companyAddress">
+                <el-input  v-if="isEdit" v-model="dataForm.companyAddress" placeholder="请输入公司网址"></el-input>
+                <span v-else>{{dataForm.companyAddress}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="公司邮箱" prop="companyMail">
+                <el-input  v-if="isEdit" v-model="dataForm.companyMail" clearable placeholder="请输入公司邮箱"></el-input>
+                <span v-else>{{dataForm.companyMail}}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <!--              <el-row :gutter="60">-->
+          <!--                <el-col :span="12">-->
+          <!--                  <el-form-item label="供货类型" prop="supplyType">-->
+          <!--                    <el-select v-model="enterpriseForm.supplyType" placeholder="请选择供货类型" clearable>-->
+          <!--                      <el-option label="代理商" value="1"></el-option>-->
+          <!--                      <el-option label="制造商" value="2"></el-option>-->
+          <!--                    </el-select>-->
+          <!--                  </el-form-item>-->
+          <!--                </el-col>-->
+          <!--              </el-row>-->
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="经营范围" prop="businessScope">
+                <el-input  v-if="isEdit" type="textarea"  v-model="dataForm.businessScope" placeholder="请输入经营范围"></el-input>
+                <el-input  v-else type="textarea"  v-model="dataForm.businessScope" readonly="readonly"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
+      </div>
+      <div class="mainContent">
+        <h3 class="title">公司股权结构</h3>
+        <div class="handle" v-if="isEdit"><el-button class="handleBtn" @click="addTable(1)" type="primary">+ 添加股东</el-button></div>
+        <div class="tablemain">
+          <el-table
+            :data="dataForm.equityStructureList"
+            style="width: 100%">
+            <el-table-column
+              v-if="isEdit"
+              class-name="del"
+              width="30">
+              <template slot-scope="scope">
+                <span v-if="scope.$index !== 0" @click="handleDel(1, scope)"></span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="shareHolderName" label="股东名称">
+              <template slot-scope="scope">
+                <el-form-item :prop="'equityStructureList.'+scope.$index+'.shareHolderName'" class="itemRule">
+                  <el-input v-if="isEdit" v-model="scope.row.shareHolderName" placeholder="请输入股东名称"></el-input>
+                  <span v-else>{{scope.row.shareHolderName}}</span>
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column prop="shareHoldingNum" label="股东持股">
+              <template slot-scope="scope">
+                <el-form-item :prop="'equityStructureList.'+scope.$index+'.shareHoldingNum'" :rules="rules.shareHoldingNum" class="itemRule">
+                  <el-input v-if="isEdit" v-model="scope.row.shareHoldingNum" placeholder="请输入股东持股"></el-input>
+                  <span v-else>{{scope.row.shareHoldingNum}}</span>
+                </el-form-item>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+      <div class="mainContent">
+        <h3 class="title">人员团队情况</h3>
+        <div class="handle" v-if="isEdit"><el-button class="handleBtn" type="primary" @click="addTable(2)">+ 添加团队</el-button></div>
+        <div class="tablemain">
+          <el-table
+            :data="dataForm.teamSituationList"
+            style="width: 100%">
+            <el-table-column v-if="isEdit" class-name="del" width="30">
+              <template slot-scope="scope">
+                <span v-if="scope.$index !== 0" @click="handleDel(2, scope)" style="margin-bottom: 12px"></span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="type" width="260px" label="类别">
+              <template slot-scope="scope">
+                <el-form-item :prop="'teamSituationList.'+scope.$index+'.type'" class="itemRule">
+                  <el-input v-if="isEdit" v-model="scope.row.type" placeholder="请输入类别"></el-input>
+                  <span v-else>{{scope.row.type}}</span>
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column width="150" label="人员数量">
+              <template slot-scope="scope">
+                <el-form-item :prop="'teamSituationList.'+scope.$index+'.staffNumber'" :rules="rules.staffNumber" class="itemRule">
+                  <el-input v-if="isEdit" v-model="dataForm.teamSituationList[scope.$index].staffNumber"></el-input>
+                  <span v-else>{{scope.row.staffNumber}}</span>
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column prop="remark" label="备注">
+              <template slot-scope="scope">
+                <el-form-item :prop="'teamSituationList.'+scope.$index+'.remark'" class="itemRule">
+                  <el-input v-if="isEdit" v-model="scope.row.remark" placeholder="请输入备注"></el-input>
+                  <span v-else>{{scope.row.remark}}</span>
+                </el-form-item>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+      <div class="mainContent">
+        <h3 class="title">附加信息</h3>
+        <div class="handle" v-if="isEdit" ><el-button class="handleBtn" type="primary" @click="addTable(3)">+ 添加信息</el-button></div>
+        <div class="tablemain">
+          <el-table :data="dataForm.additionalInformationList" style="width: 100%">
+            <el-table-column v-if="isEdit" class-name="del" width="30">
+              <template slot-scope="scope">
+                <span v-if="scope.$index !== 0" @click="handleDel(3, scope)"></span>
+              </template>
+            </el-table-column>
+            <el-table-column type="index" label="序号" width="55">
+            </el-table-column>
+            <el-table-column prop="informationName" width="260px" label="信息名称">
+              <template slot-scope="scope">
+                <el-input  v-if="isEdit" v-model="scope.row.informationName" placeholder="请输入信息名称"></el-input>
+                <span v-else>{{scope.row.informationName}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="instruction" label="说明">
+              <template slot-scope="scope">
+                <el-input  v-if="isEdit" v-model="scope.row.instruction" placeholder="请输入说明"></el-input>
+                <span v-else>{{scope.row.instruction}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              width="200px"
+              label="附件">
+              <template slot-scope="scope">
+                <uploadFile v-if='isEdit' @uploadSuccess="uploadSuccess" @deleteSuccess="deleteSuccess" :fileType="scope.$index" :fileArrays="fileInformations[scope.$index]" isImage="1"></uploadFile>
+                <file-download v-else :fileArrays="fileInformations[scope.$index]" :fileType="scope.$index"></file-download>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+    </el-form>
+  </div>
+</template>
+
+<script>
+import uploadFile from '@/components/upload/publicFileUpload'
+import fileDownload from '@/components/download/file-download'
+import {attachinfo} from '@/api/system'
+import {validateWhoInteger, validateLinks, validateEmail} from '@/assets/js/validate'
+export default {
+  name: 'attachInfo',
+  components: {
+    uploadFile,
+    fileDownload
+  },
+  data () {
+    // 验证正整数
+    let registeredCapital = (rule, value, callback) => {
+      if (value && !validateWhoInteger(value)) {
+        callback(new Error('请输入正整数'))
+      } else {
+        callback()
+      }
+    }
+    // 网址
+    let companyAddress = (rule, value, callback) => {
+      if (value && !validateLinks(value)) {
+        callback(new Error('请输入正确的网址'))
+      } else {
+        callback()
+      }
+    }
+    // 邮箱
+    let companyMail = (rule, value, callback) => {
+      if (value && !validateEmail(value)) {
+        callback(new Error('请输入正确的邮箱地址'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      // 判断编辑、查看状态 ；默认应为查看状态
+      isEdit: false,
+      dataForm: {}, // 展示数据
+      constructionValue: '', // 工程信息
+      rules: {
+        registeredCapitalVo: [
+          {validator: registeredCapital, trigger: 'change'}
+        ],
+        paidInCapitalVo: [
+          {validator: registeredCapital, trigger: 'change'}
+        ],
+        staffNumber: [
+          {validator: registeredCapital, trigger: 'change'}
+        ],
+        shareHoldingNum: [
+          {validator: registeredCapital, trigger: 'change'}
+        ],
+        companyAddress: [
+          {validator: companyAddress, trigger: 'blur'}
+        ],
+        companyMail: [
+          {validator: companyMail, trigger: 'blur'}
+        ]
+      },
+      fileInformations: [],
+      fileOrder: [],
+      constructionTypeOptions: [
+        {value: 1, label: '工程'},
+        {value: 2, label: '货物'},
+        {value: 3, label: '服务'}
+      ]
+    }
+  },
+  methods: {
+    // 添加form中的表格
+    addTable (tableNumber) {
+      // 公司股权
+      if (tableNumber === 1) {
+        let newline = {}
+        if (!this.dataForm.equityStructureList) {
+          this.dataForm.equityStructureList = []
+        }
+        this.dataForm.equityStructureList.push(newline)
+        return
+      }
+      // 人员团队
+      if (tableNumber === 2) {
+        let newline = {
+          staffNumber: ''
+        }
+        if (!this.dataForm.teamSituationList) {
+          this.dataForm.teamSituationList = [
+          ]
+        }
+        this.dataForm.teamSituationList.push(newline)
+        return
+      }
+      // 附加信息
+      if (tableNumber === 3) {
+        let newline = {
+          fileInformation: {}
+        }
+        if (!this.dataForm.additionalInformationList) {
+          this.dataForm.additionalInformationList = []
+        }
+        this.dataForm.additionalInformationList.push(newline)
+        let file = {}
+        this.fileInformations.push(file)
+      }
+    },
+    handleDel (tableNumber, scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        if (tableNumber === 1) {
+          this.dataForm.equityStructureList.splice(scope.$index, 1)
+          return
+        }
+        if (tableNumber === 2) {
+          this.dataForm.teamSituationList.splice(scope.$index, 1)
+          return
+        }
+        if (tableNumber === 3) {
+          this.dataForm.additionalInformationList.splice(scope.$index, 1)
+          this.fileInformations.splice(scope.$index, 1)
+        }
+      }).catch(() => {
+        return false
+      })
+    },
+    // 上传文件
+    uploadSuccess (file, fileOrder) {
+      if (this.fileInformations[fileOrder]) {
+        this.fileInformations.splice(fileOrder, 1, file)
+      } else {
+        this.fileInformations.push(file)
+      }
+      this.dataForm.additionalInformationList[fileOrder].fileInformation = file
+    },
+    // 删除文件
+    deleteSuccess (fileId, fileType) {
+      this.fileInformations = this.fileInformations.filter(item => item.relativePath !== fileId)
+    },
+    // 保存数据
+    saveAttachInfo (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if (this.dataForm.paidInCapitalVo) {
+            this.dataForm.paidInCapital = Number(this.dataForm.paidInCapitalVo) * 10000
+          }
+          if (this.dataForm.registeredCapitalVo) {
+            this.dataForm.registeredCapital = Number(this.dataForm.registeredCapitalVo) * 10000
+          }
+          this.removeEmptyInfo()
+          attachinfo.update(this.dataForm).then((res) => {
+            this.isEdit = false
+            this.$store.commit('SET_ENTERPRISE_SAVE', new Date().getTime())
+          })
+        }
+      })
+    },
+    // 去除空信息
+    removeEmptyInfo () {
+      if (this.dataForm.equityStructureList) {
+        let transit = []
+        this.dataForm.equityStructureList.forEach((item, index) => {
+          if (item['shareHoldingNum'] || item['shareHolderName']) {
+            transit.push(item)
+          }
+        })
+        this.dataForm.equityStructureList = transit
+      }
+      if (this.dataForm.teamSituationList) {
+        let transit = []
+        this.dataForm.teamSituationList.forEach((item, index) => {
+          if (item['remark'] || item['staffNumber'] || item['type']) {
+            transit.push(item)
+          }
+        })
+        this.dataForm.teamSituationList = transit
+      }
+      if (this.dataForm.additionalInformationList) {
+        let transit = []
+        this.dataForm.additionalInformationList.forEach((item, index) => {
+          if (item['informationName'] || item['instruction'] || item['fileInformation']) {
+            transit.push(item)
+          }
+        })
+        this.dataForm.additionalInformationList = transit
+      }
+    },
+    detail () {
+      let url = {
+        enterpriseId: this.$store.getters.authUser.enterpriseId
+      }
+      attachinfo.queryOne(url).then((res) => {
+        this.dataForm = res.data.enterpriseExpand
+        if (this.dataForm.projectConstructionType) {
+          this.dataForm.projectConstructionType = Number(this.dataForm.projectConstructionType)
+        }
+        // 将元转化为万元
+        if (this.dataForm.paidInCapital) {
+          this.$set(this.dataForm, 'paidInCapitalVo', Number(this.dataForm.paidInCapital) / 10000)
+        }
+        if (this.dataForm.registeredCapital) {
+          this.$set(this.dataForm, 'registeredCapitalVo', Number(this.dataForm.registeredCapital) / 10000)
+        }
+        // 提取文件信息
+        if (this.dataForm.additionalInformationList) {
+          this.dataForm.additionalInformationList.forEach(item => {
+            let file = item.fileInformation === null ? {} : item.fileInformation
+            this.fileInformations.push(file)
+          })
+        }
+        // 设置工程类型只读
+        if (this.isEdit === false) {
+          if (this.dataForm.projectConstructionType) {
+            this.constructionTypeOptions.forEach((item) => {
+              if (Number(item.value) === Number(this.dataForm.projectConstructionType)) {
+                this.constructionValue = item.label
+              }
+            })
+          }
+        }
+      })
+    }
+  },
+  mounted () {
+    this.detail()
+  }
+}
+</script>
+
+<style lang="less">
+  #attachInfo{
+    .btns{
+      height: 34px;
+      line-height: 34px;
+    }
+    .btns #picker{
+      width: 57px;
+      height: 28px;
+      line-height: 28px;
+    }
+    .itemRule .el-form-item__content{
+      margin-left: 0!important;
+    }
+  }
+
+</style>

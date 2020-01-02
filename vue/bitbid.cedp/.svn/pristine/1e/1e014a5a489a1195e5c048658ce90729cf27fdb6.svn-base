@@ -1,0 +1,221 @@
+<template>
+  <div class="header" id="header">
+    <div class="topHead">
+      <div class="fl">
+        <img src="../../static/images/logo.png"/>
+        <span>比比采购</span>
+      </div>
+      <div class="fr">
+        <el-link href="" :underline="false">首页</el-link>
+        <el-link href="" :underline="false">直采商城</el-link>
+        <el-link href="" :underline="false">采购招标</el-link>
+        <el-link href="" :underline="false">供应商库</el-link>
+        <el-link href="" :underline="false">园区直采</el-link>
+        <el-link href="" :underline="false">询价信息</el-link>
+        <el-link href="" :underline="false">门户导航</el-link>
+      </div>
+    </div>
+    <div class="bottomHead blueBg">
+      <div class="fl">
+        <em><img src="../../static/images/userlogo.png"/></em>
+        <strong>比比采购采购商工作平台</strong>
+        <span @click="jump">切为供应商</span>
+      </div>
+      <div class="fr">
+        <ul>
+          <li>
+            <el-popover trigger="hover">
+              <img slot="reference" src="../../static/images/topicon_map.png"/>
+              <div class="submenu">
+                <ul>
+                  <li>
+                    <span>门户</span>
+                    <el-link href="" :underline="false">门户首页</el-link>
+                    <el-link href="" :underline="false">采购商城</el-link>
+                    <el-link href="" :underline="false">直采信息</el-link>
+                  </li>
+                  <li>
+                    <span>供应商</span>
+                    <el-link href="" :underline="false">首页信息</el-link>
+                    <el-link href="" :underline="false">项目管理</el-link>
+                    <el-link href="" :underline="false">企业管理</el-link>
+                  </li>
+                  <li>
+                    <span>采购商</span>
+                    <el-link href="" :underline="false">首页信息</el-link>
+                    <el-link href="" :underline="false">计划管理</el-link>
+                    <el-link href="" :underline="false">企业管理</el-link>
+                    <el-link href="" :underline="false">企业管理</el-link>
+                  </li>
+                </ul>
+              </div>
+            </el-popover>
+          </li>
+          <li><img src="../../static/images/topicon_tool.png"/> </li>
+          <li><img src="../../static/images/topicon_message.png"/> </li>
+          <li><img src="../../static/images/topicon_edit.png"/> </li>
+          <li>
+            <el-dropdown class="setbigbox">
+              <span class="el-dropdown-link" style="color: #fff;">
+                早上好，admin
+                <i class="el-icon-arrow-down el-icon--right" style="cursor: pointer; color: #fff;"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <div class="partment">部门： 采购部</div>
+                <span  class="logoutBtn"  @click="logout">退出账号</span>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { toggleClass } from '@/assets/js/theme'
+// require('@/assets/css/theme/purchase/index.css')
+export default {
+  created () {
+    toggleClass(document.body, 'custom-purchase')
+  },
+  methods: {
+    jump () {
+      this.$router.push({path: '/supplier'})
+      toggleClass(document.body, 'custom-supplier')
+    },
+    logout () {
+      this.$store.dispatch('Logout').then(() => {
+        this.$router.push({path: '/login'})
+      })
+    }
+  }
+}
+</script>
+
+<style lang='less'>
+  #header{
+    .topHead{
+      width: 98%;
+      padding: 0 1%;
+      height: 26px;
+      background: #fff;
+      font-size: 12px;
+      overflow: hidden;
+    }
+    .topHead .fl img{
+      float: left;
+      margin-top: 3px;
+    }
+    .topHead .fl span{
+      float: left;
+      line-height: 26px;
+      margin-left: 10px;
+    }
+    .topHead .fr .el-link{
+      margin: 0 5px;
+      font-size: 12px;
+      line-height: 26px;
+    }
+    .topHead .fr .el-link:hover{
+      color: #2789ba;
+    }
+    .bottomHead{
+      width: 98%;
+      padding: 0 1%;
+      height: 45px;
+      margin: 0;
+      overflow: hidden;
+    }
+    .bottomHead .fl em{
+      -webkit-border-radius: 50%;
+      -moz-border-radius: 50%;
+      border-radius: 50%;
+      margin: 11px 10px 0 0;
+      float: left;
+    }
+    .bottomHead .fl em img{
+      width: 24px;
+      height: 24px;
+    }
+    .bottomHead .fl strong{
+      color: #ffffff;
+      line-height: 45px;
+      font-size: 15px;
+    }
+    .bottomHead .fl span{
+      margin-left: 5px;
+      height: 19px;
+      line-height: 19px;
+      padding: 0 8px;
+      border: 1px solid #39a0d4;
+      color: #98d8f8;
+      -webkit-border-radius: 10px;
+      -moz-border-radius: 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .bottomHead .fr ul{
+      overflow: hidden;
+      display: inline-block;
+    }
+    .bottomHead .fr ul li{
+      float: left;
+      margin: 13px 7px 0 7px;
+      color: #ffffff;
+      font-size: 12px;
+    }
+    .bottomHead .fr ul li img{
+      vertical-align: middle;
+    }
+    .bottomHead .fr ul li:last-child{
+      margin-left: 30px;
+    }
+    .bottomHead .fr span{
+      display: inline-block;
+      float: left;
+      margin-left: 10px;
+    }
+  }
+  .partment{
+    padding: 0 20px 5px 20px;
+    font-size: 12px;
+    line-height: 24px;
+    border-bottom: 1px solid #dddddd;
+    text-align: center;
+  }
+  .logoutBtn{
+    width: 100%;
+    display: inline-block;
+    color: #ff0000;
+    font-size: 12px;
+    line-height:20px;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 5px;
+  }
+  .submenu{
+    overflow: hidden;
+  }
+  .submenu li{
+    width: 70px;
+    float: left;
+    margin: 0 10px;
+  }
+  .submenu li>span{
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+  .submenu li a{
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+    line-height: 24px;
+  }
+  .submenu li a:hover{
+    color: #2789ba!important;
+  }
+</style>

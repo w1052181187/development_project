@@ -1,0 +1,7 @@
+import directPurchase from './execute'
+import PdirectPurchase from './dynamic'
+
+export default[
+  ...directPurchase,
+  ...PdirectPurchase
+]

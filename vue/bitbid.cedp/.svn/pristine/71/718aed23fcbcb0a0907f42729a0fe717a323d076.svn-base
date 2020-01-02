@@ -1,0 +1,478 @@
+<template>
+  <div class="blueCon" id="directPurchaseAdd">
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item :to="{ path: '/'}">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/'}">项目管理</el-breadcrumb-item>
+      <el-breadcrumb-item>直采报价</el-breadcrumb-item>
+    </el-breadcrumb>
+    <el-form :model="dataForm" :rules="rules" ref="dataForm" label-width="160px" :validate-on-rule-change="true">
+      <div class="mainContent">
+        <h3 class="title">项目信息</h3>
+        <el-row class="marginTop">
+          <el-col :span="24">
+            <el-form-item label="项目名称">
+              <span>{{dataForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="联系人">
+              <span>{{dataForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="联系方式">
+              <span>{{dataForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="联系信息">
+              <span>{{dataForm.name}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="mainContent">
+        <h3 class="title">报价信息</h3>
+        <el-row class="marginTop">
+          <el-col :span="12">
+            <el-form-item label="报价公司名称">
+              <span>{{dataForm.name}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="联系人">
+              <el-input  v-model="dataForm.name" placeholder="请输入联系人"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="联系方式">
+              <el-input  v-model="dataForm.name" placeholder="请输入联系方式"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="mainContent">
+        <h3 class="title">产品信息</h3>
+        <p class="handle handle-none">
+          <span>共4种物料，采购总金额：<i>￥50000.00</i>（已报价4种物料，报价总金额：<i>￥50000.00</i>）</span>
+        </p>
+        <div class="tablemain product-table">
+          <el-table
+            :data="tableData"
+            border
+            header-cell-class-name="table_header"
+            style="width: 100%">
+            <el-table-column
+              type="index"
+              label="序号"
+              width="50"
+              align="center"
+              :index="indexMethod">
+            </el-table-column>
+            <el-table-column
+              prop="date"
+              label="物料号">
+            </el-table-column>
+            <el-table-column
+              prop="number"
+              label="物料类目">
+            </el-table-column>
+            <el-table-column
+              prop="date"
+              label="物料名称">
+            </el-table-column>
+            <el-table-column
+              prop="number"
+              label="品牌">
+            </el-table-column>
+            <el-table-column
+              prop="date"
+              label="型号">
+            </el-table-column>
+            <el-table-column
+              prop="number"
+              label="物料描述">
+            </el-table-column>
+            <el-table-column
+              prop="date"
+              label="采购量">
+            </el-table-column>
+            <el-table-column
+              prop="number"
+              label="预算总额">
+            </el-table-column>
+            <el-table-column
+              prop="money"
+              label="报价总额">
+              <template slot-scope="scope">
+                <span v-if="scope.row.money" class="moneyOffer">{{scope.row.money}}</span>
+                <span v-else>未报价</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="date"
+              align="center"
+              label="备注及附件">
+              <template slot-scope="scope">
+                <el-button type="text" size="small" class="operation-btn dynamic-btn" @click="handleCheck(scope, '备注及附件')">查看</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="number"
+              align="center"
+              label="报价及附件">
+              <template slot-scope="scope">
+                <el-button type="text" size="small" v-if="scope.row.money" @click="handleCheck(scope, '报价', 'update')">修改</el-button>
+                <el-button type="text" size="small" v-else @click="handleCheck(scope, '报价', 'add')">报价</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+      <div class="mainContent">
+        <h3 class="title">采购信息</h3>
+        <div class="prompt-title">
+          <img src="../../../../../static/images/gth.png" alt="">
+          <span>请仔细确认采购信息</span>
+        </div>
+        <el-row class="marginTop">
+          <el-col :span="24">
+            <el-form-item label="报价截止日期">
+              <span>{{dataForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="期望收货日期">
+              <span>{{dataForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="收货地址">
+              <span>{{dataForm.name}}</span>
+              <br>
+              <span>{{dataForm.name}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="mainContent">
+        <h3 class="title">供应商要求</h3>
+        <div class="prompt-title">
+          <img src="../../../../../static/images/gth.png" alt="">
+          <span>请仔细确认供应商要求</span>
+        </div>
+        <el-row class="marginTop ">
+          <el-col :span="24">
+            <el-form-item label="报价要求">
+              <span>{{dataForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="支付方式">
+              <span>{{dataForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="交易方式">
+              <span>{{dataForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="账期结算日">
+              <span>{{dataForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="发票要求">
+              <span>{{dataForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="经营地址">
+              <span>{{dataForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="注册资金">
+              <span>{{dataForm.name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="证照要求">
+              <span>{{dataForm.name}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="mainContent">
+        <h3 class="title">供货信息</h3>
+        <div class="prompt-title">
+          <img src="../../../../../static/images/gth.png" alt="">
+          <span>请仔细确认供应商供货信息</span>
+        </div>
+        <el-row class="marginTop">
+          <el-col :span="24">
+            <el-form-item label="生产备货周期" class="offerUpdateInput">
+              <el-input v-model="dataForm.offer"></el-input>
+              天
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="交货期" class="offerUpdateInput">
+              确认选择后
+              <el-input v-model="dataForm.offer"></el-input>
+              天交货至指定地点
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="预估运费">
+              <span>{{dataForm.name}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="收货地址" prop="name">
+              <el-cascader expand-trigger="hover"
+                           :options="addressOptions"
+                           v-model="selectedcityOptions"
+                           @change="handlecityChange"
+                           clearable>
+              </el-cascader>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label=" " prop="name">
+              <el-input  v-model="dataForm.name" placeholder="请输入详细地址"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="mainContent">
+        <h3 class="title">补充说明</h3>
+        <el-row style="margin-top: 20px">
+          <el-col :span="24">
+            <el-form-item label="补充说明" prop="name">
+              <editor ref="ueditor" class="ueditor" :height= '200' :editread="false" :content = "content"></editor>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="添加附件" prop="name" class="attachment">
+              <span class="tip">提示：产品规格书、样品图等（支持jpg、jpeg、gif、doc等格式）</span>
+              <uploadFile class="blueUpload" fileMaxNum="5" @uploadSuccess="uploadSuccess" @deleteSuccess="deleteSuccess" fileType="1" :fileArrays="fileInformations" isImage="1"></uploadFile>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="footerDetailBtn">
+        <el-button class="detailBtn returnBtn">保存至草稿箱</el-button>
+        <el-button class="detailBtn" type="primary">提交报价</el-button>
+      </div>
+      <el-dialog :title="dialogLookName" width="668px" :visible.sync="dialogFormVisible">
+        <el-form-item label="报价" label-width="60px" v-if="dialogLookName === '报价'" class="offerInput">
+          <el-input  v-model="dataForm.name" placeholder="请输入报价"></el-input>
+          <span style="color: #c5c5c5;margin-left: 5px">报价含税、报价包含运费</span>
+        </el-form-item>
+        <el-form-item label="备注" label-width="60px">
+          <el-input v-model="dataForm.name" type="textarea" v-if="dialogLookName === '报价'"></el-input>
+          <el-input v-model="dataForm.name" type="textarea" autocomplete="off" readonly v-else></el-input>
+        </el-form-item>
+        <el-form-item label="附件" label-width="60px" class="attachment">
+          <span class="tip">提示：产品规格书、样品图等（支持jpg、jpeg、gif、doc等格式）</span>
+          <uploadFile class="blueUpload" @uploadSuccess="attachUploadSuccess" @deleteSuccess="attachDeleteSuccess" fileType="1" :fileArrays="fileInformations" isImage="1"></uploadFile>
+        </el-form-item>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" class="dynamic-blue" @click="dialogFormVisible = false" v-if="dialogLookName !== '报价'">确认</el-button>
+          <el-button type="primary" class="dynamic-blue" @click="dialogFormVisible = false" v-if="offerStatus === 'add'">确认报价</el-button>
+          <el-button type="primary" class="dynamic-blue" @click="dialogFormVisible = false" v-if="offerStatus === 'update'">确认修改</el-button>
+          <el-button type="primary" class="dynamic-blue" @click="dialogFormVisible = false" v-if="offerStatus === 'update'">清空报价</el-button>
+        </div>
+      </el-dialog>
+    </el-form>
+  </div>
+</template>
+
+<script>
+import * as region from '@/assets/js/region'
+import editor from '@/components/ueditor/ueditor.vue'
+import uploadFile from '@/components/upload/publicFileUpload'
+export default {
+  components: {
+    editor,
+    uploadFile
+  },
+  data () {
+    return {
+      dataForm: {
+        name: '直接采购项目',
+        checkbox: [],
+        deliveryCheckbox: [],
+        radio: '',
+        paymentRadio: ''
+      },
+      indexMethod: 1, // 序号
+      tableData: [
+        {
+          date: '2019-11-11',
+          number: '测试项目',
+          money: '4000'
+        },
+        {
+          date: '2019-11-11',
+          number: '测试项目',
+          money: ''
+        },
+        {
+          date: '2019-11-11',
+          number: '测试项目',
+          money: '4000'
+        }
+      ],
+      options: [
+        {
+          value: 1,
+          label: 1
+        },
+        {
+          value: 2,
+          label: 2
+        },
+        {
+          value: 3,
+          label: 3
+        }
+      ],
+      rangeOptions: [
+        {
+          value: 1,
+          label: 7
+        },
+        {
+          value: 2,
+          label: 30
+        },
+        {
+          value: 3,
+          label: 60
+        },
+        {
+          value: 4,
+          label: 90
+        },
+        {
+          value: 5,
+          label: 120
+        },
+        {
+          value: 6,
+          label: 180
+        },
+        {
+          value: 7,
+          label: 360
+        }
+      ],
+      rules: {},
+      // 地址三级联动
+      addressOptions: region.CityInfo,
+      selectedcityOptions: [],
+      fileInformations: [],
+      content: '',
+      offerStatus: '', // 产品信息报价状态
+      dialogLookName: '', // 弹框名字
+      dialogFormVisible: false
+    }
+  },
+  methods: {
+    // 报价
+    handleCheck (scope, name, status) {
+      this.dialogLookName = name
+      this.offerStatus = status
+      this.dialogFormVisible = true
+    },
+    // 上传文件
+    uploadSuccess (file, fileType) {
+      this.fileInformations.push(file)
+    },
+    // 删除文件
+    deleteSuccess (fileId, fileType) {
+      this.fileInformations = this.fileInformations.filter(item => item.relativePath !== fileId)
+    },
+    // 上传文件
+    attachUploadSuccess (file, fileType) {
+      this.fileInformations.push(file)
+    },
+    // 删除文件
+    attachDeleteSuccess (fileId, fileType) {
+      this.fileInformations = this.fileInformations.filter(item => item.relativePath !== fileId)
+    },
+    handlecityChange () {}
+  }
+}
+</script>
+
+<style lang="less">
+  #directPurchaseAdd{
+    .prompt-title{
+      width: 98%;
+      height: 26px;
+      background: #fff6f0;
+      padding: 0 12px;
+      border: 1px solid #ff8c40;
+      box-sizing: border-box;
+      color: #ff8c40;
+      margin: 10px auto;
+    }
+    .prompt-title>img{
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .prompt-title>span{
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .marginTop{
+      margin-top: 15px;
+    }
+    .el-date-editor{
+      width: 100%;
+    }
+    .ueditor{
+      width: 98%;
+    }
+    .attachment .webuploader-pick{
+      width: 72px;
+      height: 32px;
+      line-height: 32px;
+      padding-left: 20px;
+      background: #009688 url("../../../../../static/images/enterprise/upload.png") 10px center no-repeat;
+    }
+    .attachment span.tip{
+      position: absolute;
+      left: 125px;
+      color: #999999;
+    }
+    .tablemain .el-table td {
+      border-bottom: 1px solid #e6e6e6;
+      padding: 6px 0 6px 0;
+      color: #333333;
+    }
+    .product-table{
+      padding-bottom: 15px;
+    }
+    .offerInput .el-input{
+      width: 30%;
+    }
+    .offerUpdateInput  .el-input{
+      width: 100px;
+    }
+  }
+</style>

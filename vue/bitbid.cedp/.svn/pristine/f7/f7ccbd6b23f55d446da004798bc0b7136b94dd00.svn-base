@@ -1,0 +1,541 @@
+<template>
+  <div class="blueCon" id="directPurchase">
+    <el-form class="top-search" :model="searchForm" ref="searchForm" label-width="90px">
+      <el-row>
+        <el-col :span="8">
+          <el-form-item label="项目名称">
+            <el-input placeholder="请输入项目名称关键字" v-model="searchForm.projectNameLike"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="发布时间">
+            <el-date-picker
+              v-model="searchForm.publishTimeRange"
+              type="daterange"
+              @change="changPublishTime"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :default-time="['00:00:00', '23:59:59']">
+            </el-date-picker>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="采购预算">
+            <el-input-number v-model="searchForm.budgetMin" :controls="false"></el-input-number>
+            <span>-</span>
+            <el-input-number v-model="searchForm.budgetMax" :controls="false"></el-input-number>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="8">
+          <el-form-item label="物料名称">
+            <el-input placeholder="请输入物料名称关键字" v-model="searchForm.subjectMattersNameLike"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="截止时间">
+            <el-date-picker
+              v-model="searchForm.bidEndDateRange"
+              type="daterange"
+              @change="changBidEndDate"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :default-time="['00:00:00', '23:59:59']">
+            </el-date-picker>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="8">
+          <el-form-item label="项目状态">
+            <span v-for="(item,index) in projectStatusOption"
+                  :key="index"
+                  class="price-status"
+                  :class="{'curr' : index === statusSelected}"
+                  @click="chooseStatus(index, item)">
+                   {{item.name}}<span class="price-num" :class="{'curr' : index === statusSelected}">({{item.num}})</span>
+            </span>
+          </el-form-item>
+        </el-col>
+        <el-col :span="16">
+          <div class="handle-btn">
+            <el-button @click="reset">重置</el-button>
+            <el-button class="addButton" type="primary" @click="search">查询</el-button>
+          </div>
+        </el-col>
+      </el-row>
+    </el-form >
+    <div class="mainContent">
+      <div class="top">
+        <span class="title">项目列表</span>
+        <div class="add">
+          <span class="draft" @click="handleDraftClick"><i></i><span>草稿箱(<span v-text="draftCount"></span>)</span></span>
+          <el-button class="addButton" type="primary" @click="handleAdd">新建直采信息</el-button>
+        </div>
+      </div>
+      <div class="list-box">
+        <el-table
+          border
+          header-cell-class-name="table_header"
+          :data="tableData">
+          <el-table-column
+            prop="publishTime"
+            :formatter="simpleFormatData"
+            label="发布时间">
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="项目名称">
+          </el-table-column>
+          <el-table-column
+            prop="subjectMatterNames"
+            label="采购物料">
+          </el-table-column>
+          <el-table-column
+            prop="budget"
+            label="采购预算">
+          </el-table-column>
+          <el-table-column
+            prop="bidEndDate"
+            label="截止日期">
+          </el-table-column>
+          <el-table-column
+            prop="status"
+            label="业务状态">
+            <template slot-scope="scope">
+              <span class="status-basic" v-if="scope.row.status === 1">发布中</span>
+              <span class="status-basic status-end" v-if="scope.row.status === 2">已截止</span>
+              <span class="status-basic status-complete" v-if="scope.row.status === 3 || scope.row.status === 4 || scope.row.status === 5">已完成</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="操作" align="center" width="300">
+            <template slot-scope="scope">
+              <el-button class="addButton" type="primary" @click="handleProjectBtn(scope)"><i class="basic project"></i>项目</el-button>
+              <el-button class="addButton" type="primary" @click="handleOfferBtn(scope)"><i class="basic offer"></i>报价</el-button>
+              <el-dropdown trigger="click">
+                <el-button class="addButton" type="primary">更多<i class="basic more"></i></el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item><div @click="handleRecallBtn(scope)">撤回</div></el-dropdown-item>
+                  <el-dropdown-item><div @click="handleDelBtn(scope)">删除</div></el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div class="page-box">
+          <el-pagination
+            background
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="page.currentPage"
+            :page-size="page.pageSize"
+            layout="total, prev, pager, next, jumper"
+            :total="page.total">
+          </el-pagination>
+        </div>
+      </div>
+    </div>
+    <!-- 草稿箱弹框-->
+    <el-dialog
+      title="草稿箱"
+      :before-close="cancelDraft"
+      :visible.sync="showDraftVisible"
+      width="60%">
+      <el-table
+          border
+          header-cell-class-name="table_header"
+          :data="draftTableData">
+          <el-table-column
+            prop="publishTime"
+            :formatter="simpleFormatData"
+            label="发布时间">
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="项目名称">
+          </el-table-column>
+          <el-table-column
+            prop="subjectMatterNames"
+            label="采购物料">
+          </el-table-column>
+          <el-table-column
+            prop="budget"
+            label="采购预算">
+          </el-table-column>
+          <el-table-column
+            prop="bidEndDate"
+            label="截止日期">
+          </el-table-column>
+          <el-table-column
+            label="状态">
+            <span>草稿</span>
+          </el-table-column>
+          <el-table-column
+            label="操作" align="center" width="300">
+            <template slot-scope="scope">
+              <template>
+                <el-button class="addButton" type="primary" @click="handleDraftEditBtn(scope)"><i class="basic edit"></i>修改</el-button>
+                <el-button class="addButton delButton" type="primary" @click="handleDraftDelBtn(scope)"><i class="basic del"></i>删除</el-button>
+              </template>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div class="page-box">
+          <el-pagination
+            background
+            @size-change="handleDraftSizeChange"
+            @current-change="handleDraftCurrentChange"
+            :current-page.sync="draftPage.currentPage"
+            :page-size="draftPage.pageSize"
+            layout="total, prev, pager, next, jumper"
+            :total="draftPage.total">
+          </el-pagination>
+        </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import {directPurchase} from '@/api/project/directPurchase/directPurchase'
+import {dateFormat} from '@/assets/js/common'
+export default {
+  data () {
+    return {
+      searchForm: {
+        projectNameLike: '',
+        publishTimeRange: '',
+        budgetMin: '',
+        budgetMax: '',
+        subjectMattersNameLike: '',
+        bidEndDateRange: '',
+        includeStatus: [1, 2, 3, 4, 5]
+      },
+      publishTimeStart: null,
+      publishTimeEnd: null,
+      bidEndDateStart: null,
+      bidEndDateEnd: null,
+      // 默认选中
+      statusSelected: 0,
+      projectStatusOption: [
+        {
+          name: '全部',
+          num: 0,
+          includeStatus: [1, 2, 3, 4, 5]
+        },
+        {
+          name: '发布中',
+          num: 0,
+          includeStatus: [1]
+        },
+        {
+          name: '已截止',
+          num: 0,
+          includeStatus: [2]
+        },
+        {
+          name: '已完成',
+          num: 0,
+          includeStatus: [3, 4, 5]
+        }
+      ],
+      draftCount: 0,
+      showDraftVisible: false,
+      tableData: [],
+      draftTableData: [],
+      page: {
+        pageNo: 10,
+        pageSize: 20,
+        total: 200
+      },
+      draftPage: {
+        pageNo: 10,
+        pageSize: 20,
+        total: 200
+      }
+    }
+  },
+  watch: {
+    '$route': 'getTableData'
+  },
+  created () {
+    this.getTableData()
+  },
+  methods: {
+    changPublishTime (time) {
+      if (time && time.length) {
+        this.publishTimeStart = dateFormat(time[0], 'yyyy-MM-dd hh:mm:ss') || null
+        this.publishTimeEnd = dateFormat(time[1], 'yyyy-MM-dd hh:mm:ss') || null
+      } else {
+        this.publishTimeStart = null
+        this.publishTimeEnd = null
+      }
+    },
+    changBidEndDate (time) {
+      if (time && time.length) {
+        this.bidEndDateStart = dateFormat(time[0], 'yyyy-MM-dd hh:mm:ss') || null
+        this.bidEndDateEnd = dateFormat(time[1], 'yyyy-MM-dd hh:mm:ss') || null
+      } else {
+        this.bidEndDateStart = null
+        this.bidEndDateEnd = null
+      }
+    },
+    // 普通格式化数据，空的时候展示"---"
+    simpleFormatData (row, col, cellValue) {
+      return cellValue || '---'
+    },
+    /** 获取列表数据 */
+    getTableData () {
+      directPurchase.getList({
+        pageNo: this.page.pageNo,
+        pageSize: this.page.pageSize,
+        enterpriseId: this.$store.getters.authUser.enterpriseId,
+        projectNameLike: this.searchForm.projectNameLike || null,
+        publishTimeStart: this.publishTimeStart || null,
+        publishTimeEnd: this.publishTimeEnd || null,
+        budgetMin: this.searchForm.budgetMin || null,
+        budgetMax: this.searchForm.budgetMax || null,
+        subjectMattersNameLike: this.searchForm.subjectMattersNameLike || null,
+        bidEndDateStart: this.bidEndDateStart || null,
+        bidEndDateEnd: this.bidEndDateEnd || null,
+        includeStatus: this.searchForm.includeStatus
+      }).then((res) => {
+        if (res.data.projectList && res.data.projectList.list) {
+          this.tableData = res.data.projectList.list
+          this.page.pageNo = res.data.projectList.pageNum
+          this.page.pageSize = res.data.projectList.pageSize
+          this.page.total = res.data.projectList.total
+        }
+        this.projectStatusOption[0].num = res.data.totalCount <= 999 ? res.data.totalCount : '999+'
+        this.projectStatusOption[1].num = res.data.publishingCount <= 999 ? res.data.publishingCount : '999+'
+        this.projectStatusOption[2].num = res.data.timeEndingCount <= 999 ? res.data.timeEndingCount : '999+'
+        this.projectStatusOption[3].num = res.data.completionCount <= 999 ? res.data.completionCount : '999+'
+        this.draftCount = res.data.draftCount
+      })
+    },
+    search () {
+      if (this.validateBudget()) {
+        this.pageNo = 0
+        this.pageSize = 10
+        this.currentPage = 1
+        this.total = 0
+        this.getTableData()
+      }
+    },
+    reset () {
+      this.searchForm.projectNameLike = ''
+      this.searchForm.publishTimeRange = ''
+      this.publishTimeStart = null
+      this.publishTimeEnd = null
+      this.searchForm.budgetMin = ''
+      this.searchForm.budgetMax = ''
+      this.searchForm.subjectMattersNameLike = ''
+      this.searchForm.bidEndDateRange = ''
+      this.bidEndDateStart = null
+      this.bidEndDateEnd = null
+      this.statusSelected = 0
+      this.searchForm.includeStatus = [1, 2, 3, 4, 5]
+      this.getTableData()
+    },
+    /**
+     * 验证项目预算
+     * @returns {boolean}
+     */
+    validateBudget () {
+      let min = Number(this.searchForm.budgetMin)
+      let max = Number(this.searchForm.budgetMax)
+      if ((min !== 0 || max !== 0) && min > max) {
+        this.$message({
+          type: 'warning',
+          message: '最高预算金额不能小于最低预算金额'
+        })
+        return false
+      }
+      return true
+    },
+    handleDraftClick () {
+      this.showDraftVisible = true
+      this.searchForm.includeStatus = [0]
+      this.getTableData()
+    },
+    handleAdd () {
+      this.$router.push({path: `/purchaser/directPurchase/add`})
+    },
+    handleDraftEditBtn (scope) {
+      this.$router.push({path: `/purchaser/directPurchase/update`})
+    },
+    handleDraftDelBtn (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+      }).catch(() => {
+        return false
+      })
+    },
+    handleProjectBtn (scope) {
+      this.$router.push({path: `/purchaser/directPurchase/detail/${scope.row.code}`})
+    },
+    handleOfferBtn (scope) {
+      this.$router.push({path: `/purchaser/directPurchase/offer`})
+    },
+    handleRecallBtn (scope) {
+      this.$confirm('确认撤回吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+      }).catch(() => {
+        return false
+      })
+    },
+    handleDelBtn (scope) {
+      this.$confirm('确认删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+      }).catch(() => {
+        return false
+      })
+    },
+    // 分页
+    handleCurrentChange (nowNum) {
+      this.page.currentPage = nowNum
+      this.page.pageNo = (nowNum - 1) * this.page.pageSize
+    },
+    handleSizeChange (size) {
+      this.page.pageSize = size
+    },
+    // 点击切换搜索
+    chooseStatus (index, item) {
+      this.statusSelected = index
+      this.searchForm.includeStatus = item.includeStatus
+      this.getTableData()
+    },
+    // 分页
+    handleDraftCurrentChange (nowNum) {
+      this.draftPage.currentPage = nowNum
+      this.draftPage.pageNo = (nowNum - 1) * this.draftPage.pageSize
+    },
+    handleDraftSizeChange (size) {
+      this.draftPage.pageSize = size
+    },
+    cancelDraft () {
+      this.showDraftVisible = false
+      this.draftPage.currentPage = 1
+    }
+  }
+}
+</script>
+
+<style lang="less">
+  #directPurchase{
+    .top {
+      box-sizing: border-box;
+      padding: 10px;
+      border-bottom: 1px solid #e6e6e6;
+      margin-bottom: 18px;
+    }
+    .top .title {
+      font-size: 14px;
+      font-weight: bold;
+      padding: 0 10px;
+      margin: 0 auto;
+      height: 30px;
+      line-height: 30px;
+    }
+    .add {
+      float: right;
+    }
+    .add .draft {
+      height: 30px;
+      line-height: 30px;
+      margin-right: 12px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .add .draft i{
+      width: 12px;
+      height: 12px;
+      display: inline-block;
+      margin-right: 6px;
+      vertical-align: middle;
+      background: url("../../../../../static/images/directPurchase/draft.png") center center no-repeat;
+    }
+    .add .draft .list{
+      width: 12px;
+      height: 12px;
+      display: inline-block;
+      margin-right: 6px;
+      vertical-align: middle;
+      background: url("../../../../../static/images/directPurchase/liebiao.png") center center no-repeat;
+    }
+    .add .draft span{
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .status-basic::before{
+      display: inline-block;
+      content: '';
+      height: 6px;
+      width: 6px;
+      border-radius: 6px;
+      background-color: #2789ba;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .status-end::before{
+      background-color: #ff4100;
+    }
+    .status-complete::before{
+      background-color: #27ba5b;
+    }
+    .basic {
+      width: 12px;
+      height: 12px;
+      display: inline-block;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .edit {
+      background: url("../../../../../static/images/directPurchase/edit.png") center center no-repeat;
+    }
+    .del {
+      height: 14px;
+      background: url("../../../../../static/images/directPurchase/del.png") center center no-repeat;
+    }
+    .project {
+      background: url("../../../../../static/images/directPurchase/project.png") center center no-repeat;
+    }
+    .offer {
+      background: url("../../../../../static/images/directPurchase/offer.png") center center no-repeat;
+    }
+    .more {
+      height: 6px;
+      background: url("../../../../../static/images/directPurchase/more.png") center center no-repeat;
+      margin-right: 0;
+      margin-left: 6px;
+    }
+    .list-box {
+      box-sizing: border-box;
+      padding: 0 10px;
+    }
+    .page-box {
+      padding: 20px 10px 40px 10px;
+      box-sizing: border-box;
+      text-align: right;
+    }
+    .delButton{
+      background: #ff4100;
+      border-color: #ff4100;
+    }
+    .el-button+.el-button{
+      margin-left: 0;
+    }
+  }
+</style>
