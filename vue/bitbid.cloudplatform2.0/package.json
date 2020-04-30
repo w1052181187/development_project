@@ -16,7 +16,7 @@
     "babel-polyfill": "^6.26.0",
     "echarts": "^4.2.1",
     "element-ui": "^2.3.7",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "less": "^3.0.4",
     "less-loader": "^4.1.0",
     "nprogress": "^0.2.0",
