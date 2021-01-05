@@ -12,7 +12,7 @@
     "build:test": "cross-env NODE_ENV=test env_config=test node build/build.js"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "babel-polyfill": "^6.26.0",
     "echarts": "^4.2.1",
     "element-ui": "^2.3.7",
