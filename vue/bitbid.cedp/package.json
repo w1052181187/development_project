@@ -15,7 +15,7 @@
     "axios": "^0.18.1",
     "echarts": "^4.2.1",
     "element-ui": "^2.3.7",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-clean-css": "^3.9.0",
     "gulp-css-wrap": "^0.1.2",
     "jquery": "^3.3.1",
